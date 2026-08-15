@@ -371,23 +371,64 @@ ${JSON.stringify({
 // contradictions) and 'cross_entity' (deep model, narrative/timeline/relationship
 // consistency). Returns structured annotation nodes with evidence text excerpts.
 
+/** Maximum number of plan items serialized into the critique prompt. */
+const PLAN_ITEM_CAP = 60;
+/** Truncate a single item's `fields` object to this many serialized chars. */
+const PLAN_FIELD_CAP = 2400;
+
+/**
+ * Bound the serialized plan payload so a very large plan cannot push the prompt
+ * past the model context window (which would fail the whole run in callLLM with
+ * finish_reason=length). Item count is capped and oversized `fields` objects are
+ * truncated to a display-safe preview (the prompt is never re-parsed).
+ */
+function boundedPlanItems(items: ContentPlanItem[]): Array<Record<string, unknown>> {
+  return items.slice(0, PLAN_ITEM_CAP).map((i) => {
+    let fields: unknown = i.fields;
+    if (fields !== undefined && fields !== null) {
+      const raw = JSON.stringify(fields);
+      if (raw.length > PLAN_FIELD_CAP) {
+        fields = `${raw.substring(0, PLAN_FIELD_CAP)}…[field payload truncated]`;
+      }
+    }
+    return {
+      id: i.id,
+      type: i.type,
+      name: i.name,
+      slug: i.slug,
+      action: i.action,
+      description: i.description,
+      fields,
+      dependsOn: i.dependsOn,
+      lore_refs: i.lore_refs,
+    };
+  });
+}
+
 export function buildSemanticCritiquePrompt(
   plan: ContentPlan,
   context: ExistingContentContext,
   scope: CritiqueScopeType,
 ): string {
   const e = formatExistingContent(context);
-  const isCross = scope !== 'entity';
 
-  const scopeInstruction = isCross
-    ? `You are running a CROSS-ENTITY audit: compare plan items against EACH OTHER and
-against existing canon. Look for narrative arc problems, timeline clashes, and broken
-or conflicting relationships (e.g. two missions contradict each other's resolution;
-a character's role conflicts across items).`
-    : `You are running a PER-ENTITY audit: inspect each plan item in isolation against the
+  let scopeInstruction: string;
+  if (scope === 'entity') {
+    scopeInstruction = `You are running a PER-ENTITY audit: inspect each plan item in isolation against the
 existing canon it references. Look for local facts that contradict established lore
 (e.g. a character's faction/age/relationship contradicts an existing entry; a scene's
 district conflicts with the characters who appear there).`;
+  } else if (scope === 'cross_mission') {
+    scopeInstruction = `You are running a CROSS-MISSION audit: compare the plan's missions against EACH OTHER
+and against existing canon. Look for mission-resolution contradictions, shared-character
+timeline clashes, and narrative arcs that break or conflict across missions (e.g. two
+missions claim the same resolution; a character's role in one mission contradicts another).`;
+  } else {
+    scopeInstruction = `You are running a CROSS-ENTITY audit: compare plan items against EACH OTHER and
+against existing canon. Look for narrative arc problems, timeline clashes, and broken
+or conflicting relationships (e.g. two missions contradict each other's resolution;
+a character's role conflicts across items).`;
+  }
 
   return `You are an AI semantic critique reviewer for Las Flores 2077, a narrative cyberpunk game.
 
@@ -402,18 +443,9 @@ ${scopeInstruction}
 ${JSON.stringify({
     id: plan.id,
     description: plan.description,
-    items: plan.items.map(i => ({
-      id: i.id,
-      type: i.type,
-      name: i.name,
-      slug: i.slug,
-      action: i.action,
-      description: i.description,
-      fields: i.fields,
-      dependsOn: i.dependsOn,
-      lore_refs: i.lore_refs,
-    })),
+    items: boundedPlanItems(plan.items),
   }, null, 2)}
+${plan.items.length > PLAN_ITEM_CAP ? `\n[NOTE: ${plan.items.length - PLAN_ITEM_CAP} additional plan item(s) omitted to keep the prompt within the model context window.]\n` : ''}
 
 ## Existing canon
 - Characters: ${e.chars}

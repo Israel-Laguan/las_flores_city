@@ -408,18 +408,25 @@ adminStoryBuilderActionsRouter.get('/plans/:id/annotations', async (req: AuthReq
 });
 
 // PATCH /admin/story-builder/plans/:id/annotations/:annotationId — Live override status
-// Body: { status: 'open' | 'addresses' | 'dismissed' }  (M26 dismiss, M29 addressed)
+// Body: { status: 'open' | 'addressed' | 'dismissed' }  (M26 dismiss, M29 addressed)
 adminStoryBuilderActionsRouter.patch('/plans/:id/annotations/:annotationId', async (req: AuthRequest, res) => {
   try {
-    const { annotationId } = req.params as Record<string, string>;
+    const { id, annotationId } = req.params as Record<string, string>;
     const { status } = req.body || {};
     if (status !== 'open' && status !== 'addressed' && status !== 'dismissed') {
       res.status(400).json({ success: false, error: "status must be 'open', 'addressed', or 'dismissed'", timestamp: new Date().toISOString() });
       return;
     }
 
+    // Reject overrides for annotations that do not belong to this plan.
+    const annotation = await aiCritiqueService.getAnnotation(annotationId);
+    if (!annotation || annotation.planId !== id) {
+      res.status(404).json({ success: false, error: `Annotation not found: ${annotationId}`, timestamp: new Date().toISOString() });
+      return;
+    }
+
     await aiCritiqueService.setAnnotationStatus(annotationId, status);
-    emitAdminEvent('plan_annotation_status', { annotationId, status }, req.userId ?? undefined);
+    emitAdminEvent('plan_annotation_status', { annotationId, status }, id, req.userId);
 
     res.json({ success: true, data: { annotationId, status }, timestamp: new Date().toISOString() });
   } catch (error: any) {

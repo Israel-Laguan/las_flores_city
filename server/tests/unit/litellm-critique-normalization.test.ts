@@ -51,14 +51,28 @@ function makeContext(overrides: Partial<ExistingContentContext> = {}): ExistingC
 describe('LiteLLMProvider.analyzePlanForConflicts — annotation normalization', () => {
   let provider: LiteLLMProvider;
   let warnSpy: jest.SpiedFunction<typeof console.warn>;
+  const originalModel = process.env.LLM_MODEL;
+  const originalDeepModel = process.env.LLM_DEEP_MODEL;
 
   const stubCallLLM = (result: unknown) => {
     (provider as any).callLLM = jest.fn(async () => ({ result, usage: null }));
   };
 
   beforeEach(() => {
+    // Pin model selection so the suite is independent of the shell/CI environment:
+    // unset LLM_MODEL (uses the hardcoded default) and LLM_DEEP_MODEL (so a
+    // cross-entity run does not spawn a deep provider that would hit the network).
+    delete process.env.LLM_MODEL;
+    delete process.env.LLM_DEEP_MODEL;
     provider = new LiteLLMProvider({ timeoutMs: 1000, retries: 0 });
     warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    if (originalModel === undefined) delete process.env.LLM_MODEL;
+    else process.env.LLM_MODEL = originalModel;
+    if (originalDeepModel === undefined) delete process.env.LLM_DEEP_MODEL;
+    else process.env.LLM_DEEP_MODEL = originalDeepModel;
   });
 
   it('does NOT warn on a legitimate { annotations: [] } clean scan', async () => {
@@ -125,5 +139,32 @@ describe('LiteLLMProvider.analyzePlanForConflicts — annotation normalization',
     const nonDismissed = await provider.analyzePlanForConflicts(makePlan(), makeContext(), scope);
     // No debug assertion; just confirm the call path runs for the deep scope.
     expect(nonDismissed.annotations).toHaveLength(0);
+  });
+
+  it('selects LLM_DEEP_MODEL for the cross-entity deep audit (fetch layer stubbed)', async () => {
+    // With LLM_DEEP_MODEL set and distinct from the default model, the deep
+    // path constructs a fresh provider. Stub global.fetch (not callLLM, which is
+    // only attached to the outer instance) so the run stays offline, and capture
+    // the model actually sent to LiteLLM to prove selection.
+    process.env.LLM_DEEP_MODEL = 'poolside/deep-model-test';
+    const originalFetch = global.fetch;
+    let capturedModel = '';
+    (global as any).fetch = jest.fn(async (_url: unknown, init?: any) => {
+      capturedModel = JSON.parse(init?.body || '{}').model;
+      return {
+        ok: true,
+        json: async () => ({ choices: [{ message: { content: '{"annotations":[]}' } }] }),
+      } as any;
+    });
+
+    const scope: CritiqueScopeType = 'cross_entity';
+    try {
+      const { annotations } = await provider.analyzePlanForConflicts(makePlan(), makeContext(), scope);
+      expect(annotations).toHaveLength(0);
+      expect(capturedModel).toBe('poolside/deep-model-test');
+    } finally {
+      global.fetch = originalFetch;
+      delete process.env.LLM_DEEP_MODEL;
+    }
   });
 });

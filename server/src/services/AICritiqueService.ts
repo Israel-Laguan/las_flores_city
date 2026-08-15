@@ -17,7 +17,7 @@
 // ============================================================
 
 import crypto from 'node:crypto';
-import { queryOLTP } from '@las-flores/infra';
+import { queryOLTP, withOLTPTransaction } from '@las-flores/infra';
 import { createLLMProvider } from './LLMService.js';
 import { postgresNeighborhoodProvider } from './NeighborhoodProvider.js';
 import type { LLMProvider, CritiqueScopeType, ExistingContentContext } from './types/LLMTypes.js';
@@ -144,7 +144,7 @@ export class AICritiqueService {
    * Fetch all non-dismissed annotations for a plan, ordered by recency.
    */
   async getAnnotations(planId: string): Promise<CritiqueAnnotation[]> {
-    const result = await queryOLTP<CritiqueAnnotation>(
+    const result = await queryOLTP<Record<string, unknown>>(
       `SELECT id, type, severity, description, evidence, related_entities,
               scope, ai_model, input_hash, status, plan_id, item_ids, created_at
          FROM critique_annotations
@@ -159,7 +159,7 @@ export class AICritiqueService {
    * Fetch a single annotation by id.
    */
   async getAnnotation(annotationId: string): Promise<CritiqueAnnotation | null> {
-    const result = await queryOLTP<CritiqueAnnotation>(
+    const result = await queryOLTP<Record<string, unknown>>(
       `SELECT id, type, severity, description, evidence, related_entities,
               scope, ai_model, input_hash, status, plan_id, item_ids, created_at
          FROM critique_annotations
@@ -202,24 +202,25 @@ export class AICritiqueService {
     scope: string,
     inputHash: string,
   ): Promise<CritiqueAnnotationsResult | null> {
-    const result = await queryOLTP<{ id: string; ai_model: string; created_at: any }>(
-      `SELECT id, ai_model, created_at
+    const result = await queryOLTP<Record<string, unknown>>(
+      `SELECT id, type, severity, description, evidence, related_entities,
+              scope, ai_model, input_hash, status, plan_id, item_ids, created_at
          FROM critique_annotations
         WHERE plan_id = $1
           AND scope = $2
           AND input_hash = $3
           AND status <> 'dismissed'
-        LIMIT 1`,
+        ORDER BY created_at DESC`,
       [planId, scope, inputHash],
     );
     if (result.rows.length === 0) return null;
 
-    // Cache hit — return existing annotations directly
-    const annotations = await this.getAnnotations(planId);
+    // Select the full rows so the cached result is scoped to (plan, scope,
+    // input_hash) — never a plan-wide superset via getAnnotations.
     return {
-      annotations,
+      annotations: result.rows.map((r) => this.rowToAnnotation(r)),
       cached: true,
-      model: result.rows[0].ai_model,
+      model: result.rows[0].ai_model as string,
     };
   }
 
@@ -227,30 +228,35 @@ export class AICritiqueService {
    * Persist annotation rows to the critique_annotations table.
    */
   private async persistAnnotations(annotations: CritiqueAnnotation[]): Promise<void> {
-    for (const annotation of annotations) {
-      await queryOLTP(
-        `INSERT INTO critique_annotations
-           (id, type, severity, description, evidence, related_entities,
-            scope, ai_model, input_hash, status, plan_id, item_ids, created_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
-        [
-          annotation.id,
-          annotation.type,
-          annotation.severity,
-          annotation.description,
-          JSON.stringify(annotation.evidence || []),
-          JSON.stringify(annotation.relatedEntities || []),
-          annotation.scope,
-          annotation.aiModel,
-          annotation.inputHash,
-          annotation.status,
-          annotation.planId,
-          // item_ids as a Postgres text array literal
-          `{${(annotation.itemIds || []).map((id) => `"${id.replace(/"/g, '\\"')}"`).join(',')}}`,
-          annotation.createdAt,
-        ],
-      );
-    }
+    // All inserts run inside one transaction so the batch commits or rolls back
+    // atomically (a partial insert could otherwise masquerade as a cache hit).
+    await withOLTPTransaction(async (client) => {
+      for (const annotation of annotations) {
+        await client.query(
+          `INSERT INTO critique_annotations
+             (id, type, severity, description, evidence, related_entities,
+              scope, ai_model, input_hash, status, plan_id, item_ids, created_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+          [
+            annotation.id,
+            annotation.type,
+            annotation.severity,
+            annotation.description,
+            JSON.stringify(annotation.evidence || []),
+            JSON.stringify(annotation.relatedEntities || []),
+            annotation.scope,
+            annotation.aiModel,
+            annotation.inputHash,
+            annotation.status,
+            annotation.planId,
+            // item_ids is TEXT[]; pass the JS array directly so pg escapes it
+            // (manual array-literal escaping could corrupt backslashes/trailing).
+            annotation.itemIds || [],
+            annotation.createdAt,
+          ],
+        );
+      }
+    });
     console.log(`${LOG_PREFIX} Persisted ${annotations.length} annotations`);
   }
 

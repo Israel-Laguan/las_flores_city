@@ -295,8 +295,17 @@ export default function ReviewStep({
               className={cn(styles.button, styles.secondaryButton)}
               disabled={critiqueAnalyzeLoading}
               onClick={() => onRunCritique?.('entity')}
+              title="Per-item/local critique (cheap model)"
             >
               {critiqueAnalyzeLoading ? 'Analyzing…' : 'Analyze'}
+            </button>
+            <button
+              className={cn(styles.button, styles.secondaryButton)}
+              disabled={critiqueAnalyzeLoading}
+              onClick={() => onRunCritique?.('cross_entity')}
+              title="Cross-entity narrative/timeline critique (deep model)"
+            >
+              {critiqueAnalyzeLoading ? 'Analyzing…' : 'Deep Analyze'}
             </button>
             {critiqueAnnotations.length > 0 && (
               <span className={styles.critiqueCount}>

@@ -78,16 +78,16 @@ export default function CritiqueOverlay({ annotations, onDismiss, onCopyToChat }
                   Dismiss
                 </button>
               )}
-              {onCopyToChat && (
-                <button
-                  className={styles.chatBtn}
-                  disabled
-                  title="Available in a future update (M29)"
-                  onClick={() => onCopyToChat(a)}
-                >
-                  📋 Copy to Chat
-                </button>
-              )}
+              {/* M29 stub — always shown so authors see the (disabled) affordance,
+                  even before onCopyToChat is wired up. */}
+              <button
+                className={styles.chatBtn}
+                disabled
+                title="Available in a future update (M29)"
+                onClick={onCopyToChat ? () => onCopyToChat(a) : undefined}
+              >
+                📋 Copy to Chat
+              </button>
             </div>
           </div>
         ))}

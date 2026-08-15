@@ -75,8 +75,11 @@ CREATE INDEX IF NOT EXISTS idx_critique_annotations_plan
 CREATE INDEX IF NOT EXISTS idx_critique_annotations_status
   ON critique_annotations (status);
 
--- Cache key: unchanged subgraph + same model = skip LLM re-analyze.
-CREATE INDEX IF NOT EXISTS idx_critique_annotations_cache
-  ON critique_annotations (ai_model, input_hash);
+-- Cache lookup performed by AICritiqueService.findCachedAnnotations:
+-- (plan_id, scope, input_hash) + a status filter. Leading columns match the
+-- query shape; `ai_model` is not filtered, so it does not belong in the leading
+-- position.
+CREATE INDEX IF NOT EXISTS idx_critique_annotations_plan_scope_hash
+  ON critique_annotations (plan_id, scope, input_hash);
 
 COMMIT;

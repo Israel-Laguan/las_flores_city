@@ -1,4 +1,4 @@
-import type { ContentPlan, ContentPlanItem, IntakeConflictPreview, CritiqueAnnotation } from '@las-flores/shared';
+import type { ContentPlan, ContentPlanItem, IntakeConflictPreview, CritiqueAnnotation, CritiqueScope } from '@las-flores/shared';
 import type { EntityCandidate } from '../OutlineChunking.js';
 
 export interface ExistingLocation {
@@ -27,8 +27,9 @@ export interface LLMUsage {
   estimatedCostUsd?: number;
 }
 
-/** Which scope of critique to run: per-entity (cheap) vs cross-entity (deep). */
-export type CritiqueScopeType = 'entity' | 'cross_entity' | 'cross_mission';
+/** Which scope of critique to run: per-entity (cheap) vs cross-entity (deep).
+ *  Derived from the shared CritiqueScopeSchema so the union can never drift. */
+export type CritiqueScopeType = CritiqueScope;
 
 export interface LLMProvider {
   parseDescription(description: string, context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }>;

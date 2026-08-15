@@ -137,6 +137,16 @@ describe('AICritiqueService (Postgres-backed, M26)', () => {
   });
 
   it('is cached (no re-analyze) on an unchanged subgraph', async () => {
+    // Self-seed: force a run first so this test never depends on the preceding
+    // one (which may be filtered out when running this file selectively). This
+    // guarantees there is a matching (scope, hash) row to hit against.
+    const seeded = await service.runCritique(TEST_PLAN_ID, 'entity', {
+      forceReanalyze: true,
+      neighborhood: fixedNeighborhood,
+    });
+    expect(seeded.cached).toBe(false);
+    expect(seeded.annotations.length).toBeGreaterThan(0);
+
     const before = await queryOLTP<{ count: string }>(
       'SELECT count(*)::text AS count FROM critique_annotations WHERE plan_id = $1',
       [TEST_PLAN_ID],

@@ -201,11 +201,12 @@ ${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
     return { entities };
   }
 
-  async analyzeIntakeConflicts(plan: ContentPlan, context: ExistingContentContext): Promise<{ conflicts: IntakeConflictPreview[]; usage: LLMUsage | null }> {
-    const conflicts: IntakeConflictPreview[] = [];
-    // Build a normalized-name -> existing display name map. Names are trimmed on
-    // both sides so equivalent names with surrounding whitespace are detected
-    // consistently (plan names are trimmed before comparison).
+  /**
+   * Build a normalized existing-canon name map (case-insensitive, trimmed,
+   * first-occurrence wins) shared by the intake-conflict and semantic-critique
+   * mocks so the two never diverge.
+   */
+  private buildExistingNameMap(context: ExistingContentContext): Map<string, string> {
     const existingByName = new Map<string, string>();
     const add = (name: string) => {
       const norm = (name || '').toLowerCase().trim();
@@ -217,6 +218,15 @@ ${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
     context.missions.forEach((m) => add(m.title));
     context.overlays.forEach((o) => add(o.name));
     context.locations.forEach((l) => add(l.name));
+    return existingByName;
+  }
+
+  async analyzeIntakeConflicts(plan: ContentPlan, context: ExistingContentContext): Promise<{ conflicts: IntakeConflictPreview[]; usage: LLMUsage | null }> {
+    const conflicts: IntakeConflictPreview[] = [];
+    // Build a normalized-name -> existing display name map. Names are trimmed on
+    // both sides so equivalent names with surrounding whitespace are detected
+    // consistently (plan names are trimmed before comparison).
+    const existingByName = this.buildExistingNameMap(context);
 
     // Deterministic surrogate: flag plan items whose name collides with existing
     // canon. Only `create` items allocate a new slug, so an `update` that
@@ -257,17 +267,7 @@ ${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
 
     // Build a normalized existing-name map (case-insensitive, trimmed) the same
     // way the intake mock does.
-    const existingByName = new Map<string, string>();
-    const add = (name: string) => {
-      const norm = (name || '').toLowerCase().trim();
-      if (norm && !existingByName.has(norm)) existingByName.set(norm, (name || '').trim());
-    };
-    context.characters.forEach((c) => add(c.name));
-    context.scenes.forEach((s) => add(s.name));
-    context.dialogues.forEach((d) => add(d.name));
-    context.missions.forEach((m) => add(m.title));
-    context.overlays.forEach((o) => add(o.name));
-    context.locations.forEach((l) => add(l.name));
+    const existingByName = this.buildExistingNameMap(context);
 
     // Deterministic surrogate (same rule as intake): flag a *create* item whose
     // name collides with existing canon as a high-confidence :Conflict.
@@ -287,7 +287,7 @@ ${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
           nodeType: item.type,
           nodeId: item.id,
           slug: item.slug || '',
-          excerpt: excerpt.substring(0, 200),
+          excerpt,
           field: 'name',
         }],
         relatedEntities: [{ entityType: item.type, slug: matched.toLowerCase().replace(/\s+/g, '_') }],

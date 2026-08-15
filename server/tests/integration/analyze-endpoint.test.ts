@@ -31,6 +31,7 @@ jest.mock('../../src/services/AICritiqueService.js', () => ({
   aiCritiqueService: {
     runCritique: jest.fn(),
     getAnnotations: jest.fn(async () => []),
+    getAnnotation: jest.fn(async () => null),
     setAnnotationStatus: jest.fn(async () => {}),
   },
 }));
@@ -151,6 +152,14 @@ describe('GET /admin/story-builder/plans/:id/annotations', () => {
     expect(res.body.data.annotations).toHaveLength(1);
     expect(mocked.getAnnotations).toHaveBeenCalledWith(TEST_PLAN_ID);
   });
+
+  it('returns 500 when fetching annotations fails', async () => {
+    mocked.getAnnotations.mockRejectedValueOnce(new Error('boom'));
+    const res = await request(app)
+      .get(`/admin/story-builder/plans/${TEST_PLAN_ID}/annotations`);
+    expect(res.status).toBe(500);
+    expect(res.body.success).toBe(false);
+  });
 });
 
 describe('PATCH /admin/story-builder/plans/:id/annotations/:annotationId', () => {
@@ -167,6 +176,7 @@ describe('PATCH /admin/story-builder/plans/:id/annotations/:annotationId', () =>
   });
 
   it('applies a dismiss override', async () => {
+    mocked.getAnnotation.mockResolvedValueOnce({ planId: TEST_PLAN_ID } as any);
     const res = await request(app)
       .patch(`/admin/story-builder/plans/${TEST_PLAN_ID}/annotations/${TEST_ANNOTATION_ID}`)
       .send({ status: 'dismissed' });
@@ -176,11 +186,21 @@ describe('PATCH /admin/story-builder/plans/:id/annotations/:annotationId', () =>
   });
 
   it('returns 404 when the annotation is not found', async () => {
-    mocked.setAnnotationStatus.mockRejectedValueOnce(new Error(`Annotation not found: ${TEST_ANNOTATION_ID}`));
+    mocked.getAnnotation.mockResolvedValueOnce(null);
     const res = await request(app)
       .patch(`/admin/story-builder/plans/${TEST_PLAN_ID}/annotations/${TEST_ANNOTATION_ID}`)
       .send({ status: 'addressed' });
     expect(res.status).toBe(404);
+    expect(mocked.setAnnotationStatus).not.toHaveBeenCalled();
+  });
+
+  it('rejects the override when the annotation belongs to a different plan', async () => {
+    mocked.getAnnotation.mockResolvedValueOnce({ planId: '99999999-9999-9999-9999-999999999999' } as any);
+    const res = await request(app)
+      .patch(`/admin/story-builder/plans/${TEST_PLAN_ID}/annotations/${TEST_ANNOTATION_ID}`)
+      .send({ status: 'dismissed' });
+    expect(res.status).toBe(404);
+    expect(mocked.setAnnotationStatus).not.toHaveBeenCalled();
   });
 });
 

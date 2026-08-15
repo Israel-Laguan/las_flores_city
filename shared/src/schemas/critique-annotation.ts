@@ -20,7 +20,10 @@ import { zodUuid } from './uuid.js';
 export const CritiqueEvidenceSchema = z.object({
   nodeType: z.string(),            // 'Character' | 'Dialogue' | 'Mission' | ...
   nodeId: z.string(),              // entity / content id
-  slug: z.string(),
+  // Slug is not guaranteed in model output; default to '' so a missing slug drops
+  // only the field, never the whole annotation (which would also discard its
+  // description + other evidence).
+  slug: z.string().default(''),
   excerpt: z.string(),             // the relevant text snippet (anti-hallucination)
   field: z.string().optional(),    // which field the excerpt came from
 });

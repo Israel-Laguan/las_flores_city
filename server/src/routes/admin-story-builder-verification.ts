@@ -52,7 +52,10 @@ export async function handleGetVerificationReport(req: AuthRequest, res: any) {
     let critique_annotations: any[] | null = null;
     try {
       critique_annotations = await aiCritiqueService.getAnnotations(id as string);
-    } catch {
+    } catch (error) {
+      // Best-effort: absence of an annotations table must not fail the request,
+      // but a persistent failure should be observable (not silently "no annotations").
+      console.warn('[story-builder] Failed to load critique annotations; treating as none:', error);
       critique_annotations = null;
     }
 

@@ -356,7 +356,9 @@ export class LiteLLMProvider implements LLMProvider {
     scope: CritiqueScopeType,
   ): Promise<{ annotations: CritiqueAnnotation[]; usage: LLMUsage | null }> {
     // Deep model only for the expensive cross-entity audit; per-entity stays cheap.
-    const deepModel = process.env.LLM_DEEP_MODEL;
+    // Trim so a whitespace-only env value behaves as unset (dotenv parsers can
+    // return padding spaces instead of an empty string).
+    const deepModel = (process.env.LLM_DEEP_MODEL || '').trim() || undefined;
     const provider = scope !== 'entity' && deepModel && deepModel !== this.model
       ? new LiteLLMProvider({ model: deepModel, timeoutMs: this.defaultTimeoutMs, retries: this.retries })
       : this;
@@ -372,9 +374,12 @@ export class LiteLLMProvider implements LLMProvider {
     // Tolerate malformed entries — keep only those that pass the schema. The
     // schema assigns a fresh id/createdAt/status so the raw model output is only
     // the semantic fields (type, severity, description, evidence, itemIds, ...).
+    // Cryptic model-supplied ids/inputHash are never trusted: a non-UUID id would
+    // invalidate the node (dropping its evidence) and a non-empty inputHash would
+    // break the change-detection cache, so always regenerate both.
     const annotations = raw
       .map((a: any) => CritiqueAnnotationSchema.safeParse({
-        id: a?.id ?? crypto.randomUUID(),
+        id: crypto.randomUUID(),
         type: a?.type,
         severity: a?.severity,
         description: a?.description,
@@ -382,7 +387,7 @@ export class LiteLLMProvider implements LLMProvider {
         relatedEntities: a?.relatedEntities ?? [],
         scope,
         aiModel: provider.model,
-        inputHash: a?.inputHash ?? '',
+        inputHash: '',
         status: 'open',
         planId: plan.id,
         itemIds: a?.itemIds ?? [],

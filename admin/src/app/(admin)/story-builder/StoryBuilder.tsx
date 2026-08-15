@@ -41,6 +41,7 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
     analyzeLoading: critiqueAnalyzeLoading,
     runCritique: runCritiqueOnPlan,
     dismiss: dismissCritiqueAnnotation,
+    error: critiqueError,
   } = useCritique(planId);
 
   return (
@@ -55,6 +56,7 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
       <StepIndicator step={step} />
 
       {error && <div className="error-box">{error}</div>}
+      {critiqueError && <div className="error-box">{critiqueError}</div>}
 
       {step === 1 && (
         <DescribeStep

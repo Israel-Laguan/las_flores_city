@@ -6,15 +6,22 @@
  * Per AGENTS.md: pure unit test (jest.mock for @las-flores/infra).
  */
 import { describe, it, expect, jest as jestGlobals, beforeEach } from '@jest/globals';
-import { queryOLTP } from '@las-flores/infra';
+import { queryOLTP, withOLTPTransaction } from '@las-flores/infra';
 import { AICritiqueService } from '../../src/services/AICritiqueService.js';
 import { MockProvider } from '../../src/services/MockProvider.js';
 import type { ExistingContentContext } from '../../src/services/types/LLMTypes.js';
 
-// Mock the entire infra module to avoid real DB/Redis connections
-jestGlobals.mock('@las-flores/infra');
+// Mock the entire infra module to avoid real DB/Redis connections. Because
+// persistAnnotations now runs inside withOLTPTransaction, the transaction helper
+// must execute its callback with a client whose `query` is the queryOLTP mock so
+// insert calls remain observable to the tests below.
+jestGlobals.mock('@las-flores/infra', () => ({
+  queryOLTP: jestGlobals.fn(),
+  withOLTPTransaction: jestGlobals.fn(),
+}));
 
 const mockQueryOLTP = jestGlobals.mocked(queryOLTP);
+const mockWithOLTPTransaction = jestGlobals.mocked(withOLTPTransaction);
 
 const PLAN_ID = 'a0000000-e000-4000-8000-0000000000aa';
 const DESCRIPTION = 'Test plan for critique service unit tests';
@@ -55,6 +62,12 @@ describe('AICritiqueService', () => {
   beforeEach(() => {
     jestGlobals.clearAllMocks();
     jestGlobals.resetAllMocks();
+    // resetAllMocks clears the factory implementation, so restore it: run the
+    // transaction callback with a client whose `query` forwards INSERTs to the
+    // queryOLTP mock (keeps persist path assertions deterministic).
+    mockWithOLTPTransaction.mockImplementation(async (cb: (client: { query: typeof mockQueryOLTP }) => Promise<unknown>) =>
+      cb({ query: mockQueryOLTP }),
+    );
     service = new AICritiqueService(new MockProvider());
   });
 
@@ -72,27 +85,33 @@ describe('AICritiqueService', () => {
     mockPlan(); // plan load
     mockQueryOLTP.mockResolvedValueOnce({ rows: [] } as any); // cache check (miss)
     mockQueryOLTP.mockResolvedValue({ rowCount: 1 } as any); // inserts
+    // Neighborhood contains a canon character named "Test Character", so the mock
+    // provider flags the create item and emits at least one annotation.
+    const neighborhood: ExistingContentContext = {
+      ...emptyContext,
+      characters: [{ id: 'c0', name: 'Test Character' }],
+    };
 
-    const result = await service.runCritique(PLAN_ID, 'entity', { neighborhood: emptyContext });
+    const result = await service.runCritique(PLAN_ID, 'entity', { neighborhood });
 
     expect(result.cached).toBe(false);
     const inserts = mockQueryOLTP.mock.calls.filter(
       (call) => typeof call[0] === 'string' && (call[0] as string).includes('INSERT INTO critique_annotations'),
     );
+    // Non-vacuous: the mock must have produced and persisted at least one annotation.
+    expect(inserts.length).toBeGreaterThan(0);
     expect(inserts.length).toBe(result.annotations.length);
   });
 
   it('returns cached annotations (no LLM insert) on an unchanged subgraph', async () => {
     mockPlan(); // plan load
-    // Cache check: hit
-    mockQueryOLTP.mockResolvedValueOnce({ rows: [{ id: 'cached-1', ai_model: 'mock', created_at: new Date() }] } as any);
-    // getAnnotations (cache-hit fetch)
+    // Cache check: hit — findCachedAnnotations selects + maps the full rows directly.
     mockQueryOLTP.mockResolvedValueOnce({
       rows: [{
         id: 'cached-1', type: 'conflict', severity: 'error', description: 'Cached conflict',
         evidence: JSON.stringify([{ nodeType: 'character', nodeId: 'x', slug: 'x', excerpt: 'e' }]),
         related_entities: '[]', scope: 'entity', ai_model: 'mock', input_hash: 'hash',
-        status: 'open', plan_id: PLAN_ID, item_ids: ['{x}'], created_at: new Date('2026-01-01T00:00:00Z'),
+        status: 'open', plan_id: PLAN_ID, item_ids: ['x'], created_at: new Date('2026-01-01T00:00:00Z'),
       }],
     } as any);
 

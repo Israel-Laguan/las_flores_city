@@ -66,11 +66,22 @@ describe('buildSemanticCritiquePrompt', () => {
   it('includes distinct instruction for entity scope (per-item/local)', () => {
     const prompt = buildSemanticCritiquePrompt(makePlan(), makeContext(), 'entity');
     expect(prompt).toMatch(/PER-ENTITY|per-entity audit|per.entity/i);
+    expect(prompt).not.toContain('CROSS-ENTITY audit');
+    expect(prompt).not.toContain('CROSS-MISSION audit');
   });
 
   it('includes distinct instruction for cross_entity scope', () => {
     const prompt = buildSemanticCritiquePrompt(makePlan(), makeContext(), 'cross_entity');
     expect(prompt).toMatch(/CROSS-ENTITY|cross.entity audit|cross.entity/i);
+    expect(prompt).not.toContain('PER-ENTITY audit');
+    expect(prompt).not.toContain('CROSS-MISSION audit');
+  });
+
+  it('has a distinct cross_mission instruction (not a silent cross_entity alias)', () => {
+    const prompt = buildSemanticCritiquePrompt(makePlan(), makeContext(), 'cross_mission');
+    expect(prompt).toMatch(/CROSS-MISSION|cross.mission audit|cross.mission/i);
+    expect(prompt).not.toContain('CROSS-ENTITY audit');
+    expect(prompt).not.toContain('PER-ENTITY audit');
   });
 
   it('returns a JSON object only annotations format', () => {
