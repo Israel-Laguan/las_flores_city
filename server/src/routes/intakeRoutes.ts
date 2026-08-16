@@ -21,6 +21,7 @@ import { adminAnalyticsRouter } from './admin-analytics.js';
 import { adminUsersRouter } from './admin-users.js';
 import { adminSettingsRouter } from './admin-settings.js';
 import { adminAuditRouter } from './admin-audit.js';
+import { adminGraphRouter } from './admin-graph.js';
 
 /**
  * Admin / content-authoring route mounts for the intake-worker process (M21).
@@ -62,4 +63,5 @@ export function registerIntakeRoutes(app: express.Express, opts?: { skipShared?:
   app.use('/admin/users', adminUsersRouter);
   app.use('/admin/settings', adminSettingsRouter);
   app.use('/admin/audit', adminAuditRouter);
+  app.use('/admin/graph', adminGraphRouter);
 }

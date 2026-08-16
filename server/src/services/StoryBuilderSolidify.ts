@@ -7,7 +7,6 @@
 // staged (harness → stage → publish → migrate → verify) and is
 // crash-resumable via durable job_runs state (M22).
 // ============================================================
-
 import { ContentPlanSchema, type ContentPlan, type VerificationReport, type HarnessReport } from '@las-flores/shared';
 import { queryOLTP } from '@las-flores/infra';
 import { getCache, setCache } from '@las-flores/infra';
@@ -25,6 +24,8 @@ import {
 import { PlanNotFoundError, PlanStatusError } from './errors.js';
 import { stagePlan, type StagingResult } from './StoryBuilderPlanOps.js';
 import { migrateStagedPlan, verifyPlan } from './StoryBuilderMigration.js';
+import { isNeo4jEnabled } from './Neo4jClient.js';
+import { commitGraph } from './GraphMerger.js';
 import type { MigrationResult, SolidifyJobStatus } from './StoryBuilderOrchestrator.js';
 
 export const JOB_CACHE_PREFIX = 'story-builder:job:';
@@ -407,6 +408,18 @@ async function runVerifyAndTerminal(
     'UPDATE content_plans SET status = $1, verification_report = $2, updated_at = NOW() WHERE id = $3',
     ['verified', JSON.stringify(verificationReport), planId],
   );
+  // --- M28: best-effort graph commit ---
+  // After the `verified` terminal write, promote the plan's deltas into the
+  // canonical graph. Idempotent and never fails the run: production SQL/YAML/
+  // MinIO are authoritative; the graph is derived/disposable (GraphMerger logs
+  // and swallows any failure). A retry on a re-verified plan is a safe no-op.
+  if (isNeo4jEnabled()) {
+    try {
+      await commitGraph(planId);
+    } catch (err) {
+      console.warn(`[story-builder] commitGraph best-effort failed for ${planId}:`, (err as Error).message);
+    }
+  }
   if (jobId) {
     // Post-commit job_runs bookkeeping is best-effort: a write failure here must
     // not propagate into the enclosing compensation handler and invert an already

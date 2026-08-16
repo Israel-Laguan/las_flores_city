@@ -13,6 +13,10 @@ import type {
 } from './StoryBuilderPlanOps.js';
 import type { PublishResult } from './AssetPublishService.js';
 import { PlanNotFoundError, PlanStatusError } from './errors.js';
+import { isNeo4jEnabled } from './Neo4jClient.js';
+import { detectGraphDrift } from './GraphMerger.js';
+import { exportContentPlan, GraphExportError } from './GraphExporter.js';
+import { getDeltasForPlan } from './GraphDeltaService.js';
 import {
   startJobRun,
   updateJobRun,
@@ -120,6 +124,38 @@ export async function approveAndSolidifyPlan(planId: string, userId?: string): P
     }
 
     ContentPlanSchema.parse(load.rows[0].plan_json);
+
+    // --- M28 graph-authoritative path ---
+    // When Neo4j is enabled AND this plan carries deltas, the graph is the sole
+    // authoring entry point: validate the graph is in sync (drift guard) and
+    // re-export the ContentPlan from the merged revision into plan_json BEFORE
+    // the status flip commits. Legacy path (graph off, or no deltas) keeps the
+    // existing plan_json untouched.
+    if (isNeo4jEnabled()) {
+      const deltas = await getDeltasForPlan(planId);
+      if (deltas.length > 0) {
+        const drift = await detectGraphDrift();
+        if (!drift.inSync) {
+          throw new PlanStatusError(
+            `Graph has drifted from the content store (orphan: ${drift.orphanNodes.length}, missing: ${drift.missingNodes.length}, orphanEdges: ${drift.orphanEdges.length}, missingEdges: ${drift.missingEdges.length}). Run \`npm run resync:graph\` before approving.`,
+          );
+        }
+        try {
+          const exported = await exportContentPlan(planId, load.rows[0].plan_json.description ?? 'Graph-authored plan');
+          // Persist the exported plan with a one-shot revision identity before
+          // the pending flip commits, so runSolidify stages this exported plan.
+          await client.query(
+            'UPDATE content_plans SET plan_json = $1, updated_at = NOW() WHERE id = $2',
+            [exported, planId],
+          );
+        } catch (err) {
+          if (err instanceof GraphExportError) {
+            throw new PlanStatusError(err.message);
+          }
+          throw err;
+        }
+      }
+    }
 
     // 1. Lock the plan and set pending status.
     await ContentPlanService.setStatus(planId, 'pending', client);

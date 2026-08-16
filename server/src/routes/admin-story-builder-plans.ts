@@ -4,6 +4,8 @@ import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
 import { queryOLTP } from '@las-flores/infra';
 import { contentPlanService } from '../services/ContentPlanService.js';
 import { emitAdminEvent } from '../services/AdminEventEmitter.js';
+import { isNeo4jEnabled } from '../services/Neo4jClient.js';
+import { getDeltasForPlan } from '../services/GraphDeltaService.js';
 
 export const adminStoryBuilderPlansRouter = express.Router();
 
@@ -134,6 +136,17 @@ adminStoryBuilderPlansRouter.put('/plans/:id', async (req, res) => {
     if (!rawPlan) {
       res.status(400).json({ success: false, error: 'plan is required', timestamp: new Date().toISOString() });
       return;
+    }
+
+    // M28 — in graph-authoritative mode, the graph deltas are the sole authoring
+    // entry point for plans that carry deltas. Direct plan_json edits bypass the
+    // merge/export path, so reject them (the dual-path drop).
+    if (isNeo4jEnabled()) {
+      const deltas = await getDeltasForPlan(id);
+      if (deltas.length > 0) {
+        res.status(400).json({ success: false, error: 'plan authored via graph deltas; edit through the graph canvas, not plan_json', timestamp: new Date().toISOString() });
+        return;
+      }
     }
 
     let validatedPlan: ContentPlan;

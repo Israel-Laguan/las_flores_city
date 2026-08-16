@@ -24,6 +24,7 @@
     "seed:dev": "tsx src/database/seedAdmin.ts",
     "seed:players": "tsx src/database/seedPlayers.ts",
     "seed:graph": "tsx scripts/seed-graph.ts",
+    "resync:graph": "tsx scripts/resync-graph.ts",
     "seed:all": "npm run seed:dev && npm run seed:players",
     "backfill:critique-graph": "tsx scripts/backfill-critique-graph.ts",
     "fill-todos": "tsx src/scripts/fillExistingTodos.ts"

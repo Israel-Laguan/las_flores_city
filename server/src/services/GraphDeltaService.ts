@@ -13,7 +13,12 @@
 // no-op (return empty) when NEO4J_ENABLED is off.
 // ============================================================
 
-import { GraphDeltaSchema, type GraphDelta } from '@las-flores/shared';
+import {
+  GraphDeltaSchema,
+  GraphDeltaEdgeSchema,
+  type GraphDelta,
+  type GraphDeltaEdge,
+} from '@las-flores/shared';
 import { isNeo4jEnabled, runNeo4jQuery } from './Neo4jClient.js';
 
 /** UUID shape (case-insensitive), used to normalize identity-key components. */
@@ -127,11 +132,109 @@ export async function getDeltasForPlan(planId: string): Promise<GraphDelta[]> {
   return rows.map((r) => toGraphDelta(r.d));
 }
 
-/** Remove every delta for a plan (e.g. on discard). No-op when disabled. */
+/**
+ * Persist a plan delta edge: MERGE a relationship with the whitelisted edge type
+ * and a `planId` property, from the plan's `:ContentDelta` node to either a
+ * canonical `:Content` node or another `:ContentDelta` of the same plan. Both
+ * endpoints MUST exist (reuses the canonical-node guard pattern from
+ * `applyDelta`). No-op when Neo4j is disabled.
+ */
+export async function applyDeltaEdge(edge: GraphDeltaEdge): Promise<void> {
+  if (!isNeo4jEnabled()) return;
+  const { planId, sourceNodeType, sourceNodeId, targetNodeType, targetNodeId, type } = edge;
+  if (!/^[A-Z][A-Z_0-9]*$/.test(type)) {
+    throw new Error(`Unsafe graph relationship type "${type}"`);
+  }
+  const nPlanId = normalizeKeyComponent(planId);
+  const nSourceId = normalizeKeyComponent(sourceNodeId);
+  const nTargetId = normalizeKeyComponent(targetNodeId);
+
+  // Validate the source delta node exists for this plan.
+  const sourceExists = await runNeo4jQuery<{ count: unknown }>(
+    `MATCH (d:ContentDelta { planId: $planId, nodeType: $sourceNodeType, nodeId: $sourceNodeId })
+     RETURN count(d) AS count`,
+    { planId: nPlanId, sourceNodeType, sourceNodeId: nSourceId },
+  );
+  if (Number(sourceExists[0]?.count ?? 0) === 0) {
+    throw new Error(`Delta edge source references non-existent :ContentDelta [${sourceNodeType}:${sourceNodeId}] for plan ${planId}`);
+  }
+
+  // Target may be a canonical :Content node (planId IS null) OR a same-plan
+  // :ContentDelta (so two ADD entities in one plan can link).
+  const targetExists = await runNeo4jQuery<{ count: unknown }>(
+    `MATCH (c:Content { nodeType: $targetNodeType, nodeId: $targetNodeId })
+       WHERE c.planId IS null
+     RETURN count(c) AS count
+     UNION ALL
+     MATCH (d:ContentDelta { planId: $planId, nodeType: $targetNodeType, nodeId: $targetNodeId })
+     RETURN count(d) AS count`,
+    { planId: nPlanId, targetNodeType, targetNodeId: nTargetId },
+  );
+  const targetCount = (targetExists[0]?.count != null ? Number(targetExists[0].count) : 0)
+    + (targetExists[1]?.count != null ? Number(targetExists[1].count) : 0);
+  if (targetCount === 0) {
+    throw new Error(`Delta edge target references non-existent :Content/:ContentDelta [${targetNodeType}:${targetNodeId}] for plan ${planId}`);
+  }
+
+  await runNeo4jQuery(
+    `
+    MATCH (s:ContentDelta { planId: $planId, nodeType: $sourceNodeType, nodeId: $sourceNodeId })
+    CALL {
+      WITH s
+      MATCH (t:Content { nodeType: $targetNodeType, nodeId: $targetNodeId })
+      WHERE t.planId IS null
+      MERGE (s)-[r:${type} { planId: $planId }]->(t)
+      RETURN r
+    }
+    CALL {
+      WITH s
+      MATCH (t:ContentDelta { planId: $planId, nodeType: $targetNodeType, nodeId: $targetNodeId })
+      MERGE (s)-[r:${type} { planId: $planId }]->(t)
+      RETURN r
+    }
+    `,
+    { planId: nPlanId, sourceNodeType, sourceNodeId: nSourceId, targetNodeType, targetNodeId: nTargetId },
+  );
+}
+
+/** Coerce a raw delta-edge row into a validated GraphDeltaEdge. */
+function toGraphDeltaEdge(row: Record<string, unknown>): GraphDeltaEdge {
+  return GraphDeltaEdgeSchema.parse({
+    planId: row.planId,
+    sourceNodeType: row.sourceNodeType,
+    sourceNodeId: row.sourceNodeId,
+    targetNodeType: row.targetNodeType,
+    targetNodeId: row.targetNodeId,
+    type: row.type,
+    resolvedType: row.resolvedType ?? undefined,
+  });
+}
+
+/**
+ * Fetch all delta edges belonging to one plan (relationships from the plan's
+ * `:ContentDelta` nodes carrying the planId). Empty when disabled.
+ */
+export async function getDeltaEdgesForPlan(planId: string): Promise<GraphDeltaEdge[]> {
+  if (!isNeo4jEnabled()) return [];
+  const nPlanId = normalizeKeyComponent(planId);
+  const rows = await runNeo4jQuery<Record<string, unknown>>(
+    `
+    MATCH (s:ContentDelta { planId: $planId })-[r]->(t)
+    WHERE r.planId = $planId
+    RETURN s.nodeType AS sourceNodeType, s.nodeId AS sourceNodeId,
+           t.nodeType AS targetNodeType, t.nodeId AS targetNodeId,
+           type(r) AS type, $planId AS planId
+    `,
+    { planId: nPlanId },
+  );
+  return rows.map(toGraphDeltaEdge);
+}
+
+/** Remove every delta (and its edges) for a plan (e.g. on discard/commit). No-op when disabled. */
 export async function clearDeltasForPlan(planId: string): Promise<void> {
   if (!isNeo4jEnabled()) return;
   await runNeo4jQuery(
-    `MATCH (d:ContentDelta { planId: $planId }) DELETE d`,
+    `MATCH (d:ContentDelta { planId: $planId }) DETACH DELETE d`,
     { planId: normalizeKeyComponent(planId) },
   );
 }
