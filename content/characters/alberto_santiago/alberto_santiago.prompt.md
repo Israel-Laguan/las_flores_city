@@ -12,7 +12,7 @@ aspect_ratio: 3:4
 
 ## Prompt (Draft)
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 50-year-old Latino seafood vendor. His frame is sturdy and weathered from five decades on the water. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, deeply crinkled at the corners from decades squinting in the sun, a straight nose, and a defined jaw. His expression is calm and determined when on business, but can shift to warm and playful. His thick black hair shows silver streaks at the temples, kept in simple, flowing shapes. He wears a minimalist, pocketless sun-faded work shirt and worn trousers for deliveries. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, 8k.
+50-year-old Latino seafood vendor, sturdy and weathered from five decades on the water build, dark brown, deeply crinkled at the corners from decades squinting in the sun, a straight nose, and a defined jaw, calm and determined when on business, but can shift to warm and playful expression, thick black hair shows silver streaks at the temples, sun-faded work shirt and worn trousers for deliveries. Weathered urban Latin American building under harsh tropical sun backdrop. premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
