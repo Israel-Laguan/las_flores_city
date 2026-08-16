@@ -91,6 +91,7 @@ describe('GraphBaseService', () => {
       nodeId: CHAR_ID,
       name: 'Peter van der Meer',
       role: 'npc',
+      planId: null,
     });
   });
 
@@ -117,8 +118,15 @@ describe('GraphBaseService', () => {
 
 describe('GraphDeltaService', () => {
   test('applyDelta MERGEs a ContentDelta keyed on its surrogate key', async () => {
+    // Ensure the base :Content node exists before applying a MODIFY delta,
+    // since MODIFY/DELETE must reference an existing canonical node.
+    await upsertContentNode({ nodeType: 'Character', nodeId: CHAR_ID, name: 'Test Character' });
+    // Reset mock after upsertContentNode to capture the applyDelta call;
+    // set up return values for both the base-node existence check and the MERGE.
+    mockQuery.mockReset();
+    mockQuery.mockReturnValueOnce(Promise.resolve([{ exists: true }]));
     await applyDelta(makeDelta());
-    const [cypher, params] = mockQuery.mock.calls[0] ?? [];
+    const [cypher, params] = mockQuery.mock.calls[1] ?? [];
     expect(String(cypher)).toContain('MERGE (d:ContentDelta { key: $key })');
     expect(params).toMatchObject({
       key: `Character:${CHAR_ID}:${PLAN_ID}`,

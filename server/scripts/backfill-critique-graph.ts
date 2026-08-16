@@ -104,10 +104,14 @@ async function main(): Promise<number> {
   const newestByScope = new Map<string, { key: string; createdAt: string }>();
   for (const [key, group] of groups) {
     const scopeKey = `${group.meta.planId}|${group.meta.scope}`;
-    const createdAt = group.annotations.reduce(
+    // Include the marker's createdAt if present, so a clean-run marker timestamps
+    // the group and prevents selecting an older non-marker run in its place.
+    const markerCreatedAt = group.hadMarker ? (group.annotations.length > 0 ? group.annotations[group.annotations.length - 1].createdAt : '') : '';
+    const annotationCreatedAt = group.annotations.reduce(
       (max, a) => (a.createdAt > max ? a.createdAt : max),
-      '',
+      markerCreatedAt,
     );
+    const createdAt = annotationCreatedAt > markerCreatedAt ? annotationCreatedAt : markerCreatedAt;
     const current = newestByScope.get(scopeKey);
     if (!current || createdAt > current.createdAt) newestByScope.set(scopeKey, { key, createdAt });
   }

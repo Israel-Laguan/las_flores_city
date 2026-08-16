@@ -86,7 +86,7 @@ export async function upsertContentNode(input: BaseContentNodeInput): Promise<vo
   // entry can never corrupt the base key or hide the node from canon queries
   // (e.g. planId leaking in would make `MATCH (c:Content) WHERE c.planId IS null`
   // miss it). Identity is derived from `nodeType`/`nodeId` only.
-  const reserved = new Set(['key', 'nodeType', 'nodeId', 'planId']);
+  const reserved = new Set(['key', 'nodeType', 'nodeId', 'planId', 'isEvidence']);
   const safeFields = Object.fromEntries(
     Object.entries(canonicalFields ?? {}).filter(([k]) => !reserved.has(k)),
   );

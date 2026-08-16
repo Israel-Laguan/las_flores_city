@@ -102,7 +102,7 @@ Access the services:
 # Full setup (build images, start services, apply migrations)
 ./scripts/podman-workflow.sh setup
 
-# Start admin panel only (requires server running)
+# Start admin panel only (requires intake-worker running)
 ./scripts/podman-workflow.sh admin
 
 # Check status of all services
@@ -223,7 +223,7 @@ If you need to start services individually, prefer the `podman-workflow.sh` scri
 # Start the full stack
 ./scripts/podman-workflow.sh setup
 
-# Or start admin panel only (requires server running)
+# Or start admin panel only (requires intake-worker running)
 ./scripts/podman-workflow.sh admin
 ```
 
@@ -285,14 +285,17 @@ podman run -d \
   server /data --console-address ":9001"
 
 # Neo4j (graph authoring canvas, M27; optional — NEO4J_ENABLED defaults OFF).
-# A real password (not the image-rejected `neo4j/neo4j`) is required; the graph
+# A real password (not the image-rejected `neo4j/neo4j`) is required; set it via
+# NEO4J_PASSWORD in your shell/environment (never a committed secret). The graph
 # data volume keeps authored plan IR + critique annotations across recreates.
+# Ports 7474/7687 are bound to 127.0.0.1 so the authoring graph is not exposed
+# to other reachable devices on the network.
 podman run -d \
   --name las-flores-neo4j \
   --network las-flores-net \
-  -p 7474:7474 -p 7687:7687 \
+  -p 127.0.0.1:7474:7474 -p 127.0.0.1:7687:7687 \
   -v neo4j-data:/data \
-  -e NEO4J_AUTH=neo4j/lasfloresdev123 \
+  -e NEO4J_AUTH=neo4j/${NEO4J_PASSWORD:-changeme-local-neo4j-password} \
   -e NEO4J_server_memory_heap_max__size=512M \
   -e NEO4J_server_memory_pagecache_size=256M \
   docker.io/library/neo4j:5-community
@@ -457,18 +460,18 @@ curl http://localhost:3000/health
 ### Asset Prompt Catalog
 Returns all asset categories and prompt files:
 ```bash
-curl http://localhost:3000/assets/prompt-catalog | jq '.data.categories'
+curl http://localhost:3001/assets/prompt-catalog | jq '.data.categories'
 ```
 
 ### Asset List (by prompt_rel)
 ```bash
-curl "http://localhost:3000/assets/list?prompt_rel=isometric-map/assets/lm_electra"
+curl "http://localhost:3001/assets/list?prompt_rel=isometric-map/assets/lm_electra"
 ```
 
 ### Asset List All
 Returns all asset groups:
 ```bash
-curl http://localhost:3000/assets/list-all
+curl http://localhost:3001/assets/list-all
 ```
 
 ## Known Issues & Fixes
@@ -531,7 +534,7 @@ podman exec las-flores-redis redis-cli ping
 curl -s http://localhost:3000/health | jq
 
 # Prompt catalog
-curl -s http://localhost:3000/assets/prompt-catalog | jq '.data.categories | length'
+curl -s http://localhost:3001/assets/prompt-catalog | jq '.data.categories | length'
 
 # Should return 3 categories and 51+ entries
 ```

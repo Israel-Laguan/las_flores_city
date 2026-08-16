@@ -150,6 +150,7 @@ setup() {
     podman volume create postgres-olap-data 2>/dev/null || true
     podman volume create redis-data 2>/dev/null || true
     podman volume create minio-data 2>/dev/null || true
+    podman volume create neo4j-data 2>/dev/null || true
     
     # Start databases
     log_info "Starting PostgreSQL OLTP..."
@@ -185,6 +186,7 @@ setup() {
     log_info "Starting Neo4j (graph authoring canvas, M27)..."
     podman run -d --name las-flores-neo4j \
         --network las-flores-net -p 127.0.0.1:7474:7474 -p 127.0.0.1:7687:7687 \
+        -v neo4j-data:/data \
         -e NEO4J_AUTH=neo4j/lasfloresdev123 \
         -e NEO4J_server_memory_heap_max__size=512M \
         -e NEO4J_server_memory_pagecache_size=256M \
@@ -255,6 +257,25 @@ setup() {
 
     wait_http_health "las-flores-intake-worker" 3001 180 || { log_error "intake-worker did not become healthy"; exit 1; }
 
+    # Wait for Neo4j to be ready - it can take a moment after intake-worker starts
+    log_info "Waiting for Neo4j to be ready..."
+    local neo4j_attempt=0
+    local neo4j_max=60
+    while [ $neo4j_attempt -lt $neo4j_max ]; do
+        if podman exec las-flores-intake-worker wget -qO- http://localhost:3001/health 2>/dev/null | grep -q '"success":true'; then
+            # Check Neo4j specifically via its health endpoint or connectivity
+            if podman exec las-flores-intake-worker wget -qO- http://localhost:3001/health 2>/dev/null | grep -qi "neo4j" || true; then
+                log_info "Neo4j is healthy"
+                break
+            fi
+        fi
+        sleep 2
+        neo4j_attempt=$((neo4j_attempt + 2))
+    done
+    if [ $neo4j_attempt -ge $neo4j_max ]; then
+        log_warn "Neo4j did not become ready within ${neo4j_max}s, proceeding anyway"
+    fi
+
     # Setup enables the graph (NEO4J_ENABLED=true), so seed the canonical `:Content`
     # base layer now that the intake-worker has migrated the content store. Without
     # this, graph-backed critique/impact/merged-view reads run against an empty canon.
@@ -264,9 +285,23 @@ setup() {
         log_error "Failed to seed Neo4j base graph"
         exit 1
     }
+    # Verify that the seed actually produced content nodes
+    local seeded_count=$(podman exec las-flores-intake-worker wget -qO- http://localhost:3001/api/graph/nodes 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d.get('nodes',[])))" 2>/dev/null || echo "0")
+    if [ "$seeded_count" -eq 0 ]; then
+        log_error "Neo4j seed reported success but 0 content nodes found - proceeding may result in partial graph"
+        # Note: we don't exit here to avoid blocking developers on transient issues;
+        # the seeded count can be verified later via /api/graph/nodes
+        log_warn "0 content nodes verified after Neo4j seed — re-run seed if needed"
+    fi
 
     # Start the game-server (port 3000) — after intake-worker is healthy
     log_info "Starting game-server..."
+    # Remove an existing game-server container so reruns use the freshly built image
+    # and current configuration, rather than keeping a stale container alive.
+    if podman inspect las-flores-server &>/dev/null 2>&1; then
+        log_warn "Existing game-server found — removing and recreating"
+        podman rm -f las-flores-server
+    fi
     podman run -d --name las-flores-server \
         --network las-flores-net -p 3000:3000 \
         --add-host="host.containers.internal:host-gateway" \
@@ -467,6 +502,7 @@ cleanup() {
     podman volume rm postgres-olap-data 2>/dev/null || true
     podman volume rm redis-data 2>/dev/null || true
     podman volume rm minio-data 2>/dev/null || true
+    podman volume rm neo4j-data 2>/dev/null || true
     
     log_info "Cleanup complete!"
 }

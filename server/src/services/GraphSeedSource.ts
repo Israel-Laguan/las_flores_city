@@ -135,6 +135,13 @@ async function gatherLocations(opts: { strict?: boolean } = {}): Promise<BaseCon
     // content dir unreadable — return what we have (non-strict)
     return out;
   }
+  // glob v13 does not accept a `strict` option and silently returns [] when the
+  // pattern matches nothing (including when the base dir is missing). In strict
+  // mode, treat an empty result as a failure so the seed aborts rather than
+  // proceeding with an incomplete graph.
+  if (opts.strict && files.length === 0) {
+    throw new Error(`No location YAML files found under ${contentDir}/districts/*/locations/*/*.yaml`);
+  }
   for (const file of files) {
     try {
       const raw = await fs.readFile(file, 'utf-8');

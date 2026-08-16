@@ -159,6 +159,9 @@ describe('AICritiqueService graph branch (M27-b)', () => {
 
   it('getAnnotations reads the graph when enabled', async () => {
     graph.getAnnotations.mockResolvedValue([{ id: 'x', type: 'suggestion' } as any]);
+    // Also mock Postgres to have the annotation ID so reconcileAnnotationStatuses
+    // doesn't filter it out (the ID must exist in both graph and Postgres).
+    mockQueryOLTP.mockResolvedValue({ rows: [{ id: 'x', status: 'open' }], rowCount: 1 } as any);
     const annotations = await service.getAnnotations(PLAN_ID);
     expect(graph.getAnnotations).toHaveBeenCalledWith(PLAN_ID);
     expect(annotations).toHaveLength(1);

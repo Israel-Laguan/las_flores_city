@@ -283,8 +283,10 @@ verify_migrations() {
     
     if [ $drift_detected -eq 0 ]; then
         log_info "✓ All migrations verified for $db_type"
+        return 0
     else
         log_warn "⚠️  $drift_detected issues found for $db_type"
+        return 1
     fi
 }
 

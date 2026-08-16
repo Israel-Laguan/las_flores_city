@@ -249,7 +249,10 @@ export class AICritiqueService {
       // A graph miss must not hide a durable Postgres row.
       if (!graphAnnotation) return this.postgresGetAnnotation(annotationId);
       const [reconciled] = await this.reconcileAnnotationStatuses([graphAnnotation], { dropDismissed: false });
-      return reconciled ?? graphAnnotation;
+      // If reconciliation removed the annotation (ID absent from Postgres), return null
+      // rather than the stale graph value. This prevents authorizing a PATCH that will
+      // later fail because the durable row no longer exists.
+      return reconciled ?? null;
     } catch (err) {
       console.warn('[AICritiqueService] graph read degraded to Postgres:', (err as Error).message);
       return this.postgresGetAnnotation(annotationId);
@@ -360,7 +363,11 @@ export class AICritiqueService {
       console.warn(`${LOG_PREFIX} Postgres status reconcile failed, using graph values:`, (err as Error).message);
     }
     const durable = new Map(rows.map((r) => [String(r.id), String(r.status)]));
-    return annotations
+    // Drop annotations whose IDs are absent from Postgres (the durable authority).
+    // Orphaned graph annotations from a failed Neo4j clear should not be returned.
+    const validIds = new Set(durable.keys());
+    const filtered = annotations.filter((a) => validIds.has(a.id));
+    return filtered
       .map((a) => {
         const status = durable.get(a.id);
         return status != null && a.status !== status ? { ...a, status: status as CritiqueAnnotation['status'] } : a;

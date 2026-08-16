@@ -71,6 +71,18 @@ export async function applyDelta(delta: GraphDelta): Promise<void> {
   // planId) key away from the canonical lowercase UUID the base graph stores.
   const nNodeId = normalizeKeyComponent(nodeId);
   const nPlanId = normalizeKeyComponent(planId);
+  // MODIFY/DELETE must reference an existing canonical :Content node (planId IS null).
+  // Without this guard, a random UUID passes the schema guard and getDeltasForPlan / merged-view
+  // would treat the orphan MODIFY as a visible node, breaking the canonical view.
+  if (op !== 'ADD') {
+    const baseExists = await runNeo4jQuery<{ exists: boolean }>(
+      `MATCH (c:Content { nodeType: $nodeType, nodeId: $nodeId }) WHERE c.planId IS null RETURN count(c) > 0 AS exists`,
+      { nodeType, nodeId: nNodeId },
+    );
+    if (!baseExists[0]?.exists) {
+      throw new Error(`${op} delta references non-existent base :Content node [${nodeType}:${nodeId}]`);
+    }
+  }
   await runNeo4jQuery(
     `
     MERGE (d:ContentDelta { key: $key })

@@ -119,7 +119,7 @@ export async function getMergedView(planId: string): Promise<GraphMergedView> {
     MATCH (d:ContentDelta { planId: $planId })
     WHERE d.op IN ['ADD', 'MODIFY']
     OPTIONAL MATCH (base:Content { nodeType: d.nodeType, nodeId: d.nodeId })
-    WHERE base.planId IS null
+    WHERE base.planId IS null AND (base.isEvidence IS NULL OR base.isEvidence = false)
     RETURN d.nodeType AS nodeType, d.nodeId AS nodeId,
            coalesce(d.name, base.name, '') AS name,
            d.planId AS planId,
@@ -211,7 +211,7 @@ export async function getImpactAnalysis(nodeType: string, nodeId: string): Promi
     // Skip self-loops only when BOTH type and id match the target, so a
     // neighbor that happens to share the target's nodeId under a different
     // content type is not dropped from impact analysis.
-    if (e.sourceNodeType === nodeType && e.sourceNodeId === nodeId) {
+    if (e.sourceNodeType === nodeType && e.sourceNodeId === normalizedId) {
       continue;
     }
     neighborSet.set(`${e.sourceNodeType}:${e.sourceNodeId}`, {
@@ -223,7 +223,7 @@ export async function getImpactAnalysis(nodeType: string, nodeId: string): Promi
     });
   }
   for (const e of outgoing) {
-    if (e.targetNodeType === nodeType && e.targetNodeId === nodeId) {
+    if (e.targetNodeType === nodeType && e.targetNodeId === normalizedId) {
       continue;
     }
     neighborSet.set(`${e.targetNodeType}:${e.targetNodeId}`, {
