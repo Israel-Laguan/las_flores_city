@@ -285,6 +285,26 @@ export type {
   CritiqueAnnotationDraft,
 } from './schemas/critique-annotation.js';
 
+export {
+  GraphNodeTypeSchema,
+  GraphDeltaOpSchema,
+  GraphDeltaSchema,
+  GraphContentNodeSchema,
+  GraphEdgeSchema,
+  GraphMergedViewSchema,
+  GraphImpactAnalysisSchema,
+} from './schemas/graph-delta.js';
+export type {
+  GraphNodeType,
+  GraphDeltaOp,
+  GraphDelta,
+  GraphContentNode,
+  GraphEdge,
+  GraphMergedView,
+  GraphImpactAnalysis,
+} from './schemas/graph-delta.js';
+
+
 export type { JobRun, JobType, JobStatus } from './schemas/job-run.js';
 
 export {

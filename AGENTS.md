@@ -51,7 +51,7 @@ This file captures durable agent-facing guidance for Las Flores 2077. Human-faci
 - `server/scripts/probe_leaderboard.ts` is the canonical diagnostic for distinguishing bad connection paths from bad leaderboard data.
 - When a spec says "add column", first verify the table with `\d <table>` or migrations; several columns in this project pre-existed.
 - **Health check from host may silently fail (curl exit 56)**: The server image (node:18-alpine) does not include `curl`, and stale docker-proxy state on a shared host can cause `curl http://localhost:3000/health` from the host to return exit code 56 (failure to receive data) even when the container is healthy. Always verify health from *inside* the container using `wget`: `docker exec las-flores-server wget -qO- http://localhost:3000/health`. A `{"success":true}` response from that command is the authoritative health check. Do not treat host-side curl exit 56 as a server failure without first confirming with the in-container wget.
-- **Admin panel fails to fetch data**: If the admin dashboard shows loading but never loads data, check that `NEXT_PUBLIC_SERVER_URL=http://localhost:3000` and `INTERNAL_SERVER_URL=http://las-flores-server:3000` are set in the admin container. The browser needs `localhost:3000` to reach the server (host port mapping), while server-side route handlers need `las-flores-server:3000` to reach the server (container network). Verify with: `podman exec las-flores-admin env | grep SERVER_URL`.
+- **Admin panel fails to fetch data**: If the admin dashboard shows loading but never loads data, check that `NEXT_PUBLIC_SERVER_URL=http://localhost:3001` and `INTERNAL_SERVER_URL=http://las-flores-intake-worker:3001` are set in the admin container. The browser needs `localhost:3001` to reach the intake-worker (host port mapping), while server-side route handlers need `las-flores-intake-worker:3001` to reach the intake-worker (container network). Verify with: `podman exec las-flores-admin env | grep SERVER_URL`.
 - **Stale Jest cache can mask real test results**: A stale `ts-jest` cache can make previously-passing suites report spurious "Test suite failed to run" TypeScript parse errors (e.g. `Unexpected token, expected "from"` at an `import type` line, or `Missing semicolon` at a `let x: T;` annotation) for suites that are actually fine, while hiding genuine assertion failures in other suites. The cache lives outside the repo at `/tmp/jest_rs` (set by `cacheDirectory`); it is NOT cleared by normal edits and survives across `git` operations. Before trusting a server test run, clear it with `npx --no-install jest --workspace=server --clearCache`, then re-run. If you must pass `--no-cache` to a focused `ts-jest` ESM run, be aware it can *re-trigger* the same spurious parse errors for some suites — prefer `--clearCache` + a normal (cached) run for a trustworthy result. After a clean cache, expect the real failure count (e.g. only the suites actually exercising changed code plus any genuine test-isolation bugs), not the inflated "failed to run" count from the stale cache.
 
 - **Boot-aborting seed calls silently kill the server**: `initializeServer()` calls startup routines sequentially *before* `app.listen()`. A routine that throws/rejects (e.g. `seedPlayers()` when `NODE_ENV` is unset or `production`) is swallowed by the top-level `initializeServer().catch(console.error)`, so the process stays alive but **never binds the port** — `/health` returns "connection refused" with no crash in the logs. The rule: any dev-only startup routine invoked in `initializeServer()` must be non-fatal (try/catch with a warning log) so it can only ever *skip*, never abort boot; the explicit CLI (`npm run seed:players`) may still reject and `process.exit(1)` to protect the "no-seed-in-production" intent. When `/health` refuses while logs show migrations + Redis succeeding, look for any startup await before `app.listen`. See `.kilo/BLOCKER.md` for the resolved case.
@@ -98,6 +98,7 @@ podman volume create postgres-oltp-data
 podman volume create postgres-olap-data
 podman volume create redis-data
 podman volume create minio-data
+podman volume create neo4j-data  # persist the authoring graph across recreates
 ```
 
 ### Start services
@@ -132,50 +133,116 @@ podman run -d --name las-flores-minio \
   --network las-flores-net -p 9000:9000 -p 9001:9001 \
   -v minio-data:/data \
   docker.io/minio/minio:latest server /data --console-address ":9001"
+```
 
-# Start server using container IPs for intra-network connectivity
-podman run -d --name las-flores-server \
-  --network las-flores-net -p 3000:3000 \
-  -v ./server/src:/app/server/src \
-  -v ./shared:/app/shared \
-  -v ./content:/app/content \
-  -v ./docs:/app/docs:ro \
-  -e DATABASE_URL=postgresql://las_flores:las_flores_dev_password@10.89.0.3:5432/las_flores \
-  -e ANALYTICS_DATABASE_URL=postgresql://las_flores_analytics:las_flores_analytics_dev_password@10.89.0.4:5432/las_flores_analytics \
-  -e REDIS_URL=redis://10.89.0.5:6379 \
-  -e MINIO_ENDPOINT=10.89.0.6 \
-  -e MINIO_PORT=9000 \
-  -e MINIO_ACCESS_KEY=minioadmin \
-  -e MINIO_SECRET_KEY=minioadmin \
-  -e JWT_SECRET=your-jwt-secret-change-in-production \
+# Neo4j graph authoring canvas (M27). Internal-only; NEO4J_ENABLED defaults to
+# false so boot never aborts when it is down. NOTE: the default compose
+# NEO4J_AUTH=neo4j/${NEO4J_PASSWORD:-neo4j} resolves to "neo4j/neo4j", which the
+# image rejects — a real password must be supplied.
+```bash
+podman run -d --name las-flores-neo4j \
+  --network las-flores-net -p 7474:7474 -p 7687:7687 \
+  -v neo4j-data:/data \
+  -e NEO4J_AUTH=neo4j/lasfloresdev123 \
+  -e NEO4J_server_memory_heap_max__size=512M -e NEO4J_server_memory_pagecache_size=256M \
+  docker.io/library/neo4j:5-community
+```
+
+Discover the container IPs (rootless Podman has no `aardvark-dns` — use raw IPs):
+
+```bash
+O(){ podman inspect "$1" | jq -r '.[]|.NetworkSettings.Networks["las-flores-net"].IPAddress'; }
+OLTP_IP=$(O las-flores-postgres-oltp); OLAP_IP=$(O las-flores-postgres-olap)
+REDIS_IP=$(O las-flores-redis); MINIO_IP=$(O las-flores-minio); NEO4J_IP=$(O las-flores-neo4j)
+```
+
+#### Start `intake-worker` FIRST (migration owner, port 3001)
+
+The `intake-worker` (`server/src/intake.ts`) is the **only** process that calls
+`runAllMigrations()` (SQL schema **and** `migrateContent()` content migration). The
+game-server (`index.ts`) never migrates — it only reads the content tables the
+intake-worker creates. So the intake-worker must be healthy *before* the game-server
+starts. Use the same image with `npm run dev:intake` as the command override.
+
+```bash
+podman run -d --name las-flores-intake-worker --network las-flores-net \
+  --add-host=host.containers.internal:host-gateway -p 3001:3001 \
+  -v ./server/src:/app/server/src -v ./shared:/app/shared -v ./infra:/app/infra \
+  -v ./content:/app/content -v ./docs:/app/docs:ro \
+  -e NODE_ENV=development -e PORT=3001 \
+  -e DATABASE_URL="postgresql://las_flores:las_flores_dev_password@$OLTP_IP:5432/las_flores" \
+  -e ANALYTICS_DATABASE_URL="postgresql://las_flores_analytics:las_flores_analytics_dev_password@$OLAP_IP:5432/las_flores_analytics" \
+  -e REDIS_URL="redis://$REDIS_IP:6379" \
+  -e MINIO_ENDPOINT="$MINIO_IP" -e MINIO_PORT=9000 -e MINIO_PUBLIC_URL=http://localhost:9000 \
+  -e MINIO_ACCESS_KEY=minioadmin -e MINIO_SECRET_KEY=minioadmin \
+  -e NEO4J_URI="bolt://$NEO4J_IP:7687" -e NEO4J_USER=neo4j -e NEO4J_PASSWORD=lasfloresdev123 -e NEO4J_ENABLED=true \
+  -e JWT_SECRET=dev-secret \
+  -e LITELLM_BASE_URL=http://host.containers.internal:4000 -e LITELLM_API_KEY=local-key \
+  -e LLM_MODEL=poolside/laguna-m.1 -e LLM_PROVIDER=litellm \
+  las-flores-server npm run dev:intake --workspace=server
+```
+
+Wait until healthy (in-container `wget`; the alpine image has no `curl`):
+
+```bash
+podman exec las-flores-intake-worker wget -qO- http://localhost:3001/health
+# expected: {"success":true,...}  (content tables now exist)
+```
+
+#### Start the game-server (port 3000)
+
+Same environment as the intake-worker, but the default CMD (`npm run dev`), no `PORT`
+override, host port 3000, and container name `las-flores-server`.
+
+```bash
+podman run -d --name las-flores-server --network las-flores-net \
+  --add-host=host.containers.internal:host-gateway -p 3000:3000 \
+  -v ./server/src:/app/server/src -v ./shared:/app/shared -v ./infra:/app/infra \
+  -v ./content:/app/content -v ./docs:/app/docs:ro \
+  -e NODE_ENV=development \
+  -e DATABASE_URL="postgresql://las_flores:las_flores_dev_password@$OLTP_IP:5432/las_flores" \
+  -e ANALYTICS_DATABASE_URL="postgresql://las_flores_analytics:las_flores_analytics_dev_password@$OLAP_IP:5432/las_flores_analytics" \
+  -e REDIS_URL="redis://$REDIS_IP:6379" \
+  -e MINIO_ENDPOINT="$MINIO_IP" -e MINIO_PORT=9000 -e MINIO_PUBLIC_URL=http://localhost:9000 \
+  -e MINIO_ACCESS_KEY=minioadmin -e MINIO_SECRET_KEY=minioadmin \
+  -e NEO4J_URI="bolt://$NEO4J_IP:7687" -e NEO4J_USER=neo4j -e NEO4J_PASSWORD=lasfloresdev123 -e NEO4J_ENABLED=true \
+  -e JWT_SECRET=dev-secret \
+  -e LITELLM_BASE_URL=http://host.containers.internal:4000 -e LITELLM_API_KEY=local-key \
+  -e LLM_MODEL=poolside/laguna-m.1 -e LLM_PROVIDER=litellm \
   las-flores-server
 ```
 
-Verify with:
+Verify with (in-container `wget` — required; `curl` may exit 56 on this rootless host
+even when the server is healthy):
+
 ```bash
-curl http://localhost:3000/health
+podman exec las-flores-server wget -qO- http://localhost:3000/health
+# expected: {"success":true,"data":{"status":"healthy",...}}
 ```
 
-Apparent healthy response: `{"success":true,"data":{"status":"healthy",...}}. If the server refuses the connection, check `podman logs las-flores-server`.
+If the server refuses the connection, check `podman logs las-flores-server`.
 
 #### Start admin panel
 
-The admin panel requires two environment variables to work correctly with the server:
+The admin panel talks to `intake-worker:3001`, **not** the game-server. It needs two
+environment variables:
 
-- `NEXT_PUBLIC_SERVER_URL`: Used by client-side code (browser fetches from this URL). Set to `http://localhost:3000` so the browser can reach the server via the host port mapping.
-- `INTERNAL_SERVER_URL`: Used by server-side route handlers (admin container fetches from this URL). Set to `http://las-flores-server:3000` so the admin container can reach the server via the container network.
+- `NEXT_PUBLIC_SERVER_URL`: Used by client-side code (browser fetches from this URL). Set to `http://localhost:3001` so the browser reaches the intake-worker via the host port mapping.
+- `INTERNAL_SERVER_URL`: Used by server-side route handlers (admin container fetches from this URL). Set to `http://las-flores-intake-worker:3001` so the admin container reaches the intake-worker over the container network (resolved via `--add-host`).
 
 ```bash
 # Build the admin panel image
 podman build -f admin/Dockerfile -t las-flores-admin .
 
 # Start admin panel with correct environment variables
+INTAKE_IP=$(O las-flores-intake-worker)
 podman run -d --name las-flores-admin \
   --network las-flores-net -p 3002:3000 \
-  -v /path/to/las_flores_city:/app \
-  -w /app \
-  -e NEXT_PUBLIC_SERVER_URL=http://localhost:3000 \
-  -e INTERNAL_SERVER_URL=http://las-flores-server:3000 \
+  --add-host="las-flores-intake-worker:$INTAKE_IP" \
+  -v ./admin/src:/app/admin/src -v ./shared:/app/shared \
+  -e NODE_ENV=development \
+  -e NEXT_PUBLIC_SERVER_URL=http://localhost:3001 \
+  -e INTERNAL_SERVER_URL=http://las-flores-intake-worker:3001 \
   las-flores-admin
 ```
 
@@ -189,13 +256,11 @@ Test login at http://localhost:3002/login with `admin@example.com` / `admin123`.
 ### Clean shutdown (Podman)
 
 ```bash
-podman rm -f las-flores-server
-podman rm -f las-flores-postgres-oltp
-podman rm -f las-flores-postgres-olap
-podman rm -f las-flores-redis
-podman rm -f las-flores-minio
+podman rm -f las-flores-server las-flores-intake-worker las-flores-admin \
+  las-flores-neo4j las-flores-minio las-flores-redis \
+  las-flores-postgres-olap las-flores-postgres-oltp
 podman network rm las-flores-net
-podman volume rm postgres-oltp-data postgres-olap-data redis-data minio-data
+podman volume rm postgres-oltp-data postgres-olap-data redis-data minio-data neo4j-data
 ```
 
 ### Helper Scripts

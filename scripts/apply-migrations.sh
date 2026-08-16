@@ -283,8 +283,10 @@ verify_migrations() {
     
     if [ $drift_detected -eq 0 ]; then
         log_info "✓ All migrations verified for $db_type"
+        return 0
     else
         log_warn "⚠️  $drift_detected issues found for $db_type"
+        return 1
     fi
 }
 
@@ -360,8 +362,10 @@ main() {
             show_status "olap"
             ;;
         verify)
-            verify_migrations "oltp"
-            verify_migrations "olap"
+            local oltp_rc=0 olap_rc=0
+            verify_migrations "oltp" || oltp_rc=$?
+            verify_migrations "olap" || olap_rc=$?
+            [ $oltp_rc -eq 0 ] && [ $olap_rc -eq 0 ]
             ;;
         status)
             show_status "oltp"

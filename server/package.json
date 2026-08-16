@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-    "scripts": {
+  "scripts": {
     "dev": "tsx watch src/index.ts",
     "dev:intake": "tsx watch src/intake.ts",
     "build": "tsc && node scripts/copyMigrations.js",
@@ -23,14 +23,16 @@
     "seed:load-users": "tsx scripts/seed_load_test_users.ts",
     "seed:dev": "tsx src/database/seedAdmin.ts",
     "seed:players": "tsx src/database/seedPlayers.ts",
+    "seed:graph": "tsx scripts/seed-graph.ts",
     "seed:all": "npm run seed:dev && npm run seed:players",
+    "backfill:critique-graph": "tsx scripts/backfill-critique-graph.ts",
     "fill-todos": "tsx src/scripts/fillExistingTodos.ts"
   },
   "dependencies": {
-    "@las-flores/infra": "*",
     "@aws-sdk/client-s3": "~3.1105.0",
     "@aws-sdk/cloudfront-signer": "~3.1098.0",
     "@aws-sdk/s3-request-presigner": "~3.1105.0",
+    "@las-flores/infra": "*",
     "bcryptjs": "~3.0.3",
     "cors": "~2.8.6",
     "dotenv": "~17.4.2",
@@ -39,6 +41,7 @@
     "ioredis": "~5.11.1",
     "js-yaml": "~5.2.2",
     "jsonwebtoken": "~9.0.3",
+    "neo4j-driver": "~5.28.0",
     "pg": "~8.22.0",
     "zod": "~4.4.3"
   },

@@ -9,6 +9,7 @@ import { ContentAssetWorker } from './workers/ContentAssetWorker.js';
 import { resumeSolidify } from './services/StoryBuilderOrchestrator.js';
 import { resetOrphanedFillJobs } from './services/PlanGenerationJob.js';
 import { markOrphanedResumable } from './services/JobRunService.js';
+import { verifyNeo4j } from './services/Neo4jClient.js';
 import { resolveFileEnvVars } from './config/resolveFileEnvVars.js';
 
 dotenv.config();
@@ -83,6 +84,17 @@ async function initializeServer() {
     await seedPlayers();
   } catch (err) {
     console.warn('[seed:players] skipped:', (err as Error).message || err);
+  }
+
+  // M27 — Neo4j authoring canvas connectivity check (non-fatal). When
+  // NEO4J_ENABLED is on but the graph is unreachable, log a warning and continue:
+  // existing Postgres/plan_json paths keep working, and the graph only ever
+  // *skips*, never aborts `initializeServer()`.
+  const neo4jOk = await verifyNeo4j();
+  if (neo4jOk) {
+    console.log('🕸️  Neo4j authoring graph reachable (M27 substrate ready).');
+  } else if (process.env.NEO4J_ENABLED === 'true') {
+    console.warn('[Neo4j] graph enabled but unreachable — authoring graph reads degraded to empty (plan_json path unaffected).');
   }
 
   // Start server
