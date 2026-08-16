@@ -369,10 +369,7 @@ export class AICritiqueService {
     // IDs are absent from Postgres (the durable authority) — orphaned graph
     // annotations from a failed Neo4j clear should not be returned. On a
     // reconcile failure we cannot trust the empty set, so keep all annotations
-    // (graph values) rather than hiding everything during a transient outage —
-    // but still apply the caller's `dropDismissed` filter against the graph's
-    // own `status` (available locally even when the durable reconcile fails) so
-    // a dismissed critique is never surfaced to authors from a stale mirror.
+    // (graph values) rather than hiding everything during a transient outage.
     if (!reconciled) {
       return opts.dropDismissed ? annotations.filter((a) => a.status !== 'dismissed') : annotations;
     }

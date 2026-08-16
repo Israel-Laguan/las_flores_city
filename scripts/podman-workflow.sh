@@ -301,7 +301,7 @@ setup() {
     seeded_raw=$(podman exec las-flores-neo4j cypher-shell \
         -a "bolt://${NEO4J_IP}:7687" -u neo4j -p lasfloresdev123 \
         "MATCH (n:Content) RETURN count(n) AS c" \
-        2>/dev/null)
+        2>/dev/null) || true
     local seed_rc=$?
     local seeded_count
     seeded_count=$(printf '%s' "$seeded_raw" | grep -oE '^[0-9]+' | head -n1)
