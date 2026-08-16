@@ -184,7 +184,7 @@ setup() {
 
     log_info "Starting Neo4j (graph authoring canvas, M27)..."
     podman run -d --name las-flores-neo4j \
-        --network las-flores-net -p 7474:7474 -p 7687:7687 \
+        --network las-flores-net -p 127.0.0.1:7474:7474 -p 127.0.0.1:7687:7687 \
         -e NEO4J_AUTH=neo4j/lasfloresdev123 \
         -e NEO4J_server_memory_heap_max__size=512M \
         -e NEO4J_server_memory_pagecache_size=256M \
@@ -217,6 +217,13 @@ setup() {
     # process that runs runAllMigrations() (SQL + content migration). The
     # game-server reads the tables it creates, so wait for it to be healthy.
     log_info "Starting intake-worker (migration owner)..."
+    # A previous (stopped) intake-worker would make `podman run` fail with
+    # "already exists" and then stall the health wait — remove it first so the
+    # container is always created fresh on a re-run.
+    if podman inspect las-flores-intake-worker &>/dev/null 2>&1; then
+        log_warn "Existing intake-worker found — removing and recreating"
+        podman rm -f las-flores-intake-worker
+    fi
     podman run -d --name las-flores-intake-worker \
         --network las-flores-net -p 3001:3001 \
         --add-host="host.containers.internal:host-gateway" \
@@ -246,7 +253,17 @@ setup() {
         -e LLM_PROVIDER=litellm \
         las-flores-server npm run dev:intake --workspace=server 2>/dev/null || log_warn "Container already exists"
 
-    wait_http_health "las-flores-intake-worker" 3001 180
+    wait_http_health "las-flores-intake-worker" 3001 180 || { log_error "intake-worker did not become healthy"; exit 1; }
+
+    # Setup enables the graph (NEO4J_ENABLED=true), so seed the canonical `:Content`
+    # base layer now that the intake-worker has migrated the content store. Without
+    # this, graph-backed critique/impact/merged-view reads run against an empty canon.
+    # Fail setup if seeding fails so developers don't proceed on a partial graph.
+    log_info "Seeding Neo4j base graph (canonical :Content nodes)..."
+    podman exec las-flores-intake-worker npm run seed:graph --workspace=server || {
+        log_error "Failed to seed Neo4j base graph"
+        exit 1
+    }
 
     # Start the game-server (port 3000) — after intake-worker is healthy
     log_info "Starting game-server..."
@@ -314,7 +331,7 @@ setup() {
 
     # Verify SQL migrations (content migration already ran in the intake-worker)
     log_info "Verifying migrations..."
-    "$SCRIPT_DIR/apply-migrations.sh" verify || log_warn "Migration verify reported issues"
+    "$SCRIPT_DIR/apply-migrations.sh" verify || { log_error "Migration verify failed — aborting setup"; exit 1; }
 
     log_header "=== Setup Complete ==="
     log_info "Intake-worker: http://localhost:3001 (migrations + admin/AI/content)"

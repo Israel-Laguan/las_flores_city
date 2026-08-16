@@ -35,6 +35,10 @@ export function getDriver(): Driver {
         process.env.NEO4J_USER || 'neo4j',
         process.env.NEO4J_PASSWORD || 'neo4j',
       ),
+      // Bound connection attempts (default is ~30s). A hung/blocked graph (SYN
+      // drop, firewall) must cause verifyNeo4j() to opt out quickly rather than
+      // stall startup and the health endpoint on the intake-worker/game-server.
+      { connectionTimeout: Number(process.env.NEO4J_CONNECTION_TIMEOUT_MS || 5000) },
     );
   }
   return _driver;
@@ -56,7 +60,7 @@ export function session(): Session {
   if (!isNeo4jEnabled()) {
     throw new Neo4jDisabledError();
   }
-  return getDriver().session();
+  return getDriver().session({ database: defaultDatabaseName() });
 }
 
 /** Default database for queries (bolt://host:7687). */
@@ -77,13 +81,18 @@ export async function runNeo4jQuery<T = Record<string, unknown>>(
   try {
     const result = await s.run(cypher, params);
     return result.records.map((record) => record.toObject() as T);
+  } catch (err) {
+    console.warn('[Neo4j] query failed, returning empty result:', (err as Error).message);
+    return [];
   } finally {
     await s.close();
   }
 }
 
 /**
- * Run a body within an autocommit transaction (each statement auto-commits).
+ * Run a body within a single managed write transaction and commit it when the
+ * callback resolves — the whole callback is one transaction, not one per
+ * statement (used by GraphCritiqueService.writeAnnotations for atomic writes).
  * Bounded convenience for bulk seed loops that want a single connection.
  * No-op when disabled: resolves `undefined` without touching the driver.
  */
@@ -94,6 +103,9 @@ export async function runNeo4jTransaction<T>(
   const s = session();
   try {
     return await s.executeWrite(fn);
+  } catch (err) {
+    console.warn('[Neo4j] transaction failed, returning undefined:', (err as Error).message);
+    return undefined;
   } finally {
     await s.close();
   }

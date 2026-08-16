@@ -45,6 +45,21 @@ const CONTENT_DELTA_KEY_CYPHER = `
   FOR (d:ContentDelta) REQUIRE d.key IS UNIQUE
 `;
 
+const CONFLICT_KEY_CYPHER = `
+  CREATE CONSTRAINT conflict_key IF NOT EXISTS
+  FOR (a:Conflict) REQUIRE a.key IS UNIQUE
+`;
+
+const Suggestion_KEY_CYPHER = `
+  CREATE CONSTRAINT suggestion_key IF NOT EXISTS
+  FOR (a:Suggestion) REQUIRE a.key IS UNIQUE
+`;
+
+const CACHE_MARKER_KEY_CYPHER = `
+  CREATE CONSTRAINT cache_marker_key IF NOT EXISTS
+  FOR (m:CacheMarker) REQUIRE m.key IS UNIQUE
+`;
+
 /**
  * Idempotently create the uniqueness constraints backing `MERGE`. Safe to
  * re-run on every seed; no-op when Neo4j is disabled.
@@ -53,6 +68,9 @@ export async function ensureGraphConstraints(): Promise<void> {
   if (!isNeo4jEnabled()) return;
   await runNeo4jQuery(CONTENT_NODE_KEY_CYPHER);
   await runNeo4jQuery(CONTENT_DELTA_KEY_CYPHER);
+  await runNeo4jQuery(CONFLICT_KEY_CYPHER);
+  await runNeo4jQuery(Suggestion_KEY_CYPHER);
+  await runNeo4jQuery(CACHE_MARKER_KEY_CYPHER);
 }
 
 /**
@@ -64,15 +82,30 @@ export async function ensureGraphConstraints(): Promise<void> {
 export async function upsertContentNode(input: BaseContentNodeInput): Promise<void> {
   if (!isNeo4jEnabled()) return;
   const { nodeType, nodeId, name, canonicalFields } = input;
-  const props: Record<string, unknown> = { ...(canonicalFields ?? {}) };
-  if (name !== undefined) props.name = name;
+  // Strip reserved identity/partition properties so a rogue `canonicalFields`
+  // entry can never corrupt the base key or hide the node from canon queries
+  // (e.g. planId leaking in would make `MATCH (c:Content) WHERE c.planId IS null`
+  // miss it). Identity is derived from `nodeType`/`nodeId` only.
+  const reserved = new Set(['key', 'nodeType', 'nodeId', 'planId']);
+  const safeFields = Object.fromEntries(
+    Object.entries(canonicalFields ?? {}).filter(([k]) => !reserved.has(k)),
+  );
+  // `SET c = $props` replaces the whole property set, so clearing a canonical
+  // field in the source removes it from the node (no stale keys survive reseed).
+  const props: Record<string, unknown> = {
+    ...safeFields,
+    ...(name !== undefined ? { name } : {}),
+    key: contentKey(nodeType, nodeId),
+    nodeType,
+    nodeId,
+    planId: null,
+  };
   await runNeo4jQuery(
     `
     MERGE (c:Content { key: $key })
-    ON CREATE SET c.nodeType = $nodeType, c.nodeId = $nodeId, c.planId = null, c += $props
-    ON MATCH SET c.nodeType = $nodeType, c.nodeId = $nodeId, c += $props
+    SET c = $props
     `,
-    { key: contentKey(nodeType, nodeId), nodeType, nodeId, props },
+    { key: props.key, props },
   );
 }
 

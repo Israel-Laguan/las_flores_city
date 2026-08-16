@@ -140,12 +140,20 @@ export class Neo4jNeighborhoodProvider implements NeighborhoodProvider {
     if (!isNeo4jEnabled()) {
       return contentPlanService.gatherContext();
     }
-    const rows = await runNeo4jQuery<ContentRow>(
-      `MATCH (c:Content)
-       WHERE c.planId IS null
-       RETURN c.nodeType AS nodeType, c.nodeId AS nodeId, c.name AS name, properties(c) AS props`,
-    );
-    return groupContext(rows);
+    try {
+      const rows = await runNeo4jQuery<ContentRow>(
+        `MATCH (c:Content)
+         WHERE c.planId IS null
+           AND c.nodeType IN ['Character', 'Scene', 'Dialogue', 'Mission', 'Overlay', 'Location']
+           AND (c.isEvidence IS NULL OR c.isEvidence = false)
+         RETURN c.nodeType AS nodeType, c.nodeId AS nodeId, c.name AS name, properties(c) AS props
+         ORDER BY c.nodeType, c.name, c.nodeId`,
+      );
+      return groupContext(rows);
+    } catch (err) {
+      console.warn('[NeighborhoodProvider] graph traversal failed, falling back to Postgres context:', (err as Error).message);
+      return contentPlanService.gatherContext();
+    }
   }
 }
 

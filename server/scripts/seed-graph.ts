@@ -11,9 +11,10 @@
 // ============================================================
 
 import dotenv from 'dotenv';
+import { closeConnections } from '@las-flores/infra';
 import { isNeo4jEnabled, verifyNeo4j, closeNeo4j } from '../src/services/Neo4jClient.js';
 import { ensureGraphConstraints, upsertContentNode, upsertContentRelationship, countContentNodes } from '../src/services/GraphBaseService.js';
-import { gatherBaseGraphData, summarizeBaseGraphSource } from '../src/services/GraphSeedSource.js';
+import { gatherBaseGraphData } from '../src/services/GraphSeedSource.js';
 
 async function main(): Promise<void> {
   dotenv.config();
@@ -33,10 +34,16 @@ async function main(): Promise<void> {
 
   console.log('🌐 Seeding base graph into Neo4j...');
 
-  const sourceSummary = await summarizeBaseGraphSource();
+  // Gather once: derive the summary from the same data object so the displayed
+  // counts and the seeded content stay consistent. `strict: true` makes a
+  // malformed/unreadable location YAML abort the seed instead of silently
+  // producing a partial (incomplete) base graph.
+  const data = await gatherBaseGraphData({ strict: true });
+  const sourceSummary: Record<string, number> = {};
+  for (const node of data.nodes) {
+    sourceSummary[node.nodeType] = (sourceSummary[node.nodeType] ?? 0) + 1;
+  }
   console.log('   Source counts:', JSON.stringify(sourceSummary, null, 2));
-
-  const data = await gatherBaseGraphData();
 
   await ensureGraphConstraints();
 
@@ -63,4 +70,7 @@ main()
   })
   .finally(async () => {
     await closeNeo4j();
+    // gatherBaseGraphData() opens the shared OLTP pool — release it so the CLI
+    // terminates promptly and doesn't hold Postgres connections open.
+    await closeConnections();
   });

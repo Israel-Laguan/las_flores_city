@@ -23,6 +23,9 @@ podman volume exists postgres-oltp-data || podman volume create postgres-oltp-da
 podman volume exists postgres-olap-data || podman volume create postgres-olap-data
 podman volume exists redis-data || podman volume create redis-data
 podman volume exists minio-data || podman volume create minio-data
+# Persist the Neo4j authoring graph across container recreates (plan IR + deltas +
+# critique annotations). Without it every restart wipes the authored canvas.
+podman volume exists neo4j-data || podman volume create neo4j-data
 
 # -------------------------------------------------
 # Helper: Get container IP address
@@ -119,6 +122,7 @@ podman run -d \
 podman run -d \
   --name las-flores-neo4j \
   --network las-flores-net \
+  -v neo4j-data:/data \
   -p 7474:7474 -p 7687:7687 \
   -e NEO4J_AUTH=neo4j/lasfloresdev123 \
   -e NEO4J_server_memory_heap_max__size=512M \
@@ -279,12 +283,13 @@ podman run -d \
   -e NEXT_PUBLIC_SERVER_URL=http://localhost:3001 \
   -e INTERNAL_SERVER_URL=http://$INTAKE_IP:3001 \
   -e NEXT_PUBLIC_DEV_LOGIN_ENABLED=true \
+  -e DEV_LOGIN_ENABLED=true \
   las-flores-admin
 
 # -------------------------------------------------
 # 8. Verify migrations (SQL-only; content migration ran in the intake-worker)
 # -------------------------------------------------
-./scripts/apply-migrations.sh verify || true
+./scripts/apply-migrations.sh verify || { echo "❌ ERROR: migration verify failed"; exit 1; }
 
 # -------------------------------------------------
 # 9. Output success and health info

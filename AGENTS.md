@@ -98,6 +98,7 @@ podman volume create postgres-oltp-data
 podman volume create postgres-olap-data
 podman volume create redis-data
 podman volume create minio-data
+podman volume create neo4j-data  # persist the authoring graph across recreates
 ```
 
 ### Start services
@@ -141,6 +142,7 @@ podman run -d --name las-flores-minio \
 ```bash
 podman run -d --name las-flores-neo4j \
   --network las-flores-net -p 7474:7474 -p 7687:7687 \
+  -v neo4j-data:/data \
   -e NEO4J_AUTH=neo4j/lasfloresdev123 \
   -e NEO4J_server_memory_heap_max__size=512M -e NEO4J_server_memory_pagecache_size=256M \
   docker.io/library/neo4j:5-community
@@ -258,7 +260,7 @@ podman rm -f las-flores-server las-flores-intake-worker las-flores-admin \
   las-flores-neo4j las-flores-minio las-flores-redis \
   las-flores-postgres-olap las-flores-postgres-oltp
 podman network rm las-flores-net
-podman volume rm postgres-oltp-data postgres-olap-data redis-data minio-data
+podman volume rm postgres-oltp-data postgres-olap-data redis-data minio-data neo4j-data
 ```
 
 ### Helper Scripts

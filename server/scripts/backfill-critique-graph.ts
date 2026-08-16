@@ -28,11 +28,18 @@ interface CritiqueRow {
   status: CritiqueStatus;
   plan_id: string;
   item_ids: string[];
-  created_at: Date | string;
+  created_at: Date | string | null;
   is_marker: boolean;
 }
 
-function toIso(v: Date | string): string {
+/**
+ * Coerce a timestamp to ISO. A legacy row with an explicit null `created_at`
+ * must not abort the whole backfill: fall back to the epoch so the row is still
+ * promoted and simply sorts as the oldest (it can never trump a real run in the
+ * per-scope "keep newest" selection because other runs' timestamps are >= epoch).
+ */
+function toIso(v: Date | string | null): string {
+  if (v == null) return new Date(0).toISOString();
   return typeof v === 'string' ? v : v.toISOString();
 }
 
@@ -92,9 +99,28 @@ async function main(): Promise<number> {
     }
   }
 
+  // Only one run per (plan, scope) can survive in the graph: writeAnnotations
+  // retires prior open nodes + markers for that pair. Keep the newest run.
+  const newestByScope = new Map<string, { key: string; createdAt: string }>();
+  for (const [key, group] of groups) {
+    const scopeKey = `${group.meta.planId}|${group.meta.scope}`;
+    const createdAt = group.annotations.reduce(
+      (max, a) => (a.createdAt > max ? a.createdAt : max),
+      '',
+    );
+    const current = newestByScope.get(scopeKey);
+    if (!current || createdAt > current.createdAt) newestByScope.set(scopeKey, { key, createdAt });
+  }
+  const selected = new Set([...newestByScope.values()].map((v) => v.key));
+
   let promoted = 0;
   let markers = 0;
-  for (const group of groups.values()) {
+  let skipped = 0;
+  for (const [key, group] of groups) {
+    if (!selected.has(key)) {
+      skipped += 1;
+      continue;
+    }
     if (group.annotations.length > 0) {
       await graphCritiqueService.writeAnnotations(group.annotations, group.meta);
       promoted += group.annotations.length;
@@ -105,7 +131,7 @@ async function main(): Promise<number> {
     }
   }
 
-  console.log(`[backfill-critique-graph] Promoted ${promoted} annotation node(s) across ${groups.size} run(s), recreated ${markers} cache marker(s).`);
+  console.log(`[backfill-critique-graph] Promoted ${promoted} annotation node(s) across ${groups.size} run(s), recreated ${markers} cache marker(s), skipped ${skipped} older run(s).`);
   return groups.size;
 }
 

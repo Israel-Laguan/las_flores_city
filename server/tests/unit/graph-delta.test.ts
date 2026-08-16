@@ -79,13 +79,19 @@ describe('graph-delta schema', () => {
 });
 
 describe('GraphBaseService', () => {
-  test('upsertContentNode emits a keyed MERGE on the surrogate key with planId nulled', async () => {
+  test('upsertContentNode emits a keyed MERGE and replaces all properties', async () => {
     await upsertContentNode({ nodeType: 'Character', nodeId: CHAR_ID, name: 'Peter van der Meer', canonicalFields: { role: 'npc' } });
     const [cypher, params] = mockQuery.mock.calls[0] ?? [];
     expect(String(cypher)).toContain('MERGE (c:Content { key: $key })');
-    expect(String(cypher)).toContain('c.planId = null');
-    expect(params).toMatchObject({ key: `Character:${CHAR_ID}`, nodeType: 'Character', nodeId: CHAR_ID });
-    expect((params as any).props).toMatchObject({ name: 'Peter van der Meer', role: 'npc' });
+    expect(String(cypher)).toContain('SET c = $props');
+    expect(params).toMatchObject({ key: `Character:${CHAR_ID}` });
+    expect((params as any).props).toMatchObject({
+      key: `Character:${CHAR_ID}`,
+      nodeType: 'Character',
+      nodeId: CHAR_ID,
+      name: 'Peter van der Meer',
+      role: 'npc',
+    });
   });
 
   test('upsertContentRelationship whitelists the relationship type; rejects unsafe', async () => {
@@ -150,9 +156,10 @@ describe('GraphDeltaService', () => {
   test('summarizeDeltasForPlan tallies ops; disabled returns empty', async () => {
     mockQuery
       .mockReturnValueOnce(Promise.resolve([
-        { d: { properties: { id: 'f0000000-0000-0000-0000-000000000001', planId: PLAN_ID, nodeType: 'Character', nodeId: CHAR_ID, op: 'ADD', fields: {}, createdAt: 'x' } } },
-        { d: { properties: { id: 'f0000000-0000-0000-0000-000000000002', planId: PLAN_ID, nodeType: 'Scene', nodeId: 's', op: 'DELETE', fields: {}, createdAt: 'y' } } },
-        { d: { properties: { id: 'f0000000-0000-0000-0000-000000000003', planId: PLAN_ID, nodeType: 'Dialogue', nodeId: 'dl', op: 'MODIFY', fields: {}, createdAt: 'z' } } },
+         { d: { properties: { id: 'f0000000-0000-0000-0000-000000000001', planId: PLAN_ID, nodeType: 'Character', nodeId: CHAR_ID, op: 'ADD', fields: {}, createdAt: '2026-08-15T00:00:01.000Z' } } },
+        // DELETE/MODIFY reference base :Content nodes by UUID (schema requires it).
+        { d: { properties: { id: 'f0000000-0000-0000-0000-000000000002', planId: PLAN_ID, nodeType: 'Scene', nodeId: 'e0000000-e29b-41d4-a716-4466554400dd', op: 'DELETE', fields: {}, createdAt: '2026-08-15T00:00:02.000Z' } } },
+        { d: { properties: { id: 'f0000000-0000-0000-0000-000000000003', planId: PLAN_ID, nodeType: 'Dialogue', nodeId: 'e0000000-e29b-41d4-a716-4466554400ee', op: 'MODIFY', fields: {}, createdAt: '2026-08-15T00:00:03.000Z' } } },
       ]))
       .mockReturnValueOnce(Promise.resolve([{ count: 3 }]));
     await expect(summarizeDeltasForPlan(PLAN_ID)).resolves.toEqual({ total: 3, byOp: { ADD: 1, MODIFY: 1, DELETE: 1 } });

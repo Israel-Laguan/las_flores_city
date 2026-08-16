@@ -92,7 +92,7 @@ describe('AICritiqueService graph branch (M27-b)', () => {
     else process.env.NEO4J_ENABLED = prev;
   });
 
-  it('runCritique on a cache miss persists annotations to the graph', async () => {
+  it('runCritique on a cache miss persists a clean-plan cache-marker graph write', async () => {
     const result = await service.runCritique(PLAN_ID, 'entity', { neighborhood: emptyContext() });
     expect(result.cached).toBe(false);
     // Postgres durability write still happens (unchanged), graph mirror too.
@@ -101,9 +101,13 @@ describe('AICritiqueService graph branch (M27-b)', () => {
     const [written, meta] = graph.writeAnnotations.mock.calls[0] as [any[], any];
     expect(meta.planId).toBe(PLAN_ID);
     expect(meta.model).toBe('mock');
+    // With an empty neighborhood the mock produces no conflicts, so the graph
+    // write carries an empty annotation array (the clean-run CacheMarker path) —
+    // assert that explicitly so the test name matches what is actually verified.
+    expect(written).toHaveLength(0);
   });
 
-  it('runCritique serves the cache from the graph on an unchanged subgraph', async () => {
+  it('runCritique serves a Postgres-backed cache hit (graph confirmation) on an unchanged subgraph', async () => {
     const cached = {
       annotations: [{
         id: 'd0000000-2222-4000-8000-00000000bd03',
@@ -123,13 +127,34 @@ describe('AICritiqueService graph branch (M27-b)', () => {
       cached: true,
       model: 'mock',
     };
+    // The graph reports a hit; the durable Postgres store backs it with a clean
+    // cache-marker row, so the combined hit is served without re-running the LLM.
     graph.findCached.mockResolvedValue(cached);
+    mockQueryOLTP.mockImplementation(async (sql: string) => {
+      if (String(sql).includes('FROM content_plans')) return planRow();
+      if (String(sql).includes('FROM critique_annotations')) {
+        return {
+          rows: [{ id: 'd0000000-2222-4000-8000-00000000bd02', is_marker: true, ai_model: 'mock', type: 'suggestion', severity: 'info', description: 'clean', evidence: '[]', related_entities: '[]', scope: 'entity', input_hash: HASH, status: 'open', plan_id: PLAN_ID, item_ids: [], created_at: '2026-01-01T00:00:00.000Z' }],
+          rowCount: 1,
+        } as any;
+      }
+      return { rows: [], rowCount: 0 } as any;
+    });
 
     const result = await service.runCritique(PLAN_ID, 'entity', { neighborhood: emptyContext() });
     expect(result.cached).toBe(true);
     expect(graph.findCached).toHaveBeenCalled();
     // No LLM re-write on a cache hit.
     expect(graph.writeAnnotations).not.toHaveBeenCalled();
+  });
+
+  it('treats a graph-only hit with no Postgres backing as a miss (stale graph marker)', async () => {
+    // Graph clearance failed after the durable Postgres delete left a stale
+    // graph CacheMarker; Postgres has nothing. The stale hit must NOT be served.
+    graph.findCached.mockResolvedValue({ annotations: [], cached: true, model: 'mock' });
+    const result = await service.runCritique(PLAN_ID, 'entity', { neighborhood: emptyContext() });
+    expect(result.cached).toBe(false);
+    expect(graph.writeAnnotations).toHaveBeenCalled();
   });
 
   it('getAnnotations reads the graph when enabled', async () => {

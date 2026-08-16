@@ -57,20 +57,35 @@ export const GraphDeltaSchema = z.object({
   id: zodUuid(),
   planId: zodUuid(), // references content_plans(id)
   nodeType: GraphNodeTypeSchema,
-  nodeId: z
-    .string()
-    .min(1)
-    .refine(
-      (v) => UUID_REGEX.test(v) || /^[a-z0-9_]+$/.test(v),
-      { message: 'nodeId must be a UUID or a lowercase slug (a-z0-9_)' },
-    ),
+  nodeId: z.string().min(1),
   op: GraphDeltaOpSchema,
   // The post-approve field set for the target node. ADD = the new node's initial
   // fields; MODIFY = the FULL proposed post-approve field set (a shadow copy of
   // the canon node, so the M27 merged-view is self-contained — exact field-level
   // diffing is M28's apply-delta); DELETE may carry none.
   fields: z.record(z.string(), z.any()).default({}),
-  createdAt: z.string(), // ISO timestamp
+  createdAt: z.iso.datetime(), // ISO timestamp
+}).superRefine((delta, ctx) => {
+  // `nodeId` is a UUID for any op, or a stable lowercase slug ONLY for a new
+  // ADD entity. A MODIFY/DELETE `nodeId` must be the base `:Content` node's
+  // UUID — a slug could never match the canonical (UUID-keyed) node, so the
+  // shadow would silently fail to shadow (accepted schema, invisible breakage).
+  const uuid = UUID_REGEX.test(delta.nodeId);
+  const slug = /^[a-z0-9_]+$/.test(delta.nodeId);
+  if (!uuid && !slug) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['nodeId'],
+      message: 'nodeId must be a UUID or a lowercase slug (a-z0-9_)',
+    });
+  }
+  if (delta.op !== 'ADD' && !uuid) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['nodeId'],
+      message: `${delta.op} nodeId must be a UUID that references a base :Content node`,
+    });
+  }
 });
 
 export type GraphDelta = z.infer<typeof GraphDeltaSchema>;

@@ -237,6 +237,7 @@ podman volume exists postgres-oltp-data || podman volume create postgres-oltp-da
 podman volume exists postgres-olap-data || podman volume create postgres-olap-data
 podman volume exists redis-data || podman volume create redis-data
 podman volume exists minio-data || podman volume create minio-data
+podman volume exists neo4j-data || podman volume create neo4j-data
 ```
 
 ### 2. Start Backing Services
@@ -282,6 +283,19 @@ podman run -d \
   -e MINIO_ROOT_PASSWORD=minioadmin \
   docker.io/minio/minio:latest \
   server /data --console-address ":9001"
+
+# Neo4j (graph authoring canvas, M27; optional — NEO4J_ENABLED defaults OFF).
+# A real password (not the image-rejected `neo4j/neo4j`) is required; the graph
+# data volume keeps authored plan IR + critique annotations across recreates.
+podman run -d \
+  --name las-flores-neo4j \
+  --network las-flores-net \
+  -p 7474:7474 -p 7687:7687 \
+  -v neo4j-data:/data \
+  -e NEO4J_AUTH=neo4j/lasfloresdev123 \
+  -e NEO4J_server_memory_heap_max__size=512M \
+  -e NEO4J_server_memory_pagecache_size=256M \
+  docker.io/library/neo4j:5-community
 ```
 
 ### 3. Get Service IP Addresses
@@ -481,7 +495,10 @@ curl http://localhost:3000/assets/list-all
 **Fix:** Set `LLM_PROVIDER=litellm` in the server container environment.
 
 ### 4. Assets not visible in admin UI
-**Fix:** Added `PROMPT_ROOT="/app/content"` environment variable to the server container. Without this, the server looks for prompts in `/app/server/content` (wrong path).
+**Fix:** Ensure the content directory is reachable. The server resolves the
+content root via `resolveContentDir()` by default (it points at `/app/content`
+inside the container, matching `docker-compose.yml`), so `PROMPT_ROOT` is **not**
+required. Only set `PROMPT_ROOT` if you must override the default location.
 
 ## Troubleshooting
 

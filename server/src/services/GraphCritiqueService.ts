@@ -133,9 +133,17 @@ export class GraphCritiqueService {
           { key: a.id, props: annotationProps(a) },
         );
         for (const evidence of a.evidence ?? []) {
+          // Evidence may reference a real canon entity (matched above, and the
+          // MERGE then no-ops against the existing canon node) or a plan-derived
+          // item that is NOT the canonical graph (e.g. a lowercase `item.type`).
+          // Tag any node we create here `isEvidence = true` so the canonical
+          // traversal (`MATCH (c:Content) WHERE c.planId IS null`) excludes it:
+          // an evidence-only node must never leak into the LLM prompt/input-hash
+          // or into the merged-view canon layer. A real canon entity keeps its
+          // own properties (ON CREATE only marks newly-created evidence nodes).
           await tx.run(
             `MERGE (c:Content { key: $cKey })
-             ON CREATE SET c.nodeType = $nt, c.nodeId = $nid, c.name = '', c.planId = null
+             ON CREATE SET c.nodeType = $nt, c.nodeId = $nid, c.name = '', c.planId = null, c.isEvidence = true
              WITH c
              MATCH (n) WHERE (n:Conflict OR n:Suggestion) AND n.key = $aKey
              MERGE (n)-[:FLAGGED_IN]->(c)`,

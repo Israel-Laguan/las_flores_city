@@ -21,13 +21,16 @@ import {
   type GraphMergedView,
 } from '@las-flores/shared';
 import { isNeo4jEnabled, runNeo4jQuery } from './Neo4jClient.js';
+import { normalizeKeyComponent } from './GraphDeltaService.js';
 
 interface MergedNodeRow {
   nodeType: string;
   nodeId: string;
   name: string | null;
   planId: string | null;
-  // object (properties(base)) or a JSON string (ContentDelta.fieldsJson).
+  // Base branch: the object (properties(base)). MODIFY/ADD branch: a wrapper
+  // { base, delta } where delta is the ContentDelta.fieldsJson (string or
+  // object) and base is the canonical node's properties (or null).
   nodeProps: unknown;
 }
 
@@ -46,11 +49,25 @@ interface CountRow {
 }
 
 function toMergedNode(row: MergedNodeRow): GraphContentNode {
-  // Delta branches return `fieldsJson` (stored as JSON string — Neo4j props
-  // can't be maps); base branches return `properties(base)` already an object.
+  // Base branch returns `properties(base)` already an object. The MODIFY/ADD
+  // branch returns a wrapper { base, delta } where `delta` is the
+  // ContentDelta.fieldsJson (string or object) and `base` is the canonical
+  // node's properties (or null). For MODIFY, delta fields override the
+  // unchanged canonical fields so the merged view is the full post-approve
+  // node; for ADD there is no base, so the delta stands alone.
   let fields: Record<string, unknown> = {};
   const raw = row.nodeProps;
-  if (typeof raw === 'string') {
+  if (raw && typeof raw === 'object' && 'base' in (raw as Record<string, unknown>) && 'delta' in (raw as Record<string, unknown>)) {
+    const wrap = raw as { base: unknown; delta: unknown };
+    const base = (wrap.base && typeof wrap.base === 'object' ? wrap.base : {}) as Record<string, unknown>;
+    let delta: Record<string, unknown> = {};
+    if (typeof wrap.delta === 'string') {
+      try { delta = JSON.parse(wrap.delta); } catch { delta = {}; }
+    } else if (wrap.delta && typeof wrap.delta === 'object') {
+      delta = wrap.delta as Record<string, unknown>;
+    }
+    fields = { ...base, ...delta };
+  } else if (typeof raw === 'string') {
     try {
       fields = JSON.parse(raw);
     } catch {
@@ -86,10 +103,13 @@ export async function getMergedView(planId: string): Promise<GraphMergedView> {
   if (!isNeo4jEnabled()) {
     return { planId, nodes: [], edges: [] };
   }
-
-  const nodeRows = await runNeo4jQuery<MergedNodeRow>(`
+  // Lowercase a UUID planId so it matches the normalized key stored by applyDelta.
+  const normalizedPlanId = normalizeKeyComponent(planId);
+  try {
+    const nodeRows = await runNeo4jQuery<MergedNodeRow>(`
     MATCH (base:Content)
     WHERE base.planId IS null
+      AND (base.isEvidence IS NULL OR base.isEvidence = false)
       AND NOT EXISTS {
         MATCH (d:ContentDelta { planId: $planId, nodeType: base.nodeType, nodeId: base.nodeId })
       }
@@ -98,19 +118,24 @@ export async function getMergedView(planId: string): Promise<GraphMergedView> {
     UNION ALL
     MATCH (d:ContentDelta { planId: $planId })
     WHERE d.op IN ['ADD', 'MODIFY']
+    OPTIONAL MATCH (base:Content { nodeType: d.nodeType, nodeId: d.nodeId })
+    WHERE base.planId IS null
     RETURN d.nodeType AS nodeType, d.nodeId AS nodeId,
-           coalesce(d.name, '') AS name,
-           d.planId AS planId, d.fieldsJson AS nodeProps
-  `, { planId });
+           coalesce(d.name, base.name, '') AS name,
+           d.planId AS planId,
+           { base: properties(base), delta: d.fieldsJson } AS nodeProps
+  `, { planId: normalizedPlanId });
 
-  const nodes = nodeRows.map(toMergedNode);
+    const nodes = nodeRows.map(toMergedNode);
 
-  // Edge topology: canonical relationships whose two endpoints both survive
-  // (neither tombstoned by this plan) — ADD nodes have no edges yet, and
-  // MODIFY shadows keep their canonical edges.
-  const edgeRows = await runNeo4jQuery<EdgeRow>(`
+    // Edge topology: canonical relationships whose two endpoints both survive
+    // (neither tombstoned by this plan) — ADD nodes have no edges yet, and
+    // MODIFY shadows keep their canonical edges.
+    const edgeRows = await runNeo4jQuery<EdgeRow>(`
     MATCH (a:Content)-[r]->(b:Content)
     WHERE a.planId IS null AND b.planId IS null
+      AND (a.isEvidence IS NULL OR a.isEvidence = false)
+      AND (b.isEvidence IS NULL OR b.isEvidence = false)
       AND NOT EXISTS {
         MATCH (da:ContentDelta { planId: $planId, nodeType: a.nodeType, nodeId: a.nodeId })
         WHERE da.op = 'DELETE'
@@ -122,11 +147,18 @@ export async function getMergedView(planId: string): Promise<GraphMergedView> {
     RETURN a.nodeType AS sourceNodeType, a.nodeId AS sourceNodeId, a.name AS sourceName,
            r AS rel, b.nodeType AS targetNodeType, b.nodeId AS targetNodeId, b.name AS targetName,
            type(r) AS type
-  `, { planId });
+  `, { planId: normalizedPlanId });
 
-  const edges = edgeRows.map(toEdge);
+    const edges = edgeRows.map(toEdge);
 
-  return { planId, nodes, edges };
+    return { planId, nodes, edges };
+  } catch (err) {
+    // Defensive: a graph that becomes unreachable after startup (or an
+    // unexpected row shape) must degrade to the documented empty view rather
+    // than propagate an error to plan-authoring callers.
+    console.warn('[GraphQueryService] merged-view read failed, returning empty view:', (err as Error).message);
+    return { planId, nodes: [], edges: [] };
+  }
 }
 
 interface TargetNodeRow {
@@ -145,12 +177,15 @@ export async function getImpactAnalysis(nodeType: string, nodeId: string): Promi
   if (!isNeo4jEnabled()) {
     return { incoming: [], outgoing: [], neighbors: [] };
   }
+  // Normalize id-case so lookup matches canon nodes keyed by lowercase UUID.
+  const normalizedId = normalizeKeyComponent(nodeId);
+  const nodeParams = { nodeType, nodeId: normalizedId };
 
   const targetRows = await runNeo4jQuery<TargetNodeRow>(`
     MATCH (n:Content { nodeType: $nodeType, nodeId: $nodeId })
     WHERE n.planId IS null
     RETURN n.nodeType AS nodeType, n.nodeId AS nodeId, n.name AS name, n.planId AS planId, properties(n) AS props
-  `, { nodeType, nodeId });
+  `, nodeParams);
 
   const incomingRows = await runNeo4jQuery<EdgeRow>(`
     MATCH (src:Content)-[r]->(n:Content { nodeType: $nodeType, nodeId: $nodeId })
@@ -158,7 +193,7 @@ export async function getImpactAnalysis(nodeType: string, nodeId: string): Promi
     RETURN src.nodeType AS sourceNodeType, src.nodeId AS sourceNodeId, src.name AS sourceName,
            n.nodeType AS targetNodeType, n.nodeId AS targetNodeId, n.name AS targetName,
            type(r) AS type
-  `, { nodeType, nodeId });
+  `, nodeParams);
 
   const outgoingRows = await runNeo4jQuery<EdgeRow>(`
     MATCH (n:Content { nodeType: $nodeType, nodeId: $nodeId })-[r]->(tgt:Content)
@@ -166,33 +201,38 @@ export async function getImpactAnalysis(nodeType: string, nodeId: string): Promi
     RETURN n.nodeType AS sourceNodeType, n.nodeId AS sourceNodeId, n.name AS sourceName,
            tgt.nodeType AS targetNodeType, tgt.nodeId AS targetNodeId, tgt.name AS targetName,
            type(r) AS type
-  `, { nodeType, nodeId });
+  `, nodeParams);
 
   const incoming = incomingRows.map(toEdge);
   const outgoing = outgoingRows.map(toEdge);
 
   const neighborSet = new Map<string, GraphContentNode>();
   for (const e of incoming) {
-    if (e.sourceNodeId !== nodeId) {
-      neighborSet.set(`${e.sourceNodeType}:${e.sourceNodeId}`, {
-        nodeType: e.sourceNodeType,
-        nodeId: e.sourceNodeId,
-        name: undefined,
-        planId: null,
-        fields: {},
-      });
+    // Skip self-loops only when BOTH type and id match the target, so a
+    // neighbor that happens to share the target's nodeId under a different
+    // content type is not dropped from impact analysis.
+    if (e.sourceNodeType === nodeType && e.sourceNodeId === nodeId) {
+      continue;
     }
+    neighborSet.set(`${e.sourceNodeType}:${e.sourceNodeId}`, {
+      nodeType: e.sourceNodeType,
+      nodeId: e.sourceNodeId,
+      name: undefined,
+      planId: null,
+      fields: {},
+    });
   }
   for (const e of outgoing) {
-    if (e.targetNodeId !== nodeId) {
-      neighborSet.set(`${e.targetNodeType}:${e.targetNodeId}`, {
-        nodeType: e.targetNodeType,
-        nodeId: e.targetNodeId,
-        name: undefined,
-        planId: null,
-        fields: {},
-      });
+    if (e.targetNodeType === nodeType && e.targetNodeId === nodeId) {
+      continue;
     }
+    neighborSet.set(`${e.targetNodeType}:${e.targetNodeId}`, {
+      nodeType: e.targetNodeType,
+      nodeId: e.targetNodeId,
+      name: undefined,
+      planId: null,
+      fields: {},
+    });
   }
 
   const target = targetRows[0]
@@ -236,6 +276,9 @@ export async function detectCycles(
 ): Promise<Array<{ nodes: Array<{ nodeType: string; nodeId: string }> }>> {
   if (!isNeo4jEnabled()) return [];
   assertEdgeType(relationshipType);
+  if (!Number.isInteger(maxDepth) || maxDepth < 1 || maxDepth > 100) {
+    throw new Error(`Invalid cycle detection depth: ${maxDepth} (expected integer 1..100)`);
+  }
   const rows = await runNeo4jQuery<CyclePathRow>(
     `
     MATCH p = (start:Content)-[r:${relationshipType}*1..${maxDepth}]->(start:Content)

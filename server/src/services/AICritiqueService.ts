@@ -30,15 +30,20 @@ const LOG_PREFIX = '[AICritiqueService]';
 
 export class AICritiqueService {
   private provider: LLMProvider;
-  private neighborhoodProvider: NeighborhoodProvider;
   private graph: GraphCritiqueService;
 
   constructor(provider?: LLMProvider, graph?: GraphCritiqueService) {
     this.provider = provider || createLLMProvider();
     this.graph = graph ?? graphCritiqueService;
-    // M27-b: swap the neighborhood seam to the Neo4j traversal when the authoring
-    // graph is enabled; Postgres gatherer remains the default/fallback.
-    this.neighborhoodProvider = isNeo4jEnabled() ? neo4jNeighborhoodProvider : postgresNeighborhoodProvider;
+  }
+
+  /**
+   * M27-b: select the neighborhood seam per call so a runtime NEO4J_ENABLED
+   * change (or a test that toggles the flag after import) takes effect. The
+   * Postgres gatherer is the default/fallback.
+   */
+  private get neighborhoodProvider(): NeighborhoodProvider {
+    return isNeo4jEnabled() ? neo4jNeighborhoodProvider : postgresNeighborhoodProvider;
   }
 
   /**
@@ -128,9 +133,31 @@ export class AICritiqueService {
     if (!opts.forceReanalyze) {
       // M27-b: when the graph is enabled the `(ai_model, input_hash)` cache is
       // served from the graph; otherwise the Postgres marker/row path is used.
-      const cached = isNeo4jEnabled()
-        ? await this.graph.findCached(planId, scope, inputHash, model)
-        : await this.findCachedAnnotations(planId, scope, inputHash, model);
+      // Either read path degrades to the durable Postgres rows on a graph error
+      // so an enabled-but-unreachable Neo4j never aborts the critique.
+      let cached: CritiqueAnnotationsResult | null = null;
+      let echoedPostgres = false;
+      if (isNeo4jEnabled()) {
+        let graphHit: CritiqueAnnotationsResult | null = null;
+        try {
+          graphHit = await this.graph.findCached(planId, scope, inputHash, model);
+        } catch (err) {
+          console.warn(`${LOG_PREFIX} graph cache read degraded to Postgres:`, (err as Error).message);
+        }
+        if (graphHit) {
+          // Durable Postgres is the cache authority. A graph-only hit (e.g. a
+          // stale CacheMarker left after a failed graph clear while Postgres was
+          // already cleared) must NOT serve annotations the durable store dropped.
+          cached = await this.findCachedAnnotations(planId, scope, inputHash, model);
+          echoedPostgres = true;
+          if (!cached) {
+            console.warn(`${LOG_PREFIX} graph reported a cache hit that Postgres does not back — treating as miss (stale graph marker).`);
+          }
+        }
+      }
+      if (!cached && !echoedPostgres) {
+        cached = await this.findCachedAnnotations(planId, scope, inputHash, model);
+      }
       if (cached) {
         console.log(`${LOG_PREFIX} Cache hit for plan ${planId} (scope=${scope}, hash=${inputHash.substring(0, 12)}…)`);
         return cached;
@@ -180,13 +207,17 @@ export class AICritiqueService {
 
   /**
    * M27-b: read annotations for a plan. When the authoring graph is enabled the
-   * admin overlays read the graph; on a graph failure we degrade to the durable
-   * Postgres rows rather than surfacing an error.
+   * admin overlays read the graph; on a graph failure (or an empty mirror, e.g.
+   * before backfill) we degrade to the durable Postgres rows, and the returned
+   * statuses are reconciled against the durable store so a stale graph status
+   * (a failed mirror write) can never be shown to authors.
    */
   async getAnnotations(planId: string): Promise<CritiqueAnnotation[]> {
     if (!isNeo4jEnabled()) return this.postgresGetAnnotations(planId);
     try {
-      return await this.graph.getAnnotations(planId);
+      const graphAnnotations = await this.graph.getAnnotations(planId);
+      if (graphAnnotations.length === 0) return this.postgresGetAnnotations(planId);
+      return this.reconcileAnnotationStatuses(graphAnnotations, { dropDismissed: true });
     } catch (err) {
       console.warn('[AICritiqueService] graph read degraded to Postgres:', (err as Error).message);
       return this.postgresGetAnnotations(planId);
@@ -208,12 +239,17 @@ export class AICritiqueService {
   }
 
   /**
-   * Fetch a single annotation by id. Graph-backed when enabled, Postgres fallback.
+   * Fetch a single annotation by id. Graph-backed when enabled, Postgres fallback
+   * for both a graph miss (no matching node) and a graph error.
    */
   async getAnnotation(annotationId: string): Promise<CritiqueAnnotation | null> {
     if (!isNeo4jEnabled()) return this.postgresGetAnnotation(annotationId);
     try {
-      return await this.graph.getAnnotation(annotationId);
+      const graphAnnotation = await this.graph.getAnnotation(annotationId);
+      // A graph miss must not hide a durable Postgres row.
+      if (!graphAnnotation) return this.postgresGetAnnotation(annotationId);
+      const [reconciled] = await this.reconcileAnnotationStatuses([graphAnnotation], { dropDismissed: false });
+      return reconciled ?? graphAnnotation;
     } catch (err) {
       console.warn('[AICritiqueService] graph read degraded to Postgres:', (err as Error).message);
       return this.postgresGetAnnotation(annotationId);
@@ -298,6 +334,38 @@ export class AICritiqueService {
       cached: true,
       model: result.rows[0].ai_model as string,
     };
+  }
+
+  /**
+   * Overlay the durable Postgres `status` onto graph-mirrored annotations so an
+   * enabled-but-stale graph (e.g. a failed `setAnnotationStatus` graph write)
+   * can never serve an outdated status to admin overlays: Postgres is always the
+   * source of truth for author actions. When `dropDismissed` is true, rows the
+   * durable store marks dismissed are removed (matching `postgresGetAnnotations`).
+   */
+  private async reconcileAnnotationStatuses(
+    annotations: CritiqueAnnotation[],
+    opts: { dropDismissed: boolean },
+  ): Promise<CritiqueAnnotation[]> {
+    const ids = annotations.map((a) => a.id).filter((id) => id && id.length > 0);
+    if (ids.length === 0) return annotations;
+    let rows: Array<{ id: unknown; status: unknown }> = [];
+    try {
+      const result = await queryOLTP<{ id: unknown; status: unknown }>(
+        `SELECT id, status FROM critique_annotations WHERE id = ANY($1)`,
+        [ids],
+      );
+      rows = result.rows;
+    } catch (err) {
+      console.warn(`${LOG_PREFIX} Postgres status reconcile failed, using graph values:`, (err as Error).message);
+    }
+    const durable = new Map(rows.map((r) => [String(r.id), String(r.status)]));
+    return annotations
+      .map((a) => {
+        const status = durable.get(a.id);
+        return status != null && a.status !== status ? { ...a, status: status as CritiqueAnnotation['status'] } : a;
+      })
+      .filter((a) => (opts.dropDismissed ? a.status !== 'dismissed' : true));
   }
 
   /**

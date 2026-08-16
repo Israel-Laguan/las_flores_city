@@ -121,17 +121,67 @@ describe('GraphCritiqueService', () => {
   });
 
   it('findCached returns mapped annotations + cached flag, excluding markers', async () => {
-    mockRunQuery.mockResolvedValue([propsRow()] as any);
+    // Fixture includes a real :Conflict plus a :CacheMarker — the marker must be
+    // filtered out of the returned annotations (only Conflict/Suggestion map).
+    const marker = {
+      labels: ['CacheMarker'],
+      p: {
+        id: 'd0000000-b000-4000-8000-00000000bc99',
+        type: 'suggestion',
+        severity: 'info',
+        description: 'No conflicts found — clean run',
+        evidenceJson: '[]',
+        relatedEntitiesJson: '[]',
+        scope: 'entity',
+        aiModel: 'mock',
+        inputHash: HASH,
+        status: 'open',
+        planId: PLAN_ID,
+        itemIds: [],
+        createdAt: '2026-01-01T00:00:00.000Z',
+      },
+      createdAt: '2026-01-01T00:00:00.000Z',
+    };
+    mockRunQuery.mockResolvedValue([propsRow(), marker] as any);
     const result = await service.findCached(PLAN_ID, 'entity', HASH, 'mock');
     expect(result).not.toBeNull();
     expect(result!.cached).toBe(true);
+    // The CacheMarker row is excluded from the annotation list.
     expect(result!.annotations).toHaveLength(1);
     expect(result!.annotations[0].type).toBe('conflict');
     expect(result!.annotations[0].evidence[0].nodeType).toBe('Character');
+    expect(result!.annotations.some((a) => a.description === 'No conflicts found — clean run')).toBe(false);
     // Cache probe is scoped to (plan, scope, hash, aiModel).
     const probeCall = mockRunQuery.mock.calls[0];
     expect((probeCall as any[])[1].inputHash).toBe(HASH);
     expect((probeCall as any[])[1].aiModel).toBe('mock');
+  });
+
+  it('findCached returns a cache hit with only a CacheMarker (annotations: [], cached: true)', async () => {
+    const marker = {
+      labels: ['CacheMarker'],
+      p: {
+        id: 'd0000000-b000-4000-8000-00000000bc99',
+        type: 'suggestion',
+        severity: 'info',
+        description: 'No conflicts found — clean run',
+        evidenceJson: '[]',
+        relatedEntitiesJson: '[]',
+        scope: 'entity',
+        aiModel: 'mock',
+        inputHash: HASH,
+        status: 'open',
+        planId: PLAN_ID,
+        itemIds: [],
+        createdAt: '2026-01-01T00:00:00.000Z',
+      },
+      createdAt: '2026-01-01T00:00:00.000Z',
+    };
+    mockRunQuery.mockResolvedValue([marker] as any);
+    const result = await service.findCached(PLAN_ID, 'entity', HASH, 'mock');
+    expect(result).not.toBeNull();
+    expect(result!.cached).toBe(true);
+    expect(result!.annotations).toHaveLength(0);
   });
 
   it('findCached returns null on a cache miss', async () => {

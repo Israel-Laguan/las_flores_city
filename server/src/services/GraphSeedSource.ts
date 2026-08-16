@@ -124,28 +124,36 @@ async function gatherOverlays(): Promise<BaseContentNodeInput[]> {
 }
 
 /** Locations live only in YAML, under each district's locations/ folder. */
-async function gatherLocations(): Promise<BaseContentNodeInput[]> {
+async function gatherLocations(opts: { strict?: boolean } = {}): Promise<BaseContentNodeInput[]> {
   const contentDir = resolveContentDir();
   const out: BaseContentNodeInput[] = [];
+  let files: string[];
   try {
-    const files = await glob(`${contentDir}/districts/*/locations/*/*.yaml`, { absolute: true });
-    for (const file of files) {
-      try {
-        const raw = await fs.readFile(file, 'utf-8');
-        const data: any = yaml.load(raw);
-        if (!data || typeof data !== 'object' || !data.id) continue;
-        const canonicalFields: Record<string, unknown> = {};
-        for (const key of ['district', 'daytime', 'nightlife', 'history'] as const) {
-          const v = truthy(data[key]);
-          if (v) canonicalFields[key] = v;
-        }
-        out.push({ nodeType: 'Location', nodeId: String(data.id), name: truthy(data.name) ?? '', canonicalFields });
-      } catch {
-        // skip files that fail to parse
+    files = await glob(`${contentDir}/districts/*/locations/*/*.yaml`, { absolute: true });
+  } catch (err) {
+    if (opts.strict) throw err;
+    // content dir unreadable — return what we have (non-strict)
+    return out;
+  }
+  for (const file of files) {
+    try {
+      const raw = await fs.readFile(file, 'utf-8');
+      const data: any = yaml.load(raw);
+      // A location YAML without an `id` is malformed and cannot become a node.
+      if (!data || typeof data !== 'object' || !data.id) {
+        if (opts.strict) throw new Error(`Location YAML missing id: ${file}`);
+        continue;
       }
+      const canonicalFields: Record<string, unknown> = {};
+      for (const key of ['district', 'daytime', 'nightlife', 'history'] as const) {
+        const v = truthy(data[key]);
+        if (v) canonicalFields[key] = v;
+      }
+      out.push({ nodeType: 'Location', nodeId: String(data.id), name: truthy(data.name) ?? '', canonicalFields });
+    } catch (err) {
+      if (opts.strict) throw err instanceof Error ? err : new Error(String(err));
+      // skip files that fail to parse (non-strict)
     }
-  } catch {
-    // content dir unreadable — return what we have
   }
   return out;
 }
@@ -203,7 +211,7 @@ async function gatherSceneEdges(): Promise<GraphEdge[]> {
 }
 
 /** Gather the full base graph (nodes + FK edges) from the migrated content store. */
-export async function gatherBaseGraphData(): Promise<BaseGraphData> {
+export async function gatherBaseGraphData(opts: { strict?: boolean } = {}): Promise<BaseGraphData> {
   const [characters, districts, scenes, dialogues, missions, overlays, locNodes] = await Promise.all([
     gatherCharacters(),
     gatherDistricts(),
@@ -211,7 +219,7 @@ export async function gatherBaseGraphData(): Promise<BaseGraphData> {
     gatherDialogues(),
     gatherMissions(),
     gatherOverlays(),
-    gatherLocations(),
+    gatherLocations(opts),
   ]);
   const [dialogueEdges, overlayEdges, sceneEdges] = await Promise.all([
     gatherDialogueOwnershipEdges(),

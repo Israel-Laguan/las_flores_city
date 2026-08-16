@@ -16,6 +16,19 @@
 import { GraphDeltaSchema, type GraphDelta } from '@las-flores/shared';
 import { isNeo4jEnabled, runNeo4jQuery } from './Neo4jClient.js';
 
+/** UUID shape (case-insensitive), used to normalize identity-key components. */
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Normalize an identity component used in delta keys/properties so an uppercase
+ * UUID and its lowercase form map to the same `:ContentDelta`, and therefore
+ * the same merged-view shadow. Non-UUID values (e.g. an ADD slug) are returned
+ * unchanged.
+ */
+export function normalizeKeyComponent(value: string): string {
+  return UUID_RE.test(value) ? value.toLowerCase() : value;
+}
+
 /** A raw Neo4j node object exposes `properties`. */
 interface Neo4jNodeLike {
   properties: Record<string, unknown>;
@@ -54,6 +67,10 @@ export async function applyDelta(delta: GraphDelta): Promise<void> {
   if (!isNeo4jEnabled()) return;
   const { id, planId, nodeType, nodeId, op, fields, createdAt } = delta;
   const name = typeof fields.name === 'string' ? fields.name : null;
+  // Normalize UUID-case so an uppercase id never forks the (nodeType,nodeId,
+  // planId) key away from the canonical lowercase UUID the base graph stores.
+  const nNodeId = normalizeKeyComponent(nodeId);
+  const nPlanId = normalizeKeyComponent(planId);
   await runNeo4jQuery(
     `
     MERGE (d:ContentDelta { key: $key })
@@ -61,11 +78,14 @@ export async function applyDelta(delta: GraphDelta): Promise<void> {
                   d.op = $op, d.name = $name, d.fieldsJson = $fieldsJson,
                   d.createdAt = $createdAt, d.id = $id
     ON MATCH SET  d.nodeType = $nodeType, d.nodeId = $nodeId,
-                  d.op = $op, d.name = $name, d.fieldsJson = $fieldsJson, d.id = $id
+                  d.op = $op, d.name = $name, d.fieldsJson = $fieldsJson, d.id = $id,
+                  d.createdAt = $createdAt
     `,
     // Surrogate unique key (Community Edition can't NODE KEY on 3 props).
     // Neo4j properties can't be maps, so fields are stored as a JSON string.
-    { key: `${nodeType}:${nodeId}:${planId}`, nodeType, nodeId, planId, op, name, fieldsJson: JSON.stringify(fields), createdAt, id },
+    // `createdAt` is refreshed on MATCH too so a re-applied edit moves the delta
+    // to its true position (getDeltasForPlan orders by createdAt ASC).
+    { key: `${nodeType}:${nNodeId}:${nPlanId}`, nodeType, nodeId: nNodeId, planId: nPlanId, op, name, fieldsJson: JSON.stringify(fields), createdAt, id },
   );
 }
 
@@ -74,7 +94,7 @@ export async function getDeltasForPlan(planId: string): Promise<GraphDelta[]> {
   if (!isNeo4jEnabled()) return [];
   const rows = await runNeo4jQuery<{ d: unknown }>(
     `MATCH (d:ContentDelta { planId: $planId }) RETURN d ORDER BY d.createdAt ASC`,
-    { planId },
+    { planId: normalizeKeyComponent(planId) },
   );
   return rows.map((r) => toGraphDelta(r.d));
 }
@@ -84,7 +104,7 @@ export async function clearDeltasForPlan(planId: string): Promise<void> {
   if (!isNeo4jEnabled()) return;
   await runNeo4jQuery(
     `MATCH (d:ContentDelta { planId: $planId }) DELETE d`,
-    { planId },
+    { planId: normalizeKeyComponent(planId) },
   );
 }
 
@@ -93,7 +113,7 @@ export async function countDeltasForPlan(planId: string): Promise<number> {
   if (!isNeo4jEnabled()) return 0;
   const rows = await runNeo4jQuery<{ count: unknown }>(
     `MATCH (d:ContentDelta { planId: $planId }) RETURN count(d) AS count`,
-    { planId },
+    { planId: normalizeKeyComponent(planId) },
   );
   return rows[0]?.count != null ? Number(rows[0].count) : 0;
 }
