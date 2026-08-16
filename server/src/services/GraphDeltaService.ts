@@ -76,7 +76,7 @@ export async function applyDelta(delta: GraphDelta): Promise<void> {
   // would treat the orphan MODIFY as a visible node, breaking the canonical view.
   if (op !== 'ADD') {
     const baseExists = await runNeo4jQuery<{ exists: boolean }>(
-      `MATCH (c:Content { nodeType: $nodeType, nodeId: $nodeId }) WHERE c.planId IS null RETURN count(c) > 0 AS exists`,
+      `MATCH (c:Content { nodeType: $nodeType, nodeId: $nodeId }) WHERE c.planId IS null AND (c.isEvidence IS NULL OR c.isEvidence = false) RETURN count(c) > 0 AS exists`,
       { nodeType, nodeId: nNodeId },
     );
     if (!baseExists[0]?.exists) {

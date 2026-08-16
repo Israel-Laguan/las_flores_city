@@ -362,8 +362,10 @@ main() {
             show_status "olap"
             ;;
         verify)
-            verify_migrations "oltp"
-            verify_migrations "olap"
+            local oltp_rc=0 olap_rc=0
+            verify_migrations "oltp" || oltp_rc=$?
+            verify_migrations "olap" || olap_rc=$?
+            [ $oltp_rc -eq 0 ] && [ $olap_rc -eq 0 ]
             ;;
         status)
             show_status "oltp"

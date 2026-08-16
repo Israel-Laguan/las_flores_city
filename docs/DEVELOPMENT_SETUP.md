@@ -295,7 +295,7 @@ podman run -d \
   --network las-flores-net \
   -p 127.0.0.1:7474:7474 -p 127.0.0.1:7687:7687 \
   -v neo4j-data:/data \
-  -e NEO4J_AUTH=neo4j/${NEO4J_PASSWORD:-changeme-local-neo4j-password} \
+  -e "NEO4J_AUTH=neo4j/${NEO4J_PASSWORD:-lasfloresdev123}" \
   -e NEO4J_server_memory_heap_max__size=512M \
   -e NEO4J_server_memory_pagecache_size=256M \
   docker.io/library/neo4j:5-community

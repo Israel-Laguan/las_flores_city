@@ -353,18 +353,24 @@ export class AICritiqueService {
     const ids = annotations.map((a) => a.id).filter((id) => id && id.length > 0);
     if (ids.length === 0) return annotations;
     let rows: Array<{ id: unknown; status: unknown }> = [];
+    let reconciled = false;
     try {
       const result = await queryOLTP<{ id: unknown; status: unknown }>(
         `SELECT id, status FROM critique_annotations WHERE id = ANY($1)`,
         [ids],
       );
       rows = result.rows;
+      reconciled = true;
     } catch (err) {
       console.warn(`${LOG_PREFIX} Postgres status reconcile failed, using graph values:`, (err as Error).message);
     }
     const durable = new Map(rows.map((r) => [String(r.id), String(r.status)]));
-    // Drop annotations whose IDs are absent from Postgres (the durable authority).
-    // Orphaned graph annotations from a failed Neo4j clear should not be returned.
+    // When reconciliation succeeded with an empty result, drop annotations whose
+    // IDs are absent from Postgres (the durable authority) — orphaned graph
+    // annotations from a failed Neo4j clear should not be returned. On a
+    // reconcile failure we cannot trust the empty set, so keep all annotations
+    // (graph values) rather than hiding everything during a transient outage.
+    if (!reconciled) return annotations;
     const validIds = new Set(durable.keys());
     const filtered = annotations.filter((a) => validIds.has(a.id));
     return filtered

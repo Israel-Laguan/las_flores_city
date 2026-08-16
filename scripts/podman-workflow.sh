@@ -290,8 +290,13 @@ setup() {
         log_error "Failed to seed Neo4j base graph"
         exit 1
     }
-    # Verify that the seed actually produced content nodes
-    local seeded_count=$(podman exec las-flores-intake-worker wget -qO- http://localhost:3001/api/graph/nodes 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d.get('nodes',[])))" 2>/dev/null || echo "0")
+    # Verify that the seed actually produced content nodes. The intake-worker
+    # does not register /api/graph/nodes, so query Neo4j directly via
+    # cypher-shell (returns nonzero on auth/connect failure).
+    local seeded_count=$(podman exec las-flores-neo4j cypher-shell \
+        -a "bolt://${NEO4J_IP}:7687" -u neo4j -p lasfloresdev123 \
+        "MATCH (n:Content) RETURN count(n) AS c" \
+        2>/dev/null | grep -oE '^[0-9]+' | head -n1 || echo "0")
     if [ "$seeded_count" -eq 0 ]; then
         log_error "Neo4j seed reported success but 0 content nodes found - proceeding may result in partial graph"
         # Note: we don't exit here to avoid blocking developers on transient issues;

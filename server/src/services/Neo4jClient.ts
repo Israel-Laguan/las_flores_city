@@ -70,7 +70,9 @@ export function defaultDatabaseName(): string {
 
 /**
  * Run a single Cypher statement and return the rows as plain objects. Safe when
- * disabled — returns `[]` so graph consumers degrade to empty without throwing.
+ * disabled OR unreachable — returns `[]` so graph consumers degrade to empty
+ * without throwing (the graph is a disposable authoring IR; Postgres remains the
+ * durable source of truth).
  */
 export async function runNeo4jQuery<T = Record<string, unknown>>(
   cypher: string,
@@ -82,8 +84,8 @@ export async function runNeo4jQuery<T = Record<string, unknown>>(
     const result = await s.run(cypher, params);
     return result.records.map((record) => record.toObject() as T);
   } catch (err) {
-    console.warn('[Neo4j] query failed; propagating error:', (err as Error).message);
-    throw err;
+    console.warn('[Neo4j] query failed, returning empty result:', (err as Error).message);
+    return [];
   } finally {
     await s.close();
   }
@@ -94,7 +96,9 @@ export async function runNeo4jQuery<T = Record<string, unknown>>(
  * callback resolves — the whole callback is one transaction, not one per
  * statement (used by GraphCritiqueService.writeAnnotations for atomic writes).
  * Bounded convenience for bulk seed loops that want a single connection.
- * No-op when disabled: resolves `undefined` without touching the driver.
+ * No-op when disabled: resolves `undefined` without touching the driver. On a
+ * Neo4j error the write is skipped and `undefined` returned so the graph (a
+ * disposable IR) degrades without aborting the caller.
  */
 export async function runNeo4jTransaction<T>(
   fn: (tx: ManagedTransaction) => Promise<T>,
@@ -104,8 +108,8 @@ export async function runNeo4jTransaction<T>(
   try {
     return await s.executeWrite(fn);
   } catch (err) {
-    console.warn('[Neo4j] transaction failed; propagating error:', (err as Error).message);
-    throw err;
+    console.warn('[Neo4j] transaction failed, returning undefined:', (err as Error).message);
+    return undefined;
   } finally {
     await s.close();
   }
