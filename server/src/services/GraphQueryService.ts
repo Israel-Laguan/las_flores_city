@@ -181,6 +181,7 @@ export async function getImpactAnalysis(nodeType: string, nodeId: string): Promi
   const normalizedId = normalizeKeyComponent(nodeId);
   const nodeParams = { nodeType, nodeId: normalizedId };
 
+  try {
   const targetRows = await runNeo4jQuery<TargetNodeRow>(`
     MATCH (n:Content { nodeType: $nodeType, nodeId: $nodeId })
     WHERE n.planId IS null
@@ -251,6 +252,13 @@ export async function getImpactAnalysis(nodeType: string, nodeId: string): Promi
     outgoing,
     neighbors: [...neighborSet.values()].slice(0, 200),
   });
+  } catch (err) {
+    // Defensive: an enabled graph that becomes unreachable after startup must
+    // degrade to an empty impact analysis rather than propagate an error to
+    // authoring callers (mirrors getMergedView's catch).
+    console.warn('[GraphQueryService] impact-analysis read failed, returning empty:', (err as Error).message);
+    return { incoming: [], outgoing: [], neighbors: [] };
+  }
 }
 
 /** Validate a relationship type interpolated into a variable-length pattern. */
@@ -279,16 +287,23 @@ export async function detectCycles(
   if (!Number.isInteger(maxDepth) || maxDepth < 1 || maxDepth > 100) {
     throw new Error(`Invalid cycle detection depth: ${maxDepth} (expected integer 1..100)`);
   }
-  const rows = await runNeo4jQuery<CyclePathRow>(
-    `
-    MATCH p = (start:Content)-[r:${relationshipType}*1..${maxDepth}]->(start:Content)
-    WHERE start.planId IS null
-    RETURN [x IN nodes(p) | { nodeType: x.nodeType, nodeId: x.nodeId }] AS path
-    LIMIT 100
-    `,
-    {},
-  );
-  return rows.map((r) => ({ nodes: r.path }));
+  try {
+    const rows = await runNeo4jQuery<CyclePathRow>(
+      `
+      MATCH p = (start:Content)-[r:${relationshipType}*1..${maxDepth}]->(start:Content)
+      WHERE start.planId IS null
+      RETURN [x IN nodes(p) | { nodeType: x.nodeType, nodeId: x.nodeId }] AS path
+      LIMIT 100
+      `,
+      {},
+    );
+    return rows.map((r) => ({ nodes: r.path }));
+  } catch (err) {
+    // Defensive: an enabled graph that becomes unreachable must degrade to an
+    // empty cycle set rather than propagate an error to authoring callers.
+    console.warn('[GraphQueryService] cycle detection failed, returning empty:', (err as Error).message);
+    return [];
+  }
 }
 
 /**
@@ -297,6 +312,13 @@ export async function detectCycles(
  */
 export async function countAllDeltas(): Promise<number> {
   if (!isNeo4jEnabled()) return 0;
-  const rows = await runNeo4jQuery<CountRow>(`MATCH (d:ContentDelta) RETURN count(d) AS count`);
-  return rows[0]?.count != null ? Number(rows[0].count) : 0;
+  try {
+    const rows = await runNeo4jQuery<CountRow>(`MATCH (d:ContentDelta) RETURN count(d) AS count`);
+    return rows[0]?.count != null ? Number(rows[0].count) : 0;
+  } catch (err) {
+    // Defensive: an enabled graph that becomes unreachable must degrade to 0
+    // rather than propagate an error to telemetry callers.
+    console.warn('[GraphQueryService] delta count failed, returning 0:', (err as Error).message);
+    return 0;
+  }
 }

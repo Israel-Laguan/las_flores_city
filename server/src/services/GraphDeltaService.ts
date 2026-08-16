@@ -75,12 +75,28 @@ export async function applyDelta(delta: GraphDelta): Promise<void> {
   // Without this guard, a random UUID passes the schema guard and getDeltasForPlan / merged-view
   // would treat the orphan MODIFY as a visible node, breaking the canonical view.
   if (op !== 'ADD') {
-    const baseExists = await runNeo4jQuery<{ exists: boolean }>(
-      `MATCH (c:Content { nodeType: $nodeType, nodeId: $nodeId }) WHERE c.planId IS null AND (c.isEvidence IS NULL OR c.isEvidence = false) RETURN count(c) > 0 AS exists`,
+    // Distinguish three cases for the canonical (planId IS null) base node:
+    //   - absent entirely            → "non-existent" error
+    //   - present only as evidence   → clearer "exists only as evidence" error
+    //     (evidence nodes are tagged isEvidence=true by GraphCritiqueService,
+    //      and are excluded from the canonical traversal — a MODIFY/DELETE must
+    //      target a real canon node, not an evidence excerpt)
+    //   - present as a canonical node → allowed
+    const base = await runNeo4jQuery<{ anyExists: boolean; canonical: boolean }>(
+      `MATCH (c:Content { nodeType: $nodeType, nodeId: $nodeId })
+       WHERE c.planId IS null
+       RETURN
+         count(c) > 0 AS anyExists,
+         count(CASE WHEN c.isEvidence IS NULL OR c.isEvidence = false THEN 1 END) > 0 AS canonical`,
       { nodeType, nodeId: nNodeId },
     );
-    if (!baseExists[0]?.exists) {
+    const anyExists = base[0]?.anyExists ?? false;
+    const canonical = base[0]?.canonical ?? false;
+    if (!anyExists) {
       throw new Error(`${op} delta references non-existent base :Content node [${nodeType}:${nodeId}]`);
+    }
+    if (!canonical) {
+      throw new Error(`${op} delta targets a base :Content node that exists only as evidence (no canonical node) [${nodeType}:${nodeId}]`);
     }
   }
   await runNeo4jQuery(

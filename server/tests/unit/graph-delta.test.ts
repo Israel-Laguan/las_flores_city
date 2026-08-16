@@ -124,7 +124,7 @@ describe('GraphDeltaService', () => {
     // Reset mock after upsertContentNode to capture the applyDelta call;
     // set up return values for both the base-node existence check and the MERGE.
     mockQuery.mockReset();
-    mockQuery.mockReturnValueOnce(Promise.resolve([{ exists: true }]));
+    mockQuery.mockReturnValueOnce(Promise.resolve([{ anyExists: true, canonical: true }]));
     await applyDelta(makeDelta());
     const [cypher, params] = mockQuery.mock.calls[1] ?? [];
     expect(String(cypher)).toContain('MERGE (d:ContentDelta { key: $key })');

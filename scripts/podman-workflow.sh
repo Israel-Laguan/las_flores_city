@@ -293,11 +293,25 @@ setup() {
     # Verify that the seed actually produced content nodes. The intake-worker
     # does not register /api/graph/nodes, so query Neo4j directly via
     # cypher-shell (returns nonzero on auth/connect failure).
-    local seeded_count=$(podman exec las-flores-neo4j cypher-shell \
+    # Capture the cypher-shell exit code separately: the previous pipeline ended
+    # in `head`, so a failed cypher-shell was masked (empty result → the
+    # `[ "$count" -eq 0 ]` test errored and the warning was skipped). Now we
+    # report explicitly when the count could not be verified.
+    local seeded_raw
+    seeded_raw=$(podman exec las-flores-neo4j cypher-shell \
         -a "bolt://${NEO4J_IP}:7687" -u neo4j -p lasfloresdev123 \
         "MATCH (n:Content) RETURN count(n) AS c" \
-        2>/dev/null | grep -oE '^[0-9]+' | head -n1 || echo "0")
-    if [ "$seeded_count" -eq 0 ]; then
+        2>/dev/null)
+    local seed_rc=$?
+    local seeded_count
+    seeded_count=$(printf '%s' "$seeded_raw" | grep -oE '^[0-9]+' | head -n1)
+    seeded_count="${seeded_count:-0}"
+    if [ "$seed_rc" -ne 0 ]; then
+        # cypher-shell itself failed (auth/connect) — we cannot trust the
+        # count, so flag it instead of silently proceeding as if verified.
+        log_warn "Could not verify Neo4j seed count (cypher-shell exit ${seed_rc}); graph may be partial — re-run seed if needed"
+    fi
+    if [ "$seeded_count" -eq 0 ] && [ "$seed_rc" -eq 0 ]; then
         log_error "Neo4j seed reported success but 0 content nodes found - proceeding may result in partial graph"
         # Note: we don't exit here to avoid blocking developers on transient issues;
         # the seeded count can be verified later via /api/graph/nodes
