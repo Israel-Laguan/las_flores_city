@@ -82,7 +82,7 @@ export async function runNeo4jQuery<T = Record<string, unknown>>(
     const result = await s.run(cypher, params);
     return result.records.map((record) => record.toObject() as T);
   } catch (err) {
-    console.warn('[Neo4j] query failed, returning empty result:', (err as Error).message);
+    console.warn('[Neo4j] query failed; propagating error:', (err as Error).message);
     throw err;
   } finally {
     await s.close();
@@ -104,7 +104,7 @@ export async function runNeo4jTransaction<T>(
   try {
     return await s.executeWrite(fn);
   } catch (err) {
-    console.warn('[Neo4j] transaction failed, returning undefined:', (err as Error).message);
+    console.warn('[Neo4j] transaction failed; propagating error:', (err as Error).message);
     throw err;
   } finally {
     await s.close();

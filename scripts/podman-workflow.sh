@@ -263,8 +263,13 @@ setup() {
     local neo4j_max=60
     while [ $neo4j_attempt -lt $neo4j_max ]; do
         if podman exec las-flores-intake-worker wget -qO- http://localhost:3001/health 2>/dev/null | grep -q '"success":true'; then
-            # Check Neo4j specifically via its health endpoint or connectivity
-            if podman exec las-flores-intake-worker wget -qO- http://localhost:3001/health 2>/dev/null | grep -qi "neo4j" || true; then
+            # Genuine Neo4j readiness probe: cypher-shell returns nonzero until the
+            # graph accepts the connection and auth. No `|| true` bypass — the loop
+            # only logs Neo4j healthy after this succeeds, so seed:graph never runs
+            # against a still-initializing graph.
+            if podman exec las-flores-neo4j cypher-shell \
+                -a "bolt://${NEO4J_IP}:7687" -u neo4j -p lasfloresdev123 \
+                "RETURN 1 AS ok" >/dev/null 2>&1; then
                 log_info "Neo4j is healthy"
                 break
             fi
