@@ -4,14 +4,7 @@ import { fileURLToPath } from 'url';
 import { oltpPool, olapPool } from '@las-flores/infra';
 import type { PoolClient } from 'pg';
 import { migrateContent } from '../content/migrate.js';
-
-function hashText(value: string): number {
-  let hash = 0;
-  for (let i = 0; i < value.length; i++) {
-    hash = (hash * 31 + value.charCodeAt(i)) | 0;
-  }
-  return hash === 0 ? 1 : hash;
-}
+import { hashText, parseVersion, stripFileLevelTransactionControl, splitStatements } from './migrateUtils.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const MIGRATIONS_DIR = path.resolve(__dirname, 'migrations');
@@ -82,43 +75,10 @@ async function recordMigration(client: PoolClient, dbName: string, version: stri
   );
 }
 
-function parseVersion(filename: string): string {
-  const match = filename.match(/^(\d+)/);
-  return match ? match[1] : filename;
-}
-
 async function calculateChecksum(filePath: string): Promise<string> {
   const crypto = await import('crypto');
   const content = await fs.readFile(filePath);
   return crypto.createHash('sha256').update(content).digest('hex');
-}
-
-// Migration files historically wrapped themselves in a top-level BEGIN/COMMIT so
-// the wrapper transaction in withOLTPTransaction/withOLAPTransaction would then
-// open a *nested* transaction. A file-level COMMIT inside that wrapper can close
-// the inner savepoint before recordMigration runs, leaving schema changes
-// applied without matching bookkeeping on a later failure. We now let the
-// wrapper own the single transaction and strip the file-level transaction
-// control statements here — but only those at the top level, never the
-// BEGIN/COMMIT/ROLLBACK that appear inside PL/pgSQL `$$` ... `$$` bodies.
-function stripFileLevelTransactionControl(sql: string): string {
-  const lines = sql.split('\n');
-  let inDollarBlock = false;
-  const out: string[] = [];
-  for (const raw of lines) {
-    const line = raw.trimEnd();
-    const trimmed = line.trim();
-    if (/\$\$/.test(trimmed)) {
-      const dollars = (trimmed.match(/\$\$/g) || []).length;
-      // Toggle per pair; an odd count within a line keeps us in/out of a block.
-      if (dollars % 2 === 1) inDollarBlock = !inDollarBlock;
-    }
-    if (!inDollarBlock && /^(BEGIN|COMMIT|ROLLBACK)\s*;?\s*$/i.test(trimmed)) {
-      continue;
-    }
-    out.push(line);
-  }
-  return out.join('\n');
 }
 
 async function applySQLMigrations(): Promise<void> {
@@ -265,7 +225,13 @@ async function applySQLMigrations(): Promise<void> {
         const sql = stripFileLevelTransactionControl(rawSql);
 
         console.log(`[migrate] Applying ${filename} to ${dbName} (nontransactional)...`);
-        await client.query(sql);
+        // Execute each statement as its own autocommit query. A single
+        // multi-statement query would be wrapped in an implicit transaction
+        // block, making the in-body COMMIT illegal (2D000). Splitting avoids
+        // that and keeps the batched backfill's per-batch COMMITs valid.
+        for (const stmt of splitStatements(sql)) {
+          await client.query(stmt);
+        }
         await recordMigration(client, dbName, version, filename, checksum);
         console.log(`[migrate] ✓ ${filename} applied to ${dbName}`);
       } finally {

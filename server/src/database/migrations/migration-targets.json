@@ -64,8 +64,7 @@
     "071_admin_events_critique.sql",
     "072_admin_events_critique_validate.sql",
     "073_critique_cache_marker.sql",
-    "074_job_runs_run_token.sql",
-    "075_job_runs_run_token_backfill.sql"
+    "074_job_runs_run_token.sql"
   ],
   "nontransactional": {
     "075_job_runs_run_token_backfill.sql": "las_flores"
