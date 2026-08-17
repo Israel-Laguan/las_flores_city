@@ -210,6 +210,19 @@ export function resolveEdgeTargetNameValue(
 }
 
 /**
+ * Revision seed part for one name-valued edge: pairs the edge identity with the
+ * canonical VALUE it writes into the source item's fields. Each resolved value
+ * is folded in TOGETHER WITH its edge identity (not as a bare, sorted list of
+ * names) so that swapping two name-valued edges that point at two differently
+ * named Districts yields a different revision — otherwise the sorted name list
+ * would be identical and the approve gate could accept an export whose
+ * `district` fields are stale.
+ */
+export function nameValuedEdgeRevisionPart(e: GraphDeltaEdge, resolvedName: string): string {
+  return `${e.sourceNodeType}|${e.sourceNodeId}|${e.targetNodeType}|${e.targetNodeId}|${e.type}|${resolvedName}`;
+}
+
+/**
  * Content-addressed revision token for a plan's delta set INCLUDING edges.
  * This ensures that changes to relationships (edges) between deltas are also
  * detected, preventing a situation where edge changes after export remain
@@ -261,7 +274,7 @@ export async function getPlanDeltaRevisionWithEdges(planId: string): Promise<str
     const nameEdges = edges.filter(isNameValuedEdge);
     const nameByKey = await loadBaseNodeNames(nameEdges, tx);
     const resolvedTargetNames = nameEdges
-      .map((e) => resolveEdgeTargetNameValue(e, nameByKey))
+      .map((e) => nameValuedEdgeRevisionPart(e, resolveEdgeTargetNameValue(e, nameByKey)))
       .sort();
     return buildPlanRevisionFromDeltasAndEdges(deltas, edges, resolvedTargetNames);
   });

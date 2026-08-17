@@ -58,6 +58,15 @@ export interface SolidifyJobStatus {
    * run's status. Set by the `pending` write that initializes a run.
    */
   runToken?: string;
+  /**
+   * Optimistic-concurrency version for the cache entry. Every write mints a
+   * fresh value; `setJobStatus` passes the version it read back into the CAS so
+   * a concurrent same-run write that landed between the read and the write is
+   * detected (the CAS returns a snapshot-conflict code and the write is retried
+   * against the newer entry) instead of silently erasing the other write's
+   * stage/publish/migration data.
+   */
+  version?: string;
 }
 
 /** Read the current async solidify job status from cache (hot path) or DB. */

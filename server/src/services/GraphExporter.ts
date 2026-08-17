@@ -38,6 +38,7 @@ import {
   buildPlanRevisionFromDeltasAndEdges,
   isNameValuedEdge,
   resolveEdgeTargetNameValue,
+  nameValuedEdgeRevisionPart,
 } from './GraphDeltaService.js';
 import { buildMergedRevision } from './GraphMerger.js';
 import { resolveContentDir } from './StoryBuilderLore.js';
@@ -382,7 +383,7 @@ export async function exportContentPlan(
   // identical to what resolveEdgeLinks wrote (same resolver + fallback).
   const resolvedTargetNames = deltaEdges
     .filter(isNameValuedEdge)
-    .map((e) => resolveEdgeTargetNameValue(e, nameLookup))
+    .map((e) => nameValuedEdgeRevisionPart(e, resolveEdgeTargetNameValue(e, nameLookup)))
     .sort();
 
   const plan: ContentPlan = {

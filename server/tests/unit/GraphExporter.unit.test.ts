@@ -35,6 +35,12 @@ jest.mock('../../src/services/GraphDeltaService.js', () => ({
     e.type === 'IN_DISTRICT' && e.sourceNodeType === 'Scene' && e.targetNodeType === 'District',
   resolveEdgeTargetNameValue: (e: GraphDeltaEdge, nameByKey: Map<string, string>) =>
     nameByKey.get(`${e.targetNodeType}:${e.targetNodeId}`) ?? e.targetNodeId,
+  // Local stub mirroring the real edge-identity-aware revision seed part so the
+  // captured seed strings match what the exporter would pass to
+  // buildPlanRevisionFromDeltasAndEdges (a bare sorted name list would miss a
+  // swapped-edge rename).
+  nameValuedEdgeRevisionPart: (e: GraphDeltaEdge, name: string) =>
+    `${e.sourceNodeType}|${e.sourceNodeId}|${e.targetNodeType}|${e.targetNodeId}|${e.type}|${name}`,
   buildPlanRevisionFromDeltas: jest.fn(() => REVISION_ID),
   buildPlanRevisionFromDeltasAndEdges: jest.fn(
     (_del: GraphDelta[], _edges: GraphDeltaEdge[], resolved: readonly string[] = []) => {
@@ -169,8 +175,11 @@ describe('GraphExporter — mapping table coverage', () => {
     mockEdges.mockResolvedValue([makeEdge({ sourceNodeType: 'Scene', sourceNodeId: SCENE_ID, targetNodeType: 'District', targetNodeId: 'dist-1', type: 'IN_DISTRICT' })]);
     const plan = await exportContentPlan(PLAN_ID, 'desc');
     expect(plan.items[0].fields).toMatchObject({ district: 'Los Andes' });
-    // The resolved canonical name is folded into the revision seed (sorted).
-    expect(mockCapturedRevisionNames).toEqual(['Los Andes']);
+    // The resolved canonical name is folded into the revision seed, paired with
+    // its edge identity (not a bare sorted name list).
+    expect(mockCapturedRevisionNames).toHaveLength(1);
+    expect(mockCapturedRevisionNames[0]).toContain('Los Andes');
+    expect(mockCapturedRevisionNames[0]).toContain('IN_DISTRICT');
   });
 
   test('IN_DISTRICT revision seed tracks the resolved District name (rename would change it)', async () => {
@@ -185,7 +194,8 @@ describe('GraphExporter — mapping table coverage', () => {
     await exportContentPlan(PLAN_ID, 'desc');
     // A different resolved name → a different revision seed, so the approve gate
     // detects the base-node rename even with unchanged deltas/edges.
-    expect(mockCapturedRevisionNames).toEqual(['El Prado']);
+    expect(mockCapturedRevisionNames).toHaveLength(1);
+    expect(mockCapturedRevisionNames[0]).toContain('El Prado');
   });
 
   test('IN_DISTRICT with no resolvable District name falls back to the target nodeId in the seed', async () => {
@@ -195,7 +205,8 @@ describe('GraphExporter — mapping table coverage', () => {
     mockEdges.mockResolvedValue([makeEdge({ sourceNodeType: 'Scene', sourceNodeId: SCENE_ID, targetNodeType: 'District', targetNodeId: 'dist-3', type: 'IN_DISTRICT' })]);
     const plan = await exportContentPlan(PLAN_ID, 'desc');
     expect(plan.items[0].fields).toMatchObject({ district: 'dist-3' });
-    expect(mockCapturedRevisionNames).toEqual(['dist-3']);
+    expect(mockCapturedRevisionNames).toHaveLength(1);
+    expect(mockCapturedRevisionNames[0]).toContain('dist-3');
   });
 
   test('delta→delta edge emits a ContentLink (not a field write)', async () => {

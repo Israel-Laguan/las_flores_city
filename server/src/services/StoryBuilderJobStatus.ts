@@ -6,6 +6,7 @@
 // fail-path helpers (StoryBuilderSolidifyFail.ts), breaking their
 // previous circular import. Split out of StoryBuilderSolidify.ts.
 // ============================================================
+import { randomUUID } from 'node:crypto';
 import { getCache, casSetCache } from '@las-flores/infra';
 import type { SolidifyJobStatus } from './StoryBuilderOrchestrator.js';
 
@@ -39,6 +40,9 @@ function mergeStatus(
     planId,
     updatedAt: now,
     runToken: runToken ?? existing?.runToken,
+    // Fresh version on every write so a concurrent same-run write that lands
+    // between read and write is detectable by the CAS (snapshot guard).
+    version: randomUUID(),
   };
 
   if (merged.status === 'pending') {
@@ -77,32 +81,57 @@ export async function setJobStatus(
   status: Partial<SolidifyJobStatus>,
   runToken?: string,
 ): Promise<void> {
-  const now = new Date().toISOString();
   const cacheKey = `${JOB_CACHE_PREFIX}${planId}`;
-
-  // Read the current value once. The CAS primitive re-checks the token at write
-  // time, so a stale snapshot here is harmless — a stale run's write is still
-  // dropped by the token guard inside the script.
-  const existing = await getCache<SolidifyJobStatus>(cacheKey);
-
   const isInitializer = status.status === 'pending' && !!runToken;
-  // A fresh run is the first time this specific runToken owns the entry.
-  const isFreshRun = isInitializer && (!existing || existing.runToken !== runToken);
 
-  const merged = mergeStatus(existing, status, planId, now, runToken, isFreshRun);
+  const MAX_CAS_RETRIES = 4;
 
-  // Initializers always take ownership (unconditional). Non-initializers with a
-  // token are CAS-guarded (dropped if a newer run's token is cached). Legacy
-  // writes (no token) are best-effort overwrite.
-  const mode: 'init' | 'token' | 'legacy' = isInitializer
-    ? 'init'
-    : (runToken ? 'token' : 'legacy');
+  // Optimistic-concurrency loop. A *snapshot* conflict (same run, a newer
+  // concurrent write landed between our read and our write) is reported by the
+  // CAS as code 2; we re-read and retry so the later merge is applied on top of
+  // the newer entry rather than erasing it. A genuine owner-mismatch (different
+  // runToken) is code 0 and is dropped, not retried.
+  let attempt = 0;
+  while (true) {
+    const now = new Date().toISOString();
 
-  const ok = await casSetCache(cacheKey, merged, JOB_STATUS_TTL_SECONDS, runToken ?? '', mode);
-  if (!ok && mode === 'token') {
-    console.warn(
-      `[StoryBuilderJobStatus] Dropping stale status write for plan ${planId} ` +
-      `(token ${runToken} no longer owns the cache entry)`,
-    );
+    // Read the current value. The CAS primitive re-checks both the token and the
+    // snapshot version at write time, so a stale read here is safely retried.
+    const existing = await getCache<SolidifyJobStatus>(cacheKey);
+
+    const isFreshRun = isInitializer && (!existing || existing.runToken !== runToken);
+
+    const merged = mergeStatus(existing, status, planId, now, runToken, isFreshRun);
+
+    // Initializers always take ownership (unconditional). Non-initializers with a
+    // token are CAS-guarded (dropped if a newer run's token is cached). Legacy
+    // writes (no token) are best-effort overwrite.
+    const mode: 'init' | 'token' | 'legacy' = isInitializer
+      ? 'init'
+      : (runToken ? 'token' : 'legacy');
+
+    const expectedVersion = existing?.version ?? '';
+    const code = await casSetCache(cacheKey, merged, JOB_STATUS_TTL_SECONDS, runToken ?? '', mode, expectedVersion);
+
+    if (code === 1) return;                 // written
+    if (code === 0) {                       // owner mismatch (stale run) → drop
+      if (mode === 'token') {
+        console.warn(
+          `[StoryBuilderJobStatus] Dropping stale status write for plan ${planId} ` +
+          `(token ${runToken} no longer owns the cache entry)`,
+        );
+      }
+      return;
+    }
+    // code === 2: snapshot conflict → retry after a brief backoff.
+    attempt += 1;
+    if (attempt >= MAX_CAS_RETRIES) {
+      console.warn(
+        `[StoryBuilderJobStatus] Giving up on status write for plan ${planId} ` +
+        `(token ${runToken}) after ${MAX_CAS_RETRIES} snapshot-conflict retries`,
+      );
+      return;
+    }
+    await new Promise((r) => setTimeout(r, 5 * attempt));
   }
 }

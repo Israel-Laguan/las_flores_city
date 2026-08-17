@@ -3,14 +3,11 @@
 -- Adds a run_token column to store the CAS token persistently, so that
 -- resumed jobs can retrieve their ownership token even when the Redis
 -- cache is evicted.
-
-BEGIN;
+--
+-- The legacy-row backfill (assigning a token to pre-existing NULL rows)
+-- lives in 075_job_runs_run_token_backfill.sql, run as a NONTRANSACTIONAL
+-- migration: it commits the rewrite in bounded batches so a large
+-- job_runs history cannot hold row locks / keep the startup migration
+-- transaction open and time out intake-worker startup.
 
 ALTER TABLE job_runs ADD COLUMN IF NOT EXISTS run_token UUID;
-
--- Backfill a token for pre-existing rows so a cache-miss resume can still
--- retrieve a CAS token instead of silently bypassing the protection this
--- column exists to provide. Idempotent: only NULL rows are touched.
-UPDATE job_runs SET run_token = gen_random_uuid() WHERE run_token IS NULL;
-
-COMMIT;

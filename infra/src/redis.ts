@@ -166,30 +166,56 @@ export async function deleteCache(key: string): Promise<boolean> {
 //
 //   mode = 'init'   -> unconditional overwrite (initializers take ownership)
 //   mode = 'token'  -> only write when the existing value's `.runToken` equals
-//                      `runToken` (or no value exists); returns false WITHOUT
+//                      `runToken` (or no value exists); returns 0 WITHOUT
 //                      writing when the cached token differs, so a stale write
-//                      from a prior run is dropped
+//                      from a prior run is dropped. Returns 2 (instead of
+//                      writing) when the cached value's `.version` differs from
+//                      `expectedVersion`, so the caller can retry against the
+//                      newer snapshot instead of silently erasing data a
+//                      concurrent same-run write just persisted.
 //   mode = 'legacy' -> unconditional overwrite (no token guard)
+//
+// Return codes: 1 = written, 0 = dropped (owner mismatch), 2 = dropped
+// (snapshot/version conflict — caller should retry).
 const CAS_SET_CACHE_LUA = `
 local key = KEYS[1]
 local mode = ARGV[1]
 local token = ARGV[2]
 local value = ARGV[3]
 local ttl = ARGV[4]
+local expectedVersion = ARGV[5]
+
+local function doSet()
+  if ttl == '0' then
+    -- TTL 0 means "no expiry" — a plain SET (Redis rejects SET ... EX 0).
+    redis.call('SET', key, value)
+  else
+    redis.call('SET', key, value, 'EX', ttl)
+  end
+end
 
 if mode == 'legacy' or mode == 'init' then
-  redis.call('SET', key, value, 'EX', ttl)
+  doSet()
   return 1
 end
 
+-- mode == 'token'
 local current = redis.call('GET', key)
 if current then
   local ok, data = pcall(cjson.decode, current)
-  if ok and data.runToken and data.runToken ~= token then
-    return 0
+  if ok and type(data) == 'table' then
+    -- Ownership guard: a different run's token owns the entry → drop.
+    if data.runToken and data.runToken ~= token then
+      return 0
+    end
+    -- Snapshot guard: the entry changed since we read it → caller retries so a
+    -- stale merge cannot erase a newer same-run write (stage/publish/migration).
+    if expectedVersion ~= '' and data.version ~= expectedVersion then
+      return 2
+    end
   end
 end
-redis.call('SET', key, value, 'EX', ttl)
+doSet()
 return 1
 `;
 
@@ -199,7 +225,8 @@ export async function casSetCache(
   ttlSeconds: number,
   runToken: string,
   mode: 'init' | 'token' | 'legacy',
-): Promise<boolean> {
+  expectedVersion = '',
+): Promise<number> {
   try {
     const serialized = JSON.stringify(value);
     const result = (await getRedis().eval(
@@ -210,11 +237,12 @@ export async function casSetCache(
       runToken,
       serialized,
       String(ttlSeconds),
+      expectedVersion,
     )) as number;
-    return result === 1;
+    return result;
   } catch (error) {
     console.error('CAS cache set error:', error);
-    return false;
+    return 0;
   }
 }
 

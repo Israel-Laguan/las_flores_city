@@ -39,6 +39,7 @@ import {
   summarizeDeltasForPlan,
   buildPlanRevisionFromDeltasAndEdges,
   getPlanDeltaRevisionWithEdges,
+  nameValuedEdgeRevisionPart,
 } from '../../src/services/GraphDeltaService.js';
 import { getMergedView, getImpactAnalysis, countAllDeltas, detectCycles } from '../../src/services/GraphQueryService.js';
 
@@ -275,6 +276,32 @@ describe('GraphDeltaService — revision builders (deltas + edges + resolved nam
     );
   });
 
+  test('buildPlanRevisionFromDeltasAndEdges: swapping two name-valued edges is detected', () => {
+    // Two differently-named Districts with their IN_DISTRICT edges swapped. A
+    // bare sorted list of names ("North","South") would be identical, but the
+    // revision must fold each resolved name together with its edge identity so
+    // the approve gate rejects the stale export.
+    const edgeA: GraphDeltaEdge = { ...revEdge, sourceNodeId: 'scene-a', targetNodeId: 'dist-north' };
+    const edgeB: GraphDeltaEdge = { ...revEdge, sourceNodeId: 'scene-b', targetNodeId: 'dist-south' };
+
+    const swappedA = [
+      nameValuedEdgeRevisionPart(edgeA, 'North'),
+      nameValuedEdgeRevisionPart(edgeB, 'South'),
+    ].sort();
+    const swappedB = [
+      nameValuedEdgeRevisionPart(edgeA, 'South'),
+      nameValuedEdgeRevisionPart(edgeB, 'North'),
+    ].sort();
+
+    expect(buildPlanRevisionFromDeltasAndEdges([revDelta], [edgeA, edgeB], swappedA)).not.toBe(
+      buildPlanRevisionFromDeltasAndEdges([revDelta], [edgeA, edgeB], swappedB),
+    );
+    // And the unswapped case is stable.
+    expect(buildPlanRevisionFromDeltasAndEdges([revDelta], [edgeA, edgeB], swappedA)).toBe(
+      buildPlanRevisionFromDeltasAndEdges([revDelta], [edgeA, edgeB], swappedA),
+    );
+  });
+
   test('getPlanDeltaRevisionWithEdges folds resolved District names in a single transaction', async () => {
     mockEnabled.mockReturnValue(true);
     mockTx = {
@@ -296,9 +323,11 @@ describe('GraphDeltaService — revision builders (deltas + edges + resolved nam
 
     const rev = await getPlanDeltaRevisionWithEdges(REV_PLAN_ID);
     // Same snapshot (deltas + edge + resolved District name) → same revision.
-    expect(rev).toBe(buildPlanRevisionFromDeltasAndEdges([revDelta], [revEdge], ['Los Andes']));
+    const losPart = nameValuedEdgeRevisionPart(revEdge, 'Los Andes');
+    expect(rev).toBe(buildPlanRevisionFromDeltasAndEdges([revDelta], [revEdge], [losPart]));
     // A base District rename with unchanged deltas/edges flips the revision.
-    expect(rev).not.toBe(buildPlanRevisionFromDeltasAndEdges([revDelta], [revEdge], ['El Prado']));
+    const elPart = nameValuedEdgeRevisionPart(revEdge, 'El Prado');
+    expect(rev).not.toBe(buildPlanRevisionFromDeltasAndEdges([revDelta], [revEdge], [elPart]));
   });
 
   test('getPlanDeltaRevisionWithEdges: disabled returns the empty deltas+edges revision', async () => {
