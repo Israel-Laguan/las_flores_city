@@ -301,16 +301,35 @@ export async function resumeSolidify(planId: string, userId?: string): Promise<v
     await updateJobRun(run.id, { status: 'failed', error: 'Cannot resume: missing run_token' });
     // The polling endpoint reads `content_plans.status` whenever the job-status
     // cache is miss (e.g. evicted). Mark the plan terminal via the DB so the
-    // endpoint stops reporting a nonterminal `staging`/`migrating` status and
-    // the user can retry — but guard the write so it only flips the in-progress
-    // statuses this crashed run could have left behind. Because `getJobRun`
-    // returns the LATEST run, reaching here means this legacy run IS the latest
-    // (a newer active/completed run would have been returned instead), so the
-    // conditional update can never clobber a newer run's advanced/terminal state.
+    // endpoint stops reporting a nonterminal status and the user can retry.
+    //
+    // Two guards make this write safe:
+    //
+    //  1. Status guard: only the nonterminal statuses a crashed solidify run
+    //     could have left behind are flipped. `staged` and `migrated` ARE such
+    //     statuses: solidify commits those stages to `content_plans.status`
+    //     mid-pipeline, so a crash right after either commit strands the plan
+    //     there with no way forward (the retry route only accepts `failed`).
+    //     `verified` is excluded because it is a successful terminal state.
+    //
+    //  2. Ownership guard: `getJobRun` is only a snapshot, so a retry could
+    //     start a NEWER solidify run between that read and this write. The
+    //     status predicate alone is not enough — a newer run legitimately sets
+    //     `staging`/`migrating` again, and a stale write would clobber it. So
+    //     the update is bound to this legacy run still being the latest
+    //     solidify run for the plan; if a newer run exists, the subquery no
+    //     longer matches `run.id` and the write no-ops.
     await queryOLTP(
       `UPDATE content_plans SET status = 'failed', updated_at = NOW()
-       WHERE id = $1 AND status IN ('pending', 'staging', 'migrating', 'verifying')`,
-      [planId],
+       WHERE id = $1
+         AND status IN ('pending', 'staging', 'staged', 'migrating', 'migrated', 'verifying')
+         AND $2 = (
+           SELECT id FROM job_runs
+            WHERE plan_id = $1 AND job_type = 'solidify'
+            ORDER BY created_at DESC, id DESC
+            LIMIT 1
+         )`,
+      [planId, run.id],
     );
     return;
   }

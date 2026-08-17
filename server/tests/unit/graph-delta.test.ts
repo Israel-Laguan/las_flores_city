@@ -25,7 +25,6 @@ jest.mock('../../src/services/Neo4jClient.js', () => ({
 
 import { isNeo4jEnabled, runNeo4jQuery } from '../../src/services/Neo4jClient.js';
 import {
-  ensureGraphConstraints,
   upsertContentNode,
   upsertContentRelationship,
   countContentNodes,
