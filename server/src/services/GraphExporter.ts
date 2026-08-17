@@ -35,6 +35,7 @@ import { isNeo4jEnabled } from './Neo4jClient.js';
 import {
   getDeltasForPlan,
   getDeltaEdgesForPlan,
+  buildPlanRevisionFromDeltas,
 } from './GraphDeltaService.js';
 import { buildMergedRevision } from './GraphMerger.js';
 
@@ -181,18 +182,20 @@ function buildItemsAndIndex(
       ? existingSlugByKey.get(`${delta.nodeType}:${delta.nodeId}`)
       : undefined;
     // For UUID-backed MODIFY items the canonical graph seed never stores a `slug`
-    // field (only District does), so existingSlugByKey is empty and the item would
-    // otherwise fall through to the (possibly renamed) merged name and retarget a
-    // non-existent file path. Use the bulk-resolved canonical slug (from the
-    // content store) so the slug points at the EXISTING on-disk file; fall back to
-    // the merged node name otherwise.
+    // field (only District does), so existingSlugByKey is empty for them. Use the
+    // bulk-resolved canonical slug (from the content store) so the slug points at
+    // the EXISTING on-disk file and an entity-name edit does not retarget a
+    // non-existent path. When NO validated canonical slug is available (content
+    // store unreachable, or the entity is missing from it), block the update:
+    // falling back to the merged (possibly renamed) name could write to a path the
+    // author never intended and orphan the existing file. Blocking surfaces a
+    // clear GraphExportError that the orchestrator converts to PlanStatusError.
     if (delta.op === 'MODIFY' && !existingSlug && isUuid(delta.nodeId)) {
       existingSlug = canonicalSlugByKey.get(`${delta.nodeType}:${delta.nodeId}`);
       if (!existingSlug) {
-        const merged = revision.nodes.find(
-          (n) => n.nodeType === delta.nodeType && n.nodeId === delta.nodeId && n.name,
+        throw new GraphExportError(
+          `Cannot resolve the canonical on-disk slug for ${delta.nodeType} ${delta.nodeId} during export; refusing to retarget a possibly-renamed path. Run resync:graph so the content store and graph agree, then retry.`,
         );
-        if (merged) existingSlug = slugify(merged.name!);
       }
     }
     const item = buildItemForDelta(delta, existingSlug);
@@ -300,7 +303,13 @@ export async function exportContentPlan(
     items,
     links,
     status: 'proposed',
-    _meta: { plan_revision: freshUuid() },
+    // Content-addressed graph revision: derived from the plan's delta set (the
+    // exact set this export read), NOT a random UUID. This makes plan_revision a
+    // real, detectable revision identity — the approve gate re-reads the plan's
+    // deltas immediately before persisting plan_json and aborts if they changed,
+    // so a concurrent applyDelta can never leave plan_json pointing at a graph
+    // state whose newer deltas commitGraph later promotes.
+    _meta: { plan_revision: buildPlanRevisionFromDeltas(deltas) },
   } as ContentPlan;
 
   // Validate before returning — the materialize pipeline depends on a well-formed plan.

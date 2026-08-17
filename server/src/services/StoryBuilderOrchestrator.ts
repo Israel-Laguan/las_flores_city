@@ -17,7 +17,7 @@ import { PlanNotFoundError, PlanStatusError } from './errors.js';
 import { isNeo4jEnabled } from './Neo4jClient.js';
 import { detectGraphDrift } from './GraphMerger.js';
 import { exportContentPlan, GraphExportError } from './GraphExporter.js';
-import { getDeltasForPlan } from './GraphDeltaService.js';
+import { getDeltasForPlan, getPlanDeltaRevision } from './GraphDeltaService.js';
 import {
   startJobRun,
   updateJobRun,
@@ -158,6 +158,29 @@ export async function approveAndSolidifyPlan(planId: string, userId?: string): P
     }
   }
 
+  // M28: bind the export to the graph revision it was built from. A concurrent
+  // applyDelta/applyDeltaEdge (Neo4j) between the export read above and this
+  // re-check would change the plan's delta set; abort the approve so plan_json is
+  // never persisted against a graph the exporter did not actually read, and whose
+  // newer deltas commitGraph would later promote past it. Kept OUTSIDE the OLTP
+  // transaction to honor the design goal that Neo4j latency never holds the plan
+  // advisory/row lock — this is one lightweight delta-list read, not the export.
+  if (exported) {
+    let nowRevision: string;
+    try {
+      nowRevision = await getPlanDeltaRevision(planId);
+    } catch (err) {
+      throw new PlanStatusError(
+        `Could not re-validate the graph revision before persisting; approve aborted (${(err as Error).message})`,
+      );
+    }
+    if (nowRevision !== exported._meta?.plan_revision) {
+      throw new PlanStatusError(
+        'Graph changed during approve (a new delta was detected after export); please review and retry.',
+      );
+    }
+  }
+
   await withOLTPTransaction(async (client) => {
     await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [planId]);
 
@@ -230,19 +253,28 @@ export async function resumeSolidify(planId: string, userId?: string): Promise<v
   const run = await getJobRun(planId, 'solidify');
   if (!run || run.status !== 'resumable') return;
 
+  // Preserve the ownership token issued by the original approve-and-solidify run
+  // (carried in the cached job status) so resumes and retries observe the same
+  // compare-and-set protocol as the initial run — instead of mixing in the
+  // job-run id, which the CAS would treat as a foreign/stale token. If the cache
+  // was evicted (or the plan is resumable with no cached status), writes fall
+  // back to the legacy best-effort path (no token), which is safe for a resume.
+  const cachedStatus = await getSolidifyJobStatus(planId);
+  const runToken = cachedStatus?.runToken;
+
   const adv = await nextAttempt(planId, 'solidify');
   if (adv.exhausted) {
     await updateJobRun(run.id, { status: 'failed', error: 'Attempts exhausted during resume' });
-    await setJobStatus(planId, { status: 'failed', error: 'Attempts exhausted during resume' }, run.id);
+    await setJobStatus(planId, { status: 'failed', error: 'Attempts exhausted during resume' }, runToken);
     return;
   }
   if (adv.delayMs && adv.delayMs > 0) {
     setTimeout(() => {
-      runSolidify(planId, userId, run.id).catch((err) => {
+      runSolidify(planId, userId, run.id, runToken).catch((err) => {
         console.error(`[story-builder] Resumed runSolidify failed for ${planId}:`, err);
       });
     }, adv.delayMs).unref?.();
     return;
   }
-  await runSolidify(planId, userId, run.id);
+  await runSolidify(planId, userId, run.id, runToken);
 }

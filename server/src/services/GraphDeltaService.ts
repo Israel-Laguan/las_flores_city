@@ -19,6 +19,7 @@ import {
   type GraphDelta,
   type GraphDeltaEdge,
 } from '@las-flores/shared';
+import { createHash } from 'node:crypto';
 import { isNeo4jEnabled, runNeo4jQuery } from './Neo4jClient.js';
 import type { ManagedTransaction } from 'neo4j-driver';
 
@@ -150,6 +151,38 @@ export async function getDeltasForPlan(planId: string, tx?: ManagedTransaction):
     tx,
   );
   return rows.map((r) => toGraphDelta(r.d));
+}
+
+// Derive a deterministic RFC-4122 v5-style UUID from an arbitrary seed string.
+// Used to turn a plan's delta set into a stable, content-addressed revision
+// token that is still schema-valid (`plan_revision` requires a UUID shape).
+function deterministicUuid(seed: string): string {
+  const hash = createHash('sha256').update(seed).digest();
+  const b = Buffer.alloc(16);
+  hash.copy(b, 0, 0, 16);
+  b[6] = (b.readUInt8(6) & 0x0f) | 0x50; // version 5
+  b[8] = (b.readUInt8(8) & 0x3f) | 0x80; // variant 10xx
+  const hex = b.toString('hex');
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
+
+/**
+ * Content-addressed revision token for a plan's delta set. Stable for an
+ * unchanged set of deltas; changes whenever any delta is added, removed, or
+ * edited. Bound to the exported plan via `_meta.plan_revision` so the approve
+ * gate can re-validate that the graph has not changed since export (and detect
+ * when `commitGraph` later promotes a different, newer delta set).
+ */
+export function buildPlanRevisionFromDeltas(deltas: GraphDelta[]): string {
+  const parts = deltas
+    .map((d) => `${d.op}|${d.nodeType}|${d.nodeId}|${d.id}|${JSON.stringify(d.fields ?? {})}`)
+    .sort();
+  return deterministicUuid(parts.join('\u0000'));
+}
+
+/** Current content-addressed revision of a plan's delta set (Neo4j read). */
+export async function getPlanDeltaRevision(planId: string): Promise<string> {
+  return buildPlanRevisionFromDeltas(await getDeltasForPlan(planId));
 }
 
 /**

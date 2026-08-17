@@ -28,23 +28,35 @@ jest.mock('../../src/services/GraphMerger.js', () => ({
 jest.mock('../../src/services/GraphDeltaService.js', () => ({
   getDeltasForPlan: jest.fn(async (): Promise<GraphDelta[]> => []),
   getDeltaEdgesForPlan: jest.fn(async (): Promise<GraphDeltaEdge[]> => []),
+  buildPlanRevisionFromDeltas: jest.fn(() => REVISION_ID),
+}));
+
+// GraphExporter resolves canonical on-disk slugs for UUID-backed MODIFY deltas
+// via a bulk OLTP content-store lookup (queryOLTP). Mock it so unit tests do not
+// open a real DB connection and so UUID MODIFY deltas resolve a canonical slug
+// instead of triggering the new "no canonical slug → block" GraphExportError.
+jest.mock('@las-flores/infra', () => ({
+  queryOLTP: jest.fn(),
 }));
 
 import { isNeo4jEnabled } from '../../src/services/Neo4jClient.js';
 import { buildMergedRevision } from '../../src/services/GraphMerger.js';
 import { getDeltasForPlan, getDeltaEdgesForPlan } from '../../src/services/GraphDeltaService.js';
 import { exportContentPlan, GraphExportError } from '../../src/services/GraphExporter.js';
+import { queryOLTP } from '@las-flores/infra';
 import { ContentPlanSchema } from '@las-flores/shared';
 
 const mockEnabled = isNeo4jEnabled as unknown as Mock<() => boolean>;
 const mockRevision = buildMergedRevision as unknown as Mock<(p: string) => Promise<GraphMergedRevision>>;
 const mockDeltas = getDeltasForPlan as unknown as Mock<(p: string) => Promise<GraphDelta[]>>;
 const mockEdges = getDeltaEdgesForPlan as unknown as Mock<(p: string) => Promise<GraphDeltaEdge[]>>;
+const mockQueryOLTP = queryOLTP as unknown as Mock<(sql: string, params: unknown[]) => Promise<{ rows: Array<{ id: string; name: string }> }>>;
 
 const PLAN_ID = 'a1000000-e29b-41d4-a716-446655440001';
 const CHAR_ID = 'a1000000-e29b-41d4-a716-446655440011';
 const SCENE_ID = 'a1000000-e29b-41d4-a716-446655440012';
 const DIALOGUE_ID = 'a1000000-e29b-41d4-a716-446655440020';
+const REVISION_ID = 'b1000000-e29b-41d4-a716-446655440001';
 
 function makeDelta(overrides: Partial<GraphDelta>): GraphDelta {
   return GraphDeltaSchema.parse({
@@ -79,6 +91,13 @@ beforeEach(() => {
   mockDeltas.mockResolvedValue([]);
   mockEdges.mockReset();
   mockEdges.mockResolvedValue([]);
+  // Default: any UUID-backed MODIFY delta's canonical slug lookup resolves a row
+  // (so the exporter uses the validated canonical slug). Test overrides to [].
+  mockQueryOLTP.mockReset();
+  mockQueryOLTP.mockImplementation(async (_sql: string, params: unknown[]) => {
+    const ids = params.flat() as string[];
+    return { rows: ids.map((id) => ({ id: String(id), name: `Canonical ${id}` })) };
+  });
 });
 
 describe('GraphExporter — mapping table coverage', () => {
@@ -175,6 +194,13 @@ describe('GraphExporter — mapping table coverage', () => {
 describe('GraphExporter — error cases', () => {
   test('DELETE delta present → throws GraphExportError (blocks at approve)', async () => {
     mockDeltas.mockResolvedValue([makeDelta({ op: 'DELETE' })]);
+    await expect(exportContentPlan(PLAN_ID, 'desc')).rejects.toBeInstanceOf(GraphExportError);
+  });
+
+  test('MODIFY UUID delta with no resolvable canonical slug → throws GraphExportError (blocks retargeting a renamed path)', async () => {
+    mockQueryOLTP.mockResolvedValue({ rows: [] });
+    mockRevision.mockResolvedValue({ planId: PLAN_ID, nodes: [], edges: [], deltaEdges: [] });
+    mockDeltas.mockResolvedValue([makeDelta({ op: 'MODIFY', fields: { name: 'Something Completely Different', personality: 'brave' } })]);
     await expect(exportContentPlan(PLAN_ID, 'desc')).rejects.toBeInstanceOf(GraphExportError);
   });
 
