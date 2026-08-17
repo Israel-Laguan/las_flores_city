@@ -54,11 +54,19 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  if (neo4jLive) {
-    await cleanupNeo4j();
-    await deleteSourceRows();
+  try {
+    if (neo4jLive) {
+      await cleanupNeo4j();
+    }
+  } finally {
+    try {
+      if (neo4jLive) {
+        await deleteSourceRows();
+      }
+    } finally {
+      await closeNeo4j();
+    }
   }
-  await closeNeo4j();
 });
 
 // Reset plan deltas between tests so each test is self-contained.

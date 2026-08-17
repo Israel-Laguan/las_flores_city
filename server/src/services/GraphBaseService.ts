@@ -168,14 +168,33 @@ const EDGE_KEY_RE = /^[A-Z][A-Z_0-9]*$/;
  */
 export async function pruneOrphanContentNodes(keepKeys: Set<string>): Promise<number> {
   if (!isNeo4jEnabled()) return 0;
-  const rows = await runNeo4jQuery<{ key: string }>(
-    `MATCH (c:Content) WHERE c.planId IS null RETURN c.key AS key`,
-  );
-  const orphanKeys = rows.map((r) => r.key).filter((k) => !keepKeys.has(k));
-  for (const key of orphanKeys) {
-    await runNeo4jQuery(`MATCH (c:Content { key: $key }) DETACH DELETE c`, { key });
+  // Evidence nodes (isEvidence=true) are persisted critique excerpts, not part of
+  // the canonical base graph, so they must survive an orphan prune even though
+  // they match the `planId IS null` predicate.
+  const baseWhere = `c.planId IS null AND (c.isEvidence IS NULL OR c.isEvidence = false)`;
+  if (keepKeys.size === 0) {
+    const countRows = await runNeo4jQuery<{ count: unknown }>(
+      `MATCH (c:Content) WHERE ${baseWhere} RETURN count(c) AS count`,
+    );
+    const count = countRows[0]?.count != null ? Number(countRows[0].count) : 0;
+    if (count > 0) {
+      await runNeo4jQuery(`MATCH (c:Content) WHERE ${baseWhere} DETACH DELETE c`);
+    }
+    return count;
   }
-  return orphanKeys.length;
+  const keys = [...keepKeys];
+  const countRows = await runNeo4jQuery<{ count: unknown }>(
+    `MATCH (c:Content) WHERE ${baseWhere} AND NOT c.key IN $keys RETURN count(c) AS count`,
+    { keys },
+  );
+  const count = countRows[0]?.count != null ? Number(countRows[0].count) : 0;
+  if (count > 0) {
+    await runNeo4jQuery(
+      `MATCH (c:Content) WHERE ${baseWhere} AND NOT c.key IN $keys DETACH DELETE c`,
+      { keys },
+    );
+  }
+  return count;
 }
 
 /**
@@ -188,20 +207,31 @@ export async function pruneOrphanContentEdges(keepEdgeKeys: Set<string>): Promis
   const rows = await runNeo4jQuery<{ st: string; sn: string; tt: string; tn: string; type: string }>(
     `MATCH (a:Content)-[r]->(b:Content)
      WHERE a.planId IS null AND b.planId IS null
+       AND (a.isEvidence IS NULL OR a.isEvidence = false)
+       AND (b.isEvidence IS NULL OR b.isEvidence = false)
      RETURN a.nodeType AS st, a.nodeId AS sn, type(r) AS type, b.nodeType AS tt, b.nodeId AS tn`,
   );
-  let deleted = 0;
+  // Group orphan rows by relationship type so each type is removed in a single
+  // UNWIND delete, instead of one round trip per orphan edge.
+  const orphanByType = new Map<string, Array<{ st: string; sn: string; tt: string; tn: string }>>();
   for (const row of rows) {
     if (!EDGE_KEY_RE.test(row.type)) continue;
     const key = `${row.st}:${row.sn}->${row.tt}:${row.tn}[${row.type}]`;
-    if (!keepEdgeKeys.has(key)) {
-      await runNeo4jQuery(
-        `MATCH (a:Content { nodeType: $st, nodeId: $sn })-[r:${row.type}]->(b:Content { nodeType: $tt, nodeId: $tn })
-         DELETE r`,
-        { st: row.st, sn: row.sn, tt: row.tt, tn: row.tn },
-      );
-      deleted++;
-    }
+    if (keepEdgeKeys.has(key)) continue;
+    const list = orphanByType.get(row.type) ?? [];
+    list.push({ st: row.st, sn: row.sn, tt: row.tt, tn: row.tn });
+    orphanByType.set(row.type, list);
+  }
+  let deleted = 0;
+  for (const [type, list] of orphanByType) {
+    if (list.length === 0) continue;
+    await runNeo4jQuery(
+      `UNWIND $rows AS row
+       MATCH (a:Content { nodeType: row.st, nodeId: row.sn })-[r:${type}]->(b:Content { nodeType: row.tt, nodeId: row.tn })
+       DELETE r`,
+      { rows: list },
+    );
+    deleted += list.length;
   }
   return deleted;
 }

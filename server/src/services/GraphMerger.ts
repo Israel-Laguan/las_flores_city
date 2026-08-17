@@ -19,6 +19,7 @@ import {
   getDeltasForPlan,
   getDeltaEdgesForPlan,
   clearDeltasForPlan,
+  normalizeKeyComponent,
 } from './GraphDeltaService.js';
 import { gatherBaseGraphData } from './GraphSeedSource.js';
 import {
@@ -149,7 +150,7 @@ export async function commitGraph(planId: string): Promise<boolean> {
   // Serialize with graph resync so a full re-derive and a plan promotion cannot
   // interleave writes to the same canonical nodes.
   return withGraphWriteLock(async () => {
-    const normalizedPlanId = planId.toLowerCase();
+    const normalizedPlanId = normalizeKeyComponent(planId);
     try {
       await runNeo4jTransaction(async (tx) => {
       const deltas = await getDeltasForPlan(normalizedPlanId, tx);
@@ -208,8 +209,9 @@ export async function commitGraph(planId: string): Promise<boolean> {
         if (mapping) {
           await tx.run(
             `MATCH (a:Content { nodeType: $st, nodeId: $sn })-[r:${edge.type}]->(x:Content)
+             WHERE NOT (x.nodeType = $tt AND x.nodeId = $tn)
              DELETE r`,
-            { st: edge.sourceNodeType, sn: edge.sourceNodeId },
+            { st: edge.sourceNodeType, sn: edge.sourceNodeId, tt: edge.targetNodeType, tn: edge.targetNodeId },
           );
         }
         await tx.run(

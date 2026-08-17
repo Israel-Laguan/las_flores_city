@@ -148,7 +148,8 @@ adminStoryBuilderPlansRouter.put('/plans/:id', async (req, res) => {
       let deltas;
       try {
         deltas = await getDeltasForPlan(id);
-      } catch {
+      } catch (err) {
+        console.warn('[story-builder] delta lookup failed for plan', id, (err as Error).message);
         res.status(503).json({ success: false, error: 'graph authoring service unavailable', timestamp: new Date().toISOString() });
         return;
       }
