@@ -306,11 +306,12 @@ export async function resumeSolidify(planId: string, userId?: string): Promise<v
     // Two guards make this write safe:
     //
     //  1. Status guard: only the nonterminal statuses a crashed solidify run
-    //     could have left behind are flipped. `staged` and `migrated` ARE such
-    //     statuses: solidify commits those stages to `content_plans.status`
-    //     mid-pipeline, so a crash right after either commit strands the plan
-    //     there with no way forward (the retry route only accepts `failed`).
-    //     `verified` is excluded because it is a successful terminal state.
+    //     could have left behind are flipped (`staged` is such a status: solidify
+    //     commits it to `content_plans.status` mid-pipeline, so a crash right
+    //     after that commit strands the plan with no way forward since the retry
+    //     route only accepts `failed`). `migrated` is deliberately NOT included
+    //     here (see note below). `verified` is excluded because it is a
+    //     successful terminal state.
     //
     //  2. Ownership guard: `getJobRun` is only a snapshot, so a retry could
     //     start a NEWER solidify run between that read and this write. The
@@ -319,18 +320,36 @@ export async function resumeSolidify(planId: string, userId?: string): Promise<v
     //     the update is bound to this legacy run still being the latest
     //     solidify run for the plan; if a newer run exists, the subquery no
     //     longer matches `run.id` and the write no-ops.
-    await queryOLTP(
-      `UPDATE content_plans SET status = 'failed', updated_at = NOW()
-       WHERE id = $1
-         AND status IN ('pending', 'staging', 'staged', 'migrating', 'migrated', 'verifying')
-         AND $2 = (
-           SELECT id FROM job_runs
-            WHERE plan_id = $1 AND job_type = 'solidify'
-            ORDER BY created_at DESC, id DESC
-            LIMIT 1
-         )`,
-      [planId, run.id],
-    );
+    // A `migrated` plan is left by a run that *completed* the solidify
+    // migration step, or by a manual/independent migration. It is a valid
+    // nonterminal state: a completed migration that has not yet been verified
+    // (`verifying`/`verified`) is not "stranded" the way a `staging`-mid-crash
+    // is, and a manual migration that finished while an older legacy resumable
+    // run lingered must NOT be flipped back to `failed` (that would block
+    // `/verify`). So `migrated` is deliberately excluded here — coordinate with
+    // the migration job lifecycle before adding it back.
+    //
+    // To close the snapshot race from issue 3, take the plan row lock FIRST
+    // inside a transaction. `approveAndSolidifyPlan` (which starts a newer run
+    // and sets the plan status) also locks this row `FOR UPDATE`, so the two
+    // serialize: the ownership subquery below can only run after we hold the
+    // lock, guaranteeing it observes any newer run that has already committed
+    // and making the write no-op instead of clobbering the newer run.
+    await withOLTPTransaction(async (client) => {
+      await client.query('SELECT 1 FROM content_plans WHERE id = $1 FOR UPDATE', [planId]);
+      await client.query(
+        `UPDATE content_plans SET status = 'failed', updated_at = NOW()
+         WHERE id = $1
+           AND status IN ('pending', 'staging', 'staged', 'migrating', 'verifying')
+           AND $2 = (
+             SELECT id FROM job_runs
+              WHERE plan_id = $1 AND job_type = 'solidify'
+              ORDER BY created_at DESC, id DESC
+              LIMIT 1
+           )`,
+        [planId, run.id],
+      );
+    });
     return;
   }
 
