@@ -208,6 +208,17 @@ if current then
     if data.runToken and data.runToken ~= token then
       return 0
     end
+    -- Legacy entry (pre-version): it carries no version field and cannot
+    -- participate in snapshot conflict detection. Adopt it atomically so the
+    -- first same-token writer upgrades it to a versioned entry rather than the
+    -- snapshot guard being silently disabled for every subsequent writer
+    -- (which would let concurrent same-token writers clobber each other's
+    -- stage/publish/migration data for the full TTL). The expectedVersion here
+    -- is a non-empty sentinel, distinct from a true cache miss ('').
+    if expectedVersion == '\0' and (not data.version or data.version == '') then
+      doSet()
+      return 1
+    end
     -- Snapshot guard: the entry changed since we read it → caller retries so a
     -- stale merge cannot erase a newer same-run write (stage/publish/migration).
     if expectedVersion ~= '' and data.version ~= expectedVersion then

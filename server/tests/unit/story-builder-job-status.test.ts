@@ -13,7 +13,7 @@ jest.mock('@las-flores/infra', () => ({
   casSetCache: jest.fn(),
 }));
 
-import { setJobStatus } from '../../src/services/StoryBuilderJobStatus.js';
+import { setJobStatus, MAX_CAS_RETRIES } from '../../src/services/StoryBuilderJobStatus.js';
 import { getCache, casSetCache } from '@las-flores/infra';
 
 const mockGetCache = getCache as jest.MockedFunction<typeof getCache>;
@@ -51,7 +51,7 @@ describe('StoryBuilderJobStatus.setJobStatus — version CAS', () => {
     mockGetCache.mockResolvedValue(EXISTING);
     mockCas.mockResolvedValue(2);
     await setJobStatus('p0000000-0000-0000-0000-000000000001', { status: 'staging' }, 'mine');
-    expect(mockCas.mock.calls.length).toBeGreaterThanOrEqual(4);
+    expect(mockCas.mock.calls.length).toBe(MAX_CAS_RETRIES);
   });
 
   test('pending initializer writes unconditionally (init mode)', async () => {

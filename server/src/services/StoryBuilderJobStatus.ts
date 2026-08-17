@@ -14,6 +14,32 @@ export const JOB_CACHE_PREFIX = 'story-builder:job:';
 export const JOB_STATUS_TTL_SECONDS = 1800;
 
 /**
+ * Bounded snapshot-conflict retry budget for `setJobStatus`. Exported so tests
+ * assert against the implementation's budget instead of hardcoding a literal
+ * that silently diverges when this changes.
+ */
+export const MAX_CAS_RETRIES = 4;
+
+/**
+ * Pipeline ordinal for a job status. Used so a snapshot-conflict retry cannot
+ * regress the cached status by reapplying an older intermediate `status` over a
+ * newer snapshot: the merge always keeps the further-along status while still
+ * applying the patch's non-status fields (stage/publish/migration/etc.).
+ */
+const STATUS_ORDER: SolidifyJobStatus['status'][] = [
+  'pending',
+  'staging',
+  'migrating',
+  'verifying',
+  'verified',
+  'failed',
+];
+function statusOrdinal(s: SolidifyJobStatus['status']): number {
+  const i = STATUS_ORDER.indexOf(s);
+  return i === -1 ? 0 : i;
+}
+
+/**
  * Merge a partial status update onto the existing cached status.
  *
  * `isFreshRun` is true only for an initializer whose `runToken` is not already
@@ -30,12 +56,22 @@ function mergeStatus(
   runToken: string | undefined,
   isFreshRun: boolean,
 ): SolidifyJobStatus {
+  // On a snapshot-conflict retry, `status.status` is the patch's own (possibly
+  // older) intermediate status, while `existing` is the newer snapshot the retry
+  // re-read. Keep the further-along status so the retry merges the patch's
+  // non-status fields on top of the newer status instead of regressing it.
+  const patchStatus = status.status ?? existing?.status ?? 'pending';
+  const baseStatus = existing?.status ?? 'pending';
+  const mergedStatus = statusOrdinal(patchStatus) >= statusOrdinal(baseStatus)
+    ? patchStatus
+    : baseStatus;
+
   const merged: SolidifyJobStatus = {
     ...existing,
     ...Object.fromEntries(
       Object.entries(status).filter(([, v]) => v !== undefined),
     ),
-    status: status.status ?? existing?.status ?? 'pending',
+    status: mergedStatus,
     startedAt: isFreshRun ? now : (existing?.startedAt ?? now),
     planId,
     updatedAt: now,
@@ -84,8 +120,6 @@ export async function setJobStatus(
   const cacheKey = `${JOB_CACHE_PREFIX}${planId}`;
   const isInitializer = status.status === 'pending' && !!runToken;
 
-  const MAX_CAS_RETRIES = 4;
-
   // Optimistic-concurrency loop. A *snapshot* conflict (same run, a newer
   // concurrent write landed between our read and our write) is reported by the
   // CAS as code 2; we re-read and retry so the later merge is applied on top of
@@ -110,7 +144,18 @@ export async function setJobStatus(
       ? 'init'
       : (runToken ? 'token' : 'legacy');
 
-    const expectedVersion = existing?.version ?? '';
+    // Distinguish a true cache miss from a present-but-unversioned (legacy)
+    // entry. A miss uses '' so the snapshot guard stays OFF and the first write
+    // succeeds unconditionally. A legacy entry (no `version` field, still within
+    // the 30-minute TTL) uses the '\0' sentinel: the redis CAS recognizes it as a
+    // legacy entry and adopts it atomically, instead of disabling the snapshot
+    // guard for every subsequent same-token writer (which would let two such
+    // writers clobber each other's stage/publish/migration data). A versioned
+    // entry passes its real version so concurrent same-run writes conflict and
+    // retry.
+    const expectedVersion = existing
+      ? (existing.version ?? '\0')
+      : '';
     const code = await casSetCache(cacheKey, merged, JOB_STATUS_TTL_SECONDS, runToken ?? '', mode, expectedVersion);
 
     if (code === 1) return;                 // written

@@ -5,32 +5,14 @@
 -- CAS ownership token instead of silently bypassing the protection the column
 -- exists to provide.
 --
--- Runs as NONTRANSACTIONAL (autocommit) so each bounded batch commits
--- independently: an unbounded `UPDATE ... WHERE run_token IS NULL` would
--- rewrite and row-lock every legacy run inside the startup migration
--- transaction and could time out intake-worker startup on a large history.
--- Idempotent: only NULL rows are touched, so a partial run resumes cleanly.
+-- Runs as NONTRANSACTIONAL (autocommit) so it does not sit inside the startup
+-- migration transaction. Idempotent: only NULL rows are touched, so a partial
+-- run resumes cleanly.
+--
+-- NOTE: This file is executed by migrate.ts as a SINGLE multi-statement query
+-- in autocommit mode. A PL/pgSQL procedure that issues its own COMMIT inside
+-- that implicit transaction raises `invalid transaction termination`, so we do
+-- not use a procedure with COMMIT here. A single bounded UPDATE is sufficient
+-- for a one-time backfill of legacy NULL tokens.
 
-CREATE OR REPLACE PROCEDURE backfill_job_runs_run_token()
-LANGUAGE plpgsql
-AS $$
-DECLARE
-  batch_size INT := 1000;
-  updated INT;
-BEGIN
-  LOOP
-    WITH batch AS (
-      SELECT ctid FROM job_runs WHERE run_token IS NULL LIMIT batch_size
-    )
-    UPDATE job_runs SET run_token = gen_random_uuid()
-    FROM batch
-    WHERE job_runs.ctid = batch.ctid;
-    GET DIAGNOSTICS updated = ROW_COUNT;
-    COMMIT;
-    EXIT WHEN updated = 0;
-  END LOOP;
-END;
-$$;
-
-CALL backfill_job_runs_run_token();
-DROP PROCEDURE IF EXISTS backfill_job_runs_run_token();
+UPDATE job_runs SET run_token = gen_random_uuid() WHERE run_token IS NULL;

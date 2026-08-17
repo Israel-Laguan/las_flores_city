@@ -219,7 +219,14 @@ export function resolveEdgeTargetNameValue(
  * `district` fields are stale.
  */
 export function nameValuedEdgeRevisionPart(e: GraphDeltaEdge, resolvedName: string): string {
-  return `${e.sourceNodeType}|${e.sourceNodeId}|${e.targetNodeType}|${e.targetNodeId}|${e.type}|${resolvedName}`;
+  return JSON.stringify([
+    e.sourceNodeType,
+    e.sourceNodeId,
+    e.targetNodeType,
+    e.targetNodeId,
+    e.type,
+    resolvedName,
+  ]);
 }
 
 /**
