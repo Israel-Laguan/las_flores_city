@@ -36,10 +36,13 @@ import {
   getDeltasForPlan,
   getDeltaEdgesForPlan,
   buildPlanRevisionFromDeltasAndEdges,
+  isNameValuedEdge,
+  resolveEdgeTargetNameValue,
 } from './GraphDeltaService.js';
 import { buildMergedRevision } from './GraphMerger.js';
 import { resolveContentDir } from './StoryBuilderLore.js';
 import fs from 'node:fs/promises';
+import path from 'node:path';
 import * as yaml from 'js-yaml';
 import { glob } from 'glob';
 
@@ -119,7 +122,12 @@ async function resolveLocationSlugs(
 
       const nodeId = String(data.id).toLowerCase();
       if (idSet.has(nodeId)) {
-        const slug = slugify(data.name);
+        // The canonical on-disk slug is the Location's directory name (the content
+        // layout nests each Location under `locations/<slug>/`). A manually chosen
+        // or accented `name` slugifies differently from the directory, so deriving
+        // the slug from `name` would target a non-existent path; use the real
+        // directory instead.
+        const slug = path.basename(path.dirname(file));
         if (slug.length > 0) {
           result.set(`Location:${data.id}`, slug);
         }
@@ -192,9 +200,16 @@ function buildItemForDelta(delta: GraphDelta, existingSlug?: string): ContentPla
   const name = (typeof fields.name === 'string' && fields.name.length > 0)
     ? fields.name
     : slugify(contentType);
-  const slug = typeof fields.slug === 'string' && /^[a-z0-9_]+$/.test(fields.slug)
-    ? fields.slug
-    : (isUuid(delta.nodeId) ? existingSlug : delta.nodeId);
+  // For a UUID-backed MODIFY the validated canonical slug (existingSlug) MUST win:
+  // a supplied fields.slug could point at a renamed path and orphan the existing
+  // file. ADD / other operations keep their previous precedence (a supplied valid
+  // slug, then the UUID-derived slug, then the nodeId).
+  const uuidModify = delta.op === 'MODIFY' && isUuid(delta.nodeId);
+  const slug = (uuidModify && existingSlug)
+    ? existingSlug
+    : (typeof fields.slug === 'string' && /^[a-z0-9_]+$/.test(fields.slug)
+      ? fields.slug
+      : (isUuid(delta.nodeId) ? existingSlug : delta.nodeId));
   const slugifiedName = slugify(name);
   const finalSlug = slug
     ?? (slugifiedName
@@ -318,7 +333,7 @@ function resolveEdgeLinks(
     } else {
       // delta→canonical: write the mapped field value directly into the source item.
       const value = mapping.value === 'name'
-        ? (nameLookup.get(targetKey) ?? edge.targetNodeId)
+        ? resolveEdgeTargetNameValue(edge, nameLookup)
         : edge.targetNodeId;
       sourceItem.fields = { ...sourceItem.fields, [mapping.field]: value };
     }
@@ -360,6 +375,16 @@ export async function exportContentPlan(
   const { items, deltaItemId } = buildItemsAndIndex(deltas, revision, canonicalSlugByKey);
   const links = resolveEdgeLinks(deltaEdges, deltaItemId, items, nameLookup);
 
+  // The revision must observe the exact canonical VALUES this export folds into
+  // `sourceItem.fields` for name-valued (IN_DISTRICT) edges — otherwise a base
+  // District rename with unchanged deltas/edges would leave plan_json stale while
+  // the approve revalidation still matches. Delivered to the builder sorted and
+  // identical to what resolveEdgeLinks wrote (same resolver + fallback).
+  const resolvedTargetNames = deltaEdges
+    .filter(isNameValuedEdge)
+    .map((e) => resolveEdgeTargetNameValue(e, nameLookup))
+    .sort();
+
   const plan: ContentPlan = {
     id: planId,
     description,
@@ -369,11 +394,12 @@ export async function exportContentPlan(
     // Content-addressed graph revision: derived from the plan's delta set AND
     // delta edges (the exact set this export read), NOT a random UUID. This makes
     // plan_revision a real, detectable revision identity that includes both
-    // nodes and relationships — the approve gate re-reads the plan's deltas and
-    // edges immediately before persisting plan_json and aborts if they changed,
-    // so a concurrent applyDelta/applyDeltaEdge can never leave plan_json pointing
+    // nodes, relationships, and the resolved canonical names for name-valued
+    // edges — the approve gate re-reads all three immediately before persisting
+    // plan_json and aborts if they changed, so a concurrent applyDelta, an
+    // applied edge, or a base-node rename can never leave plan_json pointing
     // at a graph state whose newer deltas/edges commitGraph later promotes.
-    _meta: { plan_revision: buildPlanRevisionFromDeltasAndEdges(deltas, deltaEdges) },
+    _meta: { plan_revision: buildPlanRevisionFromDeltasAndEdges(deltas, deltaEdges, resolvedTargetNames) },
   } as ContentPlan;
 
   // Validate before returning — the materialize pipeline depends on a well-formed plan.

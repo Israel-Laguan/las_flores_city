@@ -6,10 +6,51 @@
 // fail-path helpers (StoryBuilderSolidifyFail.ts), breaking their
 // previous circular import. Split out of StoryBuilderSolidify.ts.
 // ============================================================
-import { getRedis, getCache, setCache } from '@las-flores/infra';
+import { getCache, casSetCache } from '@las-flores/infra';
 import type { SolidifyJobStatus } from './StoryBuilderOrchestrator.js';
 
 export const JOB_CACHE_PREFIX = 'story-builder:job:';
+export const JOB_STATUS_TTL_SECONDS = 1800;
+
+/**
+ * Merge a partial status update onto the existing cached status.
+ *
+ * `isFreshRun` is true only for an initializer whose `runToken` is not already
+ * the cached owner: a fresh run resets `startedAt` to now, while a re-entry of
+ * the SAME run (same token) preserves the original start time. A `pending`
+ * status always clears the per-run fields from any prior run so a retry starts
+ * clean rather than inheriting a previous attempt's progress.
+ */
+function mergeStatus(
+  existing: SolidifyJobStatus | null,
+  status: Partial<SolidifyJobStatus>,
+  planId: string,
+  now: string,
+  runToken: string | undefined,
+  isFreshRun: boolean,
+): SolidifyJobStatus {
+  const merged: SolidifyJobStatus = {
+    ...existing,
+    ...Object.fromEntries(
+      Object.entries(status).filter(([, v]) => v !== undefined),
+    ),
+    status: status.status ?? existing?.status ?? 'pending',
+    startedAt: isFreshRun ? now : (existing?.startedAt ?? now),
+    planId,
+    updatedAt: now,
+    runToken: runToken ?? existing?.runToken,
+  };
+
+  if (merged.status === 'pending') {
+    merged.stage = undefined;
+    merged.publish = undefined;
+    merged.migration = undefined;
+    merged.verificationReport = undefined;
+    merged.error = undefined;
+  }
+
+  return merged;
+}
 
 /**
  * Write job status to cache (hot read path for polling).
@@ -27,8 +68,9 @@ export const JOB_CACHE_PREFIX = 'story-builder:job:';
  * ownership of the cache entry — even when the previous run left a stale entry
  * behind within the cache TTL.
  *
- * Uses Redis WATCH/MULTI/EXEC for atomic CAS to prevent race conditions where
- * an older run's token check passes but then gets overwritten by a newer run's write.
+ * The CAS primitive (`casSetCache`) is a single atomic Lua EVAL: it checks the
+ * token and performs the SET with expiration in one uninterrupted step, so
+ * concurrent calls on the shared Redis client cannot clobber each other.
  */
 export async function setJobStatus(
   planId: string,
@@ -37,172 +79,30 @@ export async function setJobStatus(
 ): Promise<void> {
   const now = new Date().toISOString();
   const cacheKey = `${JOB_CACHE_PREFIX}${planId}`;
-  
-  // For initializers (pending with token), use atomic WATCH/SET to ensure
-  // the write is atomic even when another process is reading
-  const isInitializer = status.status === 'pending' && !!runToken;
-  
-  if (isInitializer) {
-    // Initializers always win - use WATCH to detect concurrent modifications
-    const redis = getRedis();
-    try {
-      await redis.watch(cacheKey);
-      // Re-read under watch
-      const currentRaw = await redis.get(cacheKey);
-      const existing = currentRaw ? JSON.parse(currentRaw) : null;
-      
-      const isFreshRun = !existing || existing.runToken !== runToken;
-      
-      const merged: SolidifyJobStatus = {
-        ...existing,
-        ...Object.fromEntries(Object.entries(status).filter(([, v]) => v !== undefined)),
-        status: status.status ?? existing?.status ?? 'pending',
-        startedAt: isFreshRun ? now : (existing?.startedAt ?? now),
-        planId,
-        updatedAt: now,
-        runToken: runToken ?? existing?.runToken,
-      };
-      
-      if (merged.status === 'pending') {
-        merged.stage = undefined;
-        merged.publish = undefined;
-        merged.migration = undefined;
-        merged.verificationReport = undefined;
-        merged.error = undefined;
-        if (isFreshRun) merged.startedAt = now;
-      }
-      
-      // Use MULTI/EXEC for atomic write
-      const multi = redis.multi();
-      multi.set(cacheKey, JSON.stringify(merged), 'EX', 1800);
-      const results = await multi.exec();
-      
-      // exec() returns null if the watch was violated (key changed during transaction)
-      // In that case, retry once
-      if (results === null) {
-        await redis.unwatch();
-        await setCache(cacheKey, merged, 1800);
-      }
-    } catch (err) {
-      await redis.unwatch();
-      console.error(`[StoryBuilderJobStatus] Initializer CAS failed for ${planId}:`, (err as Error).message);
-      // Fall back to non-atomic
-      const merged: SolidifyJobStatus = {
-        status: 'pending',
-        planId,
-        startedAt: now,
-        updatedAt: now,
-        runToken,
-      };
-      await setCache(cacheKey, merged, 1800);
-    }
-    return;
-  }
 
-  // For non-initializers, use atomic CAS
-  if (runToken) {
-    const redis = getRedis();
-    let retries = 3;
-    
-    while (retries > 0) {
-      try {
-        await redis.watch(cacheKey);
-        
-        // Re-read current value under watch
-        const currentRaw = await redis.get(cacheKey);
-        const existing = currentRaw ? JSON.parse(currentRaw) : null;
-        
-        // Check token - reject if doesn't match
-        if (existing?.runToken && existing.runToken !== runToken) {
-          await redis.unwatch();
-          console.warn(
-            `[StoryBuilderJobStatus] Dropping stale status write for plan ${planId} ` +
-            `(token ${runToken} != cached ${existing.runToken})`,
-          );
-          return;
-        }
-        
-        // Token matches (or no existing token), build merged status
-        const isFreshRun = false; // Only initializers are fresh
-        const merged: SolidifyJobStatus = {
-          ...existing,
-          ...Object.fromEntries(Object.entries(status).filter(([, v]) => v !== undefined)),
-          status: status.status ?? existing?.status ?? 'pending',
-          startedAt: isFreshRun ? now : (existing?.startedAt ?? now),
-          planId,
-          updatedAt: now,
-          runToken: runToken ?? existing?.runToken,
-        };
-        
-        if (merged.status === 'pending') {
-          merged.stage = undefined;
-          merged.publish = undefined;
-          merged.migration = undefined;
-          merged.verificationReport = undefined;
-          merged.error = undefined;
-        }
-        
-        // Use MULTI/EXEC for atomic write
-        const multi = redis.multi();
-        multi.set(cacheKey, JSON.stringify(merged), 'EX', 1800);
-        const results = await multi.exec();
-        
-        if (results !== null) {
-          // Success - CAS was atomic
-          return;
-        }
-        // Watch was violated, retry
-        retries--;
-      } catch (err) {
-        try {
-          await redis.unwatch();
-        } catch {
-          // ignore
-        }
-        retries--;
-      }
-    }
-    
-    // Fall back to non-atomic after retries exhausted
-    console.warn(`[StoryBuilderJobStatus] CAS retries exhausted for ${planId}, falling back to non-atomic`);
-    const existing = await getCache<SolidifyJobStatus>(cacheKey);
-    const merged: SolidifyJobStatus = {
-      ...existing,
-      ...Object.fromEntries(Object.entries(status).filter(([, v]) => v !== undefined)),
-      status: status.status ?? existing?.status ?? 'pending',
-      startedAt: existing?.startedAt ?? now,
-      planId,
-      updatedAt: now,
-      runToken: runToken ?? existing?.runToken,
-    };
-    if (merged.status === 'pending') {
-      merged.stage = undefined;
-      merged.publish = undefined;
-      merged.migration = undefined;
-      merged.verificationReport = undefined;
-      merged.error = undefined;
-    }
-    await setCache(cacheKey, merged, 1800);
-    return;
-  }
-
-  // No token provided (legacy best-effort path)
+  // Read the current value once. The CAS primitive re-checks the token at write
+  // time, so a stale snapshot here is harmless — a stale run's write is still
+  // dropped by the token guard inside the script.
   const existing = await getCache<SolidifyJobStatus>(cacheKey);
-  const merged: SolidifyJobStatus = {
-    ...existing,
-    ...Object.fromEntries(Object.entries(status).filter(([, v]) => v !== undefined)),
-    status: status.status ?? existing?.status ?? 'pending',
-    startedAt: existing?.startedAt ?? now,
-    planId,
-    updatedAt: now,
-    runToken: existing?.runToken,
-  };
-  if (merged.status === 'pending') {
-    merged.stage = undefined;
-    merged.publish = undefined;
-    merged.migration = undefined;
-    merged.verificationReport = undefined;
-    merged.error = undefined;
+
+  const isInitializer = status.status === 'pending' && !!runToken;
+  // A fresh run is the first time this specific runToken owns the entry.
+  const isFreshRun = isInitializer && (!existing || existing.runToken !== runToken);
+
+  const merged = mergeStatus(existing, status, planId, now, runToken, isFreshRun);
+
+  // Initializers always take ownership (unconditional). Non-initializers with a
+  // token are CAS-guarded (dropped if a newer run's token is cached). Legacy
+  // writes (no token) are best-effort overwrite.
+  const mode: 'init' | 'token' | 'legacy' = isInitializer
+    ? 'init'
+    : (runToken ? 'token' : 'legacy');
+
+  const ok = await casSetCache(cacheKey, merged, JOB_STATUS_TTL_SECONDS, runToken ?? '', mode);
+  if (!ok && mode === 'token') {
+    console.warn(
+      `[StoryBuilderJobStatus] Dropping stale status write for plan ${planId} ` +
+      `(token ${runToken} no longer owns the cache entry)`,
+    );
   }
-  await setCache(cacheKey, merged, 1800);
 }

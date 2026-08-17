@@ -8,7 +8,9 @@ BEGIN;
 
 ALTER TABLE job_runs ADD COLUMN IF NOT EXISTS run_token UUID;
 
--- Add index for efficient lookups
-CREATE INDEX IF NOT EXISTS idx_job_runs_run_token ON job_runs(run_token);
+-- Backfill a token for pre-existing rows so a cache-miss resume can still
+-- retrieve a CAS token instead of silently bypassing the protection this
+-- column exists to provide. Idempotent: only NULL rows are touched.
+UPDATE job_runs SET run_token = gen_random_uuid() WHERE run_token IS NULL;
 
 COMMIT;

@@ -16,11 +16,12 @@
 import {
   GraphDeltaSchema,
   GraphDeltaEdgeSchema,
+  findEdgeMapping,
   type GraphDelta,
   type GraphDeltaEdge,
 } from '@las-flores/shared';
 import { createHash } from 'node:crypto';
-import { isNeo4jEnabled, runNeo4jQuery } from './Neo4jClient.js';
+import { isNeo4jEnabled, runNeo4jQuery, runNeo4jTransaction } from './Neo4jClient.js';
 import type { ManagedTransaction } from 'neo4j-driver';
 
 /** UUID shape (case-insensitive), used to normalize identity-key components. */
@@ -185,14 +186,44 @@ export function buildPlanRevisionFromDeltas(deltas: GraphDelta[]): string {
 }
 
 /**
+ * True when a delta edge's mapping resolves the target's canonical NAME into the
+ * source item's fields (today only IN_DISTRICT → District). For these edges the
+ * resolved name is a canonical VALUE the exporter writes into `sourceItem.fields`
+ * that is NOT captured by the delta/edge identity hashes — so it must be folded
+ * into the revision seed or a base-node rename would go undetected at approve.
+ */
+export function isNameValuedEdge(e: GraphDeltaEdge): boolean {
+  return findEdgeMapping(e.type, e.sourceNodeType, e.targetNodeType)?.value === 'name';
+}
+
+/**
+ * Resolve the canonical value a name-valued edge writes into the source item's
+ * fields: the target base node's `name`, falling back to the stable target
+ * `nodeId` when the name is absent. Mirrors `GraphExporter.resolveEdgeLinks` so
+ * the exporter and the approve revalidation seed the revision identically.
+ */
+export function resolveEdgeTargetNameValue(
+  e: GraphDeltaEdge,
+  nameByKey: Map<string, string>,
+): string {
+  return nameByKey.get(`${e.targetNodeType}:${e.targetNodeId}`) ?? e.targetNodeId;
+}
+
+/**
  * Content-addressed revision token for a plan's delta set INCLUDING edges.
  * This ensures that changes to relationships (edges) between deltas are also
  * detected, preventing a situation where edge changes after export remain
  * undetected while `commitGraph` promotes them.
+ *
+ * The optional `resolvedTargetNames` folds in the canonical VALUES the exporter
+ * writes for name-valued (IN_DISTRICT) edges, so a base-node rename (with
+ * unchanged deltas/edges) is also detected. Default `[]` keeps the legacy
+ * deltas+edges-only output for other callers.
  */
 export function buildPlanRevisionFromDeltasAndEdges(
   deltas: GraphDelta[],
   edges: GraphDeltaEdge[],
+  resolvedTargetNames: readonly string[] = [],
 ): string {
   const deltaParts = deltas
     .map((d) => `${d.op}|${d.nodeType}|${d.nodeId}|${d.id}|${JSON.stringify(d.fields ?? {})}`)
@@ -200,7 +231,8 @@ export function buildPlanRevisionFromDeltasAndEdges(
   const edgeParts = edges
     .map((e) => `${e.sourceNodeType}|${e.sourceNodeId}|${e.targetNodeType}|${e.targetNodeId}|${e.type}|${e.planId}`)
     .sort();
-  return deterministicUuid([...deltaParts, ...edgeParts].join('\u0000'));
+  const nameParts = [...resolvedTargetNames].sort();
+  return deterministicUuid([...deltaParts, ...edgeParts, ...nameParts].join('\u0000'));
 }
 
 /** Current content-addressed revision of a plan's delta set (Neo4j read). */
@@ -208,13 +240,66 @@ export async function getPlanDeltaRevision(planId: string): Promise<string> {
   return buildPlanRevisionFromDeltas(await getDeltasForPlan(planId));
 }
 
-/** Current content-addressed revision of a plan's delta set INCLUDING edges (Neo4j read). */
+/**
+ * Current content-addressed revision of a plan's delta set INCLUDING edges and
+ * the canonical NAME values resolved for name-valued (IN_DISTRICT) edges.
+ * Reads deltas, edges, and the resolved base-node names inside a single
+ * transaction so a graph write occurring between two independent reads cannot
+ * leave the revision covering an inconsistent snapshot (which would let the
+ * approve gate accept a stale export). Folding the names in also means a base
+ * District rename — with unchanged deltas/edges — is detected and aborts approve.
+ */
 export async function getPlanDeltaRevisionWithEdges(planId: string): Promise<string> {
-  const [deltas, edges] = await Promise.all([
-    getDeltasForPlan(planId),
-    getDeltaEdgesForPlan(planId),
-  ]);
-  return buildPlanRevisionFromDeltasAndEdges(deltas, edges);
+  if (!isNeo4jEnabled()) {
+    return buildPlanRevisionFromDeltasAndEdges([], []);
+  }
+  const revision = await runNeo4jTransaction(async (tx) => {
+    const [deltas, edges] = await Promise.all([
+      getDeltasForPlan(planId, tx),
+      getDeltaEdgesForPlan(planId, tx),
+    ]);
+    const nameEdges = edges.filter(isNameValuedEdge);
+    const nameByKey = await loadBaseNodeNames(nameEdges, tx);
+    const resolvedTargetNames = nameEdges
+      .map((e) => resolveEdgeTargetNameValue(e, nameByKey))
+      .sort();
+    return buildPlanRevisionFromDeltasAndEdges(deltas, edges, resolvedTargetNames);
+  });
+  return revision ?? buildPlanRevisionFromDeltasAndEdges([], []);
+}
+
+/**
+ * Load the canonical base `:Content` node `name`s for the targets of name-valued
+ * delta edges, within the supplied transaction so the revision seed observes the
+ * same snapshot as the deltas/edges read. Grouped by `nodeType` (one query per
+ * type) so it stays valid if more name-valued mappings are added. A canonical
+ * District can never be a plan delta (the exporter rejects the District node
+ * type), so its resolved name is always the base node's `name`.
+ */
+async function loadBaseNodeNames(
+  edges: GraphDeltaEdge[],
+  tx: ManagedTransaction,
+): Promise<Map<string, string>> {
+  const byType = new Map<string, string[]>();
+  for (const e of edges) {
+    const list = byType.get(e.targetNodeType) ?? [];
+    list.push(e.targetNodeId);
+    byType.set(e.targetNodeType, list);
+  }
+  const map = new Map<string, string>();
+  for (const [nodeType, ids] of byType) {
+    const rows = await queryRows<{ nodeId: string; name: unknown }>(
+      `MATCH (c:Content { nodeType: $nodeType })
+       WHERE c.planId IS null AND c.nodeId IN $ids
+       RETURN c.nodeId AS nodeId, c.name AS name`,
+      { nodeType, ids },
+      tx,
+    );
+    for (const row of rows) {
+      if (row.name != null) map.set(`${nodeType}:${row.nodeId}`, String(row.name));
+    }
+  }
+  return map;
 }
 
 /**

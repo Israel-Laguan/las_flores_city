@@ -157,6 +157,67 @@ export async function deleteCache(key: string): Promise<boolean> {
   }
 }
 
+// Atomic compare-and-set cache write. The whole check-and-set runs inside a
+// single Lua EVAL (Redis executes a script to completion, uninterrupted), so it
+// does NOT rely on WATCH/MULTI/EXEC on the shared singleton client — which would
+// race across concurrent callers that share that connection (one caller's
+// UNWATCH clears another caller's WATCH state, letting its EXEC overwrite a
+// newer run's value).
+//
+//   mode = 'init'   -> unconditional overwrite (initializers take ownership)
+//   mode = 'token'  -> only write when the existing value's `.runToken` equals
+//                      `runToken` (or no value exists); returns false WITHOUT
+//                      writing when the cached token differs, so a stale write
+//                      from a prior run is dropped
+//   mode = 'legacy' -> unconditional overwrite (no token guard)
+const CAS_SET_CACHE_LUA = `
+local key = KEYS[1]
+local mode = ARGV[1]
+local token = ARGV[2]
+local value = ARGV[3]
+local ttl = ARGV[4]
+
+if mode == 'legacy' or mode == 'init' then
+  redis.call('SET', key, value, 'EX', ttl)
+  return 1
+end
+
+local current = redis.call('GET', key)
+if current then
+  local ok, data = pcall(cjson.decode, current)
+  if ok and data.runToken and data.runToken ~= token then
+    return 0
+  end
+end
+redis.call('SET', key, value, 'EX', ttl)
+return 1
+`;
+
+export async function casSetCache(
+  key: string,
+  value: unknown,
+  ttlSeconds: number,
+  runToken: string,
+  mode: 'init' | 'token' | 'legacy',
+): Promise<boolean> {
+  try {
+    const serialized = JSON.stringify(value);
+    const result = (await getRedis().eval(
+      CAS_SET_CACHE_LUA,
+      1,
+      key,
+      mode,
+      runToken,
+      serialized,
+      String(ttlSeconds),
+    )) as number;
+    return result === 1;
+  } catch (error) {
+    console.error('CAS cache set error:', error);
+    return false;
+  }
+}
+
 /**
  * Safely invalidates multiple keys without blocking the Redis event loop.
  * Uses SCAN (incremental iteration) instead of KEYS (O(N) full-block) and

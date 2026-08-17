@@ -53,6 +53,36 @@ jest.mock('@las-flores/infra', () => {
     }),
   };
   return {
+    getRedis: jest.fn(() => {
+      const store = new Map<string, string>();
+      return {
+        watch: jest.fn(async () => 'OK'),
+        unwatch: jest.fn(async () => 'OK'),
+        get: jest.fn(async (key: string) => store.get(key) ?? null),
+        set: jest.fn(async (key: string, value: string) => {
+          store.set(key, value);
+          return 'OK';
+        }),
+        multi: jest.fn(() => {
+          const commands: Array<() => Promise<unknown>> = [];
+          const proxy = {
+            set: (key: string, value: string) => {
+              commands.push(async () => store.set(key, value));
+              return proxy;
+            },
+            setex: (key: string, _ttl: number, value: string) => {
+              commands.push(async () => store.set(key, value));
+              return proxy;
+            },
+            exec: jest.fn(async () => {
+              for (const cmd of commands) await cmd();
+              return [];
+            }),
+          };
+          return proxy;
+        }),
+      };
+    }),
     queryOLTP: jest.fn(async (text: string) => {
       if (text.includes('SELECT plan_json')) {
         // runSolidify reads the plan after approveAndSolidifyPlan set it to pending.
@@ -68,6 +98,7 @@ jest.mock('@las-flores/infra', () => {
     withOLTPTransaction: jest.fn(async (cb: any) => cb(fakeClient)),
     getCache: jest.fn(async () => null),
     setCache: jest.fn(async () => true),
+    casSetCache: jest.fn(async () => true),
     deleteCache: jest.fn(async () => true),
     invalidatePattern: jest.fn(async () => true),
   };

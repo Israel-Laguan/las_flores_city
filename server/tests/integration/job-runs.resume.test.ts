@@ -39,6 +39,7 @@ async function applyMigration(filename: string): Promise<void> {
 beforeAll(async () => {
   await applyMigration('047_content_plans.sql');
   await applyMigration('062_job_runs.sql');
+  await applyMigration('074_job_runs_run_token.sql');
 
   await cleanUp();
   await queryOLTP(

@@ -28,7 +28,7 @@ import {
   upsertContentNode,
   upsertContentRelationship,
 } from '../../src/services/GraphBaseService.js';
-import { applyDelta, applyDeltaEdge, getDeltasForPlan, getDeltaEdgesForPlan, clearDeltasForPlan } from '../../src/services/GraphDeltaService.js';
+import { applyDelta, applyDeltaEdge, getDeltasForPlan, getDeltaEdgesForPlan, getPlanDeltaRevisionWithEdges, clearDeltasForPlan } from '../../src/services/GraphDeltaService.js';
 import { buildMergedRevision, commitGraph, detectGraphDrift } from '../../src/services/GraphMerger.js';
 import { exportContentPlan, GraphExportError } from '../../src/services/GraphExporter.js';
 import { GraphDeltaSchema, GraphDeltaEdgeSchema } from '@las-flores/shared';
@@ -216,6 +216,36 @@ describe('M28 graph write path (Neo4j-backed, optional)', () => {
     // deltas cleared.
     expect(await getDeltaEdgesForPlan(PLAN_ID)).toHaveLength(0);
     expect(await getDeltasForPlan(PLAN_ID)).toHaveLength(0);
+  });
+
+  test('approve revalidation detects a base District rename (unchanged deltas/edges)', async () => {
+    if (!neo4jLive) return;
+    // Fresh plan: ADD Scene delta + IN_DISTRICT delta edge to the canonical District D.
+    await clearDeltasForPlan(PLAN_ID);
+    await applyDelta(delta({ op: 'ADD', nodeType: 'Scene', nodeId: SCENE_B, fields: { name: 'Scene B' } }));
+    await applyDeltaEdge({
+      planId: PLAN_ID,
+      sourceNodeType: 'Scene',
+      sourceNodeId: SCENE_B,
+      targetNodeType: 'District',
+      targetNodeId: DISTRICT_D,
+      type: 'IN_DISTRICT',
+    } as GraphDeltaEdge);
+
+    const plan = await exportContentPlan(PLAN_ID, 'graph-authored plan');
+    expect(plan.items.find((i) => i.type === 'scene')?.fields).toMatchObject({ district: 'Los Andes' });
+    const exportedRevision = plan._meta?.plan_revision;
+    // Stable snapshot: deltas + edge + resolved District name are identical.
+    expect(getPlanDeltaRevisionWithEdges(PLAN_ID)).toBe(exportedRevision);
+
+    // Rename the canonical District with NO delta/edge change.
+    await upsertContentNode({ nodeType: 'District', nodeId: DISTRICT_D, name: 'Los Andes Renamed', canonicalFields: {} });
+
+    // The revalidation must now differ — the approve gate would abort & re-export.
+    expect(getPlanDeltaRevisionWithEdges(PLAN_ID)).not.toBe(exportedRevision);
+
+    // Restore the baseline District name so later tests stay deterministic.
+    await upsertContentNode({ nodeType: 'District', nodeId: DISTRICT_D, name: 'Los Andes', canonicalFields: {} });
   });
 
   test('drift detection: positive case when a canonical node is missing from the store', async () => {

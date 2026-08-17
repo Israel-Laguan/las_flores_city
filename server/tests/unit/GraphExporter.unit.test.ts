@@ -28,7 +28,20 @@ jest.mock('../../src/services/GraphMerger.js', () => ({
 jest.mock('../../src/services/GraphDeltaService.js', () => ({
   getDeltasForPlan: jest.fn(async (): Promise<GraphDelta[]> => []),
   getDeltaEdgesForPlan: jest.fn(async (): Promise<GraphDeltaEdge[]> => []),
+  // Local stubs mirroring the real mappings (IN_DISTRICT Scene→District is the
+  // only name-valued edge today). Kept free of external value imports so the
+  // hoisted factory can't reference an uninitialized binding.
+  isNameValuedEdge: (e: GraphDeltaEdge) =>
+    e.type === 'IN_DISTRICT' && e.sourceNodeType === 'Scene' && e.targetNodeType === 'District',
+  resolveEdgeTargetNameValue: (e: GraphDeltaEdge, nameByKey: Map<string, string>) =>
+    nameByKey.get(`${e.targetNodeType}:${e.targetNodeId}`) ?? e.targetNodeId,
   buildPlanRevisionFromDeltas: jest.fn(() => REVISION_ID),
+  buildPlanRevisionFromDeltasAndEdges: jest.fn(
+    (_del: GraphDelta[], _edges: GraphDeltaEdge[], resolved: readonly string[] = []) => {
+      mockCapturedRevisionNames = resolved as readonly string[];
+      return REVISION_ID;
+    },
+  ),
 }));
 
 // GraphExporter resolves canonical on-disk slugs for UUID-backed MODIFY deltas
@@ -58,6 +71,11 @@ const SCENE_ID = 'a1000000-e29b-41d4-a716-446655440012';
 const DIALOGUE_ID = 'a1000000-e29b-41d4-a716-446655440020';
 const REVISION_ID = 'b1000000-e29b-41d4-a716-446655440001';
 
+// Captured by the GraphDeltaService mock's buildPlanRevisionFromDeltasAndEdges so
+// tests can assert the resolved canonical names are folded into the revision seed.
+// Reset in beforeEach. Mock-prefixed so the hoisted factory may reference it.
+let mockCapturedRevisionNames: readonly string[] = [];
+
 function makeDelta(overrides: Partial<GraphDelta>): GraphDelta {
   return GraphDeltaSchema.parse({
     id: 'd0000000-0000-0000-0000-000000000001',
@@ -85,6 +103,7 @@ function makeEdge(overrides: Partial<GraphDeltaEdge>): GraphDeltaEdge {
 
 beforeEach(() => {
   mockEnabled.mockReturnValue(true);
+  mockCapturedRevisionNames = [];
   mockRevision.mockReset();
   mockRevision.mockResolvedValue({ planId: PLAN_ID, nodes: [], edges: [], deltaEdges: [] });
   mockDeltas.mockReset();
@@ -134,6 +153,8 @@ describe('GraphExporter — mapping table coverage', () => {
     const plan = await exportContentPlan(PLAN_ID, 'desc');
     expect(plan.items[0].fields).toMatchObject({ character_id: CHAR_ID });
     expect(plan.links).toHaveLength(0);
+    // nodeId-valued edge: no resolved name is folded into the revision seed.
+    expect(mockCapturedRevisionNames).toEqual([]);
   });
 
   test('IN_DISTRICT edge resolves the target District name into the source fields', async () => {
@@ -144,9 +165,37 @@ describe('GraphExporter — mapping table coverage', () => {
       deltaEdges: [],
     });
     mockDeltas.mockResolvedValue([makeDelta({ op: 'ADD', nodeType: 'Scene', nodeId: SCENE_ID, fields: { name: 'Scene' } })]);
+
     mockEdges.mockResolvedValue([makeEdge({ sourceNodeType: 'Scene', sourceNodeId: SCENE_ID, targetNodeType: 'District', targetNodeId: 'dist-1', type: 'IN_DISTRICT' })]);
     const plan = await exportContentPlan(PLAN_ID, 'desc');
     expect(plan.items[0].fields).toMatchObject({ district: 'Los Andes' });
+    // The resolved canonical name is folded into the revision seed (sorted).
+    expect(mockCapturedRevisionNames).toEqual(['Los Andes']);
+  });
+
+  test('IN_DISTRICT revision seed tracks the resolved District name (rename would change it)', async () => {
+    mockRevision.mockResolvedValue({
+      planId: PLAN_ID,
+      nodes: [{ nodeType: 'District', nodeId: 'dist-9', name: 'El Prado', planId: null, fields: {} }],
+      edges: [],
+      deltaEdges: [],
+    });
+    mockDeltas.mockResolvedValue([makeDelta({ op: 'ADD', nodeType: 'Scene', nodeId: SCENE_ID, fields: { name: 'Scene' } })]);
+    mockEdges.mockResolvedValue([makeEdge({ sourceNodeType: 'Scene', sourceNodeId: SCENE_ID, targetNodeType: 'District', targetNodeId: 'dist-9', type: 'IN_DISTRICT' })]);
+    await exportContentPlan(PLAN_ID, 'desc');
+    // A different resolved name → a different revision seed, so the approve gate
+    // detects the base-node rename even with unchanged deltas/edges.
+    expect(mockCapturedRevisionNames).toEqual(['El Prado']);
+  });
+
+  test('IN_DISTRICT with no resolvable District name falls back to the target nodeId in the seed', async () => {
+    // District is not present in the merged revision → nameLookup misses, so the
+    // seed uses the stable targetNodeId (mirroring resolveEdgeLinks' fallback).
+    mockDeltas.mockResolvedValue([makeDelta({ op: 'ADD', nodeType: 'Scene', nodeId: SCENE_ID, fields: { name: 'Scene' } })]);
+    mockEdges.mockResolvedValue([makeEdge({ sourceNodeType: 'Scene', sourceNodeId: SCENE_ID, targetNodeType: 'District', targetNodeId: 'dist-3', type: 'IN_DISTRICT' })]);
+    const plan = await exportContentPlan(PLAN_ID, 'desc');
+    expect(plan.items[0].fields).toMatchObject({ district: 'dist-3' });
+    expect(mockCapturedRevisionNames).toEqual(['dist-3']);
   });
 
   test('delta→delta edge emits a ContentLink (not a field write)', async () => {
