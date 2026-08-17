@@ -29,6 +29,7 @@ export const JobRunSchema = z.object({
   nextRetryAt: z.string().datetime().optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
+  runToken: zodUuid().optional(),
 });
 
 export type JobRun = z.infer<typeof JobRunSchema>;

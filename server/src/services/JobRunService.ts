@@ -25,6 +25,7 @@ export interface JobRunPatch {
   partialResult?: unknown | null;
   error?: string | null;
   nextRetryAt?: string | null;
+  runToken?: string | null;
 }
 
 interface JobRunRow {
@@ -41,6 +42,7 @@ interface JobRunRow {
   next_retry_at: Date | string | null;
   created_at: Date | string;
   updated_at: Date | string;
+  run_token: string | null;
 }
 
 function mapRow(row: JobRunRow): JobRun {
@@ -58,11 +60,13 @@ function mapRow(row: JobRunRow): JobRun {
     nextRetryAt: row.next_retry_at instanceof Date ? row.next_retry_at.toISOString() : row.next_retry_at ?? undefined,
     createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at,
     updatedAt: row.updated_at instanceof Date ? row.updated_at.toISOString() : row.updated_at,
+    runToken: row.run_token ?? undefined,
   };
 }
 
 export interface StartJobRunOptions {
   maxAttempts?: number;
+  runToken?: string;
 }
 
 /** Create a fresh `running` job run for a plan + job type. Returns the row (with id). */
@@ -77,10 +81,10 @@ export async function startJobRun(
   // (re-running many LLM calls), so the job budget is a separate, tighter policy
   // than the per-call retry curve. Callers may override via `opts.maxAttempts`.
   const result = await queryOLTP<JobRunRow>(
-    `INSERT INTO job_runs (plan_id, job_type, status, attempt, max_attempts)
-     VALUES ($1, $2, 'running', 1, $3)
+    `INSERT INTO job_runs (plan_id, job_type, status, attempt, max_attempts, run_token)
+     VALUES ($1, $2, 'running', 1, $3, $4)
      RETURNING *`,
-    [planId, jobType, opts?.maxAttempts ?? 3],
+    [planId, jobType, opts?.maxAttempts ?? 3, opts?.runToken ?? null],
   );
   return mapRow(result.rows[0]);
 }
@@ -125,6 +129,7 @@ export async function updateJobRun(jobId: string, patch: JobRunPatch): Promise<J
   if (patch.partialResult !== undefined) push('partial_result', JSON.stringify(patch.partialResult), true);
   if (patch.error !== undefined) push('error', patch.error);
   if (patch.nextRetryAt !== undefined) push('next_retry_at', patch.nextRetryAt);
+  if (patch.runToken !== undefined) push('run_token', patch.runToken);
 
   if (sets.length === 0) return getJobRunById(jobId);
 

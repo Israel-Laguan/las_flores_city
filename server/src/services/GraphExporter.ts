@@ -35,9 +35,13 @@ import { isNeo4jEnabled } from './Neo4jClient.js';
 import {
   getDeltasForPlan,
   getDeltaEdgesForPlan,
-  buildPlanRevisionFromDeltas,
+  buildPlanRevisionFromDeltasAndEdges,
 } from './GraphDeltaService.js';
 import { buildMergedRevision } from './GraphMerger.js';
+import { resolveContentDir } from './StoryBuilderLore.js';
+import fs from 'node:fs/promises';
+import * as yaml from 'js-yaml';
+import { glob } from 'glob';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -69,7 +73,7 @@ function freshUuid(): string {
 // `WHERE id IN (...)` query per table, then build a `nodeType:nodeId → slug` index
 // reused by the delta loop. None of the character/scene/dialogue/overlay/mystery
 // tables carry a `slug` column (they store `name`/`title` only), so the slug is
-// derived as `slugify(name|title)`.
+// derived as `slugify(name|title)`. District has a `slug` column in DB.
 //
 // A content-store failure must never abort the whole export (graph-less dev,
 // transient DB blip): on any error we log a warning and return an empty map so the
@@ -80,7 +84,55 @@ const CANONICAL_NAME_BULK_QUERY: Partial<Record<string, { table: string; column:
   Dialogue: { table: 'dialogue_trees', column: 'name' },
   Overlay: { table: 'dialogue_overlays', column: 'name' },
   Mission: { table: 'mysteries', column: 'title' },
+  District: { table: 'districts', column: 'slug' },
 };
+
+/**
+ * Resolve Location slugs from their YAML files on disk.
+ * Locations are file-only content with no DB table; their slug is derived
+ * from the YAML's `name` field using slugify.
+ */
+async function resolveLocationSlugs(
+  locationIds: string[],
+): Promise<Map<string, string>> {
+  const result = new Map<string, string>();
+  if (locationIds.length === 0) return result;
+
+  const contentDir = resolveContentDir();
+  let files: string[];
+  try {
+    files = await glob(`${contentDir}/districts/*/locations/*/*.yaml`, { absolute: true });
+  } catch (err) {
+    console.warn(
+      `[GraphExporter] location YAML glob failed: ${(err as Error).message}`,
+    );
+    return result;
+  }
+
+  const idSet = new Set(locationIds.map((id) => id.toLowerCase()));
+
+  for (const file of files) {
+    try {
+      const raw = await fs.readFile(file, 'utf-8');
+      const data: any = yaml.load(raw);
+      if (!data || typeof data !== 'object' || !data.id || !data.name) continue;
+
+      const nodeId = String(data.id).toLowerCase();
+      if (idSet.has(nodeId)) {
+        const slug = slugify(data.name);
+        if (slug.length > 0) {
+          result.set(`Location:${data.id}`, slug);
+        }
+      }
+    } catch (err) {
+      console.warn(
+        `[GraphExporter] failed to read location YAML ${file}: ${(err as Error).message}`,
+      );
+    }
+  }
+
+  return result;
+}
 
 async function resolveCanonicalSlugsBulk(
   deltas: GraphDelta[],
@@ -98,7 +150,7 @@ async function resolveCanonicalSlugsBulk(
   const result = new Map<string, string>();
   for (const [nodeType, ids] of byType) {
     const meta = CANONICAL_NAME_BULK_QUERY[nodeType];
-    if (!meta || ids.length === 0) continue; // Location, District — no DB slug source
+    if (!meta || ids.length === 0) continue;
     const placeholders = ids.map((_, i) => `$${i + 1}`).join(', ');
     const query = `SELECT id, ${meta.column} AS name FROM ${meta.table} WHERE id IN (${placeholders})`;
     try {
@@ -114,6 +166,16 @@ async function resolveCanonicalSlugsBulk(
       );
     }
   }
+
+  // Resolve Location slugs from YAML files (Locations have no DB table)
+  const locationIds = byType.get('Location') ?? [];
+  if (locationIds.length > 0) {
+    const locationSlugs = await resolveLocationSlugs(locationIds);
+    for (const [key, slug] of locationSlugs) {
+      result.set(key, slug);
+    }
+  }
+
   return result;
 }
 
@@ -294,8 +356,9 @@ export async function exportContentPlan(
   // query per content table) so the per-delta loop reuses an index instead of
   // issuing one sequential OLTP round-trip per modified node.
   const canonicalSlugByKey = await resolveCanonicalSlugsBulk(deltas);
+  const deltaEdges = await getDeltaEdgesForPlan(planId);
   const { items, deltaItemId } = buildItemsAndIndex(deltas, revision, canonicalSlugByKey);
-  const links = resolveEdgeLinks(await getDeltaEdgesForPlan(planId), deltaItemId, items, nameLookup);
+  const links = resolveEdgeLinks(deltaEdges, deltaItemId, items, nameLookup);
 
   const plan: ContentPlan = {
     id: planId,
@@ -303,13 +366,14 @@ export async function exportContentPlan(
     items,
     links,
     status: 'proposed',
-    // Content-addressed graph revision: derived from the plan's delta set (the
-    // exact set this export read), NOT a random UUID. This makes plan_revision a
-    // real, detectable revision identity — the approve gate re-reads the plan's
-    // deltas immediately before persisting plan_json and aborts if they changed,
-    // so a concurrent applyDelta can never leave plan_json pointing at a graph
-    // state whose newer deltas commitGraph later promotes.
-    _meta: { plan_revision: buildPlanRevisionFromDeltas(deltas) },
+    // Content-addressed graph revision: derived from the plan's delta set AND
+    // delta edges (the exact set this export read), NOT a random UUID. This makes
+    // plan_revision a real, detectable revision identity that includes both
+    // nodes and relationships — the approve gate re-reads the plan's deltas and
+    // edges immediately before persisting plan_json and aborts if they changed,
+    // so a concurrent applyDelta/applyDeltaEdge can never leave plan_json pointing
+    // at a graph state whose newer deltas/edges commitGraph later promotes.
+    _meta: { plan_revision: buildPlanRevisionFromDeltasAndEdges(deltas, deltaEdges) },
   } as ContentPlan;
 
   // Validate before returning — the materialize pipeline depends on a well-formed plan.

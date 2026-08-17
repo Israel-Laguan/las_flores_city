@@ -172,6 +172,10 @@ function deterministicUuid(seed: string): string {
  * edited. Bound to the exported plan via `_meta.plan_revision` so the approve
  * gate can re-validate that the graph has not changed since export (and detect
  * when `commitGraph` later promotes a different, newer delta set).
+ * 
+ * NOTE: This function ONLY hashes deltas (nodes), not edges. For a complete
+ * revision that includes edges, use `buildPlanRevisionFromDeltasAndEdges`.
+ * This legacy function is kept for backward compatibility.
  */
 export function buildPlanRevisionFromDeltas(deltas: GraphDelta[]): string {
   const parts = deltas
@@ -180,9 +184,37 @@ export function buildPlanRevisionFromDeltas(deltas: GraphDelta[]): string {
   return deterministicUuid(parts.join('\u0000'));
 }
 
+/**
+ * Content-addressed revision token for a plan's delta set INCLUDING edges.
+ * This ensures that changes to relationships (edges) between deltas are also
+ * detected, preventing a situation where edge changes after export remain
+ * undetected while `commitGraph` promotes them.
+ */
+export function buildPlanRevisionFromDeltasAndEdges(
+  deltas: GraphDelta[],
+  edges: GraphDeltaEdge[],
+): string {
+  const deltaParts = deltas
+    .map((d) => `${d.op}|${d.nodeType}|${d.nodeId}|${d.id}|${JSON.stringify(d.fields ?? {})}`)
+    .sort();
+  const edgeParts = edges
+    .map((e) => `${e.sourceNodeType}|${e.sourceNodeId}|${e.targetNodeType}|${e.targetNodeId}|${e.type}|${e.planId}`)
+    .sort();
+  return deterministicUuid([...deltaParts, ...edgeParts].join('\u0000'));
+}
+
 /** Current content-addressed revision of a plan's delta set (Neo4j read). */
 export async function getPlanDeltaRevision(planId: string): Promise<string> {
   return buildPlanRevisionFromDeltas(await getDeltasForPlan(planId));
+}
+
+/** Current content-addressed revision of a plan's delta set INCLUDING edges (Neo4j read). */
+export async function getPlanDeltaRevisionWithEdges(planId: string): Promise<string> {
+  const [deltas, edges] = await Promise.all([
+    getDeltasForPlan(planId),
+    getDeltaEdgesForPlan(planId),
+  ]);
+  return buildPlanRevisionFromDeltasAndEdges(deltas, edges);
 }
 
 /**
