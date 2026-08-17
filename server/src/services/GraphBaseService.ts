@@ -183,14 +183,18 @@ export async function pruneOrphanContentNodes(keepKeys: Set<string>): Promise<nu
     return count;
   }
   const keys = [...keepKeys];
+  // `NOT c.key IN $keys` yields null (not matched) when `c.key` is null/ absent,
+  // so legacy/malformed canonical nodes with no `key` would survive pruning.
+  // Include `c.key IS NULL` so those orphans are removed too.
+  const keepWhere = `${baseWhere} AND (c.key IS NULL OR NOT c.key IN $keys)`;
   const countRows = await runNeo4jQuery<{ count: unknown }>(
-    `MATCH (c:Content) WHERE ${baseWhere} AND NOT c.key IN $keys RETURN count(c) AS count`,
+    `MATCH (c:Content) WHERE ${keepWhere} RETURN count(c) AS count`,
     { keys },
   );
   const count = countRows[0]?.count != null ? Number(countRows[0].count) : 0;
   if (count > 0) {
     await runNeo4jQuery(
-      `MATCH (c:Content) WHERE ${baseWhere} AND NOT c.key IN $keys DETACH DELETE c`,
+      `MATCH (c:Content) WHERE ${keepWhere} DETACH DELETE c`,
       { keys },
     );
   }

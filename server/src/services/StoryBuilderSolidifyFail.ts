@@ -6,7 +6,7 @@
 // ============================================================
 import { type VerificationReport, type HarnessReport } from '@las-flores/shared';
 import { queryOLTP } from '@las-flores/infra';
-import { setJobStatus } from './StoryBuilderSolidify.js';
+import { setJobStatus } from './StoryBuilderJobStatus.js';
 import type { StagingResult, MigrationResult } from './StoryBuilderOrchestrator.js';
 import type { PublishResult } from './AssetPublishService.js';
 import { emitAdminEvent } from './AdminEventEmitter.js';
@@ -63,7 +63,8 @@ async function failWithVerificationReport(
     verificationReport,
     error: verificationReport.errors[0] || 'Verification failed',
   });
-  emitAdminEvent('plan_failed', { status: 'failed', error: verificationReport.errors[0] }, planId, userId);
+  const failMessage = verificationReport.errors[0] || 'Verification failed';
+  emitAdminEvent('plan_failed', { status: 'failed', error: failMessage }, planId, userId);
 }
 
 export { failWithHarnessReport, failWithVerificationReport };

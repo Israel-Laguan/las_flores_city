@@ -35,7 +35,18 @@ export interface ResyncJobStatus {
 }
 
 const jobs = new Map<string, ResyncJobStatus>();
+// Bounded in-memory retention: completed/failed jobs are evicted on a FIFO basis
+// so repeated admin resyncs cannot grow process memory without bound.
+const MAX_JOBS = 50;
 let resyncInFlight = false;
+
+function recordJob(job: ResyncJobStatus): void {
+  jobs.set(job.jobId, job);
+  if (jobs.size > MAX_JOBS) {
+    const oldest = jobs.keys().next().value as string | undefined;
+    if (oldest) jobs.delete(oldest);
+  }
+}
 
 export function getResyncJob(jobId: string): ResyncJobStatus | undefined {
   return jobs.get(jobId);
@@ -61,8 +72,11 @@ async function performResync(status: ResyncJobStatus): Promise<void> {
     const keepEdgeKeys = new Set(
       data.edges.map((e) => `${e.sourceNodeType}:${e.sourceNodeId}->${e.targetNodeType}:${e.targetNodeId}[${e.type}]`),
     );
-    status.deletedNodes = await pruneOrphanContentNodes(keepKeys);
+    // Prune edges first so the relationship count reflects every edge actually
+    // removed; otherwise DETACH DELETE in node pruning silently removes edges
+    // that `pruneOrphanContentEdges` would then never see (undercounting).
     status.deletedEdges = await pruneOrphanContentEdges(keepEdgeKeys);
+    status.deletedNodes = await pruneOrphanContentNodes(keepKeys);
   });
   status.status = 'completed';
   status.finishedAt = new Date().toISOString();
@@ -87,7 +101,7 @@ export async function runGraphResyncNow(): Promise<ResyncJobStatus> {
     total: 0,
     startedAt: new Date().toISOString(),
   };
-  jobs.set(jobId, status);
+  recordJob(status);
   try {
     await performResync(status);
   } catch (err) {
@@ -120,7 +134,7 @@ export function startGraphResync(): ResyncJobStatus {
     total: 0,
     startedAt: new Date().toISOString(),
   };
-  jobs.set(jobId, status);
+  recordJob(status);
   performResync(status)
     .catch((err) => {
       status.status = 'failed';

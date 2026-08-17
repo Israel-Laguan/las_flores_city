@@ -29,6 +29,7 @@ import {
   findEdgeMapping,
   UNSUPPORTED_EDGE_TYPES,
 } from '@las-flores/shared';
+import { queryOLTP } from '@las-flores/infra';
 import { isNeo4jEnabled } from './Neo4jClient.js';
 import {
   getDeltasForPlan,
@@ -58,6 +59,46 @@ function slugify(value: string): string {
 
 function freshUuid(): string {
   return randomUUID();
+}
+
+// Resolve the canonical on-disk slug for a UUID-backed content entity by reading
+// its canonical name from the migrated OLTP content store. None of the
+// character/scene/dialogue/overlay/mystery tables carry a `slug` column (they
+// store `name`/`title` only — confirmed via server/src/database/migrations); the
+// on-disk directory slug is exactly `slugify(name|title)`, so we derive it from
+// the canonical name. Locations have no DB table (they live only in content YAML
+// under districts/*/locations/*), so callers must pass a fallback slug.
+//
+// A content-store failure must never abort the whole export (graph-less dev,
+// transient DB blip): on any error we log a warning and return undefined so the
+// caller falls back to the existing slug-derivation logic.
+const CANONICAL_NAME_QUERY: Partial<Record<string, string>> = {
+  Character: 'SELECT name FROM characters WHERE id = $1',
+  Scene: 'SELECT name FROM scenes WHERE id = $1',
+  Dialogue: 'SELECT name FROM dialogue_trees WHERE id = $1',
+  Overlay: 'SELECT name FROM dialogue_overlays WHERE id = $1',
+  Mission: 'SELECT title AS name FROM mysteries WHERE id = $1',
+};
+
+async function resolveCanonicalSlugFromStore(
+  nodeType: string,
+  nodeId: string,
+): Promise<string | undefined> {
+  const query = CANONICAL_NAME_QUERY[nodeType];
+  if (!query) return undefined; // Location, District — no DB table slug source
+  try {
+    const result = await queryOLTP<{ name: string }>(query, [nodeId]);
+    const name = result.rows[0]?.name;
+    if (!name) return undefined;
+    const slug = slugify(name);
+    return slug.length > 0 ? slug : undefined;
+  } catch (err) {
+    console.warn(
+      `[GraphExporter] content-store slug lookup failed for ${nodeType}:${nodeId}, falling back to merged name:`,
+      (err as Error).message,
+    );
+    return undefined;
+  }
 }
 
 /** Build a plan item for one ADD/MODIFY delta (throws on unsupported node type). */
@@ -139,7 +180,26 @@ export async function exportContentPlan(
 
   for (const delta of deltas) {
     if (delta.op === 'ADD' || delta.op === 'MODIFY') {
-      const existingSlug = delta.op === 'MODIFY' ? existingSlugByKey.get(`${delta.nodeType}:${delta.nodeId}`) : undefined;
+      let existingSlug: string | undefined = delta.op === 'MODIFY'
+        ? existingSlugByKey.get(`${delta.nodeType}:${delta.nodeId}`)
+        : undefined;
+      // For UUID-backed MODIFY items the canonical graph seed never stores a
+      // `slug` field (only District does), so existingSlugByKey is empty and the
+      // item would otherwise fall through to the (possibly renamed) merged name
+      // and retarget a non-existent file path. Resolve the canonical slug from
+      // the content store so the slug points at the EXISTING on-disk file.
+      if (delta.op === 'MODIFY' && !existingSlug && isUuid(delta.nodeId)) {
+        existingSlug = await resolveCanonicalSlugFromStore(delta.nodeType, delta.nodeId);
+        // Fallback (Location has no DB table; or a transient store error): use
+        // the merged node's existing name from the revision as the canonical slug
+        // hint. This keeps behavior no worse than before for those edge cases.
+        if (!existingSlug) {
+          const merged = revision.nodes.find(
+            (n) => n.nodeType === delta.nodeType && n.nodeId === delta.nodeId && n.name,
+          );
+          if (merged) existingSlug = slugify(merged.name!);
+        }
+      }
       const item = buildItemForDelta(delta, existingSlug);
       items.push(item);
       deltaItemId.set(`${delta.nodeType}:${delta.nodeId}`, item.id);

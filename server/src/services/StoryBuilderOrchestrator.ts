@@ -23,11 +23,8 @@ import {
   getJobRun,
   nextAttempt,
 } from './JobRunService.js';
-import {
-  runSolidify,
-  setJobStatus,
-  JOB_CACHE_PREFIX,
-} from './StoryBuilderSolidify.js';
+import { runSolidify } from './StoryBuilderSolidify.js';
+import { setJobStatus, JOB_CACHE_PREFIX } from './StoryBuilderJobStatus.js';
 import { verifyPlan, migrateStagedPlan } from './StoryBuilderMigration.js';
 
 export {
@@ -113,6 +110,22 @@ export async function approveAndSolidifyPlan(planId: string, userId?: string): P
   // only if the status is still approvable.
   let exported: ContentPlan | null = null;
   if (isNeo4jEnabled()) {
+    // Lightweight existence/status guard BEFORE any graph I/O: a plan that is
+    // already gone or not in an approvable state must fail immediately with a
+    // clear PlanStatusError/PlanNotFoundError — never with a graph-availability
+    // error that masks the real reason for the rejection.
+    const pre = await queryOLTP<{ status: string }>(
+      'SELECT status FROM content_plans WHERE id = $1',
+      [planId],
+    );
+    if (pre.rows.length === 0) {
+      throw new PlanNotFoundError(planId);
+    }
+    const preStatus = pre.rows[0].status;
+    if (preStatus !== 'proposed' && preStatus !== 'approved' && preStatus !== 'failed') {
+      throw new PlanStatusError(`Plan must be 'proposed', 'approved', or 'failed' to approve. Current: ${preStatus}`);
+    }
+
     const deltas = await getDeltasForPlan(planId);
     if (deltas.length > 0) {
       const drift = await detectGraphDrift();

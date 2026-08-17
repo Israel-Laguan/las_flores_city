@@ -171,10 +171,21 @@ export async function commitGraph(planId: string): Promise<boolean> {
         const reserved = new Set(['key', 'nodeType', 'nodeId', 'planId', 'isEvidence']);
         // Neo4j node properties cannot be nested maps/arrays, so only keep
         // scalar values (and drop anything else) when building `$props`.
+        // Neo4j node properties cannot be nested maps, but primitive arrays
+        // (e.g. `available_dialogues`) are valid — keep scalars and primitive
+        // arrays (string/number/boolean), and reject only unsupported nested
+        // (map/array-of-object) values so canonical content is never silently lost.
+        const isPrimitiveArray = (v: unknown): boolean =>
+          Array.isArray(v) && (v.length === 0
+            || v.every((item) => typeof item === 'string' || typeof item === 'number' || typeof item === 'boolean'));
         const safeFields = Object.fromEntries(
           Object.entries(fields)
             .filter(([k]) => !reserved.has(k) && k !== 'name')
-            .filter(([, v]) => v == null || typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean'),
+            .filter(([, v]) => v == null
+              || typeof v === 'string'
+              || typeof v === 'number'
+              || typeof v === 'boolean'
+              || isPrimitiveArray(v)),
         );
         await tx.run(
           `MERGE (c:Content { key: $key })
@@ -227,11 +238,18 @@ export async function commitGraph(planId: string): Promise<boolean> {
         );
       }
 
-      // Delta nodes + edges die with their plan.
-      await tx.run(
-        `MATCH (d:ContentDelta { planId: $planId }) DETACH DELETE d`,
-        { planId: normalizedPlanId },
-      );
+      // Delta nodes + edges die with their plan. Delete ONLY the delta IDs we
+      // read inside this transaction — a delta inserted by a concurrent
+      // `applyDelta` after the read must not be dropped (it would be skipped
+      // from promotion yet removed here). The next `commitGraph` for those
+      // deltas handles them.
+      const readDeltaIds = deltas.map((d) => d.id);
+      if (readDeltaIds.length > 0) {
+        await tx.run(
+          `MATCH (d:ContentDelta) WHERE d.id IN $ids DETACH DELETE d`,
+          { ids: readDeltaIds },
+        );
+      }
     });
     return true;
   } catch (err) {

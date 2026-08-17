@@ -94,9 +94,9 @@ async function insertSourceRows(): Promise<void> {
     [CHAR_A, 'Character A', 'synthetic canon fixture'],
   );
   await queryOLTP(
-    `INSERT INTO districts (id, name, slug, description) VALUES ($1, $2, $3, $4)
+    `INSERT INTO districts (id, name, slug, description, x, y) VALUES ($1, $2, $3, $4, $5, $6)
      ON CONFLICT (id) DO NOTHING`,
-    [DISTRICT_D, 'Los Andes', 'los_andes', 'synthetic canon fixture'],
+    [DISTRICT_D, 'Los Andes', 'los_andes', 'synthetic canon fixture', 0, 0],
   );
   await queryOLTP(
     `INSERT INTO scenes (id, name, description, district_id) VALUES ($1, $2, $3, $4)

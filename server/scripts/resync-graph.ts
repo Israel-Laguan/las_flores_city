@@ -35,11 +35,6 @@ async function main(): Promise<void> {
   const result = await runGraphResyncNow();
 
   console.log(`✅ Graph resynced. Source nodes: ${result.total}, edges: ${result.edges}, upserted: ${result.nodes}, deleted nodes: ${result.deletedNodes}, deleted edges: ${result.deletedEdges}`);
-
-  if (result.status === 'failed') {
-    console.error('❌ Graph resync reported failure:', result.error);
-    process.exitCode = 1;
-  }
 }
 
 main()

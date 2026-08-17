@@ -208,16 +208,22 @@ adminStoryBuilderPlansRouter.delete('/plans/:id', async (req, res) => {
     }
 
     // M28 — best-effort clean up the plan's graph deltas so orphan
-    // :ContentDelta nodes don't linger after the plan row is gone.
+    // :ContentDelta nodes don't linger after the plan row is gone. The plan row
+    // is already deleted above (SQL is authoritative); if the graph cleanup
+    // fails we must not silently claim a clean delete — surface it so the admin
+    // can reconcile (a later graph resync / retry of the delete prunes the
+    // orphaned :ContentDelta nodes).
+    let graphDeltasCleaned = true;
     if (isNeo4jEnabled()) {
       try {
         await clearDeltasForPlan(id);
       } catch (err) {
+        graphDeltasCleaned = false;
         console.warn('[story-builder] delta cleanup failed for deleted plan', id, (err as Error).message);
       }
     }
 
-    res.json({ success: true, data: { deleted: true }, timestamp: new Date().toISOString() });
+    res.json({ success: true, data: { deleted: true, graphDeltasCleaned }, timestamp: new Date().toISOString() });
   } catch (error: any) {
     console.error('[story-builder] DELETE /plans/:id error:', error);
     res.status(500).json({ success: false, error: 'Failed to delete plan', timestamp: new Date().toISOString() });
