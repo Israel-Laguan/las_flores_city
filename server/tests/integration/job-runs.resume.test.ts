@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, beforeEach, afterAll } from '@jest/globals';
 import fs from 'fs';
 import path from 'path';
-import { queryOLTP, closeConnections } from '@las-flores/infra';
+import { queryOLTP, closeConnections, deleteCache } from '@las-flores/infra';
 import { closeRedis } from '@las-flores/infra';
 import { withSchemaLock } from '../helpers/schemaLock.js';
 import {
@@ -12,6 +12,8 @@ import {
   markOrphanedResumable,
   getJobRun,
 } from '../../src/services/JobRunService.js';
+import { resumeSolidify } from '../../src/services/StoryBuilderOrchestrator.js';
+import { JOB_CACHE_PREFIX } from '../../src/services/StoryBuilderJobStatus.js';
 
 // Dedicated synthetic UUIDs reserved for this suite. They must not collide with
 // seed data or with fixtures in other integration suites.
@@ -102,5 +104,37 @@ describe('job_runs resume integration', () => {
     expect(orphaned.some(o => o.planId === TEST_PLAN_ID && o.jobType === 'solidify')).toBe(true);
     const run = await getJobRun(TEST_PLAN_ID, 'solidify');
     expect(run!.status).toBe('resumable');
+  });
+
+  it('legacy resumable run with no runToken still surfaces a terminal plan status', async () => {
+    // A pre-074 resumable run left behind after a crash has no run_token, and the
+    // job-status cache has been evicted. resumeSolidify must reject the unguarded
+    // resume (newer-run protection) AND record the failure via the DB plan status
+    // so the polling endpoint stops reporting a nonterminal `staging`/`migrating`
+    // state and the user can retry.
+    await queryOLTP('DELETE FROM job_runs WHERE plan_id = $1', [TEST_PLAN_ID]);
+    await queryOLTP(
+      `INSERT INTO content_plans (id, description, plan_json, status)
+       VALUES ($1, 'resume-legacy', '{}'::jsonb, 'staging')
+       ON CONFLICT (id) DO UPDATE SET status = 'staging', plan_json = '{}'::jsonb`,
+      [TEST_PLAN_ID],
+    );
+    // Simulate a cache eviction for this plan's job-status key.
+    await deleteCache(`${JOB_CACHE_PREFIX}${TEST_PLAN_ID}`);
+    // Insert a legacy resumable run with a NULL run_token (pre-074).
+    await queryOLTP(
+      `INSERT INTO job_runs (plan_id, job_type, status, attempt, max_attempts, run_token)
+       VALUES ($1, 'solidify', 'resumable', 1, 3, NULL)`,
+      [TEST_PLAN_ID],
+    );
+
+    await resumeSolidify(TEST_PLAN_ID);
+
+    const run = await getJobRun(TEST_PLAN_ID, 'solidify');
+    expect(run!.status).toBe('failed');
+    const plan = await queryOLTP<{ status: string }>(
+      'SELECT status FROM content_plans WHERE id = $1', [TEST_PLAN_ID],
+    );
+    expect(plan.rows[0].status).toBe('failed');
   });
 });

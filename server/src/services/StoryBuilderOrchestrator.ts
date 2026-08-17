@@ -299,6 +299,19 @@ export async function resumeSolidify(planId: string, userId?: string): Promise<v
       '(cache evicted and job run has no run_token); cannot resume in unguarded legacy mode.',
     );
     await updateJobRun(run.id, { status: 'failed', error: 'Cannot resume: missing run_token' });
+    // The polling endpoint reads `content_plans.status` whenever the job-status
+    // cache is miss (e.g. evicted). Mark the plan terminal via the DB so the
+    // endpoint stops reporting a nonterminal `staging`/`migrating` status and
+    // the user can retry — but guard the write so it only flips the in-progress
+    // statuses this crashed run could have left behind. Because `getJobRun`
+    // returns the LATEST run, reaching here means this legacy run IS the latest
+    // (a newer active/completed run would have been returned instead), so the
+    // conditional update can never clobber a newer run's advanced/terminal state.
+    await queryOLTP(
+      `UPDATE content_plans SET status = 'failed', updated_at = NOW()
+       WHERE id = $1 AND status IN ('pending', 'staging', 'migrating', 'verifying')`,
+      [planId],
+    );
     return;
   }
 
