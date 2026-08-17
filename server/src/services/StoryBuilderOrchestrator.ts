@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { ContentPlanSchema, type VerificationReport, type ContentPlan } from '@las-flores/shared';
 import { queryOLTP, withOLTPTransaction, getCache } from '@las-flores/infra';
 import { ContentPlanService } from './ContentPlanService.js';
@@ -50,6 +51,13 @@ export interface SolidifyJobStatus {
   error?: string;
   startedAt: string;
   updatedAt: string;
+  /**
+   * Per-run token used for compare-and-set (CAS) of the cache. A retry/approve
+   * of the same plan issues a fresh token; stale terminal writes from a prior
+   * run that are still in flight are rejected so they cannot overwrite a newer
+   * run's status. Set by the `pending` write that initializes a run.
+   */
+  runToken?: string;
 }
 
 /** Read the current async solidify job status from cache (hot path) or DB. */
@@ -183,8 +191,10 @@ export async function approveAndSolidifyPlan(planId: string, userId?: string): P
   });
 
   // 2. Write initial cache status only after the transaction commits, so a
-  //    commit failure cannot leave a stale pending cache entry.
-  await setJobStatus(planId, { status: 'pending' });
+  //    commit failure cannot leave a stale pending cache entry. Issue a fresh
+  //    run token so stale terminal writes from a prior run can be rejected.
+  const runToken = randomUUID();
+  await setJobStatus(planId, { status: 'pending' }, runToken);
 
   // 2b. Create a durable job-runs row so the solidify job can be resumed from
   //     its last persisted stage if this process dies mid-way (M22). Best-effort:
@@ -200,7 +210,7 @@ export async function approveAndSolidifyPlan(planId: string, userId?: string): P
 
   // 3. Fire async solidify OUTSIDE the transaction.
   //    Errors are caught and persisted to status by runSolidify.
-  runSolidify(planId, userId, jobRunId).catch((err) => {
+  runSolidify(planId, userId, jobRunId, runToken).catch((err) => {
     console.error(`[story-builder] Unhandled runSolidify error for ${planId}:`, err);
   });
 
@@ -223,7 +233,7 @@ export async function resumeSolidify(planId: string, userId?: string): Promise<v
   const adv = await nextAttempt(planId, 'solidify');
   if (adv.exhausted) {
     await updateJobRun(run.id, { status: 'failed', error: 'Attempts exhausted during resume' });
-    await setJobStatus(planId, { status: 'failed', error: 'Attempts exhausted during resume' });
+    await setJobStatus(planId, { status: 'failed', error: 'Attempts exhausted during resume' }, run.id);
     return;
   }
   if (adv.delayMs && adv.delayMs > 0) {

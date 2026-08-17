@@ -175,9 +175,14 @@ export async function commitGraph(planId: string): Promise<boolean> {
         // (e.g. `available_dialogues`) are valid — keep scalars and primitive
         // arrays (string/number/boolean), and reject only unsupported nested
         // (map/array-of-object) values so canonical content is never silently lost.
-        const isPrimitiveArray = (v: unknown): boolean =>
-          Array.isArray(v) && (v.length === 0
-            || v.every((item) => typeof item === 'string' || typeof item === 'number' || typeof item === 'boolean'));
+        const isPrimitiveArray = (v: unknown): boolean => {
+          if (!Array.isArray(v) || v.length === 0) return Array.isArray(v);
+          // Require a homogeneous, Neo4j-compatible primitive type: mixed-type
+          // property lists are rejected by Neo4j and would abort commitGraph.
+          const base = typeof v[0];
+          return (base === 'string' || base === 'number' || base === 'boolean')
+            && v.every((item) => typeof item === base);
+        };
         const safeFields = Object.fromEntries(
           Object.entries(fields)
             .filter(([k]) => !reserved.has(k) && k !== 'name')
@@ -246,8 +251,8 @@ export async function commitGraph(planId: string): Promise<boolean> {
       const readDeltaIds = deltas.map((d) => d.id);
       if (readDeltaIds.length > 0) {
         await tx.run(
-          `MATCH (d:ContentDelta) WHERE d.id IN $ids DETACH DELETE d`,
-          { ids: readDeltaIds },
+          `MATCH (d:ContentDelta { planId: $planId }) WHERE d.id IN $ids DETACH DELETE d`,
+          { ids: readDeltaIds, planId: normalizedPlanId },
         );
       }
     });

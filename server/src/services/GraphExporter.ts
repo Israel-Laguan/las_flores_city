@@ -25,6 +25,7 @@ import {
   type ContentPlanItem,
   type ContentLink,
   type GraphDelta,
+  type GraphDeltaEdge,
   NODE_TYPE_TO_CONTENT_TYPE,
   findEdgeMapping,
   UNSUPPORTED_EDGE_TYPES,
@@ -61,44 +62,58 @@ function freshUuid(): string {
   return randomUUID();
 }
 
-// Resolve the canonical on-disk slug for a UUID-backed content entity by reading
-// its canonical name from the migrated OLTP content store. None of the
-// character/scene/dialogue/overlay/mystery tables carry a `slug` column (they
-// store `name`/`title` only — confirmed via server/src/database/migrations); the
-// on-disk directory slug is exactly `slugify(name|title)`, so we derive it from
-// the canonical name. Locations have no DB table (they live only in content YAML
-// under districts/*/locations/*), so callers must pass a fallback slug.
+// Resolve canonical on-disk slugs for UUID-backed content entities in BULK.
+// Individual OLTP round-trips per MODIFY delta make export latency grow linearly
+// with network/db latency; instead we group the deltas by node type and issue one
+// `WHERE id IN (...)` query per table, then build a `nodeType:nodeId → slug` index
+// reused by the delta loop. None of the character/scene/dialogue/overlay/mystery
+// tables carry a `slug` column (they store `name`/`title` only), so the slug is
+// derived as `slugify(name|title)`.
 //
 // A content-store failure must never abort the whole export (graph-less dev,
-// transient DB blip): on any error we log a warning and return undefined so the
-// caller falls back to the existing slug-derivation logic.
-const CANONICAL_NAME_QUERY: Partial<Record<string, string>> = {
-  Character: 'SELECT name FROM characters WHERE id = $1',
-  Scene: 'SELECT name FROM scenes WHERE id = $1',
-  Dialogue: 'SELECT name FROM dialogue_trees WHERE id = $1',
-  Overlay: 'SELECT name FROM dialogue_overlays WHERE id = $1',
-  Mission: 'SELECT title AS name FROM mysteries WHERE id = $1',
+// transient DB blip): on any error we log a warning and return an empty map so the
+// caller falls back to the existing slug-derivation logic for each delta.
+const CANONICAL_NAME_BULK_QUERY: Partial<Record<string, { table: string; column: string }>> = {
+  Character: { table: 'characters', column: 'name' },
+  Scene: { table: 'scenes', column: 'name' },
+  Dialogue: { table: 'dialogue_trees', column: 'name' },
+  Overlay: { table: 'dialogue_overlays', column: 'name' },
+  Mission: { table: 'mysteries', column: 'title' },
 };
 
-async function resolveCanonicalSlugFromStore(
-  nodeType: string,
-  nodeId: string,
-): Promise<string | undefined> {
-  const query = CANONICAL_NAME_QUERY[nodeType];
-  if (!query) return undefined; // Location, District — no DB table slug source
-  try {
-    const result = await queryOLTP<{ name: string }>(query, [nodeId]);
-    const name = result.rows[0]?.name;
-    if (!name) return undefined;
-    const slug = slugify(name);
-    return slug.length > 0 ? slug : undefined;
-  } catch (err) {
-    console.warn(
-      `[GraphExporter] content-store slug lookup failed for ${nodeType}:${nodeId}, falling back to merged name:`,
-      (err as Error).message,
-    );
-    return undefined;
+async function resolveCanonicalSlugsBulk(
+  deltas: GraphDelta[],
+): Promise<Map<string, string>> {
+  const uuidDeltas = deltas.filter(
+    (d) => d.op === 'MODIFY' && isUuid(d.nodeId),
+  );
+  const byType = new Map<string, string[]>();
+  for (const d of uuidDeltas) {
+    const list = byType.get(d.nodeType) ?? [];
+    list.push(d.nodeId);
+    byType.set(d.nodeType, list);
   }
+
+  const result = new Map<string, string>();
+  for (const [nodeType, ids] of byType) {
+    const meta = CANONICAL_NAME_BULK_QUERY[nodeType];
+    if (!meta || ids.length === 0) continue; // Location, District — no DB slug source
+    const placeholders = ids.map((_, i) => `$${i + 1}`).join(', ');
+    const query = `SELECT id, ${meta.column} AS name FROM ${meta.table} WHERE id IN (${placeholders})`;
+    try {
+      const rows = await queryOLTP<{ id: string; name: string }>(query, ids);
+      for (const row of rows.rows) {
+        const slug = slugify(row.name);
+        if (slug.length > 0) result.set(`${nodeType}:${row.id}`, slug);
+      }
+    } catch (err) {
+      console.warn(
+        `[GraphExporter] bulk content-store slug lookup failed for ${nodeType}, falling back per-delta:`,
+        (err as Error).message,
+      );
+    }
+  }
+  return result;
 }
 
 /** Build a plan item for one ADD/MODIFY delta (throws on unsupported node type). */
@@ -139,6 +154,113 @@ function buildItemForDelta(delta: GraphDelta, existingSlug?: string): ContentPla
   return item;
 }
 
+type Revision = Awaited<ReturnType<typeof buildMergedRevision>>;
+
+// Build one plan item per ADD/MODIFY delta, and an `itemKey → itemId` index for
+// downstream edge resolution. For MODIFY items, preserve the canonical entity's
+// existing slug (from the merged node or the bulk-resolved content store) so an
+// entity-name edit doesn't retarget a new file path and fail staging with
+// "Cannot update non-existent file".
+function buildItemsAndIndex(
+  deltas: GraphDelta[],
+  revision: Revision,
+  canonicalSlugByKey: Map<string, string>,
+): { items: ContentPlanItem[]; deltaItemId: Map<string, string> } {
+  const items: ContentPlanItem[] = [];
+  const deltaItemId = new Map<string, string>();
+  const existingSlugByKey = new Map<string, string>();
+  for (const node of revision.nodes) {
+    if (node.fields && typeof node.fields.slug === 'string' && /^[a-z0-9_]+$/.test(node.fields.slug)) {
+      existingSlugByKey.set(`${node.nodeType}:${node.nodeId}`, node.fields.slug);
+    }
+  }
+
+  for (const delta of deltas) {
+    if (delta.op !== 'ADD' && delta.op !== 'MODIFY') continue;
+    let existingSlug: string | undefined = delta.op === 'MODIFY'
+      ? existingSlugByKey.get(`${delta.nodeType}:${delta.nodeId}`)
+      : undefined;
+    // For UUID-backed MODIFY items the canonical graph seed never stores a `slug`
+    // field (only District does), so existingSlugByKey is empty and the item would
+    // otherwise fall through to the (possibly renamed) merged name and retarget a
+    // non-existent file path. Use the bulk-resolved canonical slug (from the
+    // content store) so the slug points at the EXISTING on-disk file; fall back to
+    // the merged node name otherwise.
+    if (delta.op === 'MODIFY' && !existingSlug && isUuid(delta.nodeId)) {
+      existingSlug = canonicalSlugByKey.get(`${delta.nodeType}:${delta.nodeId}`);
+      if (!existingSlug) {
+        const merged = revision.nodes.find(
+          (n) => n.nodeType === delta.nodeType && n.nodeId === delta.nodeId && n.name,
+        );
+        if (merged) existingSlug = slugify(merged.name!);
+      }
+    }
+    const item = buildItemForDelta(delta, existingSlug);
+    items.push(item);
+    deltaItemId.set(`${delta.nodeType}:${delta.nodeId}`, item.id);
+  }
+  return { items, deltaItemId };
+}
+
+// Resolve delta edges → either a direct field write (canonical/modify target,
+// using the stable entity identity) or a `ContentLink` (delta→delta target,
+// resolved on materialize). Throws `GraphExportError` on any unsupported,
+// unmapped, or orphaned edge.
+function resolveEdgeLinks(
+  deltaEdges: GraphDeltaEdge[],
+  deltaItemId: Map<string, string>,
+  items: ContentPlanItem[],
+  nameLookup: Map<string, string>,
+): ContentLink[] {
+  const links: ContentLink[] = [];
+  for (const edge of deltaEdges) {
+    if (UNSUPPORTED_EDGE_TYPES.has(edge.type)) {
+      throw new GraphExportError(
+        `Edge ${edge.sourceNodeType}>${edge.targetNodeType}:${edge.type} is unsupported for materialization (join table only)`,
+      );
+    }
+    const mapping = findEdgeMapping(edge.type, edge.sourceNodeType, edge.targetNodeType);
+    if (!mapping) {
+      throw new GraphExportError(
+        `Unmapped edge type ${edge.sourceNodeType}>${edge.targetNodeType}:${edge.type}`,
+      );
+    }
+
+    const sourceKey = `${edge.sourceNodeType}:${edge.sourceNodeId}`;
+    const sourceItemId = deltaItemId.get(sourceKey);
+    if (!sourceItemId) {
+      throw new GraphExportError(`Delta edge source ${sourceKey} has no matching plan item`);
+    }
+    const sourceItem = items.find((i) => i.id === sourceItemId)!;
+
+    const targetKey = `${edge.targetNodeType}:${edge.targetNodeId}`;
+    const targetItemId = deltaItemId.get(targetKey);
+
+    if (targetItemId) {
+      const targetItem = items.find((i) => i.id === targetItemId);
+      if (targetItem && targetItem.action === 'update') {
+        // MODIFY target is an existing canonical entity. Materialize the link as a
+        // direct field write using its stable identity (entity_id), NOT the
+        // transient plan-item id — otherwise the random item id is written as the
+        // foreign key and the relationship is lost.
+        const identity = targetItem.entity_id || edge.targetNodeId;
+        sourceItem.fields = { ...sourceItem.fields, [mapping.field]: identity };
+      } else {
+        // delta→delta (both new ADD entities): emit a ContentLink; resolveItem
+        // writes the field on materialize.
+        links.push({ fromItem: sourceItemId, toItem: targetItemId, field: mapping.field, action: 'set' });
+      }
+    } else {
+      // delta→canonical: write the mapped field value directly into the source item.
+      const value = mapping.value === 'name'
+        ? (nameLookup.get(targetKey) ?? edge.targetNodeId)
+        : edge.targetNodeId;
+      sourceItem.fields = { ...sourceItem.fields, [mapping.field]: value };
+    }
+  }
+  return links;
+}
+
 /** Build the export payload for one plan. Throws `GraphExportError` on a block. */
 export async function exportContentPlan(
   planId: string,
@@ -165,103 +287,12 @@ export async function exportContentPlan(
     if (node.name) nameLookup.set(`${node.nodeType}:${node.nodeId}`, node.name);
   }
 
-  // Build an item per ADD/MODIFY delta. Map key → item id for edge resolution.
-  // For MODIFY items, preserve the canonical entity's existing slug (when the
-  // merged node stores one) so an entity-name edit doesn't retarget a new file
-  // path and fail staging with "Cannot update non-existent file".
-  const items: ContentPlanItem[] = [];
-  const deltaItemId = new Map<string, string>();
-  const existingSlugByKey = new Map<string, string>();
-  for (const node of revision.nodes) {
-    if (node.fields && typeof node.fields.slug === 'string' && /^[a-z0-9_]+$/.test(node.fields.slug)) {
-      existingSlugByKey.set(`${node.nodeType}:${node.nodeId}`, node.fields.slug);
-    }
-  }
-
-  for (const delta of deltas) {
-    if (delta.op === 'ADD' || delta.op === 'MODIFY') {
-      let existingSlug: string | undefined = delta.op === 'MODIFY'
-        ? existingSlugByKey.get(`${delta.nodeType}:${delta.nodeId}`)
-        : undefined;
-      // For UUID-backed MODIFY items the canonical graph seed never stores a
-      // `slug` field (only District does), so existingSlugByKey is empty and the
-      // item would otherwise fall through to the (possibly renamed) merged name
-      // and retarget a non-existent file path. Resolve the canonical slug from
-      // the content store so the slug points at the EXISTING on-disk file.
-      if (delta.op === 'MODIFY' && !existingSlug && isUuid(delta.nodeId)) {
-        existingSlug = await resolveCanonicalSlugFromStore(delta.nodeType, delta.nodeId);
-        // Fallback (Location has no DB table; or a transient store error): use
-        // the merged node's existing name from the revision as the canonical slug
-        // hint. This keeps behavior no worse than before for those edge cases.
-        if (!existingSlug) {
-          const merged = revision.nodes.find(
-            (n) => n.nodeType === delta.nodeType && n.nodeId === delta.nodeId && n.name,
-          );
-          if (merged) existingSlug = slugify(merged.name!);
-        }
-      }
-      const item = buildItemForDelta(delta, existingSlug);
-      items.push(item);
-      deltaItemId.set(`${delta.nodeType}:${delta.nodeId}`, item.id);
-    }
-  }
-
-  // Resolve delta edges → field writes (canonical target) or ContentLinks (delta target).
-  const deltaEdges = await getDeltaEdgesForPlan(planId);
-  const links: ContentLink[] = [];
-
-  for (const edge of deltaEdges) {
-    if (UNSUPPORTED_EDGE_TYPES.has(edge.type)) {
-      throw new GraphExportError(
-        `Edge ${edge.sourceNodeType}>${edge.targetNodeType}:${edge.type} is unsupported for materialization (join table only)`,
-      );
-    }
-    const mapping = findEdgeMapping(edge.type, edge.sourceNodeType, edge.targetNodeType);
-    if (!mapping) {
-      throw new GraphExportError(
-        `Unmapped edge type ${edge.sourceNodeType}>${edge.targetNodeType}:${edge.type}`,
-      );
-    }
-
-    const sourceKey = `${edge.sourceNodeType}:${edge.sourceNodeId}`;
-    const sourceItemId = deltaItemId.get(sourceKey);
-    if (!sourceItemId) {
-      throw new GraphExportError(
-        `Delta edge source ${sourceKey} has no matching plan item`,
-      );
-    }
-    const sourceItem = items.find((i) => i.id === sourceItemId)!;
-
-    const targetKey = `${edge.targetNodeType}:${edge.targetNodeId}`;
-    const targetItemId = deltaItemId.get(targetKey);
-
-    if (targetItemId) {
-      const targetItem = items.find((i) => i.id === targetItemId);
-      if (targetItem && targetItem.action === 'update') {
-        // MODIFY target is an existing canonical entity. Materialize the link as a
-        // direct field write using its stable identity (entity_id), NOT the
-        // transient plan-item id — otherwise the random item id is written as the
-        // foreign key and the relationship is lost.
-        const identity = targetItem.entity_id || edge.targetNodeId;
-        sourceItem.fields = { ...sourceItem.fields, [mapping.field]: identity };
-      } else {
-        // delta→delta (both new ADD entities): emit a ContentLink; resolveItem
-        // writes the field on materialize.
-        links.push({
-          fromItem: sourceItemId,
-          toItem: targetItemId,
-          field: mapping.field,
-          action: 'set',
-        });
-      }
-    } else {
-      // delta→canonical: write the mapped field value directly into the source item.
-      const value = mapping.value === 'name'
-        ? (nameLookup.get(targetKey) ?? edge.targetNodeId)
-        : edge.targetNodeId;
-      sourceItem.fields = { ...sourceItem.fields, [mapping.field]: value };
-    }
-  }
+  // Bulk-resolve canonical slugs for UUID-backed MODIFY deltas up front (one
+  // query per content table) so the per-delta loop reuses an index instead of
+  // issuing one sequential OLTP round-trip per modified node.
+  const canonicalSlugByKey = await resolveCanonicalSlugsBulk(deltas);
+  const { items, deltaItemId } = buildItemsAndIndex(deltas, revision, canonicalSlugByKey);
+  const links = resolveEdgeLinks(await getDeltaEdgesForPlan(planId), deltaItemId, items, nameLookup);
 
   const plan: ContentPlan = {
     id: planId,

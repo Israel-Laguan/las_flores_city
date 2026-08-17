@@ -14,7 +14,8 @@ import { emitAdminEvent } from './AdminEventEmitter.js';
 async function failWithHarnessReport(
   planId: string,
   harnessReport: HarnessReport,
-  userId?: string,
+  userId: string | undefined,
+  runToken: string | undefined,
 ): Promise<void> {
   const blocking = harnessReport.findings.filter(f => f.severity === 'error');
   const message = blocking.map(f => f.message).join('; ');
@@ -39,7 +40,7 @@ async function failWithHarnessReport(
     status: 'failed',
     verificationReport,
     error: `Validation harness blocked approval: ${message}`,
-  });
+  }, runToken);
   emitAdminEvent('plan_failed', { status: 'failed', error: message, harness: harnessReport }, planId, userId);
 }
 
@@ -49,7 +50,8 @@ async function failWithVerificationReport(
   publishResult: PublishResult,
   migrationResult: MigrationResult,
   verificationReport: VerificationReport,
-  userId?: string,
+  userId: string | undefined,
+  runToken: string | undefined,
 ): Promise<void> {
   await queryOLTP(
     'UPDATE content_plans SET status = $1, verification_report = $2, updated_at = NOW() WHERE id = $3',
@@ -62,7 +64,7 @@ async function failWithVerificationReport(
     migration: migrationResult,
     verificationReport,
     error: verificationReport.errors[0] || 'Verification failed',
-  });
+  }, runToken);
   const failMessage = verificationReport.errors[0] || 'Verification failed';
   emitAdminEvent('plan_failed', { status: 'failed', error: failMessage }, planId, userId);
 }
