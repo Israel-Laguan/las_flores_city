@@ -14,13 +14,13 @@
   "dependencies": {
     "dotenv": "~17.4.2",
     "ioredis": "~5.11.1",
-    "pg": "~8.22.0"
+    "pg": "~8.23.0"
   },
   "devDependencies": {
     "@types/node": "~20.19.43",
-    "@types/pg": "~8.20.0",
-    "@typescript-eslint/eslint-plugin": "~8.66.0",
-    "@typescript-eslint/parser": "~8.66.0",
+    "@types/pg": "~8.21.0",
+    "@typescript-eslint/eslint-plugin": "~8.67.0",
+    "@typescript-eslint/parser": "~8.67.0",
     "eslint": "~10.8.0",
     "typescript": "~5.9.3"
   }

@@ -29,9 +29,9 @@
     "fill-todos": "tsx src/scripts/fillExistingTodos.ts"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "~3.1105.0",
-    "@aws-sdk/cloudfront-signer": "~3.1098.0",
-    "@aws-sdk/s3-request-presigner": "~3.1105.0",
+    "@aws-sdk/client-s3": "~3.1110.0",
+    "@aws-sdk/cloudfront-signer": "~3.1108.0",
+    "@aws-sdk/s3-request-presigner": "~3.1110.0",
     "@las-flores/infra": "*",
     "bcryptjs": "~3.0.3",
     "cors": "~2.8.6",
@@ -39,10 +39,10 @@
     "express": "~5.2.1",
     "glob": "~13.0.6",
     "ioredis": "~5.11.1",
-    "js-yaml": "~5.2.2",
+    "js-yaml": "~5.3.0",
     "jsonwebtoken": "~9.0.3",
     "neo4j-driver": "~5.28.0",
-    "pg": "~8.22.0",
+    "pg": "~8.23.0",
     "zod": "~4.4.3"
   },
   "devDependencies": {
@@ -53,7 +53,7 @@
     "@types/js-yaml": "~4.0.9",
     "@types/jsonwebtoken": "~9.0.10",
     "@types/node": "~20.19.43",
-    "@types/pg": "~8.20.0",
+    "@types/pg": "~8.21.0",
     "@types/supertest": "~7.2.1",
     "fast-check": "~4.9.0",
     "jest": "~30.4.2",
