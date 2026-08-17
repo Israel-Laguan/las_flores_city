@@ -26,17 +26,24 @@ export const MAX_CAS_RETRIES = 4;
  * newer snapshot: the merge always keeps the further-along status while still
  * applying the patch's non-status fields (stage/publish/migration/etc.).
  */
+// Progress ordinal for the merge guard. `failed` is deliberately NOT a progress
+// state — it is a terminal status and must never out-rank the resumable progress
+// statuses. Keeping it out lets a resumed run's `staging`/`migrating`/`verifying`/
+// `verified` writes replace a prior `failed` status, while a genuine `failed`
+// write still always wins explicitly in mergeStatus.
 const STATUS_ORDER: SolidifyJobStatus['status'][] = [
   'pending',
   'staging',
   'migrating',
   'verifying',
   'verified',
-  'failed',
 ];
 function statusOrdinal(s: SolidifyJobStatus['status']): number {
   const i = STATUS_ORDER.indexOf(s);
-  return i === -1 ? 0 : i;
+  // `failed` (and any unknown status) is not a progress state: return the lowest
+  // ordinal so a progress write always advances past it. `pending`/`failed` are
+  // handled explicitly in mergeStatus.
+  return i === -1 ? -1 : i;
 }
 
 /**
@@ -69,9 +76,13 @@ function mergeStatus(
   // the previous run's stale status throughout its execution.
   const mergedStatus = patchStatus === 'pending'
     ? 'pending'
-    : statusOrdinal(patchStatus) >= statusOrdinal(baseStatus)
-      ? patchStatus
-      : baseStatus;
+    // A genuine failure is always surfaced (terminal), regardless of the current
+    // base status.
+    : patchStatus === 'failed'
+      ? 'failed'
+      : statusOrdinal(patchStatus) >= statusOrdinal(baseStatus)
+        ? patchStatus
+        : baseStatus;
 
   const merged: SolidifyJobStatus = {
     ...existing,
@@ -175,12 +186,15 @@ export async function setJobStatus(
       }
       return;
     }
-    // code === 2: snapshot conflict → retry after a brief backoff.
+    // code === 2 (snapshot conflict) and code === -1 (infrastructure error — a
+    // connection/EVAL failure surfaced by the CAS helper, distinct from the 0
+    // stale-run drop) are both retryable: re-read a fresher snapshot / re-attempt
+    // the write after a brief backoff, and surface the failure if retries run out.
     attempt += 1;
     if (attempt >= MAX_CAS_RETRIES) {
-      console.warn(
+      console.error(
         `[StoryBuilderJobStatus] Giving up on status write for plan ${planId} ` +
-        `(token ${runToken}) after ${MAX_CAS_RETRIES} snapshot-conflict retries`,
+        `(token ${runToken}) after ${MAX_CAS_RETRIES} attempts (last CAS code ${code})`,
       );
       return;
     }

@@ -281,6 +281,22 @@ export async function resumeSolidify(planId: string, userId?: string): Promise<v
     );
   }
 
+  // A resume MUST carry the original run's ownership token so its status writes
+  // flow through the compare-and-set (CAS) guard. Without one — cache evicted
+  // AND the durable job run has no run_token (e.g. a pre-074 run) — the writes
+  // below would fall into unguarded `legacy` mode and could silently replace a
+  // (possibly newer) run's stage/publish/migration. Reject the resume so it can
+  // never clobber another run's state; mark the retry failed so it stops here.
+  if (!runToken) {
+    console.warn(
+      `[story-builder] Refusing to resume solidify for plan ${planId}: no runToken ` +
+      '(cache evicted and job run has no run_token); cannot resume in unguarded legacy mode.',
+    );
+    await updateJobRun(run.id, { status: 'failed', error: 'Cannot resume: missing run_token' });
+    await setJobStatus(planId, { status: 'failed', error: 'Cannot resume: missing run_token' });
+    return;
+  }
+
   const adv = await nextAttempt(planId, 'solidify');
   if (adv.exhausted) {
     await updateJobRun(run.id, { status: 'failed', error: 'Attempts exhausted during resume' });

@@ -81,4 +81,34 @@ describe('StoryBuilderJobStatus.setJobStatus — version CAS', () => {
     // Per-run fields from the prior run must be cleared on reset.
     expect(merged.stage).toBeUndefined();
   });
+
+  test('infrastructure error (code -1) is retried until it succeeds (distinct from owner-mismatch 0)', async () => {
+    mockGetCache.mockResolvedValue(EXISTING);
+    mockCas.mockResolvedValueOnce(-1).mockResolvedValueOnce(1);
+    await setJobStatus('p0000000-0000-0000-0000-000000000001', { status: 'staging' }, 'mine');
+    expect(mockCas).toHaveBeenCalledTimes(2);
+  });
+
+  test('gives up after the bounded retry budget on repeated infrastructure errors', async () => {
+    mockGetCache.mockResolvedValue(EXISTING);
+    mockCas.mockResolvedValue(-1);
+    await setJobStatus('p0000000-0000-0000-0000-000000000001', { status: 'staging' }, 'mine');
+    expect(mockCas.mock.calls.length).toBe(MAX_CAS_RETRIES);
+  });
+
+  test("a resumed run's staging write replaces a prior failed status (failed is not higher-progress)", async () => {
+    mockGetCache.mockResolvedValue({ ...EXISTING, status: 'failed', error: 'prev failure' });
+    mockCas.mockResolvedValue(1);
+    await setJobStatus('p0000000-0000-0000-0000-000000000001', { status: 'staging' }, 'mine');
+    const merged = mockCas.mock.calls[0][1] as any;
+    expect(merged.status).toBe('staging');
+  });
+
+  test('a genuine failure write always applies (terminal), even over a progress status', async () => {
+    mockGetCache.mockResolvedValue({ ...EXISTING, status: 'staging' });
+    mockCas.mockResolvedValue(1);
+    await setJobStatus('p0000000-0000-0000-0000-000000000001', { status: 'failed', error: 'boom' }, 'mine');
+    const merged = mockCas.mock.calls[0][1] as any;
+    expect(merged.status).toBe('failed');
+  });
 });

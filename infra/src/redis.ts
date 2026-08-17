@@ -176,7 +176,8 @@ export async function deleteCache(key: string): Promise<boolean> {
 //   mode = 'legacy' -> unconditional overwrite (no token guard)
 //
 // Return codes: 1 = written, 0 = dropped (owner mismatch), 2 = dropped
-// (snapshot/version conflict — caller should retry).
+// (snapshot/version conflict — caller should retry), -1 = infrastructure error
+// (connection/EVAL failure; caller may retry — distinct from the 0 stale-run drop).
 const CAS_SET_CACHE_LUA = `
 local key = KEYS[1]
 local mode = ARGV[1]
@@ -253,7 +254,10 @@ export async function casSetCache(
     return result;
   } catch (error) {
     console.error('CAS cache set error:', error);
-    return 0;
+    // -1 = infrastructure error. Distinct from 0 (owner mismatch) so callers do
+    // not mistake a Redis/EVAL failure for a stale-run drop and silently lose the
+    // status update; they retry/surface it instead.
+    return -1;
   }
 }
 

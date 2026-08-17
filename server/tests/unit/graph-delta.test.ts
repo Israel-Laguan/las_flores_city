@@ -309,7 +309,7 @@ describe('GraphDeltaService — revision builders (deltas + edges + resolved nam
         const rec = (o: Record<string, unknown>) => ({ toObject: () => o });
         const c = String(cypher);
         if (c.includes('ORDER BY d.createdAt')) {
-          return { records: [rec({ d: { properties: { id: REV_DELTA_ID, planId: REV_PLAN_ID, nodeType: 'Scene', nodeId: REV_SCENE_ID, op: 'ADD', fields: {}, createdAt: '2026-08-15T00:00:00.000Z' } } })] };
+          return { records: [rec({ d: { properties: { id: REV_DELTA_ID, planId: REV_PLAN_ID, nodeType: 'Scene', nodeId: REV_SCENE_ID, op: 'ADD', fieldsJson: JSON.stringify({ name: 'Scene B' }), createdAt: '2026-08-15T00:00:00.000Z' } } })] };
         }
         if (c.includes('type(r) AS type')) {
           return { records: [rec({ sourceNodeType: 'Scene', sourceNodeId: REV_SCENE_ID, targetNodeType: 'District', targetNodeId: REV_DISTRICT_ID, type: 'IN_DISTRICT', planId: REV_PLAN_ID })] };
@@ -321,13 +321,21 @@ describe('GraphDeltaService — revision builders (deltas + edges + resolved nam
       }),
     };
 
+    // Persisted deltas are stored as `fieldsJson`; toGraphDelta parses that into
+    // the delta's `fields`, which buildPlanRevisionFromDeltasAndEdges folds into
+    // the revision. Model the real persisted shape (not `fields: {}`) and assert
+    // the parsed value participates in the seed.
+    const revDeltaWithFields = { ...revDelta, fields: { name: 'Scene B' } };
     const rev = await getPlanDeltaRevisionWithEdges(REV_PLAN_ID);
     // Same snapshot (deltas + edge + resolved District name) → same revision.
     const losPart = nameValuedEdgeRevisionPart(revEdge, 'Los Andes');
-    expect(rev).toBe(buildPlanRevisionFromDeltasAndEdges([revDelta], [revEdge], [losPart]));
+    expect(rev).toBe(buildPlanRevisionFromDeltasAndEdges([revDeltaWithFields], [revEdge], [losPart]));
+    // fieldsJson is actually parsed (not dropped): if it were, the revision would
+    // match the empty-fields seed instead.
+    expect(rev).not.toBe(buildPlanRevisionFromDeltasAndEdges([revDelta], [revEdge], [losPart]));
     // A base District rename with unchanged deltas/edges flips the revision.
     const elPart = nameValuedEdgeRevisionPart(revEdge, 'El Prado');
-    expect(rev).not.toBe(buildPlanRevisionFromDeltasAndEdges([revDelta], [revEdge], [elPart]));
+    expect(rev).not.toBe(buildPlanRevisionFromDeltasAndEdges([revDeltaWithFields], [revEdge], [elPart]));
   });
 
   test('getPlanDeltaRevisionWithEdges: disabled returns the empty deltas+edges revision', async () => {

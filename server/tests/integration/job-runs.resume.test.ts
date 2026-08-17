@@ -29,8 +29,9 @@ async function applyMigration(filename: string): Promise<void> {
   );
   // Run on the locked client so the DDL actually executes under the advisory
   // lock (a separate pool connection via queryOLTP would not be). No catch:
-  // migrations 047/062 are fully idempotent (CREATE ... IF NOT EXISTS), so any
-  // thrown error is a genuine connection/syntax failure that must not be swallowed.
+  // migrations 047/062/074 are fully idempotent (CREATE ... IF NOT EXISTS /
+  // ADD COLUMN IF NOT EXISTS), so any thrown error is a genuine connection/syntax
+  // failure that must not be swallowed.
   await withSchemaLock(async (client) => {
     await client.query(sql);
   });

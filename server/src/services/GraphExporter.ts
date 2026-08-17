@@ -67,6 +67,13 @@ function slugify(value: string): string {
     .replace(/^_+|_+$/g, '');
 }
 
+// Normalize a canonical slug map key so an uppercase delta UUID and a lowercase
+// stored UUID (and vice versa) land on the same entry. Non-UUID keys (e.g. an
+// ADD slug) are preserved unchanged, matching how `isUuid` decides identity.
+function canonicalSlugKey(nodeType: string, nodeId: string): string {
+  return `${nodeType}:${isUuid(nodeId) ? nodeId.toLowerCase() : nodeId}`;
+}
+
 function freshUuid(): string {
   return randomUUID();
 }
@@ -130,7 +137,7 @@ async function resolveLocationSlugs(
         // directory instead.
         const slug = path.basename(path.dirname(file));
         if (slug.length > 0) {
-          result.set(`Location:${data.id}`, slug);
+          result.set(canonicalSlugKey('Location', String(data.id)), slug);
         }
       }
     } catch (err) {
@@ -166,7 +173,7 @@ async function resolveCanonicalSlugsBulk(
       const rows = await queryOLTP<{ id: string; name: string }>(query, ids);
       for (const row of rows.rows) {
         const slug = slugify(row.name);
-        if (slug.length > 0) result.set(`${nodeType}:${row.id}`, slug);
+        if (slug.length > 0) result.set(canonicalSlugKey(nodeType, row.id), slug);
       }
     } catch (err) {
       console.warn(
@@ -269,7 +276,7 @@ function buildItemsAndIndex(
     // author never intended and orphan the existing file. Blocking surfaces a
     // clear GraphExportError that the orchestrator converts to PlanStatusError.
     if (delta.op === 'MODIFY' && !existingSlug && isUuid(delta.nodeId)) {
-      existingSlug = canonicalSlugByKey.get(`${delta.nodeType}:${delta.nodeId}`);
+      existingSlug = canonicalSlugByKey.get(canonicalSlugKey(delta.nodeType, delta.nodeId));
       if (!existingSlug) {
         throw new GraphExportError(
           `Cannot resolve the canonical on-disk slug for ${delta.nodeType} ${delta.nodeId} during export; refusing to retarget a possibly-renamed path. Run resync:graph so the content store and graph agree, then retry.`,

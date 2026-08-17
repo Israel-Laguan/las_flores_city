@@ -38,9 +38,10 @@ jest.mock('../../src/services/GraphDeltaService.js', () => ({
   // Local stub mirroring the real edge-identity-aware revision seed part so the
   // captured seed strings match what the exporter would pass to
   // buildPlanRevisionFromDeltasAndEdges (a bare sorted name list would miss a
-  // swapped-edge rename).
+  // swapped-edge rename). Matches the production helper's JSON.stringify([...])
+  // array format exactly so a future change to that format is caught here.
   nameValuedEdgeRevisionPart: (e: GraphDeltaEdge, name: string) =>
-    `${e.sourceNodeType}|${e.sourceNodeId}|${e.targetNodeType}|${e.targetNodeId}|${e.type}|${name}`,
+    JSON.stringify([e.sourceNodeType, e.sourceNodeId, e.targetNodeType, e.targetNodeId, e.type, name]),
   buildPlanRevisionFromDeltas: jest.fn(() => REVISION_ID),
   buildPlanRevisionFromDeltasAndEdges: jest.fn(
     (_del: GraphDelta[], _edges: GraphDeltaEdge[], resolved: readonly string[] = []) => {
@@ -292,5 +293,17 @@ describe('GraphExporter — output is a valid ContentPlan', () => {
     mockDeltas.mockResolvedValue([makeDelta({ op: 'MODIFY', fields: { name: 'Edited', personality: 'x' } })]);
     const plan = await exportContentPlan(PLAN_ID, 'desc');
     expect(() => ContentPlanSchema.parse(plan)).not.toThrow();
+  });
+
+  test('uppercase delta UUID resolves a canonical slug stored in lowercase (canonical slug keys are UUID-case-normalized)', async () => {
+    const upperNodeId = CHAR_ID.toUpperCase();
+    mockRevision.mockResolvedValue({ planId: PLAN_ID, nodes: [], edges: [], deltaEdges: [] });
+    mockDeltas.mockResolvedValue([makeDelta({ op: 'MODIFY', nodeId: upperNodeId, fields: { name: 'Edited', personality: 'x' } })]);
+    // The content store holds the canonical UUID in lowercase; the exporter must
+    // still resolve it against the uppercase delta UUID thanks to key normalization.
+    mockQueryOLTP.mockResolvedValue({ rows: [{ id: CHAR_ID, name: 'Canonical Character' }] });
+    const item = (await exportContentPlan(PLAN_ID, 'desc')).items[0];
+    expect(item.action).toBe('update');
+    expect(item.slug).toBe('canonical_character');
   });
 });

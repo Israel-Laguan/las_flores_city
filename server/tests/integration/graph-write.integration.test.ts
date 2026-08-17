@@ -236,13 +236,13 @@ describe('M28 graph write path (Neo4j-backed, optional)', () => {
     expect(plan.items.find((i) => i.type === 'scene')?.fields).toMatchObject({ district: 'Los Andes' });
     const exportedRevision = plan._meta?.plan_revision;
     // Stable snapshot: deltas + edge + resolved District name are identical.
-    expect(getPlanDeltaRevisionWithEdges(PLAN_ID)).toBe(exportedRevision);
+    await expect(getPlanDeltaRevisionWithEdges(PLAN_ID)).resolves.toBe(exportedRevision);
 
     // Rename the canonical District with NO delta/edge change.
     await upsertContentNode({ nodeType: 'District', nodeId: DISTRICT_D, name: 'Los Andes Renamed', canonicalFields: {} });
 
     // The revalidation must now differ — the approve gate would abort & re-export.
-    expect(getPlanDeltaRevisionWithEdges(PLAN_ID)).not.toBe(exportedRevision);
+    await expect(getPlanDeltaRevisionWithEdges(PLAN_ID)).resolves.not.toBe(exportedRevision);
 
     // Restore the baseline District name so later tests stay deterministic.
     await upsertContentNode({ nodeType: 'District', nodeId: DISTRICT_D, name: 'Los Andes', canonicalFields: {} });

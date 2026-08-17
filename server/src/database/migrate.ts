@@ -81,6 +81,98 @@ async function calculateChecksum(filePath: string): Promise<string> {
   return crypto.createHash('sha256').update(content).digest('hex');
 }
 
+/**
+ * Apply one migration file on a pinned client. `transactional` migrations run
+ * inside a single BEGIN/COMMIT with a transaction-scoped advisory lock. The
+ * client MUST be pinned for the whole check/apply/record sequence so the lock
+ * and the migration transaction share one session (a plain pool.query lock would
+ * live on a different session and never serialize concurrently).
+ *
+ * `nontransactional` migrations (e.g. 075) cannot run inside a transaction
+ * because they issue COMMIT inside PL/pgSQL bodies or use CREATE/DROP INDEX
+ * CONCURRENTLY. They run in autocommit mode under a session-level advisory lock,
+ * with each statement executed as its own client.query() — a single multi-statement
+ * query would be wrapped in an implicit transaction, making the in-body COMMIT
+ * illegal (2D000). The schema_migrations record is written per-file afterwards.
+ */
+async function applyMigrationFile(
+  client: PoolClient,
+  dbName: string,
+  filename: string,
+  transactional: boolean,
+): Promise<void> {
+  const version = parseVersion(filename);
+  const filePath = path.join(MIGRATIONS_DIR, filename);
+
+  try {
+    await fs.access(filePath);
+  } catch {
+    return;
+  }
+
+  const lockKey = hashText(`migration:${dbName}`);
+
+  if (transactional) {
+    await client.query('BEGIN');
+    try {
+      // A transaction-scoped advisory lock is only meaningful inside a transaction;
+      // in autocommit it would commit and release instantly, defeating serialization.
+      await client.query('SELECT pg_advisory_xact_lock($1)', [lockKey]);
+
+      const alreadyApplied = await isAppliedOn(client, dbName, version);
+      if (alreadyApplied) {
+        await client.query('COMMIT');
+        return;
+      }
+
+      const checksum = await calculateChecksum(filePath);
+      const rawSql = await fs.readFile(filePath, 'utf-8');
+      // Strip only the file-level BEGIN/COMMIT so the wrapper's own transaction is
+      // the only one; schema changes + the schema_migrations record commit together.
+      const sql = stripFileLevelTransactionControl(rawSql);
+
+      console.log(`[migrate] Applying ${filename} to ${dbName}...`);
+      // Single transaction so a failure/interrupted run can never strand a
+      // half-applied migration (e.g. a PL/pgSQL function failing to recompile).
+      await client.query(sql);
+      await recordMigration(client, dbName, version, filename, checksum);
+      await client.query('COMMIT');
+      console.log(`[migrate] ✓ ${filename} applied to ${dbName}`);
+    } catch (err: any) {
+      await client.query('ROLLBACK');
+      console.error(`[migrate] ✗ ${filename} failed on ${dbName}: ${err.message}`);
+      throw err;
+    }
+    return;
+  }
+
+  // Nontransactional: session-level (not xact) lock so concurrent runners still
+  // serialize WITHOUT opening a transaction — CREATE/DROP INDEX CONCURRENTLY and
+  // in-body COMMIT are illegal inside one.
+  await client.query('SELECT pg_advisory_lock($1)', [lockKey]);
+  try {
+    const alreadyApplied = await isAppliedOn(client, dbName, version);
+    if (alreadyApplied) return;
+
+    const checksum = await calculateChecksum(filePath);
+    const rawSql = await fs.readFile(filePath, 'utf-8');
+    // Strip only file-level BEGIN/COMMIT; statements inside $$ bodies (including
+    // COMMIT) are preserved for autocommit execution.
+    const sql = stripFileLevelTransactionControl(rawSql);
+
+    console.log(`[migrate] Applying ${filename} to ${dbName} (nontransactional)...`);
+    // Execute each statement as its own autocommit query so an in-body COMMIT is
+    // legal (a single multi-statement query would open an implicit transaction).
+    for (const stmt of splitStatements(sql)) {
+      await client.query(stmt);
+    }
+    await recordMigration(client, dbName, version, filename, checksum);
+    console.log(`[migrate] ✓ ${filename} applied to ${dbName}`);
+  } finally {
+    await client.query('SELECT pg_advisory_unlock($1)', [lockKey]);
+  }
+}
+
 async function applySQLMigrations(): Promise<void> {
   const targetsRaw = await fs.readFile(TARGETS_PATH, 'utf-8');
   const targets: MigrateTargets = JSON.parse(targetsRaw);
@@ -91,154 +183,49 @@ async function applySQLMigrations(): Promise<void> {
     { name: 'las_flores', key: 'oltp' },
     { name: 'las_flores_analytics', key: 'olap' },
   ];
+  const validDbNames = new Set(dbConfigs.map((d) => d.name));
 
-  // Nontransactional migrations (e.g. 075) cannot run inside a transaction
-  // block because they issue COMMIT inside PL/pgSQL bodies or use
-  // CREATE/DROP INDEX CONCURRENTLY. They are executed in autocommit mode with
-  // a session-level advisory lock instead, in their own pass below — they are
-  // NOT applied via the per-database loops, so a file must live in exactly
-  // one array (per the one-migration-one-database rule). The target database
-  // for each is encoded in migration-targets.json so a nontransactional
-  // migration belonging to the OLAP database is not silently applied to OLTP.
-  const nontransactionalFiles = new Set(Object.keys(targets.nontransactional || {}));
+  const nontransactional = targets.nontransactional || {};
 
-  for (const db of dbConfigs) {
-    const files = targets[db.key];
-    if (!files) continue;
-
-    const sorted = [...files].sort((a, b) => {
-      const va = parseInt(parseVersion(a), 10);
-      const vb = parseInt(parseVersion(b), 10);
-      return va - vb;
-    });
-
-    for (const filename of sorted) {
-      if (nontransactionalFiles.has(filename)) continue;
-
-      const version = parseVersion(filename);
-      const filePath = path.join(MIGRATIONS_DIR, filename);
-
-      try {
-        await fs.access(filePath);
-      } catch {
-        continue;
-      }
-
-      const pool = db.key === 'oltp' ? oltpPool : olapPool;
-
-      // Pin ONE client for the entire check/apply/record sequence so the
-      // advisory lock and the migration transaction share the same session.
-      // A plain `pool.query` advisory lock would live on a different pooled
-      // session than the transaction client — PostgreSQL advisory locks are
-      // session-scoped, so that would NOT reliably serialize concurrent runners
-      // and an unlock could run on the wrong session.
-      const client = await pool.connect();
-      try {
-        const lockKey = hashText(`migration:${db.name}`);
-
-        // Transactional migration: open a single transaction immediately and
-        // acquire the migration lock INSIDE it. A transaction-scoped advisory
-        // lock (pg_advisory_xact_lock) is only meaningful within a transaction
-        // — issuing it in autocommit mode would commit and release it
-        // instantly, defeating serialization. Running the applied-check, SQL
-        // apply, and recordMigration inside the same transaction also
-        // guarantees the lock (and the migration) release atomically on
-        // COMMIT/ROLLBACK and can never leak if any step throws.
-        await client.query('BEGIN');
-        try {
-          await client.query('SELECT pg_advisory_xact_lock($1)', [lockKey]);
-
-          const alreadyApplied = await isAppliedOn(client, db.name, version);
-          if (alreadyApplied) {
-            await client.query('COMMIT');
-            continue;
-          }
-
-          const checksum = await calculateChecksum(filePath);
-          const rawSql = await fs.readFile(filePath, 'utf-8');
-          // Strip the file-level BEGIN/COMMIT so the wrapper's own transaction
-          // is the only one; schema changes and the schema_migrations record
-          // then commit atomically.
-          const sql = stripFileLevelTransactionControl(rawSql);
-
-          console.log(`[migrate] Applying ${filename} to ${db.name}...`);
-
-          // Run the whole file in a single transaction so a failure (or an
-          // interrupted run) can never strand a half-applied migration — e.g.
-          // a partially-created PL/pgSQL function that would fail to recompile
-          // on the next `CREATE OR REPLACE` and surface as a `pl_comp.c` error.
-          // The schema_migrations record is written inside the same
-          // transaction, so success and bookkeeping are atomic. The advisory
-          // lock is held for the duration of this transaction and released
-          // automatically on COMMIT.
-          await client.query(sql);
-          await recordMigration(client, db.name, version, filename, checksum);
-          await client.query('COMMIT');
-          console.log(`[migrate] ✓ ${filename} applied to ${db.name}`);
-        } catch (err: any) {
-          await client.query('ROLLBACK');
-          console.error(`[migrate] ✗ ${filename} failed on ${db.name}: ${err.message}`);
-          throw err;
-        }
-      } finally {
-        client.release();
-      }
+  // Fail fast on a typo/unsupported dbName in migration-targets.json. A silent
+  // fallback to oltpPool (as an unvalidated ternary would) could run an OLAP
+  // migration against OLTP — exactly the mis-targeting this pass exists to prevent.
+  for (const [filename, dbName] of Object.entries(nontransactional)) {
+    if (!validDbNames.has(dbName)) {
+      throw new Error(`Unsupported migration database target "${dbName}" for ${filename}`);
     }
   }
 
-  // Nontransactional pass: files listed in `nontransactional` are applied in
-  // autocommit mode (no wrapping transaction) so they may issue COMMIT inside
-  // PL/pgSQL bodies or CREATE/DROP INDEX CONCURRENTLY. They are intentionally
-  // absent from the per-database arrays above so they run exactly once here.
-  // Each entry maps its filename to the database it targets (encoded in
-  // migration-targets.json), so a nontransactional migration for the OLAP
-  // database is applied to `las_flores_analytics`, not OLTP.
-  const nontransactionalEntries = Object.entries(targets.nontransactional || {}).sort(
-    (a, b) => parseInt(parseVersion(a[0]), 10) - parseInt(parseVersion(b[0]), 10),
-  );
-  for (const [filename, dbName] of nontransactionalEntries) {
-    const version = parseVersion(filename);
-    const filePath = path.join(MIGRATIONS_DIR, filename);
+  // Nontransactional migrations run in autocommit mode (see applyMigrationFile).
+  // Its per-file target database is encoded in migration-targets.json, so an OLAP
+  // nontransactional migration is applied to las_flores_analytics, not OLTP.
+  //
+  // Both modes are applied per-database in ONE version-ordered stream, so a
+  // nontransactional migration that precedes a later transactional migration for
+  // the same database runs in the correct order (not after the whole db loop).
+  for (const db of dbConfigs) {
+    const transactionalFiles = targets[db.key] ?? [];
+    const nontransactionalFiles = Object.entries(nontransactional)
+      .filter(([, dbName]) => dbName === db.name)
+      .map(([filename]) => filename);
 
-    try {
-      await fs.access(filePath);
-    } catch {
-      continue;
-    }
+    // Merge without duplicates (a file lives in exactly one place per the
+    // one-migration-one-database rule; the defensive dedupe keeps this robust).
+    const planned = new Map<string, boolean>();
+    for (const f of transactionalFiles) planned.set(f, true);
+    for (const f of nontransactionalFiles) planned.set(f, false);
+    const files = [...planned.entries()]
+      .sort((a, b) => parseInt(parseVersion(a[0]), 10) - parseInt(parseVersion(b[0]), 10))
+      .map(([filename, isTransactional]) => ({ filename, isTransactional }));
 
-    const pool = dbName === 'las_flores_analytics' ? olapPool : oltpPool;
-    const client = await pool.connect();
-    try {
-      // Session-level advisory lock so concurrent runners still serialize
-      // without opening a transaction (CREATE/DROP INDEX CONCURRENTLY and
-      // in-body COMMIT are illegal inside one).
-      const lockKey = hashText(`migration:${dbName}`);
-      await client.query('SELECT pg_advisory_lock($1)', [lockKey]);
+    const pool = db.key === 'oltp' ? oltpPool : olapPool;
+    for (const { filename, isTransactional } of files) {
+      const client = await pool.connect();
       try {
-        const alreadyApplied = await isAppliedOn(client, dbName, version);
-        if (alreadyApplied) continue;
-
-        const checksum = await calculateChecksum(filePath);
-        const rawSql = await fs.readFile(filePath, 'utf-8');
-        // Strip only file-level BEGIN/COMMIT; statements inside $$ bodies
-        // (including COMMIT) are preserved for autocommit execution.
-        const sql = stripFileLevelTransactionControl(rawSql);
-
-        console.log(`[migrate] Applying ${filename} to ${dbName} (nontransactional)...`);
-        // Execute each statement as its own autocommit query. A single
-        // multi-statement query would be wrapped in an implicit transaction
-        // block, making the in-body COMMIT illegal (2D000). Splitting avoids
-        // that and keeps the batched backfill's per-batch COMMITs valid.
-        for (const stmt of splitStatements(sql)) {
-          await client.query(stmt);
-        }
-        await recordMigration(client, dbName, version, filename, checksum);
-        console.log(`[migrate] ✓ ${filename} applied to ${dbName}`);
+        await applyMigrationFile(client, db.name, filename, isTransactional);
       } finally {
-        await client.query('SELECT pg_advisory_unlock($1)', [lockKey]);
+        client.release();
       }
-    } finally {
-      client.release();
     }
   }
 }
