@@ -1,5 +1,6 @@
 import { queryOLTP } from '@las-flores/infra';
 import type { JobRun, JobType, JobStatus } from '@las-flores/shared';
+import type { PoolClient } from 'pg';
 import { backoffDelayMs } from '../utils/retryBackoff.js';
 
 /**
@@ -69,24 +70,33 @@ export interface StartJobRunOptions {
   runToken?: string;
 }
 
+const INSERT_JOB_RUN_SQL = `INSERT INTO job_runs (plan_id, job_type, status, attempt, max_attempts, run_token)
+     VALUES ($1, $2, 'running', 1, $3, $4)
+     RETURNING *`;
+
 /** Create a fresh `running` job run for a plan + job type. Returns the row (with id). */
 export async function startJobRun(
   planId: string,
   jobType: JobType,
   opts?: StartJobRunOptions,
+  client?: PoolClient,
 ): Promise<JobRun> {
   // NOTE: the default job budget (max_attempts = 3) is intentionally smaller
   // than RETRY_MAX_ATTEMPTS (6), which is the per-request retry cap used inside
   // AssetGenerationService. Each *job attempt* re-enters the whole pipeline
   // (re-running many LLM calls), so the job budget is a separate, tighter policy
   // than the per-call retry curve. Callers may override via `opts.maxAttempts`.
-  const result = await queryOLTP<JobRunRow>(
-    `INSERT INTO job_runs (plan_id, job_type, status, attempt, max_attempts, run_token)
-     VALUES ($1, $2, 'running', 1, $3, $4)
-     RETURNING *`,
-    [planId, jobType, opts?.maxAttempts ?? 3, opts?.runToken ?? null],
-  );
-  return mapRow(result.rows[0]);
+  //
+  // When `client` is supplied the INSERT runs inside that caller's existing
+  // transaction (e.g. under a `content_plans` row lock), keeping run creation
+  // serialized with the legacy-resume ownership check in the orchestrator.
+  const params: [string, JobType, number, string | null] = [
+    planId, jobType, opts?.maxAttempts ?? 3, opts?.runToken ?? null,
+  ];
+  const row = client
+    ? (await client.query<JobRunRow>(INSERT_JOB_RUN_SQL, params)).rows[0]
+    : (await queryOLTP<JobRunRow>(INSERT_JOB_RUN_SQL, params)).rows[0];
+  return mapRow(row);
 }
 
 /** Load a single job run by id. Returns null when not found. */

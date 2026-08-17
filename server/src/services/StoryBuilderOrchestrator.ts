@@ -167,6 +167,12 @@ export async function approveAndSolidifyPlan(planId: string, userId?: string): P
     }
   }
 
+  // Issue a fresh run token up front so stale terminal writes from a prior run
+  // can be rejected, and so the durable job-runs row created inside the
+  // transaction (below) can carry it.
+  const runToken = randomUUID();
+  let jobRunId: string | undefined;
+
   // M28: bind the export to the graph revision it was built from. A concurrent
   // applyDelta/applyDeltaEdge (Neo4j) between the export read above and the
   // re-check below would change the plan's delta set or edges. To minimize the
@@ -221,28 +227,30 @@ export async function approveAndSolidifyPlan(planId: string, userId?: string): P
       );
     }
 
-    // 1. Lock the plan and set pending status.
+    // 1. Lock the plan and set pending status. We hold the `content_plans`
+    //    row lock (`FOR UPDATE`) for the rest of the transaction.
     await ContentPlanService.setStatus(planId, 'pending', client);
+
+    // 2b. Create the durable job-runs row INSIDE the same transaction and under
+    //     the plan-row lock. This synchronizes run insertion with the legacy
+    //     resume ownership check in `resumeSolidify` (which takes the same row
+    //     lock `FOR UPDATE`): because both serialize on the plan row, a legacy
+    //     resume can only observe a `job_runs` state that already includes this
+    //     newer run, so it can never flip the plan back to `failed` behind a
+    //     newer approve-and-solidify. Creating the run outside the lock (as
+    //     before) left a window where the plan was `pending` but no new run row
+    //     existed yet, letting a concurrent legacy resume see the OLD run and
+    //     clobber the plan to `failed`. If the table is unavailable the whole
+    //     transaction rolls back and the caller surfaces the error instead of
+    //     leaving a half-created run.
+    const run = await startJobRun(planId, 'solidify', { runToken }, client);
+    jobRunId = run.id;
   });
 
   // 2. Write initial cache status only after the transaction commits, so a
   //    commit failure cannot leave a stale pending cache entry. Issue a fresh
   //    run token so stale terminal writes from a prior run can be rejected.
-  const runToken = randomUUID();
   await setJobStatus(planId, { status: 'pending' }, runToken);
-
-  // 2b. Create a durable job-runs row so the solidify job can be resumed from
-  //     its last persisted stage if this process dies mid-way (M22). The runToken
-  //     is persisted in the DB so it survives cache eviction. Best-effort:
-  //     if the job_runs table is unavailable we fall back to the legacy
-  //     fire-and-forget behavior (no resume).
-  let jobRunId: string | undefined;
-  try {
-    const run = await startJobRun(planId, 'solidify', { runToken });
-    jobRunId = run.id;
-  } catch (err) {
-    console.warn(`[story-builder] Could not create job run for ${planId}:`, (err as Error).message);
-  }
 
   // 3. Fire async solidify OUTSIDE the transaction.
   //    Errors are caught and persisted to status by runSolidify.

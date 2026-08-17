@@ -219,6 +219,59 @@ describe('job_runs resume integration', () => {
     expect(legacy!.id).toBe(newer.id);
   });
 
+  it('legacy resume does not flip plan after a newer approve committed pending + run', async () => {
+    // Regression for the cubic finding: when an approval has committed `pending`
+    // AND inserted its newer job_runs row (both under the content_plans row lock
+    // in approveAndSolidifyPlan), a concurrent legacy resume that takes the same
+    // row lock must observe the NEWER run as latest and no-op instead of flipping
+    // the plan to a terminal `failed`. Previously the run row was inserted OUTSIDE
+    // the lock, leaving a window where the plan was `pending` but the old run was
+    // still the latest — letting the legacy resume clobber it to `failed` and
+    // block /verify. This test pins the serialized invariant.
+    await queryOLTP('DELETE FROM job_runs WHERE plan_id = $1', [TEST_PLAN_ID]);
+    // Plan left `staged` by the old resumable run (the state a legacy resume
+    // would normally flip to `failed`).
+    await queryOLTP(
+      `INSERT INTO content_plans (id, description, plan_json, status)
+       VALUES ($1, 'resume-legacy', '{}'::jsonb, 'staged')
+       ON CONFLICT (id) DO UPDATE SET status = 'staged', plan_json = '{}'::jsonb`,
+      [TEST_PLAN_ID],
+    );
+    await deleteCache(`${JOB_CACHE_PREFIX}${TEST_PLAN_ID}`);
+
+    // OLD legacy resumable run created FIRST (no run_token, the stale one a
+    // legacy resume would act on).
+    await queryOLTP(
+      `INSERT INTO job_runs (plan_id, job_type, status, attempt, max_attempts, run_token)
+       VALUES ($1, 'solidify', 'resumable', 1, 3, NULL)`,
+      [TEST_PLAN_ID],
+    );
+    // NEWER run now owns the plan (this is exactly what approveAndSolidifyPlan
+    // inserts under the row lock: status running, carrying the fresh run_token,
+    // and the plan is `pending`/`staging`).
+    const newer = await startJobRun(TEST_PLAN_ID, 'solidify', { runToken: 'f0000000-e29b-41d4-a716-4466554400bb' });
+    // The approve also sets the plan to `pending` (nonterminal, owned by newer).
+    await queryOLTP('UPDATE content_plans SET status = $1 WHERE id = $2', ['pending', TEST_PLAN_ID]);
+
+    await resumeSolidify(TEST_PLAN_ID);
+
+    // The newer run owns the plan, so the legacy resume must be a no-op: the
+    // plan stays nonterminal and is NOT clobbered to `failed`.
+    const plan = await queryOLTP<{ status: string }>(
+      'SELECT status FROM content_plans WHERE id = $1', [TEST_PLAN_ID],
+    );
+    expect(plan.rows[0].status).toBe('pending');
+
+    // The newer run remains alive (not failed by the stale legacy resume).
+    const newerRun = await getJobRunById(newer.id);
+    expect(newerRun!.status).toBe('running');
+
+    // The old legacy resumable run is untouched (resumeSolidify only ever acts
+    // on the newest run; it never flips the older one to failed here).
+    const legacy = await getJobRun(TEST_PLAN_ID, 'solidify');
+    expect(legacy!.id).toBe(newer.id);
+  });
+
   it('legacy no-token resume flips the plan when its own run is the latest', async () => {
     // Complements the test above: when the legacy resumable run IS the latest
     // solidify run (no newer run exists), the no-token branch reaches the
