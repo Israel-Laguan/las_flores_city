@@ -53,53 +53,112 @@ export function stripFileLevelTransactionControl(sql: string): string {
 // own autocommit transaction, so an in-body COMMIT is legal.
 //
 // Top-level transaction control (BEGIN/COMMIT/ROLLBACK) was already stripped by
-// stripFileLevelTransactionControl, so we only need to break on statement
-// boundaries while keeping $$ ... $$ bodies intact.
+// stripFileLevelTransactionControl, so we only break on real statement
+// boundaries and keep `$tag$ ... $tag$` bodies (tag = "" for `$$`) intact. The
+// splitter is SQL-aware: a `;` inside a single-quoted string literal, a line or
+// block comment, or a `$...$` body never terminates a statement, and a
+// `;` that is followed on the same line by a trailing `--` comment still counts
+// as a terminator (the trailing comment is inert and is carried with the next
+// statement).
 export function splitStatements(sql: string): string[] {
   const out: string[] = [];
   let buf = '';
-  let inDollarBlock = false;
-  let dollarTag = '';
-  const lines = sql.split('\n');
-  for (const raw of lines) {
-    const trimmed = raw.trim();
-    if (trimmed.length === 0) {
-      buf += raw + '\n';
+  // Tag of the dollar-quoted body we are inside (`''` for `$$`), or null when
+  // not inside one. Semicolons inside a body are part of the routine's SQL and
+  // must never split the script.
+  let dollarTag: string | null = null;
+  let i = 0;
+
+  while (i < sql.length) {
+    // Inside a `$tag$ ... $tag$` body: only the matching closing delimiter ends
+    // it; everything in between (including `;`, quotes and comments) is inert.
+    if (dollarTag !== null) {
+      const delim = `$${dollarTag}$`;
+      if (sql.startsWith(delim, i)) {
+        buf += delim;
+        i += delim.length;
+        dollarTag = null;
+      } else {
+        buf += sql[i];
+        i += 1;
+      }
       continue;
     }
-    if (!inDollarBlock) {
-      // Find the first `$$` opening (with optional tag) anywhere in the line.
-      // A tag is `$$tag$`; an untagged opener is `$$` at end-of-line.
-      const openMatch = trimmed.match(/\$\$(\w*)\$?/);
-      if (openMatch) {
-        const tag = openMatch[1] ?? '';
-        const after = trimmed.slice(openMatch.index! + openMatch[0].length);
-        const closeRe = new RegExp(`\\$${tag}\\$`);
-        if (closeRe.test(after)) {
-          // Open and close on the same line — not a block spanning lines.
-          buf += raw + '\n';
-          if (buf.trim()) {
-            out.push(buf.trim());
-            buf = '';
-          }
+
+    const ch = sql[i];
+    const next = sql[i + 1];
+
+    // Single-quoted string literal: `''` is an escaped quote inside the literal.
+    if (ch === "'") {
+      buf += ch;
+      i += 1;
+      while (i < sql.length) {
+        if (sql[i] === "'") {
+          if (sql[i + 1] === "'") { buf += "''"; i += 2; continue; }
+          buf += "'";
+          i += 1;
+          break;
+        }
+        buf += sql[i];
+        i += 1;
+      }
+      continue;
+    }
+
+    // Line comment `-- ...` runs to the end of the line.
+    if (ch === '-' && next === '-') {
+      while (i < sql.length && sql[i] !== '\n') {
+        buf += sql[i];
+        i += 1;
+      }
+      continue;
+    }
+
+    // Block comment `/* ... */`.
+    if (ch === '/' && next === '*') {
+      buf += '/*';
+      i += 2;
+      while (i < sql.length) {
+        if (sql[i] === '*' && sql[i + 1] === '/') { buf += '*/'; i += 2; break; }
+        buf += sql[i];
+        i += 1;
+      }
+      continue;
+    }
+
+    // Dollar-quote opener (`$$` or `$tag$`). Treat it as an opener only when a
+    // matching closing delimiter appears later; a lone `$` is a literal char.
+    if (ch === '$') {
+      const m = sql.slice(i).match(/^\$(?:[A-Za-z_][A-Za-z0-9_]*\$|\$)/);
+      if (m) {
+        const delim = m[0];
+        if (sql.indexOf(delim, i + delim.length) !== -1) {
+          buf += delim;
+          i += delim.length;
+          dollarTag = delim.slice(1, -1);
           continue;
         }
-        inDollarBlock = true;
-        dollarTag = tag;
       }
-    } else {
-      const closeRe = new RegExp(`\\$${dollarTag}\\$`);
-      if (closeRe.test(trimmed)) {
-        inDollarBlock = false;
-        dollarTag = '';
-      }
+      buf += ch;
+      i += 1;
+      continue;
     }
-    buf += raw + '\n';
-    if (!inDollarBlock && /;\s*$/.test(raw)) {
-      if (buf.trim()) out.push(buf.trim());
+
+    // A semicolon outside strings/comments/dollar bodies terminates a statement.
+    if (ch === ';') {
+      buf += ch;
+      i += 1;
+      const stmt = buf.trim();
+      if (stmt) out.push(stmt);
       buf = '';
+      continue;
     }
+
+    buf += ch;
+    i += 1;
   }
-  if (buf.trim()) out.push(buf.trim());
-  return out.filter(s => s.length > 0);
+
+  const tail = buf.trim();
+  if (tail) out.push(tail);
+  return out;
 }

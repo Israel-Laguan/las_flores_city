@@ -286,14 +286,19 @@ export async function resumeSolidify(planId: string, userId?: string): Promise<v
   // AND the durable job run has no run_token (e.g. a pre-074 run) — the writes
   // below would fall into unguarded `legacy` mode and could silently replace a
   // (possibly newer) run's stage/publish/migration. Reject the resume so it can
-  // never clobber another run's state; mark the retry failed so it stops here.
+  // never clobber another run's state.
+  //
+  // We mark THIS job run failed in the DB (scoped by run.id, and it flips its
+  // status away from `resumable` so it stops here), but we deliberately do NOT
+  // touch the shared plan-status cache: we hold no token to guard that write
+  // with, and a write without one is exactly the unguarded `legacy` overwrite
+  // that could clobber a newer run's cached status.
   if (!runToken) {
     console.warn(
       `[story-builder] Refusing to resume solidify for plan ${planId}: no runToken ` +
       '(cache evicted and job run has no run_token); cannot resume in unguarded legacy mode.',
     );
     await updateJobRun(run.id, { status: 'failed', error: 'Cannot resume: missing run_token' });
-    await setJobStatus(planId, { status: 'failed', error: 'Cannot resume: missing run_token' });
     return;
   }
 

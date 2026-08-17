@@ -83,3 +83,49 @@ $$;`;
     expect(splitStatements('   \n  \n')).toEqual([]);
   });
 });
+
+describe('splitStatements — SQL-aware edge cases', () => {
+  test('does not split on semicolons inside a single-quoted string literal', () => {
+    const sql = `CREATE TABLE t (a text);
+INSERT INTO t (a) VALUES ('hello; world');
+SELECT 'a;b' AS v;`;
+    const stmts = splitStatements(sql);
+    expect(stmts).toHaveLength(3);
+    expect(stmts[1]).toBe("INSERT INTO t (a) VALUES ('hello; world');");
+    expect(stmts[2]).toBe("SELECT 'a;b' AS v;");
+  });
+
+  test('keeps a TAGGED dollar-quoted body ($tag$ ... $tag$) intact', () => {
+    const sql = `CREATE OR REPLACE FUNCTION tagged() RETURNS INT AS $fn$
+BEGIN
+  RETURN 7; -- comment with a ; inside the body
+END;
+$fn$ LANGUAGE plpgsql;
+SELECT tagged();`;
+    const stmts = splitStatements(sql);
+    expect(stmts).toHaveLength(2);
+    expect(stmts[0]).toContain('RETURN 7;');
+    expect(stmts[0]).toContain('$fn$ LANGUAGE plpgsql;');
+    expect(stmts[1]).toBe('SELECT tagged();');
+  });
+
+  test('splits on a semicolon followed by a trailing -- comment (terminator before comment)', () => {
+    const sql = `CALL foo(); -- trailing comment
+DROP PROCEDURE IF EXISTS foo();`;
+    const stmts = splitStatements(sql);
+    expect(stmts).toHaveLength(2);
+    expect(stmts[0]).toBe('CALL foo();');
+    expect(stmts[1]).toContain('DROP PROCEDURE IF EXISTS foo();');
+  });
+
+  test('does not split on semicolons inside a block comment', () => {
+    const sql = `CREATE TABLE t (a INT); /* note; mid-comment */
+SELECT 1;`;
+    const stmts = splitStatements(sql);
+    expect(stmts).toHaveLength(2);
+    // The commented `;` must not terminate: stmts[1] carries the inert comment
+    // plus the real SELECT statement as one unit.
+    expect(stmts[1]).toContain('mid-comment');
+    expect(stmts[1]).toContain('SELECT 1;');
+  });
+});
