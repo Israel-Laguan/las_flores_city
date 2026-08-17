@@ -21,8 +21,14 @@ const CONTENT_DIR = path.resolve(__dirname, '../../../content');
 interface MigrateTargets {
   oltp: string[];
   olap: string[];
-  /** Migrations that must run OUTSIDE a transaction (e.g. CREATE INDEX CONCURRENTLY). */
-  nontransactional?: string[];
+  /**
+   * Migrations that must run OUTSIDE a transaction (e.g. CREATE INDEX
+   * CONCURRENTLY or in-body COMMIT). Each entry maps the migration filename to
+   * the database it targets, so the nontransactional pass does not have to
+   * assume a single database. A file must therefore live in exactly one place
+   * (per the one-migration-one-database rule).
+   */
+  nontransactional?: Record<string, string>;
 }
 
 async function ensureSchemaMigrationsTable(): Promise<void> {
@@ -131,8 +137,10 @@ async function applySQLMigrations(): Promise<void> {
   // CREATE/DROP INDEX CONCURRENTLY. They are executed in autocommit mode with
   // a session-level advisory lock instead, in their own pass below — they are
   // NOT applied via the per-database loops, so a file must live in exactly
-  // one array (per the one-migration-one-database rule).
-  const nontransactionalFiles = new Set(targets.nontransactional || []);
+  // one array (per the one-migration-one-database rule). The target database
+  // for each is encoded in migration-targets.json so a nontransactional
+  // migration belonging to the OLAP database is not silently applied to OLTP.
+  const nontransactionalFiles = new Set(Object.keys(targets.nontransactional || {}));
 
   for (const db of dbConfigs) {
     const files = targets[db.key];
@@ -222,10 +230,13 @@ async function applySQLMigrations(): Promise<void> {
   // autocommit mode (no wrapping transaction) so they may issue COMMIT inside
   // PL/pgSQL bodies or CREATE/DROP INDEX CONCURRENTLY. They are intentionally
   // absent from the per-database arrays above so they run exactly once here.
-  // These always target the OLTP database (job_runs, etc.).
-  for (const filename of [...(targets.nontransactional || [])].sort((a, b) =>
-    parseInt(parseVersion(a), 10) - parseInt(parseVersion(b), 10)
-  )) {
+  // Each entry maps its filename to the database it targets (encoded in
+  // migration-targets.json), so a nontransactional migration for the OLAP
+  // database is applied to `las_flores_analytics`, not OLTP.
+  const nontransactionalEntries = Object.entries(targets.nontransactional || {}).sort(
+    (a, b) => parseInt(parseVersion(a[0]), 10) - parseInt(parseVersion(b[0]), 10),
+  );
+  for (const [filename, dbName] of nontransactionalEntries) {
     const version = parseVersion(filename);
     const filePath = path.join(MIGRATIONS_DIR, filename);
 
@@ -235,8 +246,8 @@ async function applySQLMigrations(): Promise<void> {
       continue;
     }
 
-    const dbName = 'las_flores';
-    const client = await oltpPool.connect();
+    const pool = dbName === 'las_flores_analytics' ? olapPool : oltpPool;
+    const client = await pool.connect();
     try {
       // Session-level advisory lock so concurrent runners still serialize
       // without opening a transaction (CREATE/DROP INDEX CONCURRENTLY and

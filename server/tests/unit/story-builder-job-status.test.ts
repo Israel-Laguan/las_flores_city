@@ -71,4 +71,14 @@ describe('StoryBuilderJobStatus.setJobStatus — version CAS', () => {
     const expectedVersion = mockCas.mock.calls[0][5];
     expect(expectedVersion).toBe('v1');
   });
+
+  test('pending initializer resets a prior terminal status (verified/failed) to pending', async () => {
+    mockGetCache.mockResolvedValue({ ...EXISTING, status: 'verified', stage: 'done' });
+    mockCas.mockResolvedValue(1);
+    await setJobStatus('p0000000-0000-0000-0000-000000000001', { status: 'pending' }, 'fresh');
+    const merged = mockCas.mock.calls[0][1] as any;
+    expect(merged.status).toBe('pending');
+    // Per-run fields from the prior run must be cleared on reset.
+    expect(merged.stage).toBeUndefined();
+  });
 });

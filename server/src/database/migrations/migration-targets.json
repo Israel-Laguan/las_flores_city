@@ -67,9 +67,9 @@
     "074_job_runs_run_token.sql",
     "075_job_runs_run_token_backfill.sql"
   ],
-  "nontransactional": [
-    "075_job_runs_run_token_backfill.sql"
-  ],
+  "nontransactional": {
+    "075_job_runs_run_token_backfill.sql": "las_flores"
+  },
   "olap": [
     "000_schema_migrations.sql",
     "002_analytics_schema.sql",

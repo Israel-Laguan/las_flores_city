@@ -62,9 +62,16 @@ function mergeStatus(
   // non-status fields on top of the newer status instead of regressing it.
   const patchStatus = status.status ?? existing?.status ?? 'pending';
   const baseStatus = existing?.status ?? 'pending';
-  const mergedStatus = statusOrdinal(patchStatus) >= statusOrdinal(baseStatus)
-    ? patchStatus
-    : baseStatus;
+  // A `pending` initializer is an explicit reset for a NEW run: it must always
+  // take over, even when the cache holds a terminal status (`verified`/`failed`)
+  // from a prior run. The monotonic merge below would otherwise keep the old
+  // terminal status and skip the per-run-field cleanup, so a retry would report
+  // the previous run's stale status throughout its execution.
+  const mergedStatus = patchStatus === 'pending'
+    ? 'pending'
+    : statusOrdinal(patchStatus) >= statusOrdinal(baseStatus)
+      ? patchStatus
+      : baseStatus;
 
   const merged: SolidifyJobStatus = {
     ...existing,
