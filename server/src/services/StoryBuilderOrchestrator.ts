@@ -1,4 +1,4 @@
-import { ContentPlanSchema, type VerificationReport } from '@las-flores/shared';
+import { ContentPlanSchema, type VerificationReport, type ContentPlan } from '@las-flores/shared';
 import { queryOLTP, withOLTPTransaction, getCache } from '@las-flores/infra';
 import { ContentPlanService } from './ContentPlanService.js';
 import {
@@ -105,8 +105,38 @@ export interface SolidifyResult {
  * `GET /plans/:id/status` for progress.
  */
 export async function approveAndSolidifyPlan(planId: string, userId?: string): Promise<SolidifyResult> {
-  // Serialize concurrent approve-and-solidify calls per-plan using an
-  // advisory lock held for the duration of the transaction.
+  // --- M28 graph-authoritative path (OUTSIDE the OLTP transaction) ---
+  // Drift detection + export hit Neo4j and the whole content store; running
+  // them inside the advisory/row lock would stall approvals (and other plans'
+  // approvals behind the advisory lock) if Neo4j is slow. Pre-compute the
+  // exported plan here, then re-validate inside the transaction and persist it
+  // only if the status is still approvable.
+  let exported: ContentPlan | null = null;
+  if (isNeo4jEnabled()) {
+    const deltas = await getDeltasForPlan(planId);
+    if (deltas.length > 0) {
+      const drift = await detectGraphDrift();
+      if (!drift.inSync) {
+        throw new PlanStatusError(
+          `Graph has drifted from the content store (orphan: ${drift.orphanNodes.length}, missing: ${drift.missingNodes.length}, orphanEdges: ${drift.orphanEdges.length}, missingEdges: ${drift.missingEdges.length}). Run \`npm run resync:graph\` before approving.`,
+        );
+      }
+      try {
+        const planRow = await queryOLTP<{ description: string }>(
+          'SELECT plan_json->>\'description\' AS description FROM content_plans WHERE id = $1',
+          [planId],
+        );
+        const description = planRow.rows[0]?.description ?? 'Graph-authored plan';
+        exported = await exportContentPlan(planId, description);
+      } catch (err) {
+        if (err instanceof GraphExportError) {
+          throw new PlanStatusError(err.message);
+        }
+        throw err;
+      }
+    }
+  }
+
   await withOLTPTransaction(async (client) => {
     await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [planId]);
 
@@ -125,36 +155,14 @@ export async function approveAndSolidifyPlan(planId: string, userId?: string): P
 
     ContentPlanSchema.parse(load.rows[0].plan_json);
 
-    // --- M28 graph-authoritative path ---
-    // When Neo4j is enabled AND this plan carries deltas, the graph is the sole
-    // authoring entry point: validate the graph is in sync (drift guard) and
-    // re-export the ContentPlan from the merged revision into plan_json BEFORE
-    // the status flip commits. Legacy path (graph off, or no deltas) keeps the
-    // existing plan_json untouched.
-    if (isNeo4jEnabled()) {
-      const deltas = await getDeltasForPlan(planId);
-      if (deltas.length > 0) {
-        const drift = await detectGraphDrift();
-        if (!drift.inSync) {
-          throw new PlanStatusError(
-            `Graph has drifted from the content store (orphan: ${drift.orphanNodes.length}, missing: ${drift.missingNodes.length}, orphanEdges: ${drift.orphanEdges.length}, missingEdges: ${drift.missingEdges.length}). Run \`npm run resync:graph\` before approving.`,
-          );
-        }
-        try {
-          const exported = await exportContentPlan(planId, load.rows[0].plan_json.description ?? 'Graph-authored plan');
-          // Persist the exported plan with a one-shot revision identity before
-          // the pending flip commits, so runSolidify stages this exported plan.
-          await client.query(
-            'UPDATE content_plans SET plan_json = $1, updated_at = NOW() WHERE id = $2',
-            [exported, planId],
-          );
-        } catch (err) {
-          if (err instanceof GraphExportError) {
-            throw new PlanStatusError(err.message);
-          }
-          throw err;
-        }
-      }
+    // Persist the pre-computed export only if this plan still carries deltas
+    // and is still approvable (status may have changed between the read above
+    // and now — the FOR UPDATE lock guards that window).
+    if (exported) {
+      await client.query(
+        'UPDATE content_plans SET plan_json = $1, updated_at = NOW() WHERE id = $2',
+        [exported, planId],
+      );
     }
 
     // 1. Lock the plan and set pending status.

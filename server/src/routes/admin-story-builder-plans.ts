@@ -5,7 +5,7 @@ import { queryOLTP } from '@las-flores/infra';
 import { contentPlanService } from '../services/ContentPlanService.js';
 import { emitAdminEvent } from '../services/AdminEventEmitter.js';
 import { isNeo4jEnabled } from '../services/Neo4jClient.js';
-import { getDeltasForPlan } from '../services/GraphDeltaService.js';
+import { getDeltasForPlan, clearDeltasForPlan } from '../services/GraphDeltaService.js';
 
 export const adminStoryBuilderPlansRouter = express.Router();
 
@@ -142,7 +142,16 @@ adminStoryBuilderPlansRouter.put('/plans/:id', async (req, res) => {
     // entry point for plans that carry deltas. Direct plan_json edits bypass the
     // merge/export path, so reject them (the dual-path drop).
     if (isNeo4jEnabled()) {
-      const deltas = await getDeltasForPlan(id);
+      // Fail closed when the graph service is enabled but unreachable: never fall
+      // back to treating an unavailable graph as an empty delta set (which would
+      // let a plan_json edit clobber graph-authored deltas).
+      let deltas;
+      try {
+        deltas = await getDeltasForPlan(id);
+      } catch {
+        res.status(503).json({ success: false, error: 'graph authoring service unavailable', timestamp: new Date().toISOString() });
+        return;
+      }
       if (deltas.length > 0) {
         res.status(400).json({ success: false, error: 'plan authored via graph deltas; edit through the graph canvas, not plan_json', timestamp: new Date().toISOString() });
         return;
@@ -195,6 +204,16 @@ adminStoryBuilderPlansRouter.delete('/plans/:id', async (req, res) => {
     if (result.rows.length === 0) {
       res.status(404).json({ success: false, error: 'Plan not found', timestamp: new Date().toISOString() });
       return;
+    }
+
+    // M28 — best-effort clean up the plan's graph deltas so orphan
+    // :ContentDelta nodes don't linger after the plan row is gone.
+    if (isNeo4jEnabled()) {
+      try {
+        await clearDeltasForPlan(id);
+      } catch (err) {
+        console.warn('[story-builder] delta cleanup failed for deleted plan', id, (err as Error).message);
+      }
     }
 
     res.json({ success: true, data: { deleted: true }, timestamp: new Date().toISOString() });

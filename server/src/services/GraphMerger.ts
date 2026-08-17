@@ -12,6 +12,7 @@
 // ============================================================
 
 import { isNeo4jEnabled, runNeo4jTransaction } from './Neo4jClient.js';
+import { withGraphWriteLock } from './graphLock.js';
 import { getMergedView } from './GraphQueryService.js';
 import type { GraphMergedView } from '@las-flores/shared';
 import {
@@ -24,6 +25,7 @@ import {
   type GraphDelta,
   type GraphDeltaEdge,
   type GraphEdge,
+  findEdgeMapping,
 } from '@las-flores/shared';
 
 /** A merged revision = merged view + the plan's delta edges (resolved). */
@@ -38,8 +40,10 @@ export interface GraphMergedRevision extends GraphMergedView {
  * Returns an empty revision when Neo4j is disabled.
  */
 export async function buildMergedRevision(planId: string): Promise<GraphMergedRevision> {
-  const merged = await getMergedView(planId);
-  const deltaEdges = await getDeltaEdgesForPlan(planId);
+  const [merged, deltaEdges] = await Promise.all([
+    getMergedView(planId),
+    getDeltaEdgesForPlan(planId),
+  ]);
   return { ...merged, deltaEdges };
 }
 
@@ -78,7 +82,9 @@ export async function detectGraphDrift(): Promise<GraphDriftReport> {
     Promise.all([
       runNeo4jTransaction(async (tx) => {
         const res = await tx.run(
-          `MATCH (c:Content) WHERE c.planId IS null RETURN c.nodeType AS t, c.nodeId AS n`,
+          `MATCH (c:Content) WHERE c.planId IS null
+             AND (c.isEvidence IS NULL OR c.isEvidence = false)
+           RETURN c.nodeType AS t, c.nodeId AS n`,
         );
         return res.records.map((r) => ({ t: r.get('t'), n: String(r.get('n')) }));
       }),
@@ -86,6 +92,8 @@ export async function detectGraphDrift(): Promise<GraphDriftReport> {
         const res = await tx.run(
           `MATCH (a:Content)-[r]->(b:Content)
            WHERE a.planId IS null AND b.planId IS null
+             AND (a.isEvidence IS NULL OR a.isEvidence = false)
+             AND (b.isEvidence IS NULL OR b.isEvidence = false)
            RETURN a.nodeType AS st, a.nodeId AS sn, type(r) AS type, b.nodeType AS tt, b.nodeId AS tn`,
         );
         return res.records.map((r) => ({
@@ -138,10 +146,13 @@ export async function detectGraphDrift(): Promise<GraphDriftReport> {
  */
 export async function commitGraph(planId: string): Promise<boolean> {
   if (!isNeo4jEnabled()) return false;
-  const normalizedPlanId = planId.toLowerCase();
-  try {
-    await runNeo4jTransaction(async (tx) => {
-      const deltas = await getDeltasForPlan(normalizedPlanId);
+  // Serialize with graph resync so a full re-derive and a plan promotion cannot
+  // interleave writes to the same canonical nodes.
+  return withGraphWriteLock(async () => {
+    const normalizedPlanId = planId.toLowerCase();
+    try {
+      await runNeo4jTransaction(async (tx) => {
+      const deltas = await getDeltasForPlan(normalizedPlanId, tx);
 
       for (const delta of deltas) {
         if (delta.op === 'DELETE') {
@@ -157,13 +168,16 @@ export async function commitGraph(planId: string): Promise<boolean> {
         const fields = delta.fields ?? {};
         const name = typeof fields.name === 'string' ? fields.name : '';
         const reserved = new Set(['key', 'nodeType', 'nodeId', 'planId', 'isEvidence']);
+        // Neo4j node properties cannot be nested maps/arrays, so only keep
+        // scalar values (and drop anything else) when building `$props`.
         const safeFields = Object.fromEntries(
-          Object.entries(fields).filter(([k]) => !reserved.has(k) && k !== 'name'),
+          Object.entries(fields)
+            .filter(([k]) => !reserved.has(k) && k !== 'name')
+            .filter(([, v]) => v == null || typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean'),
         );
         await tx.run(
           `MERGE (c:Content { key: $key })
-           ON CREATE SET c = $props
-           ON MATCH SET c += $props`,
+           SET c = $props`,
           {
             key: `${delta.nodeType}:${delta.nodeId}`,
             props: {
@@ -182,9 +196,22 @@ export async function commitGraph(planId: string): Promise<boolean> {
       // resolver resolves a delta endpoint to its canonical identity:
       //   - ADD delta    → the new canonical node (now upserted above)
       //   - MODIFY/DELTA → same (nodeType,nodeId) canonical node
-      const deltaEdges = await getDeltaEdgesForPlan(normalizedPlanId);
+      const deltaEdges = await getDeltaEdgesForPlan(normalizedPlanId, tx);
       for (const edge of deltaEdges) {
         if (!/^[A-Z][A-Z_0-9]*$/.test(edge.type)) continue;
+        // Relationship-backed fields are single-valued per source (a dialogue's
+        // scene_id/character_id/mission_id, an overlay's target_tree_id/
+        // mission_id, a scene's district IN_DISTRICT). When such a field changes,
+        // the previous canonical relationship of the same type must be removed so
+        // the graph agrees with the store after commit.
+        const mapping = findEdgeMapping(edge.type, edge.sourceNodeType, edge.targetNodeType);
+        if (mapping) {
+          await tx.run(
+            `MATCH (a:Content { nodeType: $st, nodeId: $sn })-[r:${edge.type}]->(x:Content)
+             DELETE r`,
+            { st: edge.sourceNodeType, sn: edge.sourceNodeId },
+          );
+        }
         await tx.run(
           `MATCH (a:Content { nodeType: $st, nodeId: $sn })
            MATCH (b:Content { nodeType: $tt, nodeId: $tn })
@@ -206,9 +233,10 @@ export async function commitGraph(planId: string): Promise<boolean> {
     });
     return true;
   } catch (err) {
-    console.warn(`[GraphMerger] commitGraph for plan ${planId} failed (graph is derived; SQL/YAML authoritative):`, (err as Error).message);
-    return false;
-  }
+  console.warn(`[GraphMerger] commitGraph for plan ${planId} failed (graph is derived; SQL/YAML authoritative):`, (err as Error).message);
+  return false;
+}
+});
 }
 
 // Re-export the delta primitives the resync/gate tools build on, so callers

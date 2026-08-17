@@ -3,8 +3,7 @@ import type { AuthRequest } from '../middleware/auth.js';
 import { authAndAdminMiddleware } from '../middleware/adminAuth.js';
 import { isNeo4jEnabled } from '../services/Neo4jClient.js';
 import { buildMergedRevision, detectGraphDrift } from '../services/GraphMerger.js';
-import { gatherBaseGraphData } from '../services/GraphSeedSource.js';
-import { upsertContentNode, upsertContentRelationship } from '../services/GraphBaseService.js';
+import { startGraphResync, getResyncJob } from '../services/GraphResyncService.js';
 
 export const adminGraphRouter = express.Router();
 
@@ -45,27 +44,49 @@ adminGraphRouter.get('/drift', async (_req: AuthRequest, res) => {
   }
 });
 
-// POST /admin/graph/resync — re-derive the canonical graph from the store
+// GET /admin/graph/resync/:jobId — poll a resync job's status
+adminGraphRouter.get('/resync/:jobId', async (req: AuthRequest, res) => {
+  try {
+    const job = getResyncJob(String(req.params.jobId));
+    if (!job) {
+      res.status(404).json({ success: false, error: 'Unknown resync job', timestamp: new Date().toISOString() });
+      return;
+    }
+    res.json(envelope(job));
+  } catch (error: any) {
+    console.error('[admin-graph] resync status error:', error);
+    res.status(500).json({ success: false, error: error.message || 'Failed to read resync status', timestamp: new Date().toISOString() });
+  }
+});
+
+// POST /admin/graph/resync — re-derive the canonical graph from the store.
+// Runs as a tracked background job (under the graph write lock) and returns
+// immediately with a 202 Accepted + job id; poll GET /resync/:jobId for results.
 adminGraphRouter.post('/resync', async (_req: AuthRequest, res) => {
   try {
     if (!isNeo4jEnabled()) {
       res.status(409).json({ success: false, error: 'Neo4j is disabled (NEO4J_ENABLED !== "true")', timestamp: new Date().toISOString() });
       return;
     }
-    const data = await gatherBaseGraphData({ strict: true });
-    let nodes = 0;
-    let edges = 0;
-    for (const node of data.nodes) {
-      await upsertContentNode(node);
-      nodes++;
+    let job;
+    try {
+      job = startGraphResync();
+    } catch (err) {
+      // Already in flight (or disabled) — report as a conflict.
+      res.status(409).json({ success: false, error: (err as Error).message, timestamp: new Date().toISOString() });
+      return;
     }
-    for (const edge of data.edges) {
-      await upsertContentRelationship(edge);
-      edges++;
-    }
-    res.json(envelope({ nodes, edges, total: data.nodes.length }));
+    res.status(202).json(envelope({
+      jobId: job.jobId,
+      status: job.status,
+      nodes: job.nodes,
+      edges: job.edges,
+      deletedNodes: job.deletedNodes,
+      deletedEdges: job.deletedEdges,
+      total: job.total,
+    }));
   } catch (error: any) {
     console.error('[admin-graph] resync error:', error);
-    res.status(500).json({ success: false, error: error.message || 'Failed to resync graph', timestamp: new Date().toISOString() });
+    res.status(500).json({ success: false, error: error.message || 'Failed to start resync', timestamp: new Date().toISOString() });
   }
 });

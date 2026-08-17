@@ -44,6 +44,7 @@ const mockEdges = getDeltaEdgesForPlan as unknown as Mock<(p: string) => Promise
 const PLAN_ID = 'a1000000-e29b-41d4-a716-446655440001';
 const CHAR_ID = 'a1000000-e29b-41d4-a716-446655440011';
 const SCENE_ID = 'a1000000-e29b-41d4-a716-446655440012';
+const DIALOGUE_ID = 'a1000000-e29b-41d4-a716-446655440020';
 
 function makeDelta(overrides: Partial<GraphDelta>): GraphDelta {
   return GraphDeltaSchema.parse({
@@ -140,6 +141,35 @@ describe('GraphExporter — mapping table coverage', () => {
     expect(plan.links[0]).toMatchObject({ field: 'character_id', action: 'set' });
     expect(plan.items[0].fields.character_id).toBeUndefined();
   });
+
+  test('delta→MODIFY-target edge writes the field directly with the stable entity_id (no ContentLink)', async () => {
+    // Source is a MODIFY (update) item and the target is a MODIFY (update) item.
+    // The relationship must materialize as a direct field write using the target's
+    // entity_id — never the transient plan-item id.
+    mockDeltas.mockResolvedValue([
+      makeDelta({ op: 'MODIFY', nodeType: 'Dialogue', nodeId: DIALOGUE_ID, fields: { name: 'Dlg' } }),
+      makeDelta({ op: 'MODIFY', nodeType: 'Character', nodeId: CHAR_ID, fields: { name: 'Char', personality: 'brave' } }),
+    ]);
+    mockEdges.mockResolvedValue([makeEdge({ sourceNodeType: 'Dialogue', sourceNodeId: DIALOGUE_ID, targetNodeType: 'Character', targetNodeId: CHAR_ID, type: 'OWNED_BY' })]);
+    const plan = await exportContentPlan(PLAN_ID, 'desc');
+    expect(plan.links).toHaveLength(0);
+    const source = plan.items.find((i) => i.type === 'dialogue');
+    expect(source.fields.character_id).toBe(CHAR_ID);
+  });
+
+  test('MODIFY item preserves the canonical entity slug from the merged node (name edit does not retarget the file)', async () => {
+    mockRevision.mockResolvedValue({
+      planId: PLAN_ID,
+      nodes: [{ nodeType: 'Character', nodeId: CHAR_ID, name: 'Edited Character', planId: null, fields: { slug: 'edited_character_canonical_slug' } }],
+      edges: [],
+      deltaEdges: [],
+    });
+    mockDeltas.mockResolvedValue([makeDelta({ op: 'MODIFY', fields: { name: 'Something Completely Different', personality: 'brave' } })]);
+    const plan = await exportContentPlan(PLAN_ID, 'desc');
+    const item = plan.items[0];
+    expect(item.action).toBe('update');
+    expect(item.slug).toBe('edited_character_canonical_slug');
+  });
 });
 
 describe('GraphExporter — error cases', () => {
@@ -157,6 +187,11 @@ describe('GraphExporter — error cases', () => {
   test('unmapped edge type → throws GraphExportError', async () => {
     mockDeltas.mockResolvedValue([makeDelta({ op: 'ADD', nodeType: 'Scene', nodeId: SCENE_ID, fields: { name: 'S' } })]);
     mockEdges.mockResolvedValue([makeEdge({ sourceNodeType: 'Scene', sourceNodeId: SCENE_ID, targetNodeType: 'Character', targetNodeId: CHAR_ID, type: 'MYSTERY_REL' })]);
+    await expect(exportContentPlan(PLAN_ID, 'desc')).rejects.toBeInstanceOf(GraphExportError);
+  });
+
+  test('District delta → throws GraphExportError (no valid ContentTypeSchema value)', async () => {
+    mockDeltas.mockResolvedValue([makeDelta({ op: 'ADD', nodeType: 'District', nodeId: 'los_andes', fields: { name: 'Los Andes' } })]);
     await expect(exportContentPlan(PLAN_ID, 'desc')).rejects.toBeInstanceOf(GraphExportError);
   });
 

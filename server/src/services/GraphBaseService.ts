@@ -157,3 +157,51 @@ export async function hasContentNode(nodeType: string, nodeId: string): Promise<
   );
   return rows[0]?.count != null ? Number(rows[0].count) > 0 : false;
 }
+
+const EDGE_KEY_RE = /^[A-Z][A-Z_0-9]*$/;
+
+/**
+ * Delete canonical `:Content` nodes (planId IS null) whose `(nodeType:nodeId)`
+ * key is NOT in `keepKeys`. Used by the resync path to repair orphan drift
+ * (graph nodes no longer backed by the content store). DETACH DELETE also
+ * removes their relationships. Returns the number of nodes removed.
+ */
+export async function pruneOrphanContentNodes(keepKeys: Set<string>): Promise<number> {
+  if (!isNeo4jEnabled()) return 0;
+  const rows = await runNeo4jQuery<{ key: string }>(
+    `MATCH (c:Content) WHERE c.planId IS null RETURN c.key AS key`,
+  );
+  const orphanKeys = rows.map((r) => r.key).filter((k) => !keepKeys.has(k));
+  for (const key of orphanKeys) {
+    await runNeo4jQuery(`MATCH (c:Content { key: $key }) DETACH DELETE c`, { key });
+  }
+  return orphanKeys.length;
+}
+
+/**
+ * Delete canonical relationships (between `planId IS null` nodes) whose edge key
+ * is NOT in `keepEdgeKeys`, so a removed FK in the store is reflected in the
+ * graph. Returns the number of relationships removed.
+ */
+export async function pruneOrphanContentEdges(keepEdgeKeys: Set<string>): Promise<number> {
+  if (!isNeo4jEnabled()) return 0;
+  const rows = await runNeo4jQuery<{ st: string; sn: string; tt: string; tn: string; type: string }>(
+    `MATCH (a:Content)-[r]->(b:Content)
+     WHERE a.planId IS null AND b.planId IS null
+     RETURN a.nodeType AS st, a.nodeId AS sn, type(r) AS type, b.nodeType AS tt, b.nodeId AS tn`,
+  );
+  let deleted = 0;
+  for (const row of rows) {
+    if (!EDGE_KEY_RE.test(row.type)) continue;
+    const key = `${row.st}:${row.sn}->${row.tt}:${row.tn}[${row.type}]`;
+    if (!keepEdgeKeys.has(key)) {
+      await runNeo4jQuery(
+        `MATCH (a:Content { nodeType: $st, nodeId: $sn })-[r:${row.type}]->(b:Content { nodeType: $tt, nodeId: $tn })
+         DELETE r`,
+        { st: row.st, sn: row.sn, tt: row.tt, tn: row.tn },
+      );
+      deleted++;
+    }
+  }
+  return deleted;
+}

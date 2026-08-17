@@ -152,7 +152,7 @@ export const EDGE_FIELD_MAPPINGS: EdgeFieldMapping[] = [
   { type: 'SET_IN', sourceNodeType: 'Dialogue', targetNodeType: 'Scene', field: 'scene_id', mode: 'set', value: 'nodeId' },
   { type: 'SERVES', sourceNodeType: 'Dialogue', targetNodeType: 'Mission', field: 'mission_id', mode: 'set', value: 'nodeId' },
   { type: 'OVERLAYS', sourceNodeType: 'Overlay', targetNodeType: 'Dialogue', field: 'target_tree_id', mode: 'set', value: 'nodeId' },
-  { type: 'SERVES', sourceNodeType: 'Overlay', targetNodeType: 'Mission', field: 'mystery_id', mode: 'set', value: 'nodeId' },
+  { type: 'SERVES', sourceNodeType: 'Overlay', targetNodeType: 'Mission', field: 'mission_id', mode: 'set', value: 'nodeId' },
   { type: 'IN_DISTRICT', sourceNodeType: 'Scene', targetNodeType: 'District', field: 'district', mode: 'set', value: 'name' },
 ];
 

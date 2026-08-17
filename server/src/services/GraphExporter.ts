@@ -61,9 +61,12 @@ function freshUuid(): string {
 }
 
 /** Build a plan item for one ADD/MODIFY delta (throws on unsupported node type). */
-function buildItemForDelta(delta: GraphDelta): ContentPlanItem {
+function buildItemForDelta(delta: GraphDelta, existingSlug?: string): ContentPlanItem {
   const contentType = NODE_TYPE_TO_CONTENT_TYPE[delta.nodeType];
-  if (!contentType) {
+  // 'district' (and any other graph node type) has no valid ContentTypeSchema
+  // value, so it must be rejected here rather than failing schema validation
+  // with an opaque error later in the approve gate.
+  if (!contentType || contentType === 'district') {
     throw new GraphExportError(`Unsupported node type for export: ${delta.nodeType}`);
   }
   const fields: Record<string, unknown> = { ...(delta.fields ?? {}) };
@@ -72,8 +75,11 @@ function buildItemForDelta(delta: GraphDelta): ContentPlanItem {
     : slugify(contentType);
   const slug = typeof fields.slug === 'string' && /^[a-z0-9_]+$/.test(fields.slug)
     ? fields.slug
-    : (isUuid(delta.nodeId) ? undefined : delta.nodeId);
-  const finalSlug = slug ?? slugify(name);
+    : (isUuid(delta.nodeId) ? existingSlug : delta.nodeId);
+  const slugifiedName = slugify(name);
+  const finalSlug = slug
+    ?? (slugifiedName
+      || `${slugify(contentType)}_${String(delta.nodeId).replace(/[^a-z0-9_]+/gi, '').toLowerCase()}`);
   const id = delta.op === 'ADD'
     ? (isUuid(delta.nodeId) ? delta.nodeId : freshUuid())
     : freshUuid();
@@ -119,12 +125,22 @@ export async function exportContentPlan(
   }
 
   // Build an item per ADD/MODIFY delta. Map key → item id for edge resolution.
+  // For MODIFY items, preserve the canonical entity's existing slug (when the
+  // merged node stores one) so an entity-name edit doesn't retarget a new file
+  // path and fail staging with "Cannot update non-existent file".
   const items: ContentPlanItem[] = [];
   const deltaItemId = new Map<string, string>();
+  const existingSlugByKey = new Map<string, string>();
+  for (const node of revision.nodes) {
+    if (node.fields && typeof node.fields.slug === 'string' && /^[a-z0-9_]+$/.test(node.fields.slug)) {
+      existingSlugByKey.set(`${node.nodeType}:${node.nodeId}`, node.fields.slug);
+    }
+  }
 
   for (const delta of deltas) {
     if (delta.op === 'ADD' || delta.op === 'MODIFY') {
-      const item = buildItemForDelta(delta);
+      const existingSlug = delta.op === 'MODIFY' ? existingSlugByKey.get(`${delta.nodeType}:${delta.nodeId}`) : undefined;
+      const item = buildItemForDelta(delta, existingSlug);
       items.push(item);
       deltaItemId.set(`${delta.nodeType}:${delta.nodeId}`, item.id);
     }
@@ -135,12 +151,12 @@ export async function exportContentPlan(
   const links: ContentLink[] = [];
 
   for (const edge of deltaEdges) {
-    const mapping = findEdgeMapping(edge.type, edge.sourceNodeType, edge.targetNodeType);
     if (UNSUPPORTED_EDGE_TYPES.has(edge.type)) {
       throw new GraphExportError(
         `Edge ${edge.sourceNodeType}>${edge.targetNodeType}:${edge.type} is unsupported for materialization (join table only)`,
       );
     }
+    const mapping = findEdgeMapping(edge.type, edge.sourceNodeType, edge.targetNodeType);
     if (!mapping) {
       throw new GraphExportError(
         `Unmapped edge type ${edge.sourceNodeType}>${edge.targetNodeType}:${edge.type}`,
@@ -160,13 +176,24 @@ export async function exportContentPlan(
     const targetItemId = deltaItemId.get(targetKey);
 
     if (targetItemId) {
-      // delta→delta: emit a ContentLink; resolveItem writes the field on materialize.
-      links.push({
-        fromItem: sourceItemId,
-        toItem: targetItemId,
-        field: mapping.field,
-        action: 'set',
-      });
+      const targetItem = items.find((i) => i.id === targetItemId);
+      if (targetItem && targetItem.action === 'update') {
+        // MODIFY target is an existing canonical entity. Materialize the link as a
+        // direct field write using its stable identity (entity_id), NOT the
+        // transient plan-item id — otherwise the random item id is written as the
+        // foreign key and the relationship is lost.
+        const identity = targetItem.entity_id || edge.targetNodeId;
+        sourceItem.fields = { ...sourceItem.fields, [mapping.field]: identity };
+      } else {
+        // delta→delta (both new ADD entities): emit a ContentLink; resolveItem
+        // writes the field on materialize.
+        links.push({
+          fromItem: sourceItemId,
+          toItem: targetItemId,
+          field: mapping.field,
+          action: 'set',
+        });
+      }
     } else {
       // delta→canonical: write the mapped field value directly into the source item.
       const value = mapping.value === 'name'
@@ -186,5 +213,11 @@ export async function exportContentPlan(
   } as ContentPlan;
 
   // Validate before returning — the materialize pipeline depends on a well-formed plan.
-  return ContentPlanSchema.parse(plan);
+  try {
+    return ContentPlanSchema.parse(plan);
+  } catch (err) {
+    throw new GraphExportError(
+      `Exported plan failed schema validation: ${(err as Error).message}`,
+    );
+  }
 }

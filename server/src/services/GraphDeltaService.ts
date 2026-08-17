@@ -20,6 +20,7 @@ import {
   type GraphDeltaEdge,
 } from '@las-flores/shared';
 import { isNeo4jEnabled, runNeo4jQuery } from './Neo4jClient.js';
+import type { ManagedTransaction } from 'neo4j-driver';
 
 /** UUID shape (case-insensitive), used to normalize identity-key components. */
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -122,12 +123,31 @@ export async function applyDelta(delta: GraphDelta): Promise<void> {
   );
 }
 
+/**
+ * Run a Cypher read inside an existing transaction when one is supplied, else a
+ * standalone session query. Keeps reads and writes on the same transaction
+ * snapshot (used by `commitGraph`, where the final delta delete must not drop
+ * deltas written after the read).
+ */
+async function queryRows<T = Record<string, unknown>>(
+  cypher: string,
+  params: Record<string, unknown>,
+  tx?: ManagedTransaction,
+): Promise<T[]> {
+  if (tx) {
+    const result = await tx.run(cypher, params);
+    return result.records.map((r) => r.toObject() as T);
+  }
+  return runNeo4jQuery<T>(cypher, params);
+}
+
 /** Fetch all deltas belonging to one plan, ordered by creation time. */
-export async function getDeltasForPlan(planId: string): Promise<GraphDelta[]> {
+export async function getDeltasForPlan(planId: string, tx?: ManagedTransaction): Promise<GraphDelta[]> {
   if (!isNeo4jEnabled()) return [];
-  const rows = await runNeo4jQuery<{ d: unknown }>(
+  const rows = await queryRows<{ d: unknown }>(
     `MATCH (d:ContentDelta { planId: $planId }) RETURN d ORDER BY d.createdAt ASC`,
     { planId: normalizeKeyComponent(planId) },
+    tx,
   );
   return rows.map((r) => toGraphDelta(r.d));
 }
@@ -160,10 +180,13 @@ export async function applyDeltaEdge(edge: GraphDeltaEdge): Promise<void> {
   }
 
   // Target may be a canonical :Content node (planId IS null) OR a same-plan
-  // :ContentDelta (so two ADD entities in one plan can link).
+  // :ContentDelta (so two ADD entities in one plan can link). The canonical
+  // :Content match must also exclude critique evidence nodes (isEvidence=true),
+  // matching applyDelta's guard, so an edge can never point at an invisible
+  // evidence excerpt.
   const targetExists = await runNeo4jQuery<{ count: unknown }>(
     `MATCH (c:Content { nodeType: $targetNodeType, nodeId: $targetNodeId })
-       WHERE c.planId IS null
+       WHERE c.planId IS null AND (c.isEvidence IS NULL OR c.isEvidence = false)
      RETURN count(c) AS count
      UNION ALL
      MATCH (d:ContentDelta { planId: $planId, nodeType: $targetNodeType, nodeId: $targetNodeId })
@@ -176,22 +199,22 @@ export async function applyDeltaEdge(edge: GraphDeltaEdge): Promise<void> {
     throw new Error(`Delta edge target references non-existent :Content/:ContentDelta [${targetNodeType}:${targetNodeId}] for plan ${planId}`);
   }
 
+  // Select a single target before MERGE: prefer the same-plan :ContentDelta
+  // (so two ADD entities in one plan can link), else the canonical :Content
+  // node (planId IS null). OPTIONAL MATCH keeps the source row alive even when
+  // only one target kind exists, and CASE prefers the delta — this avoids the
+  // returning-CALL row-elimination that dropped delta-only targets and the
+  // duplicate link that both CALL blocks created when both targets existed.
   await runNeo4jQuery(
     `
     MATCH (s:ContentDelta { planId: $planId, nodeType: $sourceNodeType, nodeId: $sourceNodeId })
-    CALL {
-      WITH s
-      MATCH (t:Content { nodeType: $targetNodeType, nodeId: $targetNodeId })
-      WHERE t.planId IS null
-      MERGE (s)-[r:${type} { planId: $planId }]->(t)
-      RETURN r
-    }
-    CALL {
-      WITH s
-      MATCH (t:ContentDelta { planId: $planId, nodeType: $targetNodeType, nodeId: $targetNodeId })
-      MERGE (s)-[r:${type} { planId: $planId }]->(t)
-      RETURN r
-    }
+    OPTIONAL MATCH (td:ContentDelta { planId: $planId, nodeType: $targetNodeType, nodeId: $targetNodeId })
+    OPTIONAL MATCH (tc:Content { nodeType: $targetNodeType, nodeId: $targetNodeId })
+      WHERE tc.planId IS null
+    WITH s, CASE WHEN td IS NOT NULL THEN td ELSE tc END AS t
+    WHERE t IS NOT NULL
+    MERGE (s)-[r:${type} { planId: $planId }]->(t)
+    RETURN r
     `,
     { planId: nPlanId, sourceNodeType, sourceNodeId: nSourceId, targetNodeType, targetNodeId: nTargetId },
   );
@@ -214,10 +237,10 @@ function toGraphDeltaEdge(row: Record<string, unknown>): GraphDeltaEdge {
  * Fetch all delta edges belonging to one plan (relationships from the plan's
  * `:ContentDelta` nodes carrying the planId). Empty when disabled.
  */
-export async function getDeltaEdgesForPlan(planId: string): Promise<GraphDeltaEdge[]> {
+export async function getDeltaEdgesForPlan(planId: string, tx?: ManagedTransaction): Promise<GraphDeltaEdge[]> {
   if (!isNeo4jEnabled()) return [];
   const nPlanId = normalizeKeyComponent(planId);
-  const rows = await runNeo4jQuery<Record<string, unknown>>(
+  const rows = await queryRows<Record<string, unknown>>(
     `
     MATCH (s:ContentDelta { planId: $planId })-[r]->(t)
     WHERE r.planId = $planId
@@ -226,6 +249,7 @@ export async function getDeltaEdgesForPlan(planId: string): Promise<GraphDeltaEd
            type(r) AS type, $planId AS planId
     `,
     { planId: nPlanId },
+    tx,
   );
   return rows.map(toGraphDeltaEdge);
 }

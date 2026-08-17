@@ -11,10 +11,10 @@ aspect_ratio: 3:4
 # Prompt: Nadia Delgado
 
 ## Prompt (Draft)
-Slender Latina woman in her mid 20s, slender, sturdy build, warm brown, bright, flirtatious eyes, warm expression, a subtle, knowing half-smile, long dark brown hair, casual beach clothing with an apron, small sport earbud clipped to earlobe. Weathered urban Latin American building under harsh tropical sun backdrop. premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Slender Latina woman in her mid-20s, slender, sturdy build, warm brown, bright, flirtatious eyes, warm expression, a subtle, knowing half-smile, long dark brown hair, casual beach clothing with an apron, small sport earbud clipped to earlobe. Weathered urban Latin American building under harsh tropical sun backdrop. premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
-Slender Latina woman in her mid 20s, slender, sturdy build, warm brown, bright, flirtatious eyes, warm expression, a subtle, knowing half-smile, long dark brown hair, casual beach clothing with an apron, small sport earbud clipped to earlobe. Weathered urban Latin American building under harsh tropical sun backdrop. premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Slender Latina woman in her mid-20s, slender, sturdy build, warm brown, bright, flirtatious eyes, warm expression, a subtle, knowing half-smile, long dark brown hair, casual beach clothing with an apron, small sport earbud clipped to earlobe. Weathered urban Latin American building under harsh tropical sun backdrop. premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing

@@ -14,8 +14,7 @@
 import dotenv from 'dotenv';
 import { closeConnections } from '@las-flores/infra';
 import { isNeo4jEnabled, verifyNeo4j, closeNeo4j } from '../src/services/Neo4jClient.js';
-import { ensureGraphConstraints, upsertContentNode, upsertContentRelationship } from '../src/services/GraphBaseService.js';
-import { gatherBaseGraphData } from '../src/services/GraphSeedSource.js';
+import { runGraphResyncNow } from '../src/services/GraphResyncService.js';
 
 async function main(): Promise<void> {
   dotenv.config();
@@ -33,22 +32,14 @@ async function main(): Promise<void> {
   }
 
   console.log('🔄 Re-syncing canonical graph from content store...');
-  const data = await gatherBaseGraphData({ strict: true });
-  await ensureGraphConstraints();
+  const result = await runGraphResyncNow();
 
-  console.log(`   Writing ${data.nodes.length} canonical :Content nodes...`);
-  for (let i = 0; i < data.nodes.length; i++) {
-    await upsertContentNode(data.nodes[i]);
-    if ((i + 1) % 100 === 0) console.log(`     ...${i + 1}/${data.nodes.length}`);
+  console.log(`✅ Graph resynced. Source nodes: ${result.total}, edges: ${result.edges}, upserted: ${result.nodes}, deleted nodes: ${result.deletedNodes}, deleted edges: ${result.deletedEdges}`);
+
+  if (result.status === 'failed') {
+    console.error('❌ Graph resync reported failure:', result.error);
+    process.exitCode = 1;
   }
-
-  console.log(`   Writing ${data.edges.length} FK relationships...`);
-  for (let i = 0; i < data.edges.length; i++) {
-    await upsertContentRelationship(data.edges[i]);
-    if ((i + 1) % 200 === 0) console.log(`     ...${i + 1}/${data.edges.length}`);
-  }
-
-  console.log(`✅ Graph resynced. Source nodes: ${data.nodes.length}, edges: ${data.edges.length}`);
 }
 
 main()
