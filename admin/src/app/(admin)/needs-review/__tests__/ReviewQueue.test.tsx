@@ -48,8 +48,8 @@ const delta: GraphDelta = {
 };
 
 const items: ReviewQueueItem[] = [
-  { kind: 'conflict', planId: PLAN_ID, planDescription: 'Plan description', annotation: conflict },
-  { kind: 'delta', planId: PLAN_ID, planDescription: 'Plan description', delta },
+  { kind: 'conflict', planId: PLAN_ID, planDescription: 'Plan description', annotation: conflict, deltaEdges: [] },
+  { kind: 'delta', planId: PLAN_ID, planDescription: 'Plan description', delta, deltaEdges: [] },
 ];
 
 function renderQueue() {
