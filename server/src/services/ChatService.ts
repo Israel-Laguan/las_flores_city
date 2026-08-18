@@ -23,10 +23,10 @@ import { GraphDeltaSchema, GraphDeltaEdgeSchema, type ConflictChatContext, type 
 import { queryOLTP } from '@las-flores/infra';
 import { createLLMProvider } from './LLMService.js';
 import { buildMergedRevision } from './GraphMerger.js';
-import { applyDelta, applyDeltaEdge, removeDelta, getAllDeltas, getDeltaEdgesForPlan, preflightDeltas, preflightDeltaEdges } from './GraphDeltaService.js';
+import { applyDelta, applyDeltaEdge, removeDelta, getAllDeltas, getDeltaEdgesForPlan, getDeltaEdgesForPlans, preflightDeltas, preflightDeltaEdges } from './GraphDeltaService.js';
 import { aiCritiqueService, type AICritiqueService } from './AICritiqueService.js';
 import { postgresNeighborhoodProvider, neo4jNeighborhoodProvider, type NeighborhoodProvider } from './NeighborhoodProvider.js';
-import { isNeo4jEnabled } from './Neo4jClient.js';
+import { isNeo4jEnabled, runNeo4jTransaction } from './Neo4jClient.js';
 import type { LLMProvider, ExistingContentContext, LLMUsage } from './types/LLMTypes.js';
 
 /** Delta-validation gate failed (route → 400). */
@@ -202,18 +202,22 @@ export class ChatService {
       throw new ChatGraphDisabledError('Neo4j authoring graph is disabled — cannot apply deltas. Enable NEO4J_ENABLED first.');
     }
 
-    // ④ preflight every MODIFY/DELETE base-node guard AND every delta-edge
-    //    endpoint before the first write, so a later guard/edge failure cannot
-    //    leave a partially-applied proposal in Neo4j.
-    await preflightDeltas(deltas);
-    await preflightDeltaEdges(deltaEdges);
-    // ⑤ write the batch.
-    for (const delta of deltas) {
-      await applyDelta(delta);
-    }
-    for (const edge of deltaEdges) {
-      await applyDeltaEdge(edge);
-    }
+    // ④ write the WHOLE batch in a single Neo4j transaction so a later
+    //    guard/edge failure (or a concurrent graph change) can never leave a
+    //    partially-applied proposal in the graph. Deltas are written first, then
+    //    each delta-edge endpoint is validated (so an edge whose source/target
+    //    is a delta authored in THIS same request is visible) and written — all
+    //    atomically. Any throw rolls back the entire batch.
+    await runNeo4jTransaction(async (tx) => {
+      await preflightDeltas(deltas, tx);
+      for (const delta of deltas) {
+        await applyDelta(delta, tx);
+      }
+      await preflightDeltaEdges(deltaEdges, tx);
+      for (const edge of deltaEdges) {
+        await applyDeltaEdge(edge, tx);
+      }
+    });
 
     // ⑥ mark the conflict that started the chat 'addressed' (durable Postgres
     //    + graph sync). The annotation scope is already validated above.
@@ -262,17 +266,18 @@ export class ChatService {
     }
     const deltas = allDeltas.filter((d) => existingPlanIds.has(d.planId));
 
-    // Group each plan's delta edges by their source delta key so the queue item
-    // can expose the relationships authored alongside a proposed delta.
+    // Group each plan's delta edges by their (planId, source) key so the queue
+    // item can expose the relationships authored alongside a proposed delta.
+    // The key includes the planId so two plans proposing the same
+    // (nodeType, nodeId) never share edges. All plans are read in a single
+    // scoped query to keep /review-queue latency flat as plan count grows.
     const edgesBySource = new Map<string, GraphDeltaEdge[]>();
-    if (isNeo4jEnabled()) {
-      for (const planId of existingPlanIds) {
-        for (const e of await getDeltaEdgesForPlan(planId)) {
-          const key = `${e.sourceNodeType}:${e.sourceNodeId}`;
-          const list = edgesBySource.get(key) ?? [];
-          list.push(e);
-          edgesBySource.set(key, list);
-        }
+    if (isNeo4jEnabled() && existingPlanIds.size > 0) {
+      for (const e of await getDeltaEdgesForPlans([...existingPlanIds])) {
+        const key = `${e.planId}:${e.sourceNodeType}:${e.sourceNodeId}`;
+        const list = edgesBySource.get(key) ?? [];
+        list.push(e);
+        edgesBySource.set(key, list);
       }
     }
 
@@ -289,7 +294,7 @@ export class ChatService {
         planId: d.planId,
         planDescription: descById.get(d.planId),
         delta: d,
-        deltaEdges: edgesBySource.get(`${d.nodeType}:${d.nodeId}`) ?? [],
+        deltaEdges: edgesBySource.get(`${d.planId}:${d.nodeType}:${d.nodeId}`) ?? [],
       })),
     ];
 

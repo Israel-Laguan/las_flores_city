@@ -210,6 +210,10 @@ describe('chat-apply-delta run (Neo4j-backed, optional)', () => {
     if (!neo4jLive) return;
     await cleanupNeo4j();
     await upsertContentNode({ nodeType: 'Character', nodeId: CHAR_ID, name: canonicName });
+    // The preceding Neo4j-backed test marks this annotation 'addressed'; reset
+    // it so the failure path below actually validates the absence of the
+    // 'addressed' side-effect from a rejected request.
+    await queryOLTP(`UPDATE critique_annotations SET status = 'open' WHERE id = $1`, [ANNOTATION_ID]);
 
     // Valid MODIFY delta for an existing canonical node…
     const goodDelta = validDelta();

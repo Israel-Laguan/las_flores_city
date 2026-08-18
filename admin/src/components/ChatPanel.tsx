@@ -1,11 +1,16 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { cn } from '@las-flores/ui';
 import type { ChatMessage, GraphDelta, GraphDeltaEdge } from '@las-flores/shared';
 import { useChatPanel } from './ChatPanelContext';
 import { useChatApi } from './useChatApi';
 import styles from './ChatPanel.module.css';
+
+// SSR-safe layout effect: on the server `useLayoutEffect` warns, so fall back
+// to `useEffect` there. On the client it runs synchronously during commit
+// (before paint), which is what the session-reset needs.
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 const SEVERITY_LABEL: Record<string, string> = {
   error: '🔴 Conflict',
@@ -164,10 +169,22 @@ export default function ChatPanel() {
   // value is captured at async-request start and compared against the *current*
   // token before any state update — so a late reply/error/proposal from a
   // previous session can never mutate the new one.
+  //
+  // The token is bumped synchronously during render (the moment the committed
+  // context changes), NOT in a passive effect: a `useEffect` only runs after
+  // paint, so an in-flight response from the previous session could resolve and
+  // pass the guard before the effect bumps the token, mutating the new session.
+  // Bumping during commit closes that window.
   const sessionTokenRef = useRef(0);
-  // Fresh session per context — history is ephemeral and starts empty.
-  useEffect(() => {
+  const lastSessionKeyRef = useRef(sessionKey);
+  if (lastSessionKeyRef.current !== sessionKey) {
+    lastSessionKeyRef.current = sessionKey;
     sessionTokenRef.current += 1;
+  }
+
+  // Fresh session per context — history is ephemeral and starts empty. The
+  // state reset runs as a layout effect so it also completes before paint.
+  useIsomorphicLayoutEffect(() => {
     setMessages([]);
     setInput('');
     setProposal(null);
