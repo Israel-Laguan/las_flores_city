@@ -1,3 +1,5 @@
+import '../helpers/enableTestNeo4j.js';
+
 import { describe, it, expect, beforeAll, beforeEach, afterAll } from '@jest/globals';
 import fs from 'fs';
 import path from 'path';

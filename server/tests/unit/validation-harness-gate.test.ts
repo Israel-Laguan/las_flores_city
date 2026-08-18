@@ -10,6 +10,13 @@
  */
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 
+// M32 — graph is required for approvals; keep this unit test DB/Neo4j-free.
+jest.mock('../../src/services/Neo4jClient.js', () => ({
+  isNeo4jEnabled: jest.fn(() => true),
+  runNeo4jQuery: jest.fn(async () => []),
+  runNeo4jTransaction: jest.fn(async () => undefined),
+}));
+
 const TEST_PLAN_ID = 'e0000000-e29b-41d4-a716-446655440001';
 const ITEM_A = 'e0000000-e29b-41d4-a716-44665544000a';
 const ITEM_B = 'e0000000-e29b-41d4-a716-44665544000b';
@@ -54,6 +61,10 @@ jest.mock('@las-flores/infra', () => {
   };
   return {
     queryOLTP: jest.fn(async (text: string) => {
+      if (text === 'SELECT status FROM content_plans WHERE id = $1') {
+        // M32 pre-status guard (outside the OLTP transaction).
+        return { rows: [{ status: 'proposed' }] };
+      }
       if (text.includes('SELECT plan_json')) {
         // runSolidify reads the plan after approveAndSolidifyPlan set it to pending.
         // The FOR-UPDATE row lock in approveAndSolidifyPlan runs inside the

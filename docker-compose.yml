@@ -237,12 +237,12 @@ services:
     environment:
       NODE_ENV: development
       PORT: 3001
-      # Neo4j graph authoring canvas (M27). Internal-only; authoring reads/writes
-      # (delta model, merged view, M27-b critique) run here.
+      # Neo4j graph authoring canvas (M27/M32). The intake-worker is the sole
+      # authoring process, so the graph is **required** here.
       NEO4J_URI: bolt://neo4j:7687
       NEO4J_USER: ${NEO4J_USER:-neo4j}
       NEO4J_PASSWORD: ${NEO4J_PASSWORD:-lasfloresdev123}
-      NEO4J_ENABLED: ${NEO4J_ENABLED:-false}
+      NEO4J_ENABLED: "true"
       DATABASE_URL: postgresql://las_flores:${POSTGRES_PASSWORD:-las_flores_dev_password}@postgres-oltp:5432/las_flores
       ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:${POSTGRES_ANALYTICS_PASSWORD:-las_flores_analytics_dev_password}@postgres-olap:5432/las_flores_analytics
       REDIS_URL: redis://redis:6379
@@ -276,6 +276,8 @@ services:
       postgres-olap:
         condition: service_healthy
       redis:
+        condition: service_healthy
+      neo4j:
         condition: service_healthy
     extra_hosts:
       - "host.containers.internal:host-gateway"

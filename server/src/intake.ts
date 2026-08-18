@@ -86,15 +86,16 @@ async function initializeServer() {
     console.warn('[seed:players] skipped:', (err as Error).message || err);
   }
 
-  // M27 — Neo4j authoring canvas connectivity check (non-fatal). When
-  // NEO4J_ENABLED is on but the graph is unreachable, log a warning and continue:
-  // existing Postgres/plan_json paths keep working, and the graph only ever
-  // *skips*, never aborts `initializeServer()`.
+  // M27/M32 — Neo4j authoring canvas connectivity check (non-fatal boot, but
+  // graph is now required for authoring approvals). When NEO4J_ENABLED is on
+  // but the graph is unreachable, log a warning and continue so the health
+  // endpoint stays alive; `approveAndSolidifyPlan` will fail loudly at runtime
+  // until Neo4j is reachable.
   const neo4jOk = await verifyNeo4j();
   if (neo4jOk) {
-    console.log('🕸️  Neo4j authoring graph reachable (M27 substrate ready).');
+    console.log('🕸️  Neo4j authoring graph reachable (M27/M32 substrate ready).');
   } else if (process.env.NEO4J_ENABLED === 'true') {
-    console.warn('[Neo4j] graph enabled but unreachable — authoring graph reads degraded to empty (plan_json path unaffected).');
+    console.warn('[Neo4j] graph enabled but unreachable — authoring approvals will fail until Neo4j is reachable.');
   }
 
   // Start server

@@ -1,10 +1,12 @@
 # M32 — Authoring-Path Retirement & Consolidation
 
-> **Status:** Pin complete · **Branch:** `milestone/32-authoring-retirement` · **PR size target:** ~25 files per PR
+> **Status:** PR 2 complete · **Branch:** `milestone/32-authoring-retirement` · **PR size target:** ~25 files per PR
 > **Phase:** 7 (follows M28 graph write path) / 8 · **Source:** `ARCHITECTURE_SEPARATION_ANALYSIS.md` §8, §12–13, §15; **fixes the orphan gap** across M23/M27/M28/M29
 >
 > M32 is implemented as a **7-PR workstream** so each PR stays within the
 > ~25-file limit.  PR 1 (Pin) lands the frozen ledger and the coverage probe.
+> PR 2 (Flag flip) makes graph the sole authoring entry point for approvals and
+> rejects direct `plan_json` edits when graph deltas are present.
 
 ## Goal
 
@@ -75,12 +77,12 @@ code consumers. Three draft classifications changed materially:
 ## Verify / Definition of Done
 
 - [x] **Pin:** retirement ledger frozen (files/routes/methods/columns/tests), classified
-      Retire vs Refactor-Reuse / Keep. Ledger delivered in this PR.
+      Retire vs Refactor-Reuse / Keep. Ledger delivered in PR 1.
 - [x] **Coverage probe:** `npm run probe:content-urls` exists and can be run against
       any environment to gate the `dialogue_trees.nodes` / `dialogue_chunks.nodes/leaves`
-      column drop (PR 6).
-- [ ] **Prove:** full build + test suite + `validate:content` green with new path active;
-      in-container health OK on game + intake-worker
+      column drop (PR 6). Green on current environment (947/947 rows reachable).
+- [x] **Prove:** full build + test suite + `validate:content` green with new path active;
+      in-container health OK on game + intake-worker. PR 2: 7 integration suites, 64/64 tests pass.
 - [ ] **Prune:** all Retire rows deleted in the same PR as the last flag flip; retained
       consumers refactored to shared services; dead DB columns/migrations dropped
 - [ ] No orphaned `import`/references remain (`grep` for retired symbols returns only

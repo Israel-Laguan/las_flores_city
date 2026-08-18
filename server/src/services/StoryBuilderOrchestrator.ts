@@ -119,6 +119,13 @@ export interface SolidifyResult {
  * `GET /plans/:id/status` for progress.
  */
 export async function approveAndSolidifyPlan(planId: string, userId?: string): Promise<SolidifyResult> {
+  // --- M32: graph is now the sole authoring entry point for approvals. ---
+  if (!isNeo4jEnabled()) {
+    throw new PlanStatusError(
+      'Neo4j authoring graph is disabled (NEO4J_ENABLED !== "true"). Authoring approvals require the graph.',
+    );
+  }
+
   // --- M28 graph-authoritative path (OUTSIDE the OLTP transaction) ---
   // Drift detection + export hit Neo4j and the whole content store; running
   // them inside the advisory/row lock would stall approvals (and other plans'
@@ -126,44 +133,42 @@ export async function approveAndSolidifyPlan(planId: string, userId?: string): P
   // exported plan here, then re-validate inside the transaction and persist it
   // only if the status is still approvable.
   let exported: ContentPlan | null = null;
-  if (isNeo4jEnabled()) {
-    // Lightweight existence/status guard BEFORE any graph I/O: a plan that is
-    // already gone or not in an approvable state must fail immediately with a
-    // clear PlanStatusError/PlanNotFoundError — never with a graph-availability
-    // error that masks the real reason for the rejection.
-    const pre = await queryOLTP<{ status: string }>(
-      'SELECT status FROM content_plans WHERE id = $1',
-      [planId],
-    );
-    if (pre.rows.length === 0) {
-      throw new PlanNotFoundError(planId);
-    }
-    const preStatus = pre.rows[0].status;
-    if (preStatus !== 'proposed' && preStatus !== 'approved' && preStatus !== 'failed') {
-      throw new PlanStatusError(`Plan must be 'proposed', 'approved', or 'failed' to approve. Current: ${preStatus}`);
-    }
+  // Lightweight existence/status guard BEFORE any graph I/O: a plan that is
+  // already gone or not in an approvable state must fail immediately with a
+  // clear PlanStatusError/PlanNotFoundError — never with a graph-availability
+  // error that masks the real reason for the rejection.
+  const pre = await queryOLTP<{ status: string }>(
+    'SELECT status FROM content_plans WHERE id = $1',
+    [planId],
+  );
+  if (pre.rows.length === 0) {
+    throw new PlanNotFoundError(planId);
+  }
+  const preStatus = pre.rows[0].status;
+  if (preStatus !== 'proposed' && preStatus !== 'approved' && preStatus !== 'failed') {
+    throw new PlanStatusError(`Plan must be 'proposed', 'approved', or 'failed' to approve. Current: ${preStatus}`);
+  }
 
-    const deltas = await getDeltasForPlan(planId);
-    if (deltas.length > 0) {
-      const drift = await detectGraphDrift();
-      if (!drift.inSync) {
-        throw new PlanStatusError(
-          `Graph has drifted from the content store (orphan: ${drift.orphanNodes.length}, missing: ${drift.missingNodes.length}, orphanEdges: ${drift.orphanEdges.length}, missingEdges: ${drift.missingEdges.length}). Run \`npm run resync:graph\` before approving.`,
-        );
+  const deltas = await getDeltasForPlan(planId);
+  if (deltas.length > 0) {
+    const drift = await detectGraphDrift();
+    if (!drift.inSync) {
+      throw new PlanStatusError(
+        `Graph has drifted from the content store (orphan: ${drift.orphanNodes.length}, missing: ${drift.missingNodes.length}, orphanEdges: ${drift.orphanEdges.length}, missingEdges: ${drift.missingEdges.length}). Run \`npm run resync:graph\` before approving.`,
+      );
+    }
+    try {
+      const planRow = await queryOLTP<{ description: string }>(
+        'SELECT plan_json->>\'description\' AS description FROM content_plans WHERE id = $1',
+        [planId],
+      );
+      const description = planRow.rows[0]?.description ?? 'Graph-authored plan';
+      exported = await exportContentPlan(planId, description);
+    } catch (err) {
+      if (err instanceof GraphExportError) {
+        throw new PlanStatusError(err.message);
       }
-      try {
-        const planRow = await queryOLTP<{ description: string }>(
-          'SELECT plan_json->>\'description\' AS description FROM content_plans WHERE id = $1',
-          [planId],
-        );
-        const description = planRow.rows[0]?.description ?? 'Graph-authored plan';
-        exported = await exportContentPlan(planId, description);
-      } catch (err) {
-        if (err instanceof GraphExportError) {
-          throw new PlanStatusError(err.message);
-        }
-        throw err;
-      }
+      throw err;
     }
   }
 

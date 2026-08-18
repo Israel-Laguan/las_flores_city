@@ -4,6 +4,8 @@
  * Verifies that when an author edits a plan via PUT and then triggers refine,
  * the refine operation reads the edited plan_json from DB (not the original).
  */
+import '../helpers/enableTestNeo4j.js';
+
 import express from 'express';
 import request from 'supertest';
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';

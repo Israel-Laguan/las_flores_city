@@ -78,6 +78,8 @@ afterAll(() => {
   jest.clearAllMocks();
 });
 
+import '../helpers/enableTestNeo4j.js';
+
 import { adminStoryBuilderRouter } from '../../src/routes/admin-story-builder.js';
 import { queryOLTP } from '@las-flores/infra';
 
