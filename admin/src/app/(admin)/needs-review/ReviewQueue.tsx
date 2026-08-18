@@ -137,7 +137,7 @@ function DeltaRow({
       <div className={styles.rowMain}>
         <span className={styles.preview}><code>{deltaSummary(d)}</code></span>
         <span className={styles.plan}>plan {shortId(item.planId)}</span>
-        {item.planDescription && <span className={styles.planDesc}>{item.planDescription}</span>
+        {item.planDescription && <span className={styles.planDesc}>{item.planDescription}</span>}
       </div>
       {Object.keys(d.fields ?? {}).length > 0 && (
         <ul className={styles.fields}>
