@@ -61,6 +61,7 @@ interface BaseDialogueChunkRow {
 }
 
 interface OverlayRow {
+  mystery_id: string;
   nodes: Record<string, DialogueNode>;
   updated_at: Date;
   is_nsfw: boolean;
@@ -230,7 +231,13 @@ export class DialogueResolver {
       }
     }
 
-    for (const overlay of overlays) {
+    // M30 Phase A gate parity: deterministic overlay ordering (sorted by
+    // mystery_id), matching SnapshotService.applyGateAndMerge so a snapshot's
+    // pre-merged nodes are byte-for-byte identical to a live merge.
+    const sortedOverlays = [...overlays].sort((a, b) =>
+      a.mystery_id.localeCompare(b.mystery_id)
+    );
+    for (const overlay of sortedOverlays) {
       // Entitlement gate: skip NSFW overlays for users without the unlock
       if (overlay.is_nsfw && !isNsfwUnlocked) {
         continue;
@@ -389,7 +396,7 @@ export class DialogueResolver {
     mysteryIds: string[]
   ): Promise<OverlayRow[]> {
     const result = await queryContent<OverlayRow>(
-      `SELECT nodes, updated_at, is_nsfw, unlock_condition
+      `SELECT mystery_id, nodes, updated_at, is_nsfw, unlock_condition
        FROM dialogue_overlays
        WHERE target_tree_id = $1
          AND mystery_id = ANY($2::uuid[])
@@ -410,7 +417,7 @@ export class DialogueResolver {
     mysteryId: string
   ): Promise<OverlayRow[]> {
     const result = await queryContent<OverlayRow>(
-      `SELECT nodes, updated_at, is_nsfw, unlock_condition
+      `SELECT mystery_id, nodes, updated_at, is_nsfw, unlock_condition
          FROM dialogue_overlays
         WHERE target_tree_id = $1
           AND mystery_id = $2
@@ -477,7 +484,12 @@ export class DialogueResolver {
 
     // 5. Merge overlays into base nodes (same entitlement gates as resolveTreeForUser)
     let mergedNodes: Record<string, DialogueNode> = { ...chunkRow.nodes };
-    for (const overlay of overlays) {
+    // M30 Phase A gate parity: deterministic overlay ordering (sorted by
+    // mystery_id), matching SnapshotService.applyGateAndMerge.
+    const sortedOverlays = [...overlays].sort((a, b) =>
+      a.mystery_id.localeCompare(b.mystery_id)
+    );
+    for (const overlay of sortedOverlays) {
       if (overlay.is_nsfw && !isNsfwUnlocked) {
         continue;
       }

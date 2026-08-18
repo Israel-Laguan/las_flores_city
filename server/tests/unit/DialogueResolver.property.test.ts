@@ -181,6 +181,7 @@ function wireQueryOLTP(
     mockContent.mockResolvedValueOnce({
       rows: [
         {
+          mystery_id: 'd0000000-0000-4000-8000-000000000001',
           nodes: overlayNodes,
           updated_at: new Date('2025-01-01T00:00:00Z'),
           is_nsfw: false,

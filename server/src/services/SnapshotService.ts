@@ -531,7 +531,7 @@ export async function buildSnapshotsForAllTrees(): Promise<{
   };
 
   // Get all dialogue tree IDs
-  const treeResult = await queryOLTP<{ id: string }>('SELECT id FROM dialogue_trees');
+  const treeResult = await queryContent<{ id: string }>('SELECT id FROM dialogue_trees');
   const treeIds = treeResult.rows.map((row) => row.id);
 
   result.totalTrees = treeIds.length;

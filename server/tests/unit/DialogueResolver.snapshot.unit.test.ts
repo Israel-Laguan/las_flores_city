@@ -81,6 +81,7 @@ const MOCK_BASE_TREE = {
 };
 
 const MOCK_OVERLAY = {
+  mystery_id: 'c0000000-0000-4000-8000-000000000100',
   nodes: {
     node_001: { id: 'node_001', text: 'Modified Hello', choices: [] },
   },
