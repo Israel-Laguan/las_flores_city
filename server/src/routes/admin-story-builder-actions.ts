@@ -13,77 +13,19 @@ import { isPlanNotFoundError, isPlanStatusError } from '../services/errors.js';
 import { handleGetVerificationReport } from './admin-story-builder-verification.js';
 import { emitAdminEvent } from '../services/AdminEventEmitter.js';
 import { loadPlanForStaging, runStagingPipeline } from './admin-story-builder-staging.js';
-import { contentPlanService } from '../services/ContentPlanService.js';
-import { adminStoryBuilderGenerateRouter } from './admin-story-builder-generate.js';
 import { adminStoryBuilderCritiqueRouter } from './admin-story-builder-critique.js';
 import { adminStoryBuilderChatRouter } from './admin-story-builder-chat.js';
 
 export const adminStoryBuilderActionsRouter = express.Router();
 
-// Generate endpoint (outline → scaffold → async fill) lives in admin-story-builder-generate.ts
-adminStoryBuilderActionsRouter.use(adminStoryBuilderGenerateRouter);
 // M26 — AI semantic critique handlers live in admin-story-builder-critique.ts
 adminStoryBuilderActionsRouter.use(adminStoryBuilderCritiqueRouter);
 // M29 — conversational chat + review-queue handlers live in admin-story-builder-chat.ts
 adminStoryBuilderActionsRouter.use(adminStoryBuilderChatRouter);
 
 // POST /admin/story-builder/plans/:id/refine — Refine plan with AI feedback
-adminStoryBuilderActionsRouter.post('/plans/:id/refine', async (req: AuthRequest, res) => {
-  try {
-    const { id } = req.params as Record<string, string>;
-    const { feedback, itemIds } = req.body;
-
-    if (!feedback || typeof feedback !== 'string' || feedback.trim().length === 0) {
-      res.status(400).json({ success: false, error: 'feedback is required', timestamp: new Date().toISOString() });
-      return;
-    }
-
-    // Validate itemIds if provided
-    if (itemIds != null) {
-      if (!Array.isArray(itemIds) || itemIds.length === 0) {
-        res.status(400).json({ success: false, error: 'itemIds must be a non-empty array of strings', timestamp: new Date().toISOString() });
-        return;
-      }
-      if (!itemIds.every((id: unknown) => typeof id === 'string' && id.length > 0)) {
-        res.status(400).json({ success: false, error: 'Each itemIds entry must be a non-empty string', timestamp: new Date().toISOString() });
-        return;
-      }
-    }
-
-    const isScoped = itemIds && Array.isArray(itemIds) && itemIds.length > 0;
-    const { plan: refinedPlan, usage: refinedUsage } =
-      isScoped
-        ? await contentPlanService.refinePlanItems(id, feedback.trim(), itemIds)
-        : await contentPlanService.refinePlan(id, feedback.trim());
-
-    const refinedEventData: Record<string, unknown> = {
-      feedbackLength: feedback.trim().length,
-      itemCount: refinedPlan.items.length,
-    };
-    if (isScoped) {
-      refinedEventData.refinedItemCount = itemIds.length;
-    }
-    if (refinedUsage) {
-      refinedEventData.totalTokens = refinedUsage.totalTokens;
-      refinedEventData.promptTokens = refinedUsage.promptTokens;
-      refinedEventData.completionTokens = refinedUsage.completionTokens;
-      refinedEventData.model = refinedUsage.model;
-      refinedEventData.estimatedCostUsd = refinedUsage.estimatedCostUsd;
-    }
-
-    emitAdminEvent('plan_refined', refinedEventData, refinedPlan.id, req.userId);
-
-    res.json({
-      success: true,
-      data: { plan: refinedPlan },
-      timestamp: new Date().toISOString(),
-    });
-  } catch (error: any) {
-    console.error('[story-builder] POST /plans/:id/refine error:', error);
-    const status = error.message.includes('not found') ? 404 : 500;
-    res.status(status).json({ success: false, error: error.message || 'Failed to refine plan', timestamp: new Date().toISOString() });
-  }
-});
+// Removed in M32 PR5 - use chatPropose for iterative refinement via /plans/:id/chat
+// adminStoryBuilderActionsRouter.post('/plans/:id/refine', async (req: AuthRequest, res) => {
 
 // POST /admin/story-builder/plans/:id/preview — Dry-run preview
 adminStoryBuilderActionsRouter.post('/plans/:id/preview', async (req, res) => {

@@ -78,49 +78,6 @@ jest.mock('../../src/services/StoryBuilderLore.js', () => ({
 
 jest.mock('../../src/services/ContentPlanService.js', () => ({
   contentPlanService: {
-    parseDescription: jest.fn(async (description) => ({
-      plan: {
-        id: MOCK_PLAN_ID,
-        description,
-        status: 'draft',
-        items: [
-          {
-            id: MOCK_ITEM_ID,
-            type: 'character',
-            action: 'create',
-            name: 'Diego',
-            slug: 'diego',
-            fields: { title: 'Bartender', description: 'A friendly bartender' },
-            assetNeeds: [],
-            dependsOn: [],
-          },
-        ],
-        links: [],
-      },
-      usage: null,
-    })),
-    generateOutline: jest.fn(async (description) => ({
-      plan: {
-        id: MOCK_PLAN_ID,
-        description,
-        status: 'draft',
-        items: [
-          {
-            id: MOCK_ITEM_ID,
-            type: 'character',
-            action: 'create',
-            name: 'Diego',
-            slug: 'diego',
-            fields: { title: 'TODO: Add title', description: 'TODO: Add description', metadata: { type: 'human', role: 'npc', faction: 'TODO: Add faction', personality: 'TODO: Add personality' } },
-            assetNeeds: [],
-            dependsOn: [],
-          },
-        ],
-        links: [],
-        _meta: { outline_source: 'llm', outline_repaired: false },
-      },
-      usage: null,
-    })),
     validateAndRepairOutline: jest.fn((plan, _description) => plan),
     // Full ExistingContentContext shape — the validation harness iterates
     // context.characters/locations/etc, so an empty `{}` would throw and now
@@ -135,15 +92,14 @@ jest.mock('../../src/services/ContentPlanService.js', () => ({
     })),
     generateLore: jest.fn(async () => '# Diego\n\nA friendly bartender.'),
     analyzeIntakeConflicts: jest.fn(async () => ({ conflicts: [], usage: null })),
-    refinePlanPreview: jest.fn(async (plan, feedback) => ({
-      plan: { ...plan, description: `${plan.description} [refined: ${feedback}]` },
-      conflicts: [],
-      usage: null,
-    })),
     getLastUsage: jest.fn(() => null),
     provider: {
       generateLore: jest.fn(async () => '# Diego\n\nA friendly bartender.'),
     },
+  },
+  ContentPlanService: {
+    setStatus: jest.fn(),
+    updatePlanJson: jest.fn(),
   },
 }));
 
@@ -155,12 +111,6 @@ jest.mock('../../src/services/StoryBuilderOrchestrator.js', () => ({
     migrationResult: { filesProcessed: 1, filesSkipped: 0, filesFailed: 0 },
     assetTasks: [],
   })),
-}));
-
-jest.mock('../../src/services/PlanGenerationJob.js', () => ({
-  runPlanFill: jest.fn(async () => {}),
-  getPlanFillJobStatus: jest.fn(async () => null),
-  cancelPlanFillStatus: jest.fn(async () => true),
 }));
 
 import { adminStoryBuilderRouter } from '../../src/routes/admin-story-builder.js';
@@ -297,24 +247,7 @@ describe('POST /admin/story-builder/plan/scaffold', () => {
     ).toBe(true);
   });
 
-  test('logs a warning when cancelPlanFillStatus delete fails during rollback', async () => {
-    const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    const { cancelPlanFillStatus } = await import('../../src/services/PlanGenerationJob.js');
-    (cancelPlanFillStatus as jest.Mock).mockResolvedValueOnce(false);
 
-    mockQueryOLTP.mockRejectedValueOnce(new Error('connection lost'));
-    const res = await request(app)
-      .post('/admin/story-builder/plan/scaffold')
-      .send({ plan: validPlan });
-
-    expect(res.status).toBe(500);
-    expect(res.body.success).toBe(false);
-    // The failed cache deletion must be observable via console warning
-    expect(consoleWarnSpy).toHaveBeenCalledWith(
-      expect.stringContaining('Failed to delete fill-job cache'),
-    );
-    consoleWarnSpy.mockRestore();
-  });
 });
 
 describe('POST /admin/story-builder/plan/refine-preview', () => {

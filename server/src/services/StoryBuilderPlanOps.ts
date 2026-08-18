@@ -14,12 +14,12 @@ import {
 import { buildValidationErrors } from './StoryBuilderValidation.js';
 import { resolveContentDir, generateLoreStubs } from './StoryBuilderLore.js';
 import { generatePromptFiles } from './PromptFileGenerator.js';
-import { fillFields, mergeFilledFields } from './ContentFillService.js';
 import { applyDelta, applyDeltaEdge, preflightDeltas, preflightDeltaEdges } from './GraphDeltaService.js';
 import { isNeo4jEnabled, runNeo4jTransaction } from './Neo4jClient.js';
 import { uuidv4 } from './ContentPlanValidation.js';
 import { CONTENT_TYPE_TO_NODE_TYPE } from '@las-flores/shared';
 import type { LLMProvider, ExistingContentContext } from './types/LLMTypes.js';
+import { buildFillFieldsPrompt } from './LLMPrompts.js';
 
 export interface ExecutionResult {
   success: boolean;
@@ -423,19 +423,94 @@ async function fillPlanItemsWithLLM(
 
   const planId = options.planId;
 
+  // Inlined fill logic (formerly in ContentFillService.fillFields)
+  const FILL_TARGETS: Record<string, string[]> = {
+    character: [
+      'description', 'title',
+      'physical_description', 'psychological_description',
+      'metadata.faction', 'metadata.age', 'metadata.gender', 'metadata.ethnicity',
+      'metadata.occupation', 'metadata.background', 'metadata.education',
+      'metadata.residence', 'metadata.organization', 'metadata.allies',
+      'metadata.mannerisms', 'metadata.motivations', 'metadata.quote',
+      'metadata.methods', 'metadata.status', 'metadata.location',
+      'metadata.personality',
+    ],
+    scene: ['description', 'mood'],
+    location: ['description', 'history', 'daytime', 'nightlife', 'conclusion'],
+    dialogue: ['description'],
+    mission: ['description'],
+    overlay: ['description'],
+    vault: ['description'],
+    gig: ['description', 'reward'],
+    shop_item: ['description'],
+    story: ['description', 'title'],
+    story_beat: ['description'],
+  };
+
+  function getNestedField(obj: any, path: string): any {
+    return path.split('.').reduce((o: any, k: string) => o?.[k], obj);
+  }
+
+  function setNestedField(obj: any, path: string, value: any): void {
+    const parts = path.split('.');
+    let current = obj;
+    for (let i = 0; i < parts.length - 1; i++) {
+      const part = parts[i];
+      if (!(part in current) || current[part] === null || typeof current[part] !== 'object') {
+        current[part] = {};
+      }
+      current = current[part];
+    }
+    current[parts[parts.length - 1]] = value;
+  }
+
   for (const item of sortedItems) {
     try {
-      const fillResult = await fillFields(item, options.context, options.provider);
-      if (Object.keys(fillResult.fields).length > 0) {
-        mergeFilledFields(item, fillResult.fields);
-        // Emit MODIFY delta for filled fields
-        if (planId) {
-          await emitFillDeltas(planId, item, fillResult.fields);
+      const targets = FILL_TARGETS[item.type];
+      if (!targets || targets.length === 0) continue;
+
+      // Only fill fields that are still TODO or empty
+      const unfilled = targets.filter(f => {
+        const val = getNestedField(item.fields, f);
+        return !val || val === '' || (typeof val === 'string' && val.startsWith('TODO'));
+      });
+
+      if (unfilled.length === 0) continue;
+
+      const prompt = buildFillFieldsPrompt(item, unfilled, options.context);
+      const response = await options.provider.generateFill(prompt);
+
+      // Validate: only accept values for the target fields we asked for
+      const filteredFields: Record<string, string> = {};
+      if (response?.fields) {
+        for (const key of unfilled) {
+          if (key in response.fields && typeof response.fields[key] === 'string') {
+            filteredFields[key] = response.fields[key];
+          }
         }
       }
-      if (fillResult.lore_refs && fillResult.lore_refs.length > 0) {
+
+      if (Object.keys(filteredFields).length > 0) {
+        // Inlined merge logic (formerly in ContentFillService.mergeFilledFields)
+        const filledPaths = new Set(item.filled_fields ?? []);
+        for (const [path, value] of Object.entries(filteredFields)) {
+          const current = getNestedField(item.fields, path);
+          // Only override if the current value is TODO or empty
+          if (!current || current === '' || (typeof current === 'string' && current.startsWith('TODO'))) {
+            setNestedField(item.fields, path, value);
+            filledPaths.add(path);
+          }
+        }
+        item.filled_fields = Array.from(filledPaths);
+
+        // Emit MODIFY delta for filled fields
+        if (planId) {
+          await emitFillDeltas(planId, item, filteredFields);
+        }
+      }
+      if (response.lore_refs && response.lore_refs.length > 0) {
         const existing = item.lore_refs ?? [];
-        item.lore_refs = Array.from(new Set([...existing, ...fillResult.lore_refs]));
+        item.lore_refs = Array.from(new Set([...existing, ...response.lore_refs]));
       }
     } catch (err: any) {
       console.warn(`[story-builder] LLM fill failed for ${item.name}: ${err.message}`);

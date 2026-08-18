@@ -1,6 +1,5 @@
 import { ContentPlanSchema, GraphDeltaSchema, type ContentPlan, type ContentPlanItem, type IntakeConflictPreview, type CritiqueAnnotation, type GraphDelta, type GraphDeltaEdge, type ChatMessage, type ConflictChatContext } from '@las-flores/shared';
 import type { LLMProvider, ExistingContentContext, LLMUsage, CritiqueScopeType } from './types/LLMTypes.js';
-import type { EntityCandidate } from './OutlineChunking.js';
 
 const MOCK_IDS = {
   planId: 'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d',
@@ -23,106 +22,6 @@ function mockNodeType(t: string): string {
 }
 
 export class MockProvider implements LLMProvider {
-  async generateOutline(description: string, _context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }> {
-    return this.parseDescription(description, _context);
-  }
-
-  async parseDescription(description: string, _context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }> {
-    const lower = description.toLowerCase();
-    const items: ContentPlan['items'] = [];
-
-    if (lower.includes('bartender')) {
-      items.push({
-        id: MOCK_IDS.characterId,
-        type: 'character',
-        action: 'create',
-        name: 'Diego',
-        description: 'A weathered bartender with a cybernetic left arm and a talent for listening.',
-        slug: 'diego',
-        fields: {
-          name: 'Diego',
-          description: 'A weathered bartender with a cybernetic left arm and a talent for listening.',
-          title: 'Bartender at The Neon Flask',
-        },
-        assetNeeds: [],
-        dependsOn: [],
-      });
-    }
-
-    if (lower.includes('plaza')) {
-      items.push({
-        id: MOCK_IDS.sceneId,
-        type: 'scene',
-        action: 'update',
-        name: 'Central Plaza',
-        description: 'The bustling heart of Las Flores, where neon signs flicker above street vendors.',
-        slug: 'central_plaza',
-        fields: {
-          name: 'Central Plaza',
-          description: 'The bustling heart of Las Flores, where neon signs flicker above street vendors.',
-          district: 'downtown',
-        },
-        assetNeeds: [],
-        dependsOn: [],
-      });
-    }
-
-    items.push({
-      id: MOCK_IDS.dialogueId,
-      type: 'dialogue',
-      action: 'create',
-      name: 'Street Encounter',
-      description: 'A chance conversation on the streets of Las Flores.',
-      slug: 'street_encounter',
-      fields: {
-        name: 'Street Encounter',
-        description: 'A chance conversation on the streets of Las Flores.',
-        start_node_id: 'node_start',
-        nodes: {
-          node_start: {
-            id: 'node_start',
-            text: 'You pass through the crowded street.',
-            choices: [],
-          },
-        },
-      },
-      assetNeeds: [],
-      dependsOn: [],
-    });
-
-    return {
-      plan: ContentPlanSchema.parse({
-        id: MOCK_IDS.planId,
-        description: `Mock plan for: ${description}`,
-        items,
-        links: [],
-        status: 'draft',
-      }),
-      usage: null,
-    };
-  }
-
-  async refinePlan(existingPlan: ContentPlan, feedback: string, _context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }> {
-    return {
-      plan: ContentPlanSchema.parse({
-        ...existingPlan,
-        description: `${existingPlan.description} [Refined based on: ${feedback}]`,
-        status: 'proposed',
-      }),
-      usage: null,
-    };
-  }
-
-  async refinePlanItems(selectedItems: ContentPlanItem[], _fullPlan: ContentPlan, feedback: string, _context: ExistingContentContext): Promise<{ items: ContentPlanItem[]; usage: LLMUsage | null }> {
-    return {
-      items: selectedItems.map(item => ({
-        ...item,
-        fields: { ...item.fields, description: `${item.fields.description || ''} [Refined based on: ${feedback}]` },
-      })),
-      usage: null,
-    };
-  }
-
   async generateLore(item: ContentPlanItem, _context: ExistingContentContext): Promise<string> {
     const name = item.name || 'Untitled';
     const description = item.fields.description || '';
@@ -200,18 +99,6 @@ ${description || `A ${item.type} unfolds in the shadows of Las Flores.`}
 ${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
 `;
     }
-  }
-
-  async extractEntities(_systemPrompt: string, chunk: string): Promise<{ entities: EntityCandidate[] }> {
-    const entities: EntityCandidate[] = [];
-    const lower = chunk.toLowerCase();
-    if (lower.includes('bartender') || lower.includes('diego')) {
-      entities.push({ name: 'Diego', type: 'character', description: 'A weathered bartender.' });
-    }
-    if (lower.includes('plaza')) {
-      entities.push({ name: 'Central Plaza', type: 'scene', description: 'The bustling heart of Las Flores.' });
-    }
-    return { entities };
   }
 
   /**

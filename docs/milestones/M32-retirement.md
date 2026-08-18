@@ -1,6 +1,6 @@
 # M32 — Authoring-Path Retirement & Consolidation
 
-> **Status:** PR 2 complete · **Branch:** `milestone/32-authoring-retirement` · **PR size target:** ~25 files per PR
+> **Status:** PR 4 complete · **Branch:** `milestone/32-authoring-retirement` · **PR size target:** ~25 files per PR
 > **Phase:** 7 (follows M28 graph write path) / 8 · **Source:** `ARCHITECTURE_SEPARATION_ANALYSIS.md` §8, §12–13, §15; **fixes the orphan gap** across M23/M27/M28/M29
 >
 > M32 is implemented as a **7-PR workstream** so each PR stays within the
@@ -74,6 +74,65 @@ code consumers. Three draft classifications changed materially:
 | `server/src/scripts/fillExistingTodos.ts` | Retire | legacy fill CLI |
 | Orphan tests across the above | Retire / Port | ~14 test files touch retire candidates; port kept-domain tests, delete tests for retired services |
 
+## PR Breakdown
+
+### PR 1 — Pin
+- Froze the retirement ledger
+- Delivered `npm run probe:content-urls` coverage probe
+
+### PR 2 — Flag Flip + Prove  
+- Made graph the sole authoring entry point for approvals
+- Rejects direct `plan_json` edits when graph deltas are present
+- Proved: 7 integration suites, 64/64 tests pass, build + `validate:content` green, in-container health OK
+
+### PR 3 — Graph Intake Path (current)
+- Created `GraphIntakeService.ts` with `createPlanFromDescription` → `chatPropose` → `GraphDeltaService` write path
+- Added POST `/plans/graph-intake` route + mounted in `admin-story-builder.ts`
+- Tweaked `StoryBuilderPlanOps.ts` so `generateLore`/`generateFill` emit MODIFY deltas
+- Added Neo4j-gated integration tests + unit mocks
+- Full prove gate passed
+
+### PR 4 — Retire Legacy Intake Surface
+**Status: Complete**
+
+Retired the superseded async fill / placeholder pipeline and legacy LLM methods.
+
+| Task | Candidate | Action |
+|------|-----------|--------|
+| 1 | `PlanGenerationJob.ts` | ✅ Delete file + remove all imports |
+| 2 | `FillPlaceholders.ts` | ✅ Delete file + remove all imports |
+| 3 | `ContentFillService.ts` | ✅ Delete file + remove all imports (inlined into StoryBuilderPlanOps.ts) |
+| 4 | `admin-story-builder-generate.ts` | ✅ Delete file + unmount from admin-story-builder |
+| 5 | `admin-story-builder-drafts.ts` | ✅ Delete file + unmount from admin-story-builder |
+| 6 | `intake.ts` `resetOrphanedFillJobs` | ✅ Remove boot call |
+| 7 | `server/src/scripts/fillExistingTodos.ts` | ✅ Delete file |
+| 8 | `LLMProvider.parseDescription` | ✅ Remove from interface + implementations |
+| 9 | `LLMProvider.generateOutline` | ✅ Remove from interface + implementations |
+| 10 | `LLMProvider.refinePlan` | ✅ Remove from interface + implementations |
+| 11 | `LLMProvider.refinePlanItems` | ✅ Remove from interface + implementations |
+| 12 | `LLMProvider.extractEntities` | ✅ Remove from interface + implementations |
+| 13 | Related tests | ✅ Delete or port to new services |
+
+**Gate:** All retired files deleted in the same PR. No orphaned imports remain. Grep verified.
+
+### PR 5 — Retire Outline Chunking + Templates
+- Delete `OutlineChunking.ts` (extract `EntityCandidate` type to shared)
+- Delete `PlanTemplates.ts`, `PlanTemplateBuilders.ts`
+- Delete `admin-story-builder-meta.ts` (templates/clone/execute endpoints)
+- Delete `admin-story-builder-actions.ts` `/plans/:id/refine` endpoint
+
+### PR 6 — Retire ContentPlanValidation + Column Drop
+- Delete `ContentPlanValidation.ts` (extract `uuidv4` to shared util)
+- Delete `dialogue_trees.nodes`, `dialogue_chunks.nodes`/`leaves` columns
+- **Gate:** `npm run probe:content-urls` must pass (every row's `content_url` must resolve)
+- Update `SnapshotService` to stop writing dropped columns
+
+### PR 7 — Final Prune + Docs
+- Delete any remaining orphans
+- Run final grep for retired symbols
+- Update `ARCHITECTURE_SEPARATION_ANALYSIS.md` §12–§15
+- Verify all references to retired symbols are removed
+
 ## Verify / Definition of Done
 
 - [x] **Pin:** retirement ledger frozen (files/routes/methods/columns/tests), classified
@@ -83,6 +142,21 @@ code consumers. Three draft classifications changed materially:
       column drop (PR 6). Green on current environment (947/947 rows reachable).
 - [x] **Prove:** full build + test suite + `validate:content` green with new path active;
       in-container health OK on game + intake-worker. PR 2: 7 integration suites, 64/64 tests pass.
+- [x] **PR 3:** GraphIntakeService (createPlanFromDescription → chatPropose → GraphDeltaService write path)
+      + POST /plans/graph-intake route + admin-story-builder mount
+      + StoryBuilderPlanOps tweaked: generateLore/generateFill emit MODIFY deltas
+      + Neo4j-gated integration tests + unit mocks
+      + Full prove gate passed
+- [x] **PR 4:** Retire Legacy Intake Surface — all 13 tasks complete:
+      + Deleted PlanGenerationJob.ts, FillPlaceholders.ts, ContentFillService.ts, PlanFillRecovery.ts
+      + Deleted admin-story-builder-generate.ts, admin-story-builder-drafts.ts, admin-story-builder-generate-helpers.ts
+      + Removed resetOrphanedFillJobs from intake.ts
+      + Deleted fillExistingTodos.ts
+      + Removed parseDescription, generateOutline, refinePlan, refinePlanItems, extractEntities from LLMProvider
+      + Inlined ContentFillService logic into StoryBuilderPlanOps.ts
+      + Removed parseDescription path from admin-story-builder-plans.ts (now requires plan object)
+      + Deleted 6 related test files, updated 3 test files
+      + No orphaned imports remain (grep verified)
 - [ ] **Prune:** all Retire rows deleted in the same PR as the last flag flip; retained
       consumers refactored to shared services; dead DB columns/migrations dropped
 - [ ] No orphaned `import`/references remain (`grep` for retired symbols returns only

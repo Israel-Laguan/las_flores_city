@@ -7,7 +7,6 @@ import { runAllMigrations } from './database/migrate.js';
 import { seedPlayers } from './database/seedPlayers.js';
 import { ContentAssetWorker } from './workers/ContentAssetWorker.js';
 import { resumeSolidify } from './services/StoryBuilderOrchestrator.js';
-import { resetOrphanedFillJobs } from './services/PlanGenerationJob.js';
 import { markOrphanedResumable } from './services/JobRunService.js';
 import { verifyNeo4j } from './services/Neo4jClient.js';
 import { resolveFileEnvVars } from './config/resolveFileEnvVars.js';
@@ -148,15 +147,7 @@ async function initializeServer() {
     }
   }
 
-  // Startup recovery: reset orphaned fill jobs to failed (legacy reclaim) +
-  // resume any resumable plan_fill jobs. Pass the already-claimed orphans so
-  // plan_fill rows are not lost (they were flipped to `resumable` above), and
-  // the startup cutoff so any fallback claim stays bounded. Retried so a
-  // transient failure cannot strand durable fill jobs until the next restart.
-  await withStartupRetry(
-    () => resetOrphanedFillJobs(claimedOrphans, startupCutoff),
-    'resetOrphanedFillJobs',
-  );
+
 
   // Content asset worker — generate pending image drafts for verified plans every 30 seconds
   const ASSET_WORKER_INTERVAL_MS = 30 * 1000;

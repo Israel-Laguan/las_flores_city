@@ -1,5 +1,4 @@
 import type { ContentPlan, ContentPlanItem, IntakeConflictPreview, CritiqueAnnotation, CritiqueScope, ChatMessage, ConflictChatContext, GraphDelta, GraphDeltaEdge } from '@las-flores/shared';
-import type { EntityCandidate } from '../OutlineChunking.js';
 
 export interface ExistingLocation {
   id: string;
@@ -32,13 +31,8 @@ export interface LLMUsage {
 export type CritiqueScopeType = CritiqueScope;
 
 export interface LLMProvider {
-  parseDescription(description: string, context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }>;
-  generateOutline(description: string, context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }>;
-  refinePlan(existingPlan: ContentPlan, feedback: string, context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }>;
-  refinePlanItems(selectedItems: ContentPlanItem[], fullPlan: ContentPlan, feedback: string, context: ExistingContentContext): Promise<{ items: ContentPlanItem[]; usage: LLMUsage | null }>;
   generateLore(item: ContentPlanItem, context: ExistingContentContext): Promise<string>;
   generateFill(prompt: string): Promise<{ fields: Record<string, string>; lore_refs?: string[] }>;
-  extractEntities(systemPrompt: string, chunk: string): Promise<{ entities: EntityCandidate[] }>;
   analyzeIntakeConflicts(plan: ContentPlan, context: ExistingContentContext): Promise<{ conflicts: IntakeConflictPreview[]; usage: LLMUsage | null }>;
 
   /**

@@ -44,19 +44,11 @@ jest.mock('../../src/middleware/adminAuth.js', () => ({
 
 jest.mock('../../src/services/ContentPlanService.js', () => ({
   contentPlanService: {
-    parseDescription: jest.fn(async (description: string) => ({
-      plan: { ...MOCK_PLAN, description },
-      usage: null,
-    })),
-    refinePlan: jest.fn(async (_planId: string, feedback: string) => ({
-      plan: {
-        ...MOCK_PLAN,
-        description: `${MOCK_PLAN.description} [Refined: ${feedback}]`,
-        status: 'proposed',
-      },
-      usage: null,
-    })),
     getLastUsage: jest.fn(() => null),
+  },
+  ContentPlanService: {
+    setStatus: jest.fn(),
+    updatePlanJson: jest.fn(),
   },
 }));
 
@@ -95,27 +87,14 @@ function makeApp() {
 describe('POST /admin/story-builder/plans', () => {
   const app = makeApp();
 
-  test('returns 400 for missing description', async () => {
+  test('returns 400 for missing plan', async () => {
     const res = await request(app)
       .post('/admin/story-builder/plans')
       .send({});
 
     expect(res.status).toBe(400);
     expect(res.body.success).toBe(false);
-    expect(res.body.error).toMatch(/description/i);
-  });
-
-  test('creates a plan from description', async () => {
-    mockQueryOLTP.mockResolvedValueOnce({ rows: [{ id: TEST_PLAN_ID }], rowCount: 1, command: 'INSERT', oid: 0, fields: [] });
-
-    const res = await request(app)
-      .post('/admin/story-builder/plans')
-      .send({ description: 'Add a bartender named Diego' });
-
-    expect(res.status).toBe(200);
-    expect(res.body.success).toBe(true);
-    expect(res.body.data.planId).toBe(TEST_PLAN_ID);
-    expect(res.body.data.plan.items.length).toBeGreaterThan(0);
+    expect(res.body.error).toMatch(/plan/i);
   });
 
   test('creates a plan with pre-built plan object', async () => {
@@ -123,10 +102,11 @@ describe('POST /admin/story-builder/plans', () => {
 
     const res = await request(app)
       .post('/admin/story-builder/plans')
-      .send({ description: 'Test plan', plan: MOCK_PLAN });
+      .send({ plan: MOCK_PLAN });
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
+    expect(res.body.data.planId).toBe(TEST_PLAN_ID);
   });
 });
 
