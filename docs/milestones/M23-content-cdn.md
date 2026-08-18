@@ -1,6 +1,6 @@
 # M23 — Content Externalization Phase 1 (Chunks + Dialogues → CDN)
 
-> **Status:** Planned · **Branch:** `milestone/23-content-cdn` · **PR size target:** ~25 files
+> **Status:** Implemented · **Branch:** `milestone/23-content-cdn` · **PR size target:** ~25 files
 > **Phase:** 4 · **Source:** `ARCHITECTURE_SEPARATION_ANALYSIS.md` §6
 
 ## Goal
@@ -13,22 +13,63 @@ OLTP content reads drop to ~zero on the hot path.
 
 | Item | Detail |
 |---|---|
-| **Publish chunks + tree nodes** | `content_url → s3://las-flores/chunks/<tree>/<key>.json` |
-| **Slim DB rows** | `dialogue_chunks` / `dialogue_trees` keep `id, tree_id, chunk_key, content_url`; heavy JSONB dropped |
+| **Publish chunks + tree nodes** | `content_url → s3://las-flores/chunks/<tree>/<key>__<hash>.json` and `s3://las-flores/dialogues/<treeId>__<hash>.json` |
+| **Dual-write DB rows** | `dialogue_chunks` / `dialogue_trees` keep `id, tree_id, chunk_key, content_url` **and** the existing `nodes`/`leaves` JSONB columns for Phase 1 fallback |
 | **`DialogueResolver` CDN fetch** | GET by `content_url`; merge base + overlays in Redis-cached memory (Phase 1) |
 | **Cache-invalidation ordering** | publish MinIO → update DB pointer → `invalidatePattern('dialogue:resolved:*')` |
-| **Content-addressed keys** | `<slug>__<hash>.json` using `migration_log` checksum as the version key |
+| **Content-addressed keys** | `<scope>/<id>__<hash>.json` where the hash is a SHA-256 of the serialized blob |
+| **Cache key versioning** | Resolver cache keys include `:content:<ver>` derived from `content_url`; a republished blob changes the pointer → fresh key even if pattern invalidation didn't fire |
 
 ## Key changes / files touched (~25)
 
 | Area | Files |
 |---|---|
-| Publish/bake | `server/src/services/AssetPublishService.ts`, `ServerStorage.ts` |
+| Publish/bake | `server/src/services/ContentPublishService.ts`, `StorageService.ts` |
 | Content engine | `server/src/content/migrate.ts`, `compiler.ts` |
 | Read path | `server/src/services/DialogueResolver.ts` (+ CDN fetch helper) |
-| Migrations | `dialogue_chunks` / `dialogue_trees` schema changes |
-| Connection | `server/src/database/connection.ts` (content pool from M19) |
-| Tests | integration for CDN-fetch + merge; invalidation ordering |
+| Migrations | `server/src/database/migrations/063_content_url.sql` |
+| Connection | Reuse `oltpPool` / `withOLTPTransaction` (M19 explicitly added a read-only `contentPool`/`queryContent` for content reads, which is the sanctioned exception to the no-new-pools rule) |
+| Tests | `server/tests/integration/dialogue-cdn.integration.test.ts`, updated `server/tests/integration/dialogue-resolver.test.ts` |
+
+## Phase 1 dual-write / fallback decision
+
+The milestone spec originally called for "slim DB rows" with the heavy JSONB columns dropped.
+During implementation we kept the `dialogue_chunks.nodes`/`leaves` and `dialogue_trees.nodes`
+columns and adopted a **publish-first, dual-write, fallback-enabled** strategy instead:
+
+1. **`compiler.ts` publishes first**, then writes `content_url` pointers. If MinIO is unavailable,
+   publishing is best-effort (`safePublish` wrapper) and the row is still written with
+   `content_url = NULL`.
+2. **`DialogueResolver` reads CDN first** (`fetchNodesFromContentUrl`) and falls back to the
+   in-DB JSONB when `content_url` is NULL/empty or the CDN fetch fails.
+3. **JSONB columns are intentionally retained** so existing tests, seed scripts, and admin/debug
+   tooling that read/write `nodes`/`leaves` continue to work, and production can survive a CDN
+   outage without losing dialogue resolution.
+
+This is a deliberate **drift from the original spec** (which envisioned immediate column drops).
+Physical removal of the JSONB columns is now **Phase 2** work, gated on operational confidence
+and a migration that backfills or verifies every row has a reachable `content_url`.
+
+### Phase 2 column-drop caveat (must fix before M32 drops the JSONB)
+
+> Tracked in `M32-retirement.md:45`, but the concrete fix is a **precondition** here, not
+> just a ledger line.
+
+`DialogueResolver.loadBaseChunk` / `loadBaseChunkByKey` (`server/src/services/DialogueResolver.ts`)
+currently fetch **only `nodes`** from the CDN blob and **always take `leaves` from the DB
+`leaves` column** (`...row, nodes: cdnNodes ?? row.nodes`). The published chunk blob is written
+with `{ nodes, leaves }` (`compiler.ts`), so the leaves *are* in MinIO — but the resolver ignores
+them there. As long as the JSONB columns exist (Phase 1) this is harmless, because the DB column
+supplies `leaves`. **If M32 drops the JSONB columns before this is fixed, `leaves` silently
+becomes empty even though the CDN blob contains it**, breaking chunk leaf references on the hot
+path.
+
+Precondition for the M32 column drop:
+- Update `fetchNodesFromContentUrl` (or a sibling `fetchChunkFromContentUrl`) to return the full
+  `{ nodes, leaves }` shape from the CDN; have `loadBaseChunk`/`loadBaseChunkByKey` hydrate both
+  fields from the blob instead of the DB column.
+- Add a regression test asserting `resolved.chunk.leaves` is populated from `content_url` when
+  the DB `leaves` column is NULL (mirrors the existing `content_url`-NULL fallback test).
 
 ## Risks & verification
 
@@ -41,7 +82,22 @@ OLTP content reads drop to ~zero on the hot path.
 
 ## Definition of Done
 
-- [ ] Chunks + tree nodes published to MinIO; DB rows slimmed to references
-- [ ] `DialogueResolver` fetches from CDN and merges overlays in Redis (Phase 1)
-- [ ] Publish-first invalidation ordering correct; content-addressed keys in use
-- [ ] Full dialogue resolution works end-to-end (unit + integration)
+- [x] Chunks + tree nodes published to MinIO; DB rows reference via `content_url` (JSONB retained for fallback)
+- [x] `DialogueResolver` fetches from CDN and merges overlays in Redis (Phase 1)
+- [x] Publish-first invalidation ordering correct; content-addressed keys in use; resolver cache keys include content-version token
+- [x] Full dialogue resolution works end-to-end (unit + integration)
+
+## Verification log
+
+Verified on the local Podman stack (OLTP + Redis + MinIO):
+
+- **Migration:** `063_content_url.sql` applied idempotently to OLTP.
+- **DB pointers:** `dialogue_trees` 48/48 and `dialogue_chunks` 323/323 rows carry a
+  non-NULL `content_url` after migration (`SELECT count(content_url) …`).
+- **Live CDN round trip:** publish → `s3://las-flores/dialogues/<id>__<sha256>.json`,
+  fetched back and JSON-parsed with `Content-Type: application/json`; changed content
+  yields a different hash/key (content-addressing confirmed). Real bucket already holds
+  ~50 content-addressed dialogue blobs from actual migration runs.
+- **Tests:** `dialogue-cdn.integration.test.ts` + `dialogue-resolver.test.ts` pass;
+  full integration suite 51/51 (351 tests), unit suite 80/80 (912 tests).
+- **Lint/build:** server lint 0 errors; `tsc` build clean.

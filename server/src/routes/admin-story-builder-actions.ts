@@ -16,6 +16,7 @@ import { loadPlanForStaging, runStagingPipeline } from './admin-story-builder-st
 import { contentPlanService } from '../services/ContentPlanService.js';
 import { adminStoryBuilderGenerateRouter } from './admin-story-builder-generate.js';
 import { adminStoryBuilderCritiqueRouter } from './admin-story-builder-critique.js';
+import { adminStoryBuilderChatRouter } from './admin-story-builder-chat.js';
 
 export const adminStoryBuilderActionsRouter = express.Router();
 
@@ -23,6 +24,8 @@ export const adminStoryBuilderActionsRouter = express.Router();
 adminStoryBuilderActionsRouter.use(adminStoryBuilderGenerateRouter);
 // M26 — AI semantic critique handlers live in admin-story-builder-critique.ts
 adminStoryBuilderActionsRouter.use(adminStoryBuilderCritiqueRouter);
+// M29 — conversational chat + review-queue handlers live in admin-story-builder-chat.ts
+adminStoryBuilderActionsRouter.use(adminStoryBuilderChatRouter);
 
 // POST /admin/story-builder/plans/:id/refine — Refine plan with AI feedback
 adminStoryBuilderActionsRouter.post('/plans/:id/refine', async (req: AuthRequest, res) => {

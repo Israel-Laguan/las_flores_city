@@ -1,0 +1,210 @@
+/* M29 — right-docked authoring chat side-panel */
+.panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100dvh;
+  width: min(420px, 100vw);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface, #1b1d22);
+  border-left: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  box-shadow: -6px 0 24px rgba(0, 0, 0, 0.35);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+}
+
+.title {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.closeBtn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.context {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.contextBadge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(239, 68, 68, 0.18);
+  color: #f87171;
+}
+
+.contextDesc {
+  margin: 0.4rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.contextMeta {
+  font-size: 0.72rem;
+  opacity: 0.7;
+}
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.empty {
+  color: var(--text-muted, rgba(255, 255, 255, 0.55));
+  font-size: 0.85rem;
+  text-align: center;
+  margin: auto;
+}
+
+.msgUser {
+  align-self: flex-end;
+}
+
+.msgAssistant {
+  align-self: flex-start;
+}
+
+.msgBubble {
+  display: inline-block;
+  max-width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: rgba(59, 130, 246, 0.18);
+  color: #e5e7eb;
+}
+
+.msgUser .msgBubble {
+  background: rgba(59, 130, 246, 0.35);
+}
+
+.proposal {
+  border-top: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  padding: 0.75rem 1rem;
+  max-height: 45%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: rgba(16, 185, 129, 0.05);
+}
+
+.deltaCard,
+.edgeCard {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  border-radius: 8px;
+  padding: 0.5rem;
+}
+
+.deltaHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.deltaSummary,
+.edgeSummary {
+  font-size: 0.8rem;
+  word-break: break-word;
+}
+
+.deltaDiscard,
+.applyBtn {
+  flex-shrink: 0;
+}
+
+.deltaFields {
+  margin: 0.35rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.72rem;
+}
+
+.fieldKey {
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.fieldVal {
+  opacity: 0.75;
+}
+
+.error {
+  margin: 0 1rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.composer {
+  padding: 0.75rem 1rem 1rem;
+  border-top: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+}
+
+.modeToggle {
+  display: inline-flex;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.modeBtn {
+  font-size: 0.8rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.06);
+  color: inherit;
+}
+
+.modeBtnActive {
+  background: rgba(59, 130, 246, 0.3);
+  border-color: rgba(59, 130, 246, 0.5);
+}
+
+.form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.15));
+  background: rgba(255, 255, 255, 0.05);
+  color: inherit;
+  font-size: 0.85rem;
+}
+
+.sendBtn {
+  flex-shrink: 0;
+}

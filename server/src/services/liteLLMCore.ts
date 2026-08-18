@@ -15,6 +15,17 @@ export interface LiteLLMCore {
   enhanceError(lastError: Error, timeoutMs: number, maxTimeoutMs: number): never;
   callLLM(systemPrompt: string, userMessage: string, customTimeoutMs?: number, maxTokens?: number): Promise<{ result: Record<string, unknown>; usage: LLMUsage | null }>;
   callLLMText(systemPrompt: string, userMessage: string): Promise<string>;
+  /**
+   * M29 — multi-turn chat completion. Unlike `callLLM`/`callLLMText` (single
+   * user turn), this accepts a full message history. Supports both free-form
+   * prose (`jsonMode: false`) and structured JSON output (`jsonMode: true`).
+   * Retry/backoff/truncation rules are the same as `callLLM`.
+   */
+  callLLMMessages(
+    systemPrompt: string,
+    messages: Array<{ role: string; content: string }>,
+    opts?: { jsonMode?: boolean; maxTokens?: number; customTimeoutMs?: number },
+  ): Promise<{ result?: Record<string, unknown>; text?: string; usage: LLMUsage | null }>;
 }
 
 function extractUsage(data: any, model: string): LLMUsage | null {
@@ -212,6 +223,100 @@ async function callLLMText(deps: LiteLLMCoreDeps, systemPrompt: string, userMess
   throw lastError!;
 }
 
+/**
+ * M29 — multi-turn chat completion. Sends the full message history (system +
+ * supplied turns), applying the same retry/backoff/truncation rules as
+ * `callLLM`. Returns structured JSON (`result`) when `opts.jsonMode` is true,
+ * otherwise free-form trimmed prose (`text`).
+ */
+async function callLLMMessages(
+  deps: LiteLLMCoreDeps,
+  systemPrompt: string,
+  messages: Array<{ role: string; content: string }>,
+  opts: { jsonMode?: boolean; maxTokens?: number; customTimeoutMs?: number } = {},
+): Promise<{ result?: Record<string, unknown>; text?: string; usage: LLMUsage | null }> {
+  const { baseUrl, apiKey, model, defaultTimeoutMs, retries } = deps;
+  const timeoutMs = opts.customTimeoutMs ?? defaultTimeoutMs;
+  const maxTokens = opts.maxTokens;
+  const maxTimeoutMs = finiteInt(process.env.LLM_MAX_TIMEOUT_MS, 300000);
+  let lastError: Error | null = null;
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    // Escalate the per-attempt timeout so a slow model isn't abandoned early.
+    let currentTimeoutMs = timeoutMs * (attempt + 1);
+    if (currentTimeoutMs > maxTimeoutMs) currentTimeoutMs = maxTimeoutMs;
+    try {
+      if (attempt > 0) {
+        const delay = Math.min(1000 * Math.pow(2, attempt - 1), 10_000);
+        console.log(`[LiteLLM] Messages retry ${attempt}/${retries} after ${delay}ms`);
+        await new Promise(r => setTimeout(r, delay));
+      }
+
+      const response = await fetch(`${baseUrl}/v1/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(apiKey ? { 'Authorization': `Bearer ${apiKey}` } : {}),
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            ...messages,
+          ],
+          temperature: 0.7,
+          ...(maxTokens !== undefined ? { max_tokens: maxTokens } : {}),
+        }),
+        signal: AbortSignal.timeout(currentTimeoutMs),
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        const errorMsg = `LiteLLM messages request failed: ${response.status} ${response.statusText} — ${text}`;
+        const isRetryable = response.status === 429 || response.status >= 500;
+        if (!isRetryable) {
+          const nonRetryableError = new Error(errorMsg);
+          (nonRetryableError as any).isRetryable = false;
+          throw nonRetryableError;
+        }
+        throw new Error(errorMsg);
+      }
+
+      const data = await response.json();
+      const usage = extractUsage(data, model);
+
+      // Truncation guard: if the model hit max_tokens mid-generation, a partial
+      // parse could silently drop chunks (especially in JSON mode). Surface a
+      // clear non-retryable error instead of corrupting the output.
+      if (data.choices?.[0]?.finish_reason === 'length' && maxTokens !== undefined) {
+        const truncError = new Error(
+          `LLM output truncated (finish_reason=length, max_tokens=${maxTokens}). ` +
+          `Consider increasing the max token limit for this call or reducing input size.`,
+        );
+        (truncError as any).isRetryable = false;
+        throw truncError;
+      }
+
+      const content = data.choices?.[0]?.message?.content ?? '';
+      if (opts.jsonMode) {
+        return { result: parseJsonContent(content), text: undefined, usage };
+      }
+
+      let trimmed = content.trim();
+      if (trimmed.startsWith('```')) {
+        const fenceMatch = trimmed.match(/```(?:markdown)?\s*\n?([\s\S]*?)```/);
+        trimmed = fenceMatch ? fenceMatch[1].trim() : trimmed;
+      }
+      return { result: undefined, text: trimmed, usage };
+    } catch (err: any) {
+      if (err.isRetryable === false) throw err;
+      lastError = err;
+      if (attempt === retries) break;
+    }
+  }
+  enhanceError(lastError!, model, baseUrl, retries, timeoutMs, maxTimeoutMs);
+}
+
 function createLiteLLMCore(deps: LiteLLMCoreDeps): LiteLLMCore {
   return {
     extractUsage: (data) => extractUsage(data, deps.model),
@@ -220,6 +325,7 @@ function createLiteLLMCore(deps: LiteLLMCoreDeps): LiteLLMCore {
     callLLM: (systemPrompt, userMessage, customTimeoutMs, maxTokens) =>
       callLLM(deps, systemPrompt, userMessage, customTimeoutMs, maxTokens),
     callLLMText: (systemPrompt, userMessage) => callLLMText(deps, systemPrompt, userMessage),
+    callLLMMessages: (systemPrompt, messages, opts) => callLLMMessages(deps, systemPrompt, messages, opts),
   };
 }
 

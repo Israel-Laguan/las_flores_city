@@ -14,7 +14,7 @@ best-guess, and scope conflict detection to the patch neighborhood.
 | Item | Detail |
 |---|---|
 | **`entity_id` vs aliases** | shared schemas; stable ID separate from names/aliases |
-| **`IdentityResolver`** | returns `matched: {id}` | `new_candidate`; surfaces alternatives (`["a193 Marcus", "new: Marcus II"]`) — never silently decides identity |
+| **`IdentityResolver`** | returns `matched: {id}` \| `new_candidate`; surfaces alternatives (`["a193 Marcus", "new: Marcus II"]`) — never silently decides identity |
 | **Bounded conflict detection** | targeted per-entity-type, neighborhood-scoped checks (timeline, location, lineage) with a recorded **"checked scope"** per job |
 | **Admin UI** | resolution alternatives picker + conflict/scope display |
 

@@ -452,3 +452,71 @@ export async function summarizeDeltasForPlan(planId: string): Promise<{ total: n
   }
   return { total: deltas.length, byOp };
 }
+
+// ── M29: single-delta removal + all-deltas reads (needs_review queue sources) ──
+
+/**
+ * DETACH DELETE one plan delta by its surrogate `(nodeType, nodeId, planId)` key.
+ * Used by "[Keep existing]" on the review queue — the author declines a proposed
+ * delta, leaving the canonical base graph untouched. No-op when Neo4j is disabled.
+ */
+export async function removeDelta(planId: string, nodeType: string, nodeId: string): Promise<void> {
+  if (!isNeo4jEnabled()) return;
+  await runNeo4jQuery(
+    `MATCH (d:ContentDelta { key: $key }) DETACH DELETE d`,
+    { key: `${nodeType}:${normalizeKeyComponent(nodeId)}:${normalizeKeyComponent(planId)}` },
+  );
+}
+
+/** Defensively coerce one raw `:ContentDelta` node; skip anything unreadable. */
+function safeToGraphDelta(nodeLike: unknown): GraphDelta | null {
+  try {
+    return toGraphDelta(nodeLike);
+  } catch {
+    return null;
+  }
+}
+
+/** Coerce a raw delta-edge row into a validated GraphDeltaEdge, or null. */
+function safeToGraphDeltaEdge(row: Record<string, unknown>): GraphDeltaEdge | null {
+  try {
+    return toGraphDeltaEdge(row);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Every proposed delta across ALL plans (the global `needs_review` queue source).
+ * A single unreadable node is skipped, never allowed to sink the whole queue.
+ * Empty when Neo4j is disabled.
+ */
+export async function getAllDeltas(): Promise<GraphDelta[]> {
+  if (!isNeo4jEnabled()) return [];
+  const rows = await runNeo4jQuery<{ d: unknown }>(
+    `MATCH (d:ContentDelta) RETURN d ORDER BY d.createdAt ASC`,
+  );
+  return rows
+    .map((r) => safeToGraphDelta(r.d))
+    .filter((d): d is GraphDelta => d !== null);
+}
+
+/**
+ * Every delta edge (relationship carrying a planId) across ALL plans — the edge
+ * half of the queue source. Empty when Neo4j is disabled.
+ */
+export async function getAllDeltaEdges(): Promise<GraphDeltaEdge[]> {
+  if (!isNeo4jEnabled()) return [];
+  const rows = await runNeo4jQuery<Record<string, unknown>>(
+    `MATCH (s:ContentDelta)-[r]->(t)
+     WHERE r.planId IS NOT NULL
+     RETURN r.planId AS planId,
+            s.nodeType AS sourceNodeType, s.nodeId AS sourceNodeId,
+            t.nodeType AS targetNodeType, t.nodeId AS targetNodeId,
+            type(r) AS type
+     ORDER BY r.planId`,
+  );
+  return rows
+    .map((row) => safeToGraphDeltaEdge(row))
+    .filter((e): e is GraphDeltaEdge => e !== null);
+}

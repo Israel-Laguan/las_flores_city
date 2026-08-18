@@ -63,7 +63,7 @@ base graph, express plans as deltas tagged with `plan_id`, and support merged-vi
 M27-b (AI critique into the graph) reads the following seams; all exist here:
 
 1. **`(:Content)` base nodes keyed on `(nodeType, nodeId)`** — every canon entity
-   (Character, Scene, Dialogue, Mission, Overlay, Location) seeds as a
+   (Character, Scene, Dialogue, Mission, Overlay, Location, District) seeds as a
    `:Content` node carrying `nodeType`, `nodeId`, `name` + canon fields.
    M27-b links `(:Conflict)-[:FLAGGED_IN]->(:Content)` and its
    `Neo4jNeighborhoodProvider` traverses exactly this shape.

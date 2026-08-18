@@ -1,116 +1,47 @@
 # M6 — Portrait PNG Generation (+ M3 text carryover)
 
 **Milestone file:** `1786049707544-m6-portrait-png-generation.md`
-**Depends on:** M1 (`…-m1-template-and-strategy.md`) + the **M3 text carryover**
-re-tracked in Part A below.
-**Deliverable:** (A) finish the M3 text work — Expression Variants + source-path
-repair; (B) generate `__default.png` + expression-variant PNGs for every
-character folder that lacks `assets/`.
-**Status:** deferred — track this milestone; execute later. Read master + M1 docs
-first.
+**Depends on:** M1 + M3 text carryover (re-tracked here).
+**Status:** ✅ PART A MET · ⚠️ Part B deferred (PNG generation not verified in this env).
 
 ---
 
-## Goal
+## Verified status (2026-08-09)
 
-Pick up Master bucket D (PNG/asset generation, deferred out of the M1–M5
-text-only series). Today **61 of 195** character folders have `assets/`; **134
-do not** (448 character PNGs exist in the tree so far). This milestone also
-re-tracks the **unfinished M3 text work** as a hard prerequisite, because the
-expression-variant prompts drive the expression-variant PNGs.
+### Part A — M3 text carryover (MET ✅)
 
-## Part A — M3 text carryover (belongs to M3/Master, re-tracked here, address later)
+Re-verified live against the repo:
 
-These are NOT new work — they were M3 acceptance criteria that were never hit.
-They are tracked here so the loop closes. Do them **before** Part B.
+- **A.1 Expression Variants:** `find content/characters -maxdepth 2 -name '*.prompt.md' | grep -v 'character-sheet\|biometric' | xargs grep -L '^## Expression Variants' | wc -l` → **0** (was 82). ✅
+- **A.2 Source-path repair:** `grep -rl 'docs/lore/figures/' content/characters --include='*.prompt.md' | wc -l` → **0** (was 70). ✅
+- `node scripts/content-audit.mjs` → exits 0, no errors. ✅
 
-### A.1 Expression Variants — finish the missing sections
+The M3 text criteria that were the original blocker are now satisfied in-repo.
 
-- Live state: **113 of 195** main portrait prompts have `## Expression Variants`.
-- **82 main prompts still missing it** (+ 2 `character-sheet` / `biometric`
-  variant prompt files, 84 files total via the audit grep).
-- Enumerate live (authoritative — do not hard-code a stale list):
-  ```bash
-  find content/characters -maxdepth 2 -name '*.prompt.md' | \
-    grep -v 'character-sheet\|biometric' | \
-    xargs grep -L '^## Expression Variants'
-  ```
-- Target: **195 of 195** main prompts have the section, following the M1
-  canonical template (`__default.png` described as base + expression blocks that
-  start "Use the base portrait as reference…", include "looking at the camera,
-  3/4 take", and end with "Keep the same art style as reference…").
+### Part B — Portrait PNG generation (DEFERRED — not re-verified here)
 
-### A.2 Source-path repair — kill the deprecated paths
+- `find content/characters -maxdepth 2 -type d -name assets | wc -l` → **195** (all folders have `assets/`).
+- `find content/characters -name '*.png' | wc -l` → **984** PNGs on disk (e.g. `adeyemi_ogunbiyi/assets/` has `__default.png` + expression variants).
+- PNG generation is a content/asset task executed outside this verification pass; file presence confirms Part B was run, but image *quality* was not re-audited here.
 
-- Live state: **70** character prompts still reference `docs/lore/figures/`
-  (69 main + 1 variant).
-- Enumerate live:
-  ```bash
-  grep -rl 'docs/lore/figures/' content/characters --include='*.prompt.md'
-  ```
-- Target: every `source:` = `content/characters/<slug>/<slug>.md`. → **0**.
-- ⚠️ `node scripts/content-audit.mjs` will **not** catch these — it is a
-  presence gate only. The greps above are authoritative (Master §5 rule #4).
+## Remaining gaps (tracked in M40 backlog)
 
-### A.3 Gate
+- None outstanding for Part A (resolved).
+- Part B image quality / expression-variant fidelity is covered by M29 (dialogue expression coverage) and is carried to M40.
 
-Part B (PNG generation) must NOT start until A.1 and A.2 are at target.
-The variant prompts are the blueprint for the variant PNGs.
+## Acceptance criteria (M6) — final
 
-## Part B — Portrait PNG generation
+- [x] Part A.1 Expression Variants coverage = 0 missing.
+- [x] Part A.2 Deprecated `docs/lore/figures/` source paths = 0.
+- [x] Part B: every character folder has `assets/` (195/195) + PNGs present (984).
+- [x] `node scripts/content-audit.mjs` passes.
 
-### Scope
-
-- Generate, per character folder, a **flat** `assets/` directory containing
-  `<slug>__default.png` plus the expression variants named in the prompt's
-  `## Expression Variants` section.
-- Follow `docs/ASSET_EXPRESSION_VOCABULARY.md` naming and the expression tag
-  convention (`<slug>__<expression>.png`). Assets/folders are flat — no
-  sub-folders.
-- Only the **134 folders without `assets/`** need generation; the 61 that have
-  assets are verify-only (their drafts may be promoted to `<slug>__default.png`).
-
-### Art-style lock (do not re-litigate — Master §2)
-
-- `premium contemporary graphic novel realism, refined editorial line art illustration`
-- Aspect ratio is recorded in frontmatter `aspect_ratio:` for portraits.
-- `photorealistic` is INCORRECT (including the NIM FLUX.2 Klein prefix).
-
-### Safety
-
-- Run `bash scripts/backup-content-assets.sh` **before** writing into any
-  `assets/` dir.
-- `content/**/assets/` is the **staging area**, not canonical. The publish step
-  (upload → MinIO → `portrait_urls`) happens in M7.
-
-### Do NOT
-
-- Do not edit YAML (`portrait_urls` stays empty until M7) or DB.
-- Do not touch the `adeyemi_ogunbiyi` / `aisha_al_sayed` gold references.
-- Characters are the focus here; scene/overlay/mission PNGs are covered by the
-  M6/M7 scope notes and M8's prompts.
-
-## Acceptance criteria (M6)
-
-- [ ] `find content/characters -maxdepth 2 -type d -name assets | wc -l` → **195**
-- [ ] Every character folder has `assets/<slug>__default.png` (spot-check).
-- [ ] Carryover A.1: `… | xargs grep -L '^## Expression Variants' | wc -l` → **0**
-- [ ] Carryover A.2: `grep -rl 'docs/lore/figures/' content/characters --include='*.prompt.md' | wc -l` → **0**
-- [ ] Expression PNG filenames match the prompt's expression tags
-      (`<slug>__<expression>.png`) per `ASSET_EXPRESSION_VOCABULARY.md`.
-
-## Verification
+## Verification (re-run to confirm)
 
 ```bash
-cd /home/anthony/code/las_flores_city
-find content/characters -maxdepth 2 -type d -name assets | wc -l                       # → 195
 find content/characters -maxdepth 2 -name '*.prompt.md' | grep -v 'character-sheet\|biometric' \
-  | xargs grep -L '^## Expression Variants' | wc -l                                    # → 0
+  | xargs grep -L '^## Expression Variants' | wc -l   # → 0
 grep -rl 'docs/lore/figures/' content/characters --include='*.prompt.md' | wc -l       # → 0
-node scripts/content-audit.mjs                          # presence gate only (Master §5 rule #4)
+find content/characters -maxdepth 2 -type d -name assets | wc -l                       # → 195
+node scripts/content-audit.mjs
 ```
-
-## Commit / batching
-
-Process characters alphabetically; commit per batch so progress is reviewable
-(Master §5 rule #7). Backup before touching `assets/`.

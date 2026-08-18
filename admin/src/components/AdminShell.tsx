@@ -7,6 +7,8 @@ import TopBar from './TopBar';
 import Breadcrumbs from './Breadcrumbs';
 import { SidebarContext } from './SidebarContext';
 import { BreadcrumbProvider } from './BreadcrumbContext';
+import { ChatPanelProvider } from './ChatPanelContext';
+import ChatPanel from './ChatPanel';
 import styles from './AdminShell.module.css';
 
 const COLLAPSE_STORAGE_KEY = 'lf-admin-sidebar-collapsed';
@@ -63,9 +65,10 @@ export default function AdminShell({ user, children }: AdminShellProps) {
   const closeMobile = useCallback(() => setMobileOpen(false), []);
 
   return (
-    <SidebarContext.Provider
-      value={{ mobileOpen, toggleMobile, closeMobile, collapsed, toggleCollapsed }}
-    >
+    <ChatPanelProvider>
+      <SidebarContext.Provider
+        value={{ mobileOpen, toggleMobile, closeMobile, collapsed, toggleCollapsed }}
+      >
       <div className={styles.shell} data-collapsed={collapsed ? 'true' : undefined}>
         <Sidebar />
         {mobileOpen && (
@@ -95,5 +98,7 @@ export default function AdminShell({ user, children }: AdminShellProps) {
         </div>
       </div>
     </SidebarContext.Provider>
+      <ChatPanel />
+    </ChatPanelProvider>
   );
 }

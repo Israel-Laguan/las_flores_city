@@ -1,4 +1,4 @@
-import { ContentPlanSchema, type ContentPlan, type ContentPlanItem, type IntakeConflictPreview, type CritiqueAnnotation } from '@las-flores/shared';
+import { ContentPlanSchema, GraphDeltaSchema, type ContentPlan, type ContentPlanItem, type IntakeConflictPreview, type CritiqueAnnotation, type GraphDelta, type GraphDeltaEdge, type ChatMessage, type ConflictChatContext } from '@las-flores/shared';
 import type { LLMProvider, ExistingContentContext, LLMUsage, CritiqueScopeType } from './types/LLMTypes.js';
 import type { EntityCandidate } from './OutlineChunking.js';
 
@@ -8,6 +8,19 @@ const MOCK_IDS = {
   sceneId: 'c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f',
   dialogueId: 'd4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f80',
 };
+
+/** Map an evidence `nodeType` (often lowercase) to a `GraphNodeType` enum value. */
+const NODE_TYPE_CAPS: Record<string, string> = {
+  character: 'Character', scene: 'Scene', dialogue: 'Dialogue',
+  mission: 'Mission', overlay: 'Overlay', location: 'Location', district: 'District',
+};
+
+/** UUID shape (case-insensitive) — MODIFY requires a canonical UUID nodeId. */
+const MOCK_UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function mockNodeType(t: string): string {
+  return NODE_TYPE_CAPS[t.trim().toLowerCase()] || 'Character';
+}
 
 export class MockProvider implements LLMProvider {
   async generateOutline(description: string, _context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }> {
@@ -331,6 +344,66 @@ ${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
   /** The mock always uses a single fixed model for every scope. */
   critiqueModel(_scope: CritiqueScopeType): string {
     return 'mock';
+  }
+
+  async chatExplain(
+    planId: string,
+    messages: ChatMessage[],
+    _context: ExistingContentContext,
+    conflict?: ConflictChatContext,
+  ): Promise<{ reply: string; usage: LLMUsage | null }> {
+    const last = messages[messages.length - 1]?.content ?? '';
+    const subject = conflict
+      ? `the active ${conflict.type} "${conflict.description}"`
+      : 'the plan in context';
+    return {
+      reply: `Mock explanation for plan ${planId} concerning ${subject}. Your question was: "${last}". (Deterministic mock — configure LLM_PROVIDER=litellm for real generation.)`,
+      usage: null,
+    };
+  }
+
+  async chatPropose(
+    planId: string,
+    messages: ChatMessage[],
+    _context: ExistingContentContext,
+    conflict?: ConflictChatContext,
+  ): Promise<{ reply: string; deltas: GraphDelta[]; deltaEdges: GraphDeltaEdge[]; usage: LLMUsage | null }> {
+    const ev = conflict?.evidence?.[0];
+    let deltas: GraphDelta[];
+    if (ev && MOCK_UUID_RE.test(ev.nodeId)) {
+      deltas = [GraphDeltaSchema.parse({
+        id: crypto.randomUUID(),
+        planId,
+        nodeType: mockNodeType(ev.nodeType) as GraphDelta['nodeType'],
+        nodeId: ev.nodeId,
+        op: 'MODIFY',
+        fields: {
+          description: `Mock-proposed MODIFY resolving the active conflict (was flagged via ${ev.slug || ev.nodeId}).`,
+        },
+        createdAt: new Date().toISOString(),
+      })];
+    } else {
+      deltas = [GraphDeltaSchema.parse({
+        id: crypto.randomUUID(),
+        planId,
+        nodeType: 'Character',
+        nodeId: 'diego',
+        op: 'ADD',
+        fields: {
+          name: 'Diego el Mock',
+          description: 'A deterministic mock proposal: add a new character to demonstrate the propose→apply loop.',
+          role: 'bartender',
+        },
+        createdAt: new Date().toISOString(),
+      })];
+    }
+    const last = messages[messages.length - 1]?.content ?? '';
+    return {
+      reply: `Mock proposal for plan ${planId}: ${deltas.length} delta(s) crafted from "${last}".`,
+      deltas,
+      deltaEdges: [],
+      usage: null,
+    };
   }
 
   async generateFill(prompt: string): Promise<{ fields: Record<string, string>; lore_refs?: string[] }> {

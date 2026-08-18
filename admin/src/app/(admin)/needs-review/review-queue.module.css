@@ -1,0 +1,96 @@
+/* M29 — global needs_review triage queue */
+.wrapper {
+  max-width: 900px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.heading {
+  margin: 0;
+}
+
+.subtitle {
+  color: var(--text-muted, rgba(255, 255, 255, 0.6));
+  margin: 0.25rem 0 1rem;
+  font-size: 0.9rem;
+}
+
+.empty {
+  color: var(--text-muted, rgba(255, 255, 255, 0.6));
+  padding: 2rem 0;
+  text-align: center;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.row {
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.rowMain {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.preview {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.plan {
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
+.planDesc {
+  font-size: 0.8rem;
+  opacity: 0.75;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.fields {
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8rem;
+}
+
+.fieldKey {
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+.fieldVal {
+  opacity: 0.75;
+}
+
+.evidence {
+  opacity: 0.85;
+}
+
+.actions {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}

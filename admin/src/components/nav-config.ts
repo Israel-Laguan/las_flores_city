@@ -41,6 +41,7 @@ export const navSections: NavSection[] = [
           { href: '/story-builder/plans', label: 'Plans' },
         ],
       },
+      { href: '/needs-review', label: 'Needs Review', icon: 'clipboard' },
       ],
   },
   {
