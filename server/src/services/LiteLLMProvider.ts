@@ -1,7 +1,7 @@
-import { ContentPlanSchema, IntakeConflictPreviewSchema, CritiqueAnnotationSchema, CritiqueEvidenceSchema, CritiqueRelatedEntitySchema, type ContentPlan, type ContentPlanItem, type IntakeConflictPreview, type CritiqueAnnotation } from '@las-flores/shared';
+import { ContentPlanSchema, IntakeConflictPreviewSchema, CritiqueAnnotationSchema, CritiqueEvidenceSchema, CritiqueRelatedEntitySchema, GraphDeltaSchema, GraphDeltaEdgeSchema, type ContentPlan, type ContentPlanItem, type IntakeConflictPreview, type CritiqueAnnotation, type ChatMessage, type ConflictChatContext, type GraphDelta, type GraphDeltaEdge } from '@las-flores/shared';
 import type { LLMProvider, ExistingContentContext, LLMUsage, CritiqueScopeType } from './types/LLMTypes.js';
 import type { EntityCandidate } from './OutlineChunking.js';
-import { buildLorePrompt, buildRefinementPrompt, buildItemScopedRefinementPrompt, buildSystemPrompt, buildOutlinePrompt, buildIntakeConflictPrompt, buildSemanticCritiquePrompt } from './LLMPrompts.js';
+import { buildLorePrompt, buildRefinementPrompt, buildItemScopedRefinementPrompt, buildSystemPrompt, buildOutlinePrompt, buildIntakeConflictPrompt, buildSemanticCritiquePrompt, buildChatExplainPrompt, buildChatProposePrompt } from './LLMPrompts.js';
 import { finiteInt } from '../utils/env.js';
 import { createLiteLLMCore, type LiteLLMCore } from './liteLLMCore.js';
 
@@ -56,6 +56,14 @@ export class LiteLLMProvider implements LLMProvider {
 
   private callLLMText(systemPrompt: string, userMessage: string): Promise<string> {
     return this.core.callLLMText(systemPrompt, userMessage);
+  }
+
+  private callLLMMessages(
+    systemPrompt: string,
+    messages: Array<{ role: string; content: string }>,
+    opts?: { jsonMode?: boolean; maxTokens?: number },
+  ): Promise<{ result?: Record<string, unknown>; text?: string; usage: LLMUsage | null }> {
+    return this.core.callLLMMessages(systemPrompt, messages, opts);
   }
 
   async parseDescription(description: string, context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }> {
@@ -279,6 +287,118 @@ export class LiteLLMProvider implements LLMProvider {
   critiqueModel(scope: CritiqueScopeType): string {
     const deepModel = (process.env.LLM_DEEP_MODEL || '').trim() || undefined;
     return scope !== 'entity' && deepModel && deepModel !== this.model ? deepModel : this.model;
+  }
+
+  // ── M29 Chat: explain / propose split ─────────────────────────────────────
+
+  /** Prose reply — no structured side-effects. */
+  async chatExplain(
+    planId: string,
+    messages: ChatMessage[],
+    context: ExistingContentContext,
+    conflict?: ConflictChatContext,
+    planDescription?: string,
+  ): Promise<{ reply: string; usage: LLMUsage | null }> {
+    const systemPrompt = buildChatExplainPrompt({ id: planId, description: planDescription }, context, conflict);
+    const { text, usage } = await this.callLLMMessages(systemPrompt, messages, { jsonMode: false });
+    return { reply: text ?? '', usage };
+  }
+
+  /**
+   * Structured proposal — returns schema-valid `GraphDelta`s. Malformed entries
+   * are dropped; if the arrays are absent (or nothing survived), exactly ONE
+   * retry appends the validation errors, then warn-and-degrade to empty deltas
+   * (never throws into the graph path — apply-delta revalidates before write).
+   * `id`/`planId`/`createdAt` are ALWAYS stamped server-side.
+   */
+  async chatPropose(
+    planId: string,
+    messages: ChatMessage[],
+    context: ExistingContentContext,
+    conflict?: ConflictChatContext,
+    planDescription?: string,
+  ): Promise<{ reply: string; deltas: GraphDelta[]; deltaEdges: GraphDeltaEdge[]; usage: LLMUsage | null }> {
+    const maxTokens = finiteInt(process.env.LLM_CHAT_MAX_TOKENS, 4096);
+    let chatProposeErrors = '';
+    let lastUsage: LLMUsage | null = null;
+
+    for (let attempt = 0; attempt <= 1; attempt++) {
+      let systemPrompt = buildChatProposePrompt({ id: planId, description: planDescription }, context, conflict);
+      if (attempt === 1) {
+        // Reject-and-refine: tell the model the exact validation failures from
+        // the previous attempt (collected below).
+        systemPrompt += `\n\n## Previous attempt REJECTED\nYour previous proposal was REJECTED for schema-invalid deltas. Fix these exact errors and return ONLY the corrected JSON contract:\n${chatProposeErrors}\n`;
+      }
+
+      const { result, usage } = await this.callLLMMessages(systemPrompt, messages, { jsonMode: true, maxTokens });
+      lastUsage = usage;
+
+      const isObject = result !== null && typeof result === 'object' && !Array.isArray(result);
+      const deltasIn = isObject && Array.isArray((result as any).deltas) ? (result as any).deltas : [];
+      const edgesIn = isObject && Array.isArray((result as any).deltaEdges) ? (result as any).deltaEdges : [];
+
+      const deltas = deltasIn
+        .map((d: any) => GraphDeltaSchema.safeParse({
+          id: crypto.randomUUID(),          // NEVER trust model ids
+          planId,                            // stamp the owning plan
+          nodeType: d?.nodeType,
+          nodeId: d?.nodeId,
+          op: d?.op,
+          fields: d?.fields ?? {},
+          createdAt: new Date().toISOString(),
+        }))
+        .filter((r: any) => r.success)
+        .map((r: any) => r.data);
+
+      const deltaEdges = edgesIn
+        .map((e: any) => GraphDeltaEdgeSchema.safeParse({
+          planId,
+          sourceNodeType: e?.sourceNodeType,
+          sourceNodeId: e?.sourceNodeId,
+          targetNodeType: e?.targetNodeType,
+          targetNodeId: e?.targetNodeId,
+          type: e?.type,
+        }))
+        .filter((r: any) => r.success)
+        .map((r: any) => r.data);
+
+      // Discard edges with unrecognized type before returning (validate early)
+      const validEdgeTypes = ['OWNED_BY', 'SET_IN', 'SERVES', 'OVERLAYS', 'IN_DISTRICT'];
+      const preFilterEdgeCount = deltaEdges.length;
+      const filteredEdges = deltaEdges.filter((e: GraphDeltaEdge) => validEdgeTypes.includes(e.type));
+      if (preFilterEdgeCount - filteredEdges.length > 0) {
+        console.warn(`[LiteLLM] chatPropose dropped ${preFilterEdgeCount - filteredEdges.length} edge(s) with invalid type (plan=${planId}).`);
+      }
+      // Replace contents in-place so the rest of the loop uses filtered edges
+      deltaEdges.splice(0, deltaEdges.length, ...filteredEdges);
+
+      const droppedDeltas = deltasIn.length - deltas.length;
+      const droppedEdges = edgesIn.length - deltaEdges.length;
+      if (droppedDeltas > 0 || droppedEdges > 0) {
+        console.warn(`[LiteLLM] chatPropose dropped ${droppedDeltas} delta(s) / ${droppedEdges} edge(s) as schema-invalid (plan=${planId}).`);
+      }
+
+      const reply = typeof (result as any)?.reply === 'string' ? (result as any).reply : '';
+      const allDropped = deltasIn.length > 0 && deltas.length === 0;
+      const nothingValid = deltas.length === 0;
+
+      if (isObject && deltas.length > 0) {
+        return { reply, deltas, deltaEdges, usage };
+      }
+
+      // Validation failures to feed a single refine attempt.
+      chatProposeErrors = [
+        !isObject || !Array.isArray((result as any)?.deltas) ? '"deltas" array is missing or not an array' : null,
+        nothingValid && deltasIn.length === 0 ? '"deltas" array is empty' : null,
+        allDropped ? `${droppedDeltas} delta(s) failed GraphDeltaSchema validation (nodeType/op/nodeId/fields rules)` : null,
+      ].filter((x): x is string => !!x).join('; ');
+      if (chatProposeErrors === '') chatProposeErrors = 'deltas are invalid';
+
+      if (attempt === 0) continue; // exactly ONE refine retry
+    }
+
+    console.warn(`[LiteLLM] chatPropose failed after refine; degrading to empty deltas (plan=${planId}): ${chatProposeErrors}`);
+    return { reply: 'Proposal generation could not produce valid deltas. Please rephrase or use explain mode.', deltas: [], deltaEdges: [], usage: lastUsage };
   }
 
 }

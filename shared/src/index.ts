@@ -286,6 +286,19 @@ export type {
 } from './schemas/critique-annotation.js';
 
 export {
+  ChatMessageSchema,
+  ChatModeSchema,
+  ConflictChatContextSchema,
+  ReviewQueueItemSchema,
+} from './schemas/chat.js';
+export type {
+  ChatMessage,
+  ChatMode,
+  ConflictChatContext,
+  ReviewQueueItem,
+} from './schemas/chat.js';
+
+export {
   GraphNodeTypeSchema,
   GraphDeltaOpSchema,
   GraphDeltaSchema,

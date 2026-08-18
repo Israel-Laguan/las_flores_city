@@ -22,11 +22,8 @@ import {
 } from './GraphDeltaService.js';
 import { gatherBaseGraphData } from './GraphSeedSource.js';
 import {
-  type GraphDelta,
-  type GraphDeltaEdge,
   type GraphEdge,
   type GraphMergedRevision,
-  type GraphMergedView,
   findEdgeMapping,
 } from '@las-flores/shared';
 

@@ -284,6 +284,23 @@ export class AICritiqueService {
   }
 
   /**
+   * M29 — every open, non-marker annotation across ALL plans (the global
+   * `needs_review` queue source). Durable Postgres read; the graph is a derived
+   * mirror, and the queue must survive a disabled/broken graph.
+   */
+  async getAllOpenAnnotations(): Promise<CritiqueAnnotation[]> {
+    const result = await queryOLTP<Record<string, unknown>>(
+      `SELECT id, type, severity, description, evidence, related_entities,
+              scope, ai_model, input_hash, status, plan_id, item_ids, created_at
+         FROM critique_annotations
+        WHERE status = 'open'
+          AND is_marker = FALSE
+        ORDER BY created_at DESC`,
+    );
+    return result.rows.map((r) => this.rowToAnnotation(r));
+  }
+
+  /**
    * Clear annotations for a plan (removes cache entries, forces re-analyze).
    */
   async clearAnnotations(planId: string): Promise<void> {

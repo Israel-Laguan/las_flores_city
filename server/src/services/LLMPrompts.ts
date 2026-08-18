@@ -4,6 +4,7 @@ import { buildLorePrompt, buildEntityExtractionPrompt, CONTENT_TYPES } from './L
 
 export { buildLorePrompt, buildEntityExtractionPrompt, CONTENT_TYPES };
 export { boundedPlanItems, serializeCritiqueContext, buildSemanticCritiquePrompt } from './llmPromptsCritique.js';
+export { buildChatExplainPrompt, buildChatProposePrompt } from './llmPromptsChat.js';
 
 // ── Shared Formatting Helpers ───────────────────────────────────────────
 

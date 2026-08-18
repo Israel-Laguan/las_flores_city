@@ -71,7 +71,7 @@ function toGraphDelta(nodeLike: unknown): GraphDelta {
  * Persist one plan delta (upsert by `(nodeType, nodeId, planId)`; the latest
  * write for the same key wins). No-op when Neo4j is disabled.
  */
-export async function applyDelta(delta: GraphDelta): Promise<void> {
+export async function applyDelta(delta: GraphDelta, tx?: ManagedTransaction): Promise<void> {
   if (!isNeo4jEnabled()) return;
   const { id, planId, nodeType, nodeId, op, fields, createdAt } = delta;
   const name = typeof fields.name === 'string' ? fields.name : null;
@@ -90,13 +90,14 @@ export async function applyDelta(delta: GraphDelta): Promise<void> {
     //      and are excluded from the canonical traversal — a MODIFY/DELETE must
     //      target a real canon node, not an evidence excerpt)
     //   - present as a canonical node → allowed
-    const base = await runNeo4jQuery<{ anyExists: boolean; canonical: boolean }>(
+    const base = await queryRows<{ anyExists: boolean; canonical: boolean }>(
       `MATCH (c:Content { nodeType: $nodeType, nodeId: $nodeId })
        WHERE c.planId IS null
        RETURN
          count(c) > 0 AS anyExists,
          count(CASE WHEN c.isEvidence IS NULL OR c.isEvidence = false THEN 1 END) > 0 AS canonical`,
       { nodeType, nodeId: nNodeId },
+      tx,
     );
     const anyExists = base[0]?.anyExists ?? false;
     const canonical = base[0]?.canonical ?? false;
@@ -107,7 +108,7 @@ export async function applyDelta(delta: GraphDelta): Promise<void> {
       throw new Error(`${op} delta targets a base :Content node that exists only as evidence (no canonical node) [${nodeType}:${nodeId}]`);
     }
   }
-  await runNeo4jQuery(
+  await queryRows(
     `
     MERGE (d:ContentDelta { key: $key })
     ON CREATE SET d.nodeType = $nodeType, d.nodeId = $nodeId, d.planId = $planId,
@@ -122,7 +123,85 @@ export async function applyDelta(delta: GraphDelta): Promise<void> {
     // `createdAt` is refreshed on MATCH too so a re-applied edit moves the delta
     // to its true position (getDeltasForPlan orders by createdAt ASC).
     { key: `${nodeType}:${nNodeId}:${nPlanId}`, nodeType, nodeId: nNodeId, planId: nPlanId, op, name, fieldsJson: JSON.stringify(fields), createdAt, id },
+    tx,
   );
+}
+/**
+ * Preflight-guard a whole delta batch before any write: every MODIFY/DELETE
+ * delta must reference an existing canonical `:Content` node (planId IS null).
+ * Throws before any delta/edge is written so `applyDeltas` can never leave a
+ * partially-applied proposal in Neo4j when a later guard would fail.
+ */
+export async function preflightDeltas(deltas: GraphDelta[], tx?: ManagedTransaction): Promise<void> {
+  if (!isNeo4jEnabled()) return;
+  for (const delta of deltas) {
+    const { nodeType, nodeId, op } = delta;
+    if (op === 'ADD') continue;
+    const nNodeId = normalizeKeyComponent(nodeId);
+    const base = await queryRows<{ anyExists: boolean; canonical: boolean }>(
+      `MATCH (c:Content { nodeType: $nodeType, nodeId: $nodeId })
+       WHERE c.planId IS null
+       RETURN
+         count(c) > 0 AS anyExists,
+         count(CASE WHEN c.isEvidence IS NULL OR c.isEvidence = false THEN 1 END) > 0 AS canonical`,
+      { nodeType, nodeId: nNodeId },
+      tx,
+    );
+    const anyExists = base[0]?.anyExists ?? false;
+    const canonical = base[0]?.canonical ?? false;
+    if (!anyExists) {
+      throw new Error(`${op} delta references non-existent base :Content node [${nodeType}:${nodeId}]`);
+    }
+    if (!canonical) {
+      throw new Error(`${op} delta targets a base :Content node that exists only as evidence (no canonical node) [${nodeType}:${nodeId}]`);
+    }
+  }
+}
+
+/**
+ * Preflight-guard a whole delta-edge batch before any write: every edge's
+ * source `:ContentDelta` and target (canonical `:Content` or same-plan
+ * `:ContentDelta`) must exist, and the relationship type must be safe. Throws
+ * before any delta/edge is written so `applyDeltas` can never leave a
+ * partially-applied proposal in Neo4j when a later edge guard would fail.
+ */
+export async function preflightDeltaEdges(edges: GraphDeltaEdge[], tx?: ManagedTransaction): Promise<void> {
+  if (!isNeo4jEnabled()) return;
+  for (const edge of edges) {
+    const { planId, sourceNodeType, sourceNodeId, targetNodeType, targetNodeId, type } = edge;
+    if (!/^[A-Z][A-Z_0-9]*$/.test(type)) {
+      throw new Error(`Unsafe graph relationship type "${type}"`);
+    }
+    const nPlanId = normalizeKeyComponent(planId);
+    const nSourceId = normalizeKeyComponent(sourceNodeId);
+    const nTargetId = normalizeKeyComponent(targetNodeId);
+
+    const sourceExists = await queryRows<{ count: unknown }>(
+      `MATCH (d:ContentDelta { planId: $planId, nodeType: $sourceNodeType, nodeId: $sourceNodeId })
+       RETURN count(d) AS count`,
+      { planId: nPlanId, sourceNodeType, sourceNodeId: nSourceId },
+      tx,
+    );
+    if (Number(sourceExists[0]?.count ?? 0) === 0) {
+      throw new Error(`Delta edge source references non-existent :ContentDelta [${sourceNodeType}:${sourceNodeId}] for plan ${planId}`);
+    }
+
+    const targetExists = await queryRows<{ count: unknown }>(
+      `MATCH (c:Content { nodeType: $targetNodeType, nodeId: $targetNodeId })
+          WHERE c.planId IS null AND (c.isEvidence IS NULL OR c.isEvidence = false)
+        RETURN count(c) AS count
+        UNION ALL
+        MATCH (d:ContentDelta { planId: $planId, nodeType: $targetNodeType, nodeId: $targetNodeId })
+        RETURN count(d) AS count`,
+      { planId: nPlanId, targetNodeType, targetNodeId: nTargetId },
+      tx,
+    );
+    const targetCount = (targetExists[0]?.count != null ? Number(targetExists[0].count) : 0)
+      + (targetExists[1]?.count != null ? Number(targetExists[1].count) : 0);
+    if (targetCount === 0) {
+      throw new Error(`Delta edge target references non-existent :Content/:ContentDelta [${targetNodeType}:${targetNodeId}] for plan ${planId}`);
+    }
+  }
 }
 
 /**
@@ -329,7 +408,7 @@ async function loadBaseNodeNames(
  * endpoints MUST exist (reuses the canonical-node guard pattern from
  * `applyDelta`). No-op when Neo4j is disabled.
  */
-export async function applyDeltaEdge(edge: GraphDeltaEdge): Promise<void> {
+export async function applyDeltaEdge(edge: GraphDeltaEdge, tx?: ManagedTransaction): Promise<void> {
   if (!isNeo4jEnabled()) return;
   const { planId, sourceNodeType, sourceNodeId, targetNodeType, targetNodeId, type } = edge;
   if (!/^[A-Z][A-Z_0-9]*$/.test(type)) {
@@ -340,10 +419,11 @@ export async function applyDeltaEdge(edge: GraphDeltaEdge): Promise<void> {
   const nTargetId = normalizeKeyComponent(targetNodeId);
 
   // Validate the source delta node exists for this plan.
-  const sourceExists = await runNeo4jQuery<{ count: unknown }>(
+  const sourceExists = await queryRows<{ count: unknown }>(
     `MATCH (d:ContentDelta { planId: $planId, nodeType: $sourceNodeType, nodeId: $sourceNodeId })
      RETURN count(d) AS count`,
     { planId: nPlanId, sourceNodeType, sourceNodeId: nSourceId },
+    tx,
   );
   if (Number(sourceExists[0]?.count ?? 0) === 0) {
     throw new Error(`Delta edge source references non-existent :ContentDelta [${sourceNodeType}:${sourceNodeId}] for plan ${planId}`);
@@ -354,7 +434,7 @@ export async function applyDeltaEdge(edge: GraphDeltaEdge): Promise<void> {
   // :Content match must also exclude critique evidence nodes (isEvidence=true),
   // matching applyDelta's guard, so an edge can never point at an invisible
   // evidence excerpt.
-  const targetExists = await runNeo4jQuery<{ count: unknown }>(
+  const targetExists = await queryRows<{ count: unknown }>(
     `MATCH (c:Content { nodeType: $targetNodeType, nodeId: $targetNodeId })
        WHERE c.planId IS null AND (c.isEvidence IS NULL OR c.isEvidence = false)
      RETURN count(c) AS count
@@ -362,6 +442,7 @@ export async function applyDeltaEdge(edge: GraphDeltaEdge): Promise<void> {
      MATCH (d:ContentDelta { planId: $planId, nodeType: $targetNodeType, nodeId: $targetNodeId })
      RETURN count(d) AS count`,
     { planId: nPlanId, targetNodeType, targetNodeId: nTargetId },
+    tx,
   );
   const targetCount = (targetExists[0]?.count != null ? Number(targetExists[0].count) : 0)
     + (targetExists[1]?.count != null ? Number(targetExists[1].count) : 0);
@@ -375,7 +456,7 @@ export async function applyDeltaEdge(edge: GraphDeltaEdge): Promise<void> {
   // only one target kind exists, and CASE prefers the delta — this avoids the
   // returning-CALL row-elimination that dropped delta-only targets and the
   // duplicate link that both CALL blocks created when both targets existed.
-  await runNeo4jQuery(
+  await queryRows(
     `
     MATCH (s:ContentDelta { planId: $planId, nodeType: $sourceNodeType, nodeId: $sourceNodeId })
     OPTIONAL MATCH (td:ContentDelta { planId: $planId, nodeType: $targetNodeType, nodeId: $targetNodeId })
@@ -387,6 +468,7 @@ export async function applyDeltaEdge(edge: GraphDeltaEdge): Promise<void> {
     RETURN r
     `,
     { planId: nPlanId, sourceNodeType, sourceNodeId: nSourceId, targetNodeType, targetNodeId: nTargetId },
+    tx,
   );
 }
 
@@ -424,6 +506,29 @@ export async function getDeltaEdgesForPlan(planId: string, tx?: ManagedTransacti
   return rows.map(toGraphDeltaEdge);
 }
 
+/**
+ * Fetch all delta edges belonging to MANY plans in a single query (the global
+ * `needs_review` queue source). Relationships from each plan's `:ContentDelta`
+ * nodes carrying a matching `planId`. Empty when disabled.
+ */
+export async function getDeltaEdgesForPlans(planIds: string[], tx?: ManagedTransaction): Promise<GraphDeltaEdge[]> {
+  if (!isNeo4jEnabled()) return [];
+  const nPlanIds = planIds.map(normalizeKeyComponent);
+  if (nPlanIds.length === 0) return [];
+  const rows = await queryRows<Record<string, unknown>>(
+    `
+    MATCH (s:ContentDelta)-[r]->(t)
+    WHERE s.planId IN $planIds AND r.planId IN $planIds
+    RETURN s.nodeType AS sourceNodeType, s.nodeId AS sourceNodeId,
+           t.nodeType AS targetNodeType, t.nodeId AS targetNodeId,
+           type(r) AS type, s.planId AS planId
+    `,
+    { planIds: nPlanIds },
+    tx,
+  );
+  return rows.map(toGraphDeltaEdge);
+}
+
 /** Remove every delta (and its edges) for a plan (e.g. on discard/commit). No-op when disabled. */
 export async function clearDeltasForPlan(planId: string): Promise<void> {
   if (!isNeo4jEnabled()) return;
@@ -452,3 +557,44 @@ export async function summarizeDeltasForPlan(planId: string): Promise<{ total: n
   }
   return { total: deltas.length, byOp };
 }
+
+// ── M29: single-delta removal + all-deltas reads (needs_review queue sources) ──
+
+/**
+ * DETACH DELETE one plan delta by its surrogate `(nodeType, nodeId, planId)` key.
+ * Used by "[Keep existing]" on the review queue — the author declines a proposed
+ * delta, leaving the canonical base graph untouched. No-op when Neo4j is disabled.
+ */
+export async function removeDelta(planId: string, nodeType: string, nodeId: string): Promise<void> {
+  if (!isNeo4jEnabled()) return;
+  await runNeo4jQuery(
+    `MATCH (d:ContentDelta { key: $key }) DETACH DELETE d`,
+    { key: `${nodeType}:${normalizeKeyComponent(nodeId)}:${normalizeKeyComponent(planId)}` },
+  );
+}
+
+/** Defensively coerce one raw `:ContentDelta` node; skip anything unreadable. */
+function safeToGraphDelta(nodeLike: unknown): GraphDelta | null {
+  try {
+    return toGraphDelta(nodeLike);
+  } catch {
+    return null;
+  }
+}
+
+
+/**
+ * Every proposed delta across ALL plans (the global `needs_review` queue source).
+ * A single unreadable node is skipped, never allowed to sink the whole queue.
+ * Empty when Neo4j is disabled.
+ */
+export async function getAllDeltas(): Promise<GraphDelta[]> {
+  if (!isNeo4jEnabled()) return [];
+  const rows = await runNeo4jQuery<{ d: unknown }>(
+    `MATCH (d:ContentDelta) RETURN d ORDER BY d.createdAt ASC`,
+  );
+  return rows
+    .map((r) => safeToGraphDelta(r.d))
+    .filter((d): d is GraphDelta => d !== null);
+}
+

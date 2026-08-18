@@ -1,6 +1,7 @@
 'use client';
 
 import type { CritiqueAnnotation } from '@las-flores/shared';
+import { useChatPanel } from '@/components/ChatPanelContext';
 import styles from './CritiqueOverlay.module.css';
 
 const SEVERITY_LABEL: Record<string, string> = {
@@ -12,7 +13,7 @@ const SEVERITY_LABEL: Record<string, string> = {
 interface CritiqueOverlayProps {
   annotations: CritiqueAnnotation[];
   onDismiss?: (id: string) => void;
-  /** M29: stub — opens a chat side-panel contextualized to this annotation */
+  /** M29: override — when omitted, "Copy to Chat" opens the global chat panel. */
   onCopyToChat?: (annotation: CritiqueAnnotation) => void;
 }
 
@@ -25,9 +26,11 @@ interface CritiqueOverlayProps {
  *   - evidence excerpts (anti-hallucination)
  *   - related-entity references
  *   - "Dismiss" button (live override for false-positives)
- *   - "Copy to Chat" button (disabled stub until M29)
+ *   - "Copy to Chat" button (M29: opens the global chat side-panel scoped to the
+ *     annotation, so the author can ask/propose against its context)
  */
 export default function CritiqueOverlay({ annotations, onDismiss, onCopyToChat }: CritiqueOverlayProps) {
+  const { openWithAnnotation } = useChatPanel();
   if (!annotations || annotations.length === 0) return null;
 
   return (
@@ -81,13 +84,13 @@ export default function CritiqueOverlay({ annotations, onDismiss, onCopyToChat }
                   Dismiss
                 </button>
               )}
-              {/* M29 stub — always shown so authors see the (disabled) affordance,
-                  even before onCopyToChat is wired up. */}
+              {/* M29 — always enabled; opens the chat panel scoped to this annotation
+                      (or the passed override). Falls back to the default no-op
+                      when no provider is mounted, so rendering is always safe. */}
               <button
                 className={styles.chatBtn}
-                disabled
-                title="Available in a future update (M29)"
-                onClick={onCopyToChat ? () => onCopyToChat(a) : undefined}
+                title="Open a chat assistant scoped to this annotation"
+                onClick={() => (onCopyToChat ? onCopyToChat(a) : openWithAnnotation(a.planId, a))}
               >
                 📋 Copy to Chat
               </button>

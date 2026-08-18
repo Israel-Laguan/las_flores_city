@@ -64,6 +64,8 @@ The story-processing skill's "Biography Check" (lore = past, beats = player's pr
 
 `docs/NEXT_STEPS.md` is referenced as the open-items source of truth by `game_design.md:100,302`, `DATA_INTAKE.md:212`, and `STORY_BUILDER_DESIGN.md:15,1030,1096,1230` — but the file no longer exists (partially extracted into `STORY_BUILDER_OPERATIONS.md`). `docs/milestones/` referenced by older plans is also absent.
 
+**Resolved 2026-08-10**: the three source docs (`game_design.md`, `DATA_INTAKE.md`, `STORY_BUILDER_DESIGN.md`) no longer reference `docs/NEXT_STEPS.md`; `docs/milestones/` also exists again. The stale-reference gap (M30 G30.2 / M40 backlog) is closed.
+
 ---
 
 ## 4. Proposed next steps
@@ -89,7 +91,7 @@ The story-processing skill's "Biography Check" (lore = past, beats = player's pr
 
 ### Phase 4 — Hygiene
 
-11. Fix `NEXT_STEPS.md` references (restore an index doc or repoint to `STORY_BUILDER_OPERATIONS.md`); refresh stale operations notes (§4.2); document big-story behavior in `DATA_INTAKE.md` Path B.
+11. Fix `NEXT_STEPS.md` references (restore an index doc or repoint to `STORY_BUILDER_OPERATIONS.md`); refresh stale operations notes (§4.2); document big-story behavior in `DATA_INTAKE.md` Path B. **(NEXT_STEPS references resolved 2026-08-10; the remaining §4.2 / Path B big-story items were also addressed in the same pass.)**
 
 ---
 

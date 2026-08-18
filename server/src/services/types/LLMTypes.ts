@@ -1,4 +1,4 @@
-import type { ContentPlan, ContentPlanItem, IntakeConflictPreview, CritiqueAnnotation, CritiqueScope } from '@las-flores/shared';
+import type { ContentPlan, ContentPlanItem, IntakeConflictPreview, CritiqueAnnotation, CritiqueScope, ChatMessage, ConflictChatContext, GraphDelta, GraphDeltaEdge } from '@las-flores/shared';
 import type { EntityCandidate } from '../OutlineChunking.js';
 
 export interface ExistingLocation {
@@ -66,4 +66,21 @@ export interface LLMProvider {
    * than returning another model's annotations.
    */
   critiqueModel(scope: CritiqueScopeType): string;
+
+  /** M29 — conversational chat assistant (Moment 4). */
+  chatExplain(
+    planId: string,
+    messages: ChatMessage[],
+    context: ExistingContentContext,
+    conflict?: ConflictChatContext,
+    planDescription?: string,
+  ): Promise<{ reply: string; usage: LLMUsage | null }>;
+
+  chatPropose(
+    planId: string,
+    messages: ChatMessage[],
+    context: ExistingContentContext,
+    conflict?: ConflictChatContext,
+    planDescription?: string,
+  ): Promise<{ reply: string; deltas: GraphDelta[]; deltaEdges: GraphDeltaEdge[]; usage: LLMUsage | null }>;
 }

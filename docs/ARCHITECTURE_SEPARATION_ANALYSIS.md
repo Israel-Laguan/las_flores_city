@@ -301,24 +301,29 @@ generation with token-bucket rate limiting and 6 retries at 60s backoff
 (`AssetGenerationService.ts:7-9`). All of this shares the **single event loop**
 and competes for libuv threadpool resources that the game server also needs.
 
-Node default `UV_THREADPOOL_SIZE=4` handles `dns.lookup()`, filesystem I/O,
-and crypto/compression for **both** the LLM pipeline and the game. Standard `fetch`/HTTP
-sockets, non-blocking database traffic, and remote image-generation responses (NIM /
-Pollinations) are handled by the event loop's non-blocking I/O (epoll/kqueue/IOCP) and
-do **not** consume threadpool slots — parsing those responses or decoding large JSON
-chunks runs synchronously on the event loop and is best characterized as event-loop CPU
-contention, not threadpool work. Only local `fs` operations (reads/writes) count as
-libuv threadpool work: the LLM pipeline's `dns.lookup()` calls (provider endpoints),
-local file reads of prompt/lore files, and `AssetGenerationService`'s local file reads
-can occupy the threadpool and reduce headroom for the game's I/O during bursts.
+Node default `UV_THREADPOOL_SIZE=4` handles local `fs` I/O, `dns.lookup()`
+(getaddrinfo), and some CPU-bound crypto/compression work for **both** the LLM pipeline
+and the game. Standard `fetch`/HTTP sockets, non-blocking database traffic (the Postgres
+protocol runs over a socket), and remote image-generation responses (NIM / Pollinations)
+are handled by the event loop's non-blocking I/O (epoll/kqueue/IOCP) and do **not**
+consume threadpool slots — parsing those responses or decoding large JSON chunks runs
+synchronously on the event loop and is best characterized as event-loop CPU contention,
+not threadpool work. The libuv threadpool work that contends with the game's I/O is
+therefore: the LLM pipeline's `dns.lookup()` calls (provider endpoints), local file reads
+of prompt/lore files, and `AssetGenerationService`'s local file reads; heavy
+local `fs` writes during asset generation can occupy the threadpool and reduce headroom
+for the game's I/O during bursts.
 
 ### Options for content read optimization
 
-> ⚠️ **Contract warning:** A1 (open a second pg `Pool`) would violate the repo's
-> documented hard constraint in `AGENTS.md`, which forbids introducing new pools and
-> mandates using only the existing `oltpPool` / `withOLTPTransaction` / `getCache` /
-> `setCache` / `queryOLAP` patterns. Implement A1 only if the contract is updated
-> first, or drop it in favor of A2/A4.
+> ⚠️ **Contract warning:** A1 (open a second pg `Pool`) was previously blocked by the
+> repo's `AGENTS.md` hard constraint, which forbade introducing new pools and mandated
+> using only the existing `oltpPool` / `withOLTPTransaction` / `getCache` / `setCache` /
+> `queryOLAP` patterns. The constraint has since been reconciled (M19): a single
+> **read-only** content pool (`contentPool` / `queryContent`, defined in `@las-flores/infra`)
+> is now sanctioned for content reads only, while all player reads AND writes stay on
+> `oltpPool` / `withOLTPTransaction`. The content pool is enforced read-only at the Postgres
+> session level (`default_transaction_read_only=on`), so it must never route player writes.
 
 | Option | Description | Feasibility |
 |---|---|---|
@@ -327,7 +332,7 @@ can occupy the threadpool and reduce headroom for the game's I/O during bursts.
 | **A3. Content as a separate DB** | Move content tables to a 3rd Postgres. Breaks cross-table joins. | ★★☆☆☆ |
 | **A4. Content snapshot to Redis/disk on migrate** | Write a denormalized resolved snapshot per dialogue; runtime reads only the snapshot. | ★★★☆☆ |
 
-**Recommendation:** A2 or A4 now; revisit A1 only if the pool contract changes.
+**Recommendation:** A1 is now the baseline content-read path (implemented in M19 via `@las-flores/infra`). Prefer A2 (streaming read-replica) or A4 (denormalized Redis/disk snapshot) as future scale-out if contention on the primary grows.
 
 ### Options for authoring workload separation
 
@@ -768,11 +773,14 @@ untouched** — they already implement criterion 3.
 
 Each phase builds on the last. Lowest-risk-first:
 
-1. **Content-read separation (A2 read-replica or A4 Redis snapshot)** (1–2 days). Drop A1
-   (a second pg `Pool`) — it violates the `AGENTS.md` hard constraint. If contention is
-   real, prefer A4 (denormalized Redis/disk snapshot per dialogue, already cached with
-   `CACHE_TTL_SECONDS = 3600`) or A2 (streaming read-replica) to keep the OLTP pool
-   single and contract-compliant. Point `DialogueResolver` at the snapshot/replica.
+1. **Content-read separation** (done in M19 via A1). A single **read-only** content pool
+   (`contentPool` / `queryContent` in `@las-flores/infra`) now isolates content reads
+   (`DialogueResolver` chunk/overlay reads, `location.ts`/`location.npcs.ts` browse JOINs)
+   from the gameplay `oltpPool`. This was reconciled with the `AGENTS.md` hard constraint,
+   which now sanctions exactly one read-only content pool plus the OLTP pool. For further
+   scale-out if primary contention grows, extend toward A2 (streaming read-replica) or
+   A4 (denormalized Redis/disk snapshot, already cached with `CACHE_TTL_SECONDS = 3600`);
+   point `contentPool`/`queryContent` at the replica/snapshot.
 2. **B1 — Extract intake-worker process** (~1 week). The foundation for all content
    publishing. Reuse the existing fire-and-forget + cache-status pattern; move `runSolidify`
    and LLM services into a process that doesn't serve game traffic. Extract
