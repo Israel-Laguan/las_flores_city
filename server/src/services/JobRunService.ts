@@ -1,5 +1,6 @@
 import { queryOLTP } from '@las-flores/infra';
 import type { JobRun, JobType, JobStatus } from '@las-flores/shared';
+import type { PoolClient } from 'pg';
 import { backoffDelayMs } from '../utils/retryBackoff.js';
 
 /**
@@ -25,6 +26,7 @@ export interface JobRunPatch {
   partialResult?: unknown | null;
   error?: string | null;
   nextRetryAt?: string | null;
+  runToken?: string | null;
 }
 
 interface JobRunRow {
@@ -41,6 +43,7 @@ interface JobRunRow {
   next_retry_at: Date | string | null;
   created_at: Date | string;
   updated_at: Date | string;
+  run_token: string | null;
 }
 
 function mapRow(row: JobRunRow): JobRun {
@@ -58,31 +61,42 @@ function mapRow(row: JobRunRow): JobRun {
     nextRetryAt: row.next_retry_at instanceof Date ? row.next_retry_at.toISOString() : row.next_retry_at ?? undefined,
     createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at,
     updatedAt: row.updated_at instanceof Date ? row.updated_at.toISOString() : row.updated_at,
+    runToken: row.run_token ?? undefined,
   };
 }
 
 export interface StartJobRunOptions {
   maxAttempts?: number;
+  runToken?: string;
 }
+
+const INSERT_JOB_RUN_SQL = `INSERT INTO job_runs (plan_id, job_type, status, attempt, max_attempts, run_token)
+     VALUES ($1, $2, 'running', 1, $3, $4)
+     RETURNING *`;
 
 /** Create a fresh `running` job run for a plan + job type. Returns the row (with id). */
 export async function startJobRun(
   planId: string,
   jobType: JobType,
   opts?: StartJobRunOptions,
+  client?: PoolClient,
 ): Promise<JobRun> {
   // NOTE: the default job budget (max_attempts = 3) is intentionally smaller
   // than RETRY_MAX_ATTEMPTS (6), which is the per-request retry cap used inside
   // AssetGenerationService. Each *job attempt* re-enters the whole pipeline
   // (re-running many LLM calls), so the job budget is a separate, tighter policy
   // than the per-call retry curve. Callers may override via `opts.maxAttempts`.
-  const result = await queryOLTP<JobRunRow>(
-    `INSERT INTO job_runs (plan_id, job_type, status, attempt, max_attempts)
-     VALUES ($1, $2, 'running', 1, $3)
-     RETURNING *`,
-    [planId, jobType, opts?.maxAttempts ?? 3],
-  );
-  return mapRow(result.rows[0]);
+  //
+  // When `client` is supplied the INSERT runs inside that caller's existing
+  // transaction (e.g. under a `content_plans` row lock), keeping run creation
+  // serialized with the legacy-resume ownership check in the orchestrator.
+  const params: [string, JobType, number, string | null] = [
+    planId, jobType, opts?.maxAttempts ?? 3, opts?.runToken ?? null,
+  ];
+  const row = client
+    ? (await client.query<JobRunRow>(INSERT_JOB_RUN_SQL, params)).rows[0]
+    : (await queryOLTP<JobRunRow>(INSERT_JOB_RUN_SQL, params)).rows[0];
+  return mapRow(row);
 }
 
 /** Load a single job run by id. Returns null when not found. */
@@ -125,6 +139,7 @@ export async function updateJobRun(jobId: string, patch: JobRunPatch): Promise<J
   if (patch.partialResult !== undefined) push('partial_result', JSON.stringify(patch.partialResult), true);
   if (patch.error !== undefined) push('error', patch.error);
   if (patch.nextRetryAt !== undefined) push('next_retry_at', patch.nextRetryAt);
+  if (patch.runToken !== undefined) push('run_token', patch.runToken);
 
   if (sets.length === 0) return getJobRunById(jobId);
 

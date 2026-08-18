@@ -157,3 +157,85 @@ export async function hasContentNode(nodeType: string, nodeId: string): Promise<
   );
   return rows[0]?.count != null ? Number(rows[0].count) > 0 : false;
 }
+
+const EDGE_KEY_RE = /^[A-Z][A-Z_0-9]*$/;
+
+/**
+ * Delete canonical `:Content` nodes (planId IS null) whose `(nodeType:nodeId)`
+ * key is NOT in `keepKeys`. Used by the resync path to repair orphan drift
+ * (graph nodes no longer backed by the content store). DETACH DELETE also
+ * removes their relationships. Returns the number of nodes removed.
+ */
+export async function pruneOrphanContentNodes(keepKeys: Set<string>): Promise<number> {
+  if (!isNeo4jEnabled()) return 0;
+  // Evidence nodes (isEvidence=true) are persisted critique excerpts, not part of
+  // the canonical base graph, so they must survive an orphan prune even though
+  // they match the `planId IS null` predicate.
+  const baseWhere = `c.planId IS null AND (c.isEvidence IS NULL OR c.isEvidence = false)`;
+  if (keepKeys.size === 0) {
+    const countRows = await runNeo4jQuery<{ count: unknown }>(
+      `MATCH (c:Content) WHERE ${baseWhere} RETURN count(c) AS count`,
+    );
+    const count = countRows[0]?.count != null ? Number(countRows[0].count) : 0;
+    if (count > 0) {
+      await runNeo4jQuery(`MATCH (c:Content) WHERE ${baseWhere} DETACH DELETE c`);
+    }
+    return count;
+  }
+  const keys = [...keepKeys];
+  // `NOT c.key IN $keys` yields null (not matched) when `c.key` is null/ absent,
+  // so legacy/malformed canonical nodes with no `key` would survive pruning.
+  // Include `c.key IS NULL` so those orphans are removed too.
+  const keepWhere = `${baseWhere} AND (c.key IS NULL OR NOT c.key IN $keys)`;
+  const countRows = await runNeo4jQuery<{ count: unknown }>(
+    `MATCH (c:Content) WHERE ${keepWhere} RETURN count(c) AS count`,
+    { keys },
+  );
+  const count = countRows[0]?.count != null ? Number(countRows[0].count) : 0;
+  if (count > 0) {
+    await runNeo4jQuery(
+      `MATCH (c:Content) WHERE ${keepWhere} DETACH DELETE c`,
+      { keys },
+    );
+  }
+  return count;
+}
+
+/**
+ * Delete canonical relationships (between `planId IS null` nodes) whose edge key
+ * is NOT in `keepEdgeKeys`, so a removed FK in the store is reflected in the
+ * graph. Returns the number of relationships removed.
+ */
+export async function pruneOrphanContentEdges(keepEdgeKeys: Set<string>): Promise<number> {
+  if (!isNeo4jEnabled()) return 0;
+  const rows = await runNeo4jQuery<{ st: string; sn: string; tt: string; tn: string; type: string }>(
+    `MATCH (a:Content)-[r]->(b:Content)
+     WHERE a.planId IS null AND b.planId IS null
+       AND (a.isEvidence IS NULL OR a.isEvidence = false)
+       AND (b.isEvidence IS NULL OR b.isEvidence = false)
+     RETURN a.nodeType AS st, a.nodeId AS sn, type(r) AS type, b.nodeType AS tt, b.nodeId AS tn`,
+  );
+  // Group orphan rows by relationship type so each type is removed in a single
+  // UNWIND delete, instead of one round trip per orphan edge.
+  const orphanByType = new Map<string, Array<{ st: string; sn: string; tt: string; tn: string }>>();
+  for (const row of rows) {
+    if (!EDGE_KEY_RE.test(row.type)) continue;
+    const key = `${row.st}:${row.sn}->${row.tt}:${row.tn}[${row.type}]`;
+    if (keepEdgeKeys.has(key)) continue;
+    const list = orphanByType.get(row.type) ?? [];
+    list.push({ st: row.st, sn: row.sn, tt: row.tt, tn: row.tn });
+    orphanByType.set(row.type, list);
+  }
+  let deleted = 0;
+  for (const [type, list] of orphanByType) {
+    if (list.length === 0) continue;
+    await runNeo4jQuery(
+      `UNWIND $rows AS row
+       MATCH (a:Content { nodeType: row.st, nodeId: row.sn })-[r:${type}]->(b:Content { nodeType: row.tt, nodeId: row.tn })
+       DELETE r`,
+      { rows: list },
+    );
+    deleted += list.length;
+  }
+  return deleted;
+}

@@ -105,6 +105,9 @@ const ContentPlanMetaSchema = z.object({
     newCandidates: z.number().int().nonnegative(),
     ambiguous: z.number().int().nonnegative(),
   }).optional(),
+  // M28: a one-shot revision identity stamped when the graph exporter emits a
+  // ContentPlan, so re-approves after drift resync produce a distinct plan_json.
+  plan_revision: zodUuid().optional(),
 }).optional();
 
 export const ContentPlanSchema = z.object({

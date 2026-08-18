@@ -7,15 +7,16 @@
 // staged (harness → stage → publish → migrate → verify) and is
 // crash-resumable via durable job_runs state (M22).
 // ============================================================
-
-import { ContentPlanSchema, type ContentPlan, type VerificationReport, type HarnessReport } from '@las-flores/shared';
+import { ContentPlanSchema, type ContentPlan, type HarnessReport } from '@las-flores/shared';
 import { queryOLTP } from '@las-flores/infra';
-import { getCache, setCache } from '@las-flores/infra';
+import { getCache } from '@las-flores/infra';
+import { setJobStatus, JOB_CACHE_PREFIX } from './StoryBuilderJobStatus.js';
 import { runValidationHarness } from './ValidationHarnessService.js';
 import { publishChosenDrafts, type PublishResult } from './AssetPublishService.js';
 import { createLLMProvider } from './LLMService.js';
 import { contentPlanService } from './ContentPlanService.js';
 import { emitAdminEvent } from './AdminEventEmitter.js';
+import { failWithHarnessReport, failWithVerificationReport } from './StoryBuilderSolidifyFail.js';
 import {
   updateJobRun,
   commitStage,
@@ -25,44 +26,9 @@ import {
 import { PlanNotFoundError, PlanStatusError } from './errors.js';
 import { stagePlan, type StagingResult } from './StoryBuilderPlanOps.js';
 import { migrateStagedPlan, verifyPlan } from './StoryBuilderMigration.js';
+import { isNeo4jEnabled } from './Neo4jClient.js';
+import { commitGraph } from './GraphMerger.js';
 import type { MigrationResult, SolidifyJobStatus } from './StoryBuilderOrchestrator.js';
-
-export const JOB_CACHE_PREFIX = 'story-builder:job:';
-
-/** Write job status to cache (hot read path for polling). */
-export async function setJobStatus(planId: string, status: Partial<SolidifyJobStatus>): Promise<void> {
-  const now = new Date().toISOString();
-  const existing = await getCache<SolidifyJobStatus>(`${JOB_CACHE_PREFIX}${planId}`);
-  // Preserve previously cached fields (stage / publish / migration /
-  // verificationReport / error) then overlay only the *defined* values from
-  // `status`. Callers such as runMigrationStage and runVerifyAndTerminal pass
-  // `stage`/`publish`/`migration` unconditionally even when they have no value
-  // to report — stripping those undefined keys here keeps the last known value
-  // for polling instead of erasing it. status/startedAt/planId/updatedAt are
-  // pinned last so a stale `existing` spread can never win.
-  const merged: SolidifyJobStatus = {
-    ...existing,
-    ...Object.fromEntries(Object.entries(status).filter(([, v]) => v !== undefined)),
-    status: status.status ?? existing?.status ?? 'pending',
-    startedAt: existing?.startedAt ?? now,
-    planId,
-    updatedAt: now,
-  };
-  // When a NEW run is initialized (`pending` is only ever written at the start
-  // of a solidify run in approveAndSolidifyPlan), discard per-run fields from a
-  // prior run (error / verificationReport / stage / publish / migration) so a
-  // retry within the cache TTL never surfaces a stale failure on a fresh,
-  // pending or later success.
-  if (merged.status === 'pending') {
-    merged.stage = undefined;
-    merged.publish = undefined;
-    merged.migration = undefined;
-    merged.verificationReport = undefined;
-    merged.error = undefined;
-  }
-  // Cache TTL: 30 minutes — long enough for slow plans, short enough to not leak
-  await setCache(`${JOB_CACHE_PREFIX}${planId}`, merged, 1800);
-}
 
 interface SolidifyState {
   currentStatus: string;
@@ -75,7 +41,12 @@ interface SolidifyState {
  * Runs the full solidify pipeline outside a transaction.
  * Updates cache status at each stage and persists final status to DB.
  */
-export async function runSolidify(planId: string, userId?: string, jobId?: string): Promise<void> {
+export async function runSolidify(
+  planId: string,
+  userId?: string,
+  jobId?: string,
+  runToken?: string,
+): Promise<void> {
   const state: SolidifyState = { currentStatus: '' };
   try {
     // Load plan
@@ -91,7 +62,7 @@ export async function runSolidify(planId: string, userId?: string, jobId?: strin
 
     // Already fully verified — nothing to do (idempotent resume).
     if (state.currentStatus === 'verified') {
-      await setJobStatus(planId, { status: 'verified' });
+      await setJobStatus(planId, { status: 'verified' }, runToken);
       if (jobId) await updateJobRun(jobId, { status: 'succeeded', stage: 'verified' });
       return;
     }
@@ -127,7 +98,7 @@ export async function runSolidify(planId: string, userId?: string, jobId?: strin
 
     // --- Deterministic pre-approve harness gate + staging ---
     if (state.currentStatus === 'pending' || state.currentStatus === 'staging') {
-      const harnessBlocked = await runHarnessStagePublish(planId, plan, state, jobId, userId);
+      const harnessBlocked = await runHarnessStagePublish(planId, plan, state, jobId, userId, runToken);
       if (harnessBlocked) return;
     }
 
@@ -147,11 +118,11 @@ export async function runSolidify(planId: string, userId?: string, jobId?: strin
         );
       }
     } else {
-      await runMigrationStage(planId, state, jobId, userId);
+      await runMigrationStage(planId, state, jobId, userId, runToken);
     }
 
     // --- Verify (read-only; no double-apply risk) ---
-    const verificationFailed = await runVerifyAndTerminal(planId, plan, state, jobId, userId);
+    const verificationFailed = await runVerifyAndTerminal(planId, plan, state, jobId, userId, runToken);
     if (verificationFailed) return;
   } catch (error: any) {
     console.error(`[story-builder] runSolidify failed for ${planId}:`, error.message);
@@ -176,7 +147,7 @@ export async function runSolidify(planId: string, userId?: string, jobId?: strin
       await setJobStatus(planId, {
         status: 'failed',
         error: error.message,
-      });
+      }, runToken);
       emitAdminEvent('plan_failed', { status: 'failed', error: error.message }, planId, userId);
     }
     if (jobId) {
@@ -225,20 +196,21 @@ async function runHarnessStagePublish(
   state: SolidifyState,
   jobId: string | undefined,
   userId: string | undefined,
+  runToken: string | undefined,
 ): Promise<boolean> {
   if (jobId) await updateJobRun(jobId, { status: 'running', stage: 'harness' });
 
   const context = await contentPlanService.gatherContext();
   const harnessReport: HarnessReport = runValidationHarness(plan, context);
   if (!harnessReport.passed) {
-    await failWithHarnessReport(planId, harnessReport, userId);
+    await failWithHarnessReport(planId, harnessReport, userId, runToken);
     if (jobId) await updateJobRun(jobId, { status: 'failed', stage: 'harness', error: 'Validation harness blocked approval' });
     return true;
   }
   if (jobId) await commitStage(jobId, 'harness');
 
   // --- Stage: write YAML + lore + prompt files to disk ---
-  await setJobStatus(planId, { status: 'staging' });
+  await setJobStatus(planId, { status: 'staging' }, runToken);
   await queryOLTP(
     'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
     ['staging', planId],
@@ -290,7 +262,7 @@ async function runHarnessStagePublish(
   if (state.publishResult !== undefined) {
     statusPatch.publish = state.publishResult;
   }
-  await setJobStatus(planId, statusPatch);
+  await setJobStatus(planId, statusPatch, runToken);
 
   // --- Stage complete → mark as 'staged' for migrateStagedPlan validation ---
   await queryOLTP(
@@ -307,13 +279,14 @@ async function runMigrationStage(
   planId: string,
   state: SolidifyState,
   jobId: string | undefined,
-  userId?: string,
+  userId: string | undefined,
+  runToken: string | undefined,
 ): Promise<void> {
   if (jobId) await updateJobRun(jobId, { status: 'running', stage: 'migrating' });
-  await setJobStatus(planId, { status: 'migrating', stage: state.stageResult, publish: state.publishResult });
+  await setJobStatus(planId, { status: 'migrating', stage: state.stageResult, publish: state.publishResult }, runToken);
 
   const migrationResult = await migrateStagedPlan(planId, undefined, state.stageResult?.createdFiles, userId);
-  await setJobStatus(planId, { status: 'migrating', stage: state.stageResult, publish: state.publishResult, migration: migrationResult });
+  await setJobStatus(planId, { status: 'migrating', stage: state.stageResult, publish: state.publishResult, migration: migrationResult }, runToken);
 
   if (!migrationResult.success) {
     if (jobId) await updateJobRun(jobId, { status: 'resumable', stage: 'migrating', error: migrationResult.error });
@@ -365,6 +338,7 @@ async function runVerifyAndTerminal(
   state: SolidifyState,
   jobId: string | undefined,
   userId: string | undefined,
+  runToken: string | undefined,
 ): Promise<boolean> {
   if (jobId) {
     // Best-effort: if job_runs writes are unavailable, a failure here must NOT
@@ -378,7 +352,7 @@ async function runVerifyAndTerminal(
       // intentionally swallow — verification proceeds regardless
     }
   }
-  await setJobStatus(planId, { status: 'verifying', stage: state.stageResult, publish: state.publishResult, migration: state.migrationResult });
+  await setJobStatus(planId, { status: 'verifying', stage: state.stageResult, publish: state.publishResult, migration: state.migrationResult }, runToken);
   // NOTE: do NOT flip the DB row to `verifying` here. `verifyPlan` requires the
   // row to be `migrated` (StoryBuilderMigration.ts), so switching it to
   // `verifying` would make every normal solidify run fail before verification.
@@ -398,6 +372,7 @@ async function runVerifyAndTerminal(
       state.migrationResult ?? { success: false, migrationResult: null },
       verificationReport,
       userId,
+      runToken,
     );
     if (jobId) await updateJobRun(jobId, { status: 'failed', stage: 'verifying', error: verificationReport.errors[0] });
     return true;
@@ -407,6 +382,18 @@ async function runVerifyAndTerminal(
     'UPDATE content_plans SET status = $1, verification_report = $2, updated_at = NOW() WHERE id = $3',
     ['verified', JSON.stringify(verificationReport), planId],
   );
+  // --- M28: best-effort graph commit ---
+  // After the `verified` terminal write, promote the plan's deltas into the
+  // canonical graph. Idempotent and never fails the run: production SQL/YAML/
+  // MinIO are authoritative; the graph is derived/disposable (GraphMerger logs
+  // and swallows any failure). A retry on a re-verified plan is a safe no-op.
+  if (isNeo4jEnabled()) {
+    try {
+      await commitGraph(planId);
+    } catch (err) {
+      console.warn(`[story-builder] commitGraph best-effort failed for ${planId}:`, (err as Error).message);
+    }
+  }
   if (jobId) {
     // Post-commit job_runs bookkeeping is best-effort: a write failure here must
     // not propagate into the enclosing compensation handler and invert an already
@@ -420,7 +407,7 @@ async function runVerifyAndTerminal(
     publish: state.publishResult,
     migration: state.migrationResult,
     verificationReport,
-  });
+  }, runToken);
   emitAdminEvent('plan_verified', { status: 'verified' }, planId, userId);
   // Terminal signal for the single-click "Approve & Solidify" capstone: emit
   // only after the pipeline fully succeeds. Failures emit `plan_failed` above.
@@ -428,58 +415,5 @@ async function runVerifyAndTerminal(
   return false;
 }
 
-async function failWithHarnessReport(
-  planId: string,
-  harnessReport: HarnessReport,
-  userId?: string,
-): Promise<void> {
-  const blocking = harnessReport.findings.filter(f => f.severity === 'error');
-  const message = blocking.map(f => f.message).join('; ');
-  const verificationReport: VerificationReport = {
-    planId,
-    checkedAt: new Date().toISOString(),
-    passed: false,
-    checks: harnessReport.findings.map(f => ({
-      name: f.code,
-      description: f.message,
-      status: f.severity === 'error' ? 'fail' : 'warn',
-      details: f.itemIds,
-    })),
-    errors: blocking.map(f => f.message),
-    warnings: harnessReport.findings.filter(f => f.severity === 'warning').map(f => f.message),
-  };
-  await queryOLTP(
-    'UPDATE content_plans SET status = $1, verification_report = $2, updated_at = NOW() WHERE id = $3',
-    ['failed', JSON.stringify(verificationReport), planId],
-  );
-  await setJobStatus(planId, {
-    status: 'failed',
-    verificationReport,
-    error: `Validation harness blocked approval: ${message}`,
-  });
-  emitAdminEvent('plan_failed', { status: 'failed', error: message, harness: harnessReport }, planId, userId);
-}
 
-async function failWithVerificationReport(
-  planId: string,
-  stageResult: StagingResult,
-  publishResult: PublishResult,
-  migrationResult: MigrationResult,
-  verificationReport: VerificationReport,
-  userId?: string,
-): Promise<void> {
-  await queryOLTP(
-    'UPDATE content_plans SET status = $1, verification_report = $2, updated_at = NOW() WHERE id = $3',
-    ['failed', JSON.stringify(verificationReport), planId],
-  );
-  await setJobStatus(planId, {
-    status: 'failed',
-    stage: stageResult,
-    publish: publishResult,
-    migration: migrationResult,
-    verificationReport,
-    error: verificationReport.errors[0] || 'Verification failed',
-  });
-  emitAdminEvent('plan_failed', { status: 'failed', error: verificationReport.errors[0] }, planId, userId);
-}
 

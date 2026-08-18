@@ -13,8 +13,16 @@
 // no-op (return empty) when NEO4J_ENABLED is off.
 // ============================================================
 
-import { GraphDeltaSchema, type GraphDelta } from '@las-flores/shared';
-import { isNeo4jEnabled, runNeo4jQuery } from './Neo4jClient.js';
+import {
+  GraphDeltaSchema,
+  GraphDeltaEdgeSchema,
+  findEdgeMapping,
+  type GraphDelta,
+  type GraphDeltaEdge,
+} from '@las-flores/shared';
+import { createHash } from 'node:crypto';
+import { isNeo4jEnabled, runNeo4jQuery, runNeo4jTransaction } from './Neo4jClient.js';
+import type { ManagedTransaction } from 'neo4j-driver';
 
 /** UUID shape (case-insensitive), used to normalize identity-key components. */
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -117,21 +125,310 @@ export async function applyDelta(delta: GraphDelta): Promise<void> {
   );
 }
 
+/**
+ * Run a Cypher read inside an existing transaction when one is supplied, else a
+ * standalone session query. Keeps reads and writes on the same transaction
+ * snapshot (used by `commitGraph`, where the final delta delete must not drop
+ * deltas written after the read).
+ */
+async function queryRows<T = Record<string, unknown>>(
+  cypher: string,
+  params: Record<string, unknown>,
+  tx?: ManagedTransaction,
+): Promise<T[]> {
+  if (tx) {
+    const result = await tx.run(cypher, params);
+    return result.records.map((r) => r.toObject() as T);
+  }
+  return runNeo4jQuery<T>(cypher, params);
+}
+
 /** Fetch all deltas belonging to one plan, ordered by creation time. */
-export async function getDeltasForPlan(planId: string): Promise<GraphDelta[]> {
+export async function getDeltasForPlan(planId: string, tx?: ManagedTransaction): Promise<GraphDelta[]> {
   if (!isNeo4jEnabled()) return [];
-  const rows = await runNeo4jQuery<{ d: unknown }>(
+  const rows = await queryRows<{ d: unknown }>(
     `MATCH (d:ContentDelta { planId: $planId }) RETURN d ORDER BY d.createdAt ASC`,
     { planId: normalizeKeyComponent(planId) },
+    tx,
   );
   return rows.map((r) => toGraphDelta(r.d));
 }
 
-/** Remove every delta for a plan (e.g. on discard). No-op when disabled. */
+// Derive a deterministic RFC-4122 v5-style UUID from an arbitrary seed string.
+// Used to turn a plan's delta set into a stable, content-addressed revision
+// token that is still schema-valid (`plan_revision` requires a UUID shape).
+function deterministicUuid(seed: string): string {
+  const hash = createHash('sha256').update(seed).digest();
+  const b = Buffer.alloc(16);
+  hash.copy(b, 0, 0, 16);
+  b[6] = (b.readUInt8(6) & 0x0f) | 0x50; // version 5
+  b[8] = (b.readUInt8(8) & 0x3f) | 0x80; // variant 10xx
+  const hex = b.toString('hex');
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
+
+/**
+ * Content-addressed revision token for a plan's delta set. Stable for an
+ * unchanged set of deltas; changes whenever any delta is added, removed, or
+ * edited. Bound to the exported plan via `_meta.plan_revision` so the approve
+ * gate can re-validate that the graph has not changed since export (and detect
+ * when `commitGraph` later promotes a different, newer delta set).
+ * 
+ * NOTE: This function ONLY hashes deltas (nodes), not edges. For a complete
+ * revision that includes edges, use `buildPlanRevisionFromDeltasAndEdges`.
+ * This legacy function is kept for backward compatibility.
+ */
+export function buildPlanRevisionFromDeltas(deltas: GraphDelta[]): string {
+  const parts = deltas
+    .map((d) => `${d.op}|${d.nodeType}|${d.nodeId}|${d.id}|${JSON.stringify(d.fields ?? {})}`)
+    .sort();
+  return deterministicUuid(parts.join('\u0000'));
+}
+
+/**
+ * True when a delta edge's mapping resolves the target's canonical NAME into the
+ * source item's fields (today only IN_DISTRICT → District). For these edges the
+ * resolved name is a canonical VALUE the exporter writes into `sourceItem.fields`
+ * that is NOT captured by the delta/edge identity hashes — so it must be folded
+ * into the revision seed or a base-node rename would go undetected at approve.
+ */
+export function isNameValuedEdge(e: GraphDeltaEdge): boolean {
+  return findEdgeMapping(e.type, e.sourceNodeType, e.targetNodeType)?.value === 'name';
+}
+
+/**
+ * Resolve the canonical value a name-valued edge writes into the source item's
+ * fields: the target base node's `name`, falling back to the stable target
+ * `nodeId` when the name is absent. Mirrors `GraphExporter.resolveEdgeLinks` so
+ * the exporter and the approve revalidation seed the revision identically.
+ */
+export function resolveEdgeTargetNameValue(
+  e: GraphDeltaEdge,
+  nameByKey: Map<string, string>,
+): string {
+  return nameByKey.get(`${e.targetNodeType}:${e.targetNodeId}`) ?? e.targetNodeId;
+}
+
+/**
+ * Revision seed part for one name-valued edge: pairs the edge identity with the
+ * canonical VALUE it writes into the source item's fields. Each resolved value
+ * is folded in TOGETHER WITH its edge identity (not as a bare, sorted list of
+ * names) so that swapping two name-valued edges that point at two differently
+ * named Districts yields a different revision — otherwise the sorted name list
+ * would be identical and the approve gate could accept an export whose
+ * `district` fields are stale.
+ */
+export function nameValuedEdgeRevisionPart(e: GraphDeltaEdge, resolvedName: string): string {
+  return JSON.stringify([
+    e.sourceNodeType,
+    e.sourceNodeId,
+    e.targetNodeType,
+    e.targetNodeId,
+    e.type,
+    resolvedName,
+  ]);
+}
+
+/**
+ * Content-addressed revision token for a plan's delta set INCLUDING edges.
+ * This ensures that changes to relationships (edges) between deltas are also
+ * detected, preventing a situation where edge changes after export remain
+ * undetected while `commitGraph` promotes them.
+ *
+ * The optional `resolvedTargetNames` folds in the canonical VALUES the exporter
+ * writes for name-valued (IN_DISTRICT) edges, so a base-node rename (with
+ * unchanged deltas/edges) is also detected. Default `[]` keeps the legacy
+ * deltas+edges-only output for other callers.
+ */
+export function buildPlanRevisionFromDeltasAndEdges(
+  deltas: GraphDelta[],
+  edges: GraphDeltaEdge[],
+  resolvedTargetNames: readonly string[] = [],
+): string {
+  const deltaParts = deltas
+    .map((d) => `${d.op}|${d.nodeType}|${d.nodeId}|${d.id}|${JSON.stringify(d.fields ?? {})}`)
+    .sort();
+  const edgeParts = edges
+    .map((e) => `${e.sourceNodeType}|${e.sourceNodeId}|${e.targetNodeType}|${e.targetNodeId}|${e.type}|${e.planId}`)
+    .sort();
+  const nameParts = [...resolvedTargetNames].sort();
+  return deterministicUuid([...deltaParts, ...edgeParts, ...nameParts].join('\u0000'));
+}
+
+/** Current content-addressed revision of a plan's delta set (Neo4j read). */
+export async function getPlanDeltaRevision(planId: string): Promise<string> {
+  return buildPlanRevisionFromDeltas(await getDeltasForPlan(planId));
+}
+
+/**
+ * Current content-addressed revision of a plan's delta set INCLUDING edges and
+ * the canonical NAME values resolved for name-valued (IN_DISTRICT) edges.
+ * Reads deltas, edges, and the resolved base-node names inside a single
+ * transaction so a graph write occurring between two independent reads cannot
+ * leave the revision covering an inconsistent snapshot (which would let the
+ * approve gate accept a stale export). Folding the names in also means a base
+ * District rename — with unchanged deltas/edges — is detected and aborts approve.
+ */
+export async function getPlanDeltaRevisionWithEdges(planId: string): Promise<string> {
+  if (!isNeo4jEnabled()) {
+    return buildPlanRevisionFromDeltasAndEdges([], []);
+  }
+  const revision = await runNeo4jTransaction(async (tx) => {
+    const [deltas, edges] = await Promise.all([
+      getDeltasForPlan(planId, tx),
+      getDeltaEdgesForPlan(planId, tx),
+    ]);
+    const nameEdges = edges.filter(isNameValuedEdge);
+    const nameByKey = await loadBaseNodeNames(nameEdges, tx);
+    const resolvedTargetNames = nameEdges
+      .map((e) => nameValuedEdgeRevisionPart(e, resolveEdgeTargetNameValue(e, nameByKey)))
+      .sort();
+    return buildPlanRevisionFromDeltasAndEdges(deltas, edges, resolvedTargetNames);
+  });
+  return revision ?? buildPlanRevisionFromDeltasAndEdges([], []);
+}
+
+/**
+ * Load the canonical base `:Content` node `name`s for the targets of name-valued
+ * delta edges, within the supplied transaction so the revision seed observes the
+ * same snapshot as the deltas/edges read. Grouped by `nodeType` (one query per
+ * type) so it stays valid if more name-valued mappings are added. A canonical
+ * District can never be a plan delta (the exporter rejects the District node
+ * type), so its resolved name is always the base node's `name`.
+ */
+async function loadBaseNodeNames(
+  edges: GraphDeltaEdge[],
+  tx: ManagedTransaction,
+): Promise<Map<string, string>> {
+  const byType = new Map<string, string[]>();
+  for (const e of edges) {
+    const list = byType.get(e.targetNodeType) ?? [];
+    list.push(e.targetNodeId);
+    byType.set(e.targetNodeType, list);
+  }
+  const map = new Map<string, string>();
+  for (const [nodeType, ids] of byType) {
+    const rows = await queryRows<{ nodeId: string; name: unknown }>(
+      `MATCH (c:Content { nodeType: $nodeType })
+       WHERE c.planId IS null AND c.nodeId IN $ids
+       RETURN c.nodeId AS nodeId, c.name AS name`,
+      { nodeType, ids },
+      tx,
+    );
+    for (const row of rows) {
+      if (row.name != null) map.set(`${nodeType}:${row.nodeId}`, String(row.name));
+    }
+  }
+  return map;
+}
+
+/**
+ * Persist a plan delta edge: MERGE a relationship with the whitelisted edge type
+ * and a `planId` property, from the plan's `:ContentDelta` node to either a
+ * canonical `:Content` node or another `:ContentDelta` of the same plan. Both
+ * endpoints MUST exist (reuses the canonical-node guard pattern from
+ * `applyDelta`). No-op when Neo4j is disabled.
+ */
+export async function applyDeltaEdge(edge: GraphDeltaEdge): Promise<void> {
+  if (!isNeo4jEnabled()) return;
+  const { planId, sourceNodeType, sourceNodeId, targetNodeType, targetNodeId, type } = edge;
+  if (!/^[A-Z][A-Z_0-9]*$/.test(type)) {
+    throw new Error(`Unsafe graph relationship type "${type}"`);
+  }
+  const nPlanId = normalizeKeyComponent(planId);
+  const nSourceId = normalizeKeyComponent(sourceNodeId);
+  const nTargetId = normalizeKeyComponent(targetNodeId);
+
+  // Validate the source delta node exists for this plan.
+  const sourceExists = await runNeo4jQuery<{ count: unknown }>(
+    `MATCH (d:ContentDelta { planId: $planId, nodeType: $sourceNodeType, nodeId: $sourceNodeId })
+     RETURN count(d) AS count`,
+    { planId: nPlanId, sourceNodeType, sourceNodeId: nSourceId },
+  );
+  if (Number(sourceExists[0]?.count ?? 0) === 0) {
+    throw new Error(`Delta edge source references non-existent :ContentDelta [${sourceNodeType}:${sourceNodeId}] for plan ${planId}`);
+  }
+
+  // Target may be a canonical :Content node (planId IS null) OR a same-plan
+  // :ContentDelta (so two ADD entities in one plan can link). The canonical
+  // :Content match must also exclude critique evidence nodes (isEvidence=true),
+  // matching applyDelta's guard, so an edge can never point at an invisible
+  // evidence excerpt.
+  const targetExists = await runNeo4jQuery<{ count: unknown }>(
+    `MATCH (c:Content { nodeType: $targetNodeType, nodeId: $targetNodeId })
+       WHERE c.planId IS null AND (c.isEvidence IS NULL OR c.isEvidence = false)
+     RETURN count(c) AS count
+     UNION ALL
+     MATCH (d:ContentDelta { planId: $planId, nodeType: $targetNodeType, nodeId: $targetNodeId })
+     RETURN count(d) AS count`,
+    { planId: nPlanId, targetNodeType, targetNodeId: nTargetId },
+  );
+  const targetCount = (targetExists[0]?.count != null ? Number(targetExists[0].count) : 0)
+    + (targetExists[1]?.count != null ? Number(targetExists[1].count) : 0);
+  if (targetCount === 0) {
+    throw new Error(`Delta edge target references non-existent :Content/:ContentDelta [${targetNodeType}:${targetNodeId}] for plan ${planId}`);
+  }
+
+  // Select a single target before MERGE: prefer the same-plan :ContentDelta
+  // (so two ADD entities in one plan can link), else the canonical :Content
+  // node (planId IS null). OPTIONAL MATCH keeps the source row alive even when
+  // only one target kind exists, and CASE prefers the delta — this avoids the
+  // returning-CALL row-elimination that dropped delta-only targets and the
+  // duplicate link that both CALL blocks created when both targets existed.
+  await runNeo4jQuery(
+    `
+    MATCH (s:ContentDelta { planId: $planId, nodeType: $sourceNodeType, nodeId: $sourceNodeId })
+    OPTIONAL MATCH (td:ContentDelta { planId: $planId, nodeType: $targetNodeType, nodeId: $targetNodeId })
+    OPTIONAL MATCH (tc:Content { nodeType: $targetNodeType, nodeId: $targetNodeId })
+      WHERE tc.planId IS null
+    WITH s, CASE WHEN td IS NOT NULL THEN td ELSE tc END AS t
+    WHERE t IS NOT NULL
+    MERGE (s)-[r:${type} { planId: $planId }]->(t)
+    RETURN r
+    `,
+    { planId: nPlanId, sourceNodeType, sourceNodeId: nSourceId, targetNodeType, targetNodeId: nTargetId },
+  );
+}
+
+/** Coerce a raw delta-edge row into a validated GraphDeltaEdge. */
+function toGraphDeltaEdge(row: Record<string, unknown>): GraphDeltaEdge {
+  return GraphDeltaEdgeSchema.parse({
+    planId: row.planId,
+    sourceNodeType: row.sourceNodeType,
+    sourceNodeId: row.sourceNodeId,
+    targetNodeType: row.targetNodeType,
+    targetNodeId: row.targetNodeId,
+    type: row.type,
+    resolvedType: row.resolvedType ?? undefined,
+  });
+}
+
+/**
+ * Fetch all delta edges belonging to one plan (relationships from the plan's
+ * `:ContentDelta` nodes carrying the planId). Empty when disabled.
+ */
+export async function getDeltaEdgesForPlan(planId: string, tx?: ManagedTransaction): Promise<GraphDeltaEdge[]> {
+  if (!isNeo4jEnabled()) return [];
+  const nPlanId = normalizeKeyComponent(planId);
+  const rows = await queryRows<Record<string, unknown>>(
+    `
+    MATCH (s:ContentDelta { planId: $planId })-[r]->(t)
+    WHERE r.planId = $planId
+    RETURN s.nodeType AS sourceNodeType, s.nodeId AS sourceNodeId,
+           t.nodeType AS targetNodeType, t.nodeId AS targetNodeId,
+           type(r) AS type, $planId AS planId
+    `,
+    { planId: nPlanId },
+    tx,
+  );
+  return rows.map(toGraphDeltaEdge);
+}
+
+/** Remove every delta (and its edges) for a plan (e.g. on discard/commit). No-op when disabled. */
 export async function clearDeltasForPlan(planId: string): Promise<void> {
   if (!isNeo4jEnabled()) return;
   await runNeo4jQuery(
-    `MATCH (d:ContentDelta { planId: $planId }) DELETE d`,
+    `MATCH (d:ContentDelta { planId: $planId }) DETACH DELETE d`,
     { planId: normalizeKeyComponent(planId) },
   );
 }

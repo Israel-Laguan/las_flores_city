@@ -293,6 +293,12 @@ export {
   GraphEdgeSchema,
   GraphMergedViewSchema,
   GraphImpactAnalysisSchema,
+  GraphDeltaEdgeSchema,
+  NODE_TYPE_TO_CONTENT_TYPE,
+  CONTENT_TYPE_TO_NODE_TYPE,
+  EDGE_FIELD_MAPPINGS,
+  UNSUPPORTED_EDGE_TYPES,
+  findEdgeMapping,
 } from './schemas/graph-delta.js';
 export type {
   GraphNodeType,
@@ -301,7 +307,10 @@ export type {
   GraphContentNode,
   GraphEdge,
   GraphMergedView,
+  GraphMergedRevision,
   GraphImpactAnalysis,
+  GraphDeltaEdge,
+  EdgeFieldMapping,
 } from './schemas/graph-delta.js';
 
 

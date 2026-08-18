@@ -157,6 +157,110 @@ export async function deleteCache(key: string): Promise<boolean> {
   }
 }
 
+// Atomic compare-and-set cache write. The whole check-and-set runs inside a
+// single Lua EVAL (Redis executes a script to completion, uninterrupted), so it
+// does NOT rely on WATCH/MULTI/EXEC on the shared singleton client — which would
+// race across concurrent callers that share that connection (one caller's
+// UNWATCH clears another caller's WATCH state, letting its EXEC overwrite a
+// newer run's value).
+//
+//   mode = 'init'   -> unconditional overwrite (initializers take ownership)
+//   mode = 'token'  -> only write when the existing value's `.runToken` equals
+//                      `runToken` (or no value exists); returns 0 WITHOUT
+//                      writing when the cached token differs, so a stale write
+//                      from a prior run is dropped. Returns 2 (instead of
+//                      writing) when the cached value's `.version` differs from
+//                      `expectedVersion`, so the caller can retry against the
+//                      newer snapshot instead of silently erasing data a
+//                      concurrent same-run write just persisted.
+//   mode = 'legacy' -> unconditional overwrite (no token guard)
+//
+// Return codes: 1 = written, 0 = dropped (owner mismatch), 2 = dropped
+// (snapshot/version conflict — caller should retry), -1 = infrastructure error
+// (connection/EVAL failure; caller may retry — distinct from the 0 stale-run drop).
+const CAS_SET_CACHE_LUA = `
+local key = KEYS[1]
+local mode = ARGV[1]
+local token = ARGV[2]
+local value = ARGV[3]
+local ttl = ARGV[4]
+local expectedVersion = ARGV[5]
+
+local function doSet()
+  if ttl == '0' then
+    -- TTL 0 means "no expiry" — a plain SET (Redis rejects SET ... EX 0).
+    redis.call('SET', key, value)
+  else
+    redis.call('SET', key, value, 'EX', ttl)
+  end
+end
+
+if mode == 'legacy' or mode == 'init' then
+  doSet()
+  return 1
+end
+
+-- mode == 'token'
+local current = redis.call('GET', key)
+if current then
+  local ok, data = pcall(cjson.decode, current)
+  if ok and type(data) == 'table' then
+    -- Ownership guard: a different run's token owns the entry → drop.
+    if data.runToken and data.runToken ~= token then
+      return 0
+    end
+    -- Legacy entry (pre-version): it carries no version field and cannot
+    -- participate in snapshot conflict detection. Adopt it atomically so the
+    -- first same-token writer upgrades it to a versioned entry rather than the
+    -- snapshot guard being silently disabled for every subsequent writer
+    -- (which would let concurrent same-token writers clobber each other's
+    -- stage/publish/migration data for the full TTL). The expectedVersion here
+    -- is a non-empty sentinel, distinct from a true cache miss ('').
+    if expectedVersion == '\0' and (not data.version or data.version == '') then
+      doSet()
+      return 1
+    end
+    -- Snapshot guard: the entry changed since we read it → caller retries so a
+    -- stale merge cannot erase a newer same-run write (stage/publish/migration).
+    if expectedVersion ~= '' and data.version ~= expectedVersion then
+      return 2
+    end
+  end
+end
+doSet()
+return 1
+`;
+
+export async function casSetCache(
+  key: string,
+  value: unknown,
+  ttlSeconds: number,
+  runToken: string,
+  mode: 'init' | 'token' | 'legacy',
+  expectedVersion = '',
+): Promise<number> {
+  try {
+    const serialized = JSON.stringify(value);
+    const result = (await getRedis().eval(
+      CAS_SET_CACHE_LUA,
+      1,
+      key,
+      mode,
+      runToken,
+      serialized,
+      String(ttlSeconds),
+      expectedVersion,
+    )) as number;
+    return result;
+  } catch (error) {
+    console.error('CAS cache set error:', error);
+    // -1 = infrastructure error. Distinct from 0 (owner mismatch) so callers do
+    // not mistake a Redis/EVAL failure for a stale-run drop and silently lose the
+    // status update; they retry/surface it instead.
+    return -1;
+  }
+}
+
 /**
  * Safely invalidates multiple keys without blocking the Redis event loop.
  * Uses SCAN (incremental iteration) instead of KEYS (O(N) full-block) and

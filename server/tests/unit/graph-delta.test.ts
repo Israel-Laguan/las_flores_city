@@ -2,6 +2,7 @@ import { describe, test, expect, jest, beforeEach } from '@jest/globals';
 import type { Mock } from 'jest-mock';
 import {
   GraphDeltaSchema,
+  GraphDeltaEdgeSchema,
   GraphDeltaOpSchema,
   GraphNodeTypeSchema,
   type GraphContentNode,
@@ -9,6 +10,7 @@ import {
   type GraphEdge,
   type GraphImpactAnalysis,
   type GraphMergedView,
+  type GraphDeltaEdge,
 } from '@las-flores/shared';
 
 // M27 — mock the Neo4j seam (AGENTS.md rule: unit tests must never open real
@@ -17,11 +19,13 @@ import {
 jest.mock('../../src/services/Neo4jClient.js', () => ({
   isNeo4jEnabled: jest.fn(() => true),
   runNeo4jQuery: jest.fn(async () => []),
+  // mockTx is mock-prefixed so the hoisted factory may reference it; it is read
+  // lazily at call time (set in beforeEach), never at module load.
+  runNeo4jTransaction: jest.fn(async (fn: any) => fn(mockTx)),
 }));
 
 import { isNeo4jEnabled, runNeo4jQuery } from '../../src/services/Neo4jClient.js';
 import {
-  ensureGraphConstraints,
   upsertContentNode,
   upsertContentRelationship,
   countContentNodes,
@@ -33,14 +37,31 @@ import {
   clearDeltasForPlan,
   countDeltasForPlan,
   summarizeDeltasForPlan,
+  buildPlanRevisionFromDeltasAndEdges,
+  getPlanDeltaRevisionWithEdges,
+  nameValuedEdgeRevisionPart,
 } from '../../src/services/GraphDeltaService.js';
 import { getMergedView, getImpactAnalysis, countAllDeltas, detectCycles } from '../../src/services/GraphQueryService.js';
 
 const mockEnabled = isNeo4jEnabled as unknown as Mock<() => boolean>;
 const mockQuery = runNeo4jQuery as unknown as Mock<(c: string, p: Record<string, unknown>) => Promise<any[]>>;
 
+// Dummy transaction object handed to `runNeo4jTransaction`'s callback. Set to a
+// fresh default in beforeEach; the revision-wiring test overrides `.run`.
+let mockTx: {
+  run: Mock<(cypher: string, params?: Record<string, unknown>) => Promise<{ records: Array<{ toObject: () => Record<string, unknown> }> }>>;
+  [k: string]: unknown;
+} = { run: jest.fn(async (cypher: string, _params?: Record<string, unknown>) => ({ records: [] })) };
+
 const PLAN_ID = 'e0000000-e29b-41d4-a716-4466554400aa';
 const CHAR_ID = 'e0000000-e29b-41d4-a716-4466554400bb';
+
+// Dedicated synthetic IDs for the revision-builder tests (AGENTS.md: never reuse
+// a sibling test's fixture IDs).
+const REV_PLAN_ID = 'e0000000-e29b-41d4-a716-4466554400cd';
+const REV_SCENE_ID = 'e0000000-e29b-41d4-a716-4466554400ce';
+const REV_DISTRICT_ID = 'e0000000-e29b-41d4-a716-4466554400cf';
+const REV_DELTA_ID = 'e0000000-e29b-41d4-a716-4466554400d0';
 
 function makeDelta(overrides: Partial<GraphDelta> = {}): GraphDelta {
   return GraphDeltaSchema.parse({
@@ -59,6 +80,7 @@ beforeEach(() => {
   mockEnabled.mockReturnValue(true);
   mockQuery.mockReset();
   mockQuery.mockReturnValue(Promise.resolve([]));
+  mockTx = { run: jest.fn(async (cypher: string, _params?: Record<string, unknown>) => ({ records: [] })) };
 });
 
 describe('graph-delta schema', () => {
@@ -222,3 +244,108 @@ describe('GraphQueryService', () => {
     expect(mockQuery).not.toHaveBeenCalled();
   });
 });
+
+describe('GraphDeltaService — revision builders (deltas + edges + resolved names)', () => {
+  const revDelta = GraphDeltaSchema.parse({
+    id: REV_DELTA_ID,
+    planId: REV_PLAN_ID,
+    nodeType: 'Scene',
+    nodeId: REV_SCENE_ID,
+    op: 'ADD',
+    fields: {},
+    createdAt: '2026-08-15T00:00:00.000Z',
+  });
+  const revEdge = GraphDeltaEdgeSchema.parse({
+    planId: REV_PLAN_ID,
+    sourceNodeType: 'Scene',
+    sourceNodeId: REV_SCENE_ID,
+    targetNodeType: 'District',
+    targetNodeId: REV_DISTRICT_ID,
+    type: 'IN_DISTRICT',
+  });
+
+  test('buildPlanRevisionFromDeltasAndEdges: empty/absent third arg keeps legacy output; names change it', () => {
+    const legacy = buildPlanRevisionFromDeltasAndEdges([revDelta], [revEdge]);
+    expect(buildPlanRevisionFromDeltasAndEdges([revDelta], [revEdge], [])).toBe(legacy);
+    const withName = buildPlanRevisionFromDeltasAndEdges([revDelta], [revEdge], ['Los Andes']);
+    expect(withName).not.toBe(legacy);
+  });
+
+  test('buildPlanRevisionFromDeltasAndEdges: resolved names are order-independent', () => {
+    expect(
+      buildPlanRevisionFromDeltasAndEdges([revDelta], [revEdge], ['Los Andes', 'El Prado']),
+    ).toBe(
+      buildPlanRevisionFromDeltasAndEdges([revDelta], [revEdge], ['El Prado', 'Los Andes']),
+    );
+  });
+
+  test('buildPlanRevisionFromDeltasAndEdges: swapping two name-valued edges is detected', () => {
+    // Two differently-named Districts with their IN_DISTRICT edges swapped. A
+    // bare sorted list of names ("North","South") would be identical, but the
+    // revision must fold each resolved name together with its edge identity so
+    // the approve gate rejects the stale export.
+    const edgeA: GraphDeltaEdge = { ...revEdge, sourceNodeId: 'scene-a', targetNodeId: 'dist-north' };
+    const edgeB: GraphDeltaEdge = { ...revEdge, sourceNodeId: 'scene-b', targetNodeId: 'dist-south' };
+
+    const swappedA = [
+      nameValuedEdgeRevisionPart(edgeA, 'North'),
+      nameValuedEdgeRevisionPart(edgeB, 'South'),
+    ].sort();
+    const swappedB = [
+      nameValuedEdgeRevisionPart(edgeA, 'South'),
+      nameValuedEdgeRevisionPart(edgeB, 'North'),
+    ].sort();
+
+    expect(buildPlanRevisionFromDeltasAndEdges([revDelta], [edgeA, edgeB], swappedA)).not.toBe(
+      buildPlanRevisionFromDeltasAndEdges([revDelta], [edgeA, edgeB], swappedB),
+    );
+    // And the unswapped case is stable.
+    expect(buildPlanRevisionFromDeltasAndEdges([revDelta], [edgeA, edgeB], swappedA)).toBe(
+      buildPlanRevisionFromDeltasAndEdges([revDelta], [edgeA, edgeB], swappedA),
+    );
+  });
+
+  test('getPlanDeltaRevisionWithEdges folds resolved District names in a single transaction', async () => {
+    mockEnabled.mockReturnValue(true);
+    mockTx = {
+      run: jest.fn(async (cypher: string, _params?: Record<string, unknown>) => {
+        const rec = (o: Record<string, unknown>) => ({ toObject: () => o });
+        const c = String(cypher);
+        if (c.includes('ORDER BY d.createdAt')) {
+          return { records: [rec({ d: { properties: { id: REV_DELTA_ID, planId: REV_PLAN_ID, nodeType: 'Scene', nodeId: REV_SCENE_ID, op: 'ADD', fieldsJson: JSON.stringify({ name: 'Scene B' }), createdAt: '2026-08-15T00:00:00.000Z' } } })] };
+        }
+        if (c.includes('type(r) AS type')) {
+          return { records: [rec({ sourceNodeType: 'Scene', sourceNodeId: REV_SCENE_ID, targetNodeType: 'District', targetNodeId: REV_DISTRICT_ID, type: 'IN_DISTRICT', planId: REV_PLAN_ID })] };
+        }
+        if (c.includes('RETURN c.nodeId AS nodeId')) {
+          return { records: [rec({ nodeId: REV_DISTRICT_ID, name: 'Los Andes' })] };
+        }
+        return { records: [] };
+      }),
+    };
+
+    // Persisted deltas are stored as `fieldsJson`; toGraphDelta parses that into
+    // the delta's `fields`, which buildPlanRevisionFromDeltasAndEdges folds into
+    // the revision. Model the real persisted shape (not `fields: {}`) and assert
+    // the parsed value participates in the seed.
+    const revDeltaWithFields = { ...revDelta, fields: { name: 'Scene B' } };
+    const rev = await getPlanDeltaRevisionWithEdges(REV_PLAN_ID);
+    // Same snapshot (deltas + edge + resolved District name) → same revision.
+    const losPart = nameValuedEdgeRevisionPart(revEdge, 'Los Andes');
+    expect(rev).toBe(buildPlanRevisionFromDeltasAndEdges([revDeltaWithFields], [revEdge], [losPart]));
+    // fieldsJson is actually parsed (not dropped): if it were, the revision would
+    // match the empty-fields seed instead.
+    expect(rev).not.toBe(buildPlanRevisionFromDeltasAndEdges([revDelta], [revEdge], [losPart]));
+    // A base District rename with unchanged deltas/edges flips the revision.
+    const elPart = nameValuedEdgeRevisionPart(revEdge, 'El Prado');
+    expect(rev).not.toBe(buildPlanRevisionFromDeltasAndEdges([revDeltaWithFields], [revEdge], [elPart]));
+  });
+
+  test('getPlanDeltaRevisionWithEdges: disabled returns the empty deltas+edges revision', async () => {
+    mockEnabled.mockReturnValue(false);
+    await expect(getPlanDeltaRevisionWithEdges(REV_PLAN_ID)).resolves.toBe(
+      buildPlanRevisionFromDeltasAndEdges([], []),
+    );
+  });
+});
+

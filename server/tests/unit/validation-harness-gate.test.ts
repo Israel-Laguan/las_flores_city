@@ -68,6 +68,7 @@ jest.mock('@las-flores/infra', () => {
     withOLTPTransaction: jest.fn(async (cb: any) => cb(fakeClient)),
     getCache: jest.fn(async () => null),
     setCache: jest.fn(async () => true),
+    casSetCache: jest.fn(async () => 1),
     deleteCache: jest.fn(async () => true),
     invalidatePattern: jest.fn(async () => true),
   };

@@ -31,6 +31,7 @@ export {
   getCache,
   setCache,
   deleteCache,
+  casSetCache,
   invalidatePattern,
   getContentVersion,
   setContentVersion,
