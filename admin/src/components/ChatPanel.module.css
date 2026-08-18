@@ -8,9 +8,9 @@
   z-index: 50;
   display: flex;
   flex-direction: column;
-  background: var(--color-surface, #1b1d22);
-  border-left: 1px solid var(--border, rgba(255, 255, 255, 0.1));
-  box-shadow: -6px 0 24px rgba(0, 0, 0, 0.35);
+  background: var(--surface-2);
+  border-left: 1px solid var(--border);
+  box-shadow: var(--panel-shadow);
 }
 
 .header {
@@ -18,7 +18,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  border-bottom: 1px solid var(--border);
 }
 
 .title {
@@ -35,8 +35,8 @@
 
 .context {
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.1));
-  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid var(--border);
+  background: var(--hover-overlay);
 }
 
 .contextBadge {
@@ -45,8 +45,8 @@
   font-weight: 700;
   padding: 0.15rem 0.5rem;
   border-radius: 999px;
-  background: rgba(239, 68, 68, 0.18);
-  color: #f87171;
+  background: var(--status-error-bg);
+  color: var(--danger);
 }
 
 .contextDesc {
@@ -70,7 +70,7 @@
 }
 
 .empty {
-  color: var(--text-muted, rgba(255, 255, 255, 0.55));
+  color: var(--text-muted);
   font-size: 0.85rem;
   text-align: center;
   margin: auto;
@@ -93,29 +93,29 @@
   line-height: 1.4;
   white-space: pre-wrap;
   word-break: break-word;
-  background: rgba(59, 130, 246, 0.18);
-  color: #e5e7eb;
+  background: var(--info-bg);
+  color: var(--text-primary);
 }
 
 .msgUser .msgBubble {
-  background: rgba(59, 130, 246, 0.35);
+  background: var(--info-bg-strong);
 }
 
 .proposal {
-  border-top: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  border-top: 1px solid var(--border);
   padding: 0.75rem 1rem;
   max-height: 45%;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  background: rgba(16, 185, 129, 0.05);
+  background: var(--status-success-bg);
 }
 
 .deltaCard,
 .edgeCard {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  background: var(--hover-overlay);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 0.5rem;
 }
@@ -159,13 +159,13 @@
   padding: 0.5rem 0.75rem;
   border-radius: 6px;
   font-size: 0.8rem;
-  color: #f87171;
-  background: rgba(239, 68, 68, 0.12);
+  color: var(--danger);
+  background: var(--status-error-bg);
 }
 
 .composer {
   padding: 0.75rem 1rem 1rem;
-  border-top: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  border-top: 1px solid var(--border);
 }
 
 .modeToggle {
@@ -180,13 +180,13 @@
   border-radius: 999px;
   border: 1px solid transparent;
   cursor: pointer;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--hover-overlay);
   color: inherit;
 }
 
 .modeBtnActive {
-  background: rgba(59, 130, 246, 0.3);
-  border-color: rgba(59, 130, 246, 0.5);
+  background: var(--info-surface);
+  border-color: var(--info-surface-border);
 }
 
 .form {
@@ -199,8 +199,8 @@
   min-width: 0;
   padding: 0.5rem 0.6rem;
   border-radius: 8px;
-  border: 1px solid var(--border, rgba(255, 255, 255, 0.15));
-  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  background: var(--hover-overlay);
   color: inherit;
   font-size: 0.85rem;
 }

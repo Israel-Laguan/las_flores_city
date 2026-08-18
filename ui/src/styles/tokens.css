@@ -91,6 +91,15 @@
 
   /* Overlay background (translucent) */
   --overlay-bg: rgba(0, 0, 0, 0.75);
+
+  /* Info / accent-blue surfaces (authoring chat panels) */
+  --info-bg: rgba(59, 130, 246, 0.18);
+  --info-bg-strong: rgba(59, 130, 246, 0.35);
+  --info-surface: rgba(59, 130, 246, 0.3);
+  --info-surface-border: rgba(59, 130, 246, 0.5);
+
+  /* Panel elevation shadow */
+  --panel-shadow: -6px 0 24px rgba(0, 0, 0, 0.35);
 }
 
 /* =========================================================================
@@ -163,6 +172,15 @@ body.theme-light {
 
   /* Overlay background */
   --overlay-bg: rgba(0, 0, 0, 0.6);
+
+  /* Info / accent-blue surfaces (authoring chat panels) */
+  --info-bg: rgba(59, 130, 246, 0.18);
+  --info-bg-strong: rgba(59, 130, 246, 0.35);
+  --info-surface: rgba(59, 130, 246, 0.3);
+  --info-surface-border: rgba(59, 130, 246, 0.5);
+
+  /* Panel elevation shadow */
+  --panel-shadow: -6px 0 24px rgba(0, 0, 0, 0.35);
 
   /* Elevation */
   --shadow-glow: 0 0 8px rgba(0, 0, 0, 0.12);

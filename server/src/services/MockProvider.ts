@@ -351,6 +351,7 @@ ${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
     messages: ChatMessage[],
     _context: ExistingContentContext,
     conflict?: ConflictChatContext,
+    _planDescription?: string,
   ): Promise<{ reply: string; usage: LLMUsage | null }> {
     const last = messages[messages.length - 1]?.content ?? '';
     const subject = conflict
@@ -367,6 +368,7 @@ ${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
     messages: ChatMessage[],
     _context: ExistingContentContext,
     conflict?: ConflictChatContext,
+    _planDescription?: string,
   ): Promise<{ reply: string; deltas: GraphDelta[]; deltaEdges: GraphDeltaEdge[]; usage: LLMUsage | null }> {
     const ev = conflict?.evidence?.[0];
     let deltas: GraphDelta[];

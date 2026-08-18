@@ -258,15 +258,16 @@ async function callLLMMessages(
           'Content-Type': 'application/json',
           ...(apiKey ? { 'Authorization': `Bearer ${apiKey}` } : {}),
         },
-        body: JSON.stringify({
-          model,
-          messages: [
-            { role: 'system', content: systemPrompt },
-            ...messages,
-          ],
-          temperature: 0.7,
-          ...(maxTokens !== undefined ? { max_tokens: maxTokens } : {}),
-        }),
+          body: JSON.stringify({
+            model,
+            messages: [
+              { role: 'system', content: systemPrompt },
+              ...messages,
+            ],
+            temperature: 0.7,
+            ...(opts.jsonMode ? { response_format: { type: 'json_object' } } : {}),
+            ...(maxTokens !== undefined ? { max_tokens: maxTokens } : {}),
+          }),
         signal: AbortSignal.timeout(currentTimeoutMs),
       });
 
@@ -288,9 +289,9 @@ async function callLLMMessages(
       // Truncation guard: if the model hit max_tokens mid-generation, a partial
       // parse could silently drop chunks (especially in JSON mode). Surface a
       // clear non-retryable error instead of corrupting the output.
-      if (data.choices?.[0]?.finish_reason === 'length' && maxTokens !== undefined) {
+      if (data.choices?.[0]?.finish_reason === 'length') {
         const truncError = new Error(
-          `LLM output truncated (finish_reason=length, max_tokens=${maxTokens}). ` +
+          `LLM output truncated (finish_reason=length${maxTokens !== undefined ? `, max_tokens=${maxTokens}` : ''}). ` +
           `Consider increasing the max token limit for this call or reducing input size.`,
         );
         (truncError as any).isRetryable = false;

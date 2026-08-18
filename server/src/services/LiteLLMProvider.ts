@@ -18,8 +18,6 @@ export class LiteLLMProvider implements LLMProvider {
   private defaultTimeoutMs: number;
   private retries: number;
   private core: LiteLLMCore;
-  /** M29 — validation errors fed to chatPropose's single refine retry. */
-  private chatProposeErrors = '';
 
   constructor(opts?: LiteLLMProviderOptions) {
     this.baseUrl = process.env.LITELLM_BASE_URL || 'http://litellm:4000';
@@ -299,8 +297,9 @@ export class LiteLLMProvider implements LLMProvider {
     messages: ChatMessage[],
     context: ExistingContentContext,
     conflict?: ConflictChatContext,
+    planDescription?: string,
   ): Promise<{ reply: string; usage: LLMUsage | null }> {
-    const systemPrompt = buildChatExplainPrompt({ id: planId }, context, conflict);
+    const systemPrompt = buildChatExplainPrompt({ id: planId, description: planDescription }, context, conflict);
     const { text, usage } = await this.callLLMMessages(systemPrompt, messages, { jsonMode: false });
     return { reply: text ?? '', usage };
   }
@@ -317,16 +316,17 @@ export class LiteLLMProvider implements LLMProvider {
     messages: ChatMessage[],
     context: ExistingContentContext,
     conflict?: ConflictChatContext,
+    planDescription?: string,
   ): Promise<{ reply: string; deltas: GraphDelta[]; deltaEdges: GraphDeltaEdge[]; usage: LLMUsage | null }> {
     const maxTokens = finiteInt(process.env.LLM_CHAT_MAX_TOKENS, 4096);
-    this.chatProposeErrors = '';
+    let chatProposeErrors = '';
 
     for (let attempt = 0; attempt <= 1; attempt++) {
-      let systemPrompt = buildChatProposePrompt({ id: planId }, context, conflict);
+      let systemPrompt = buildChatProposePrompt({ id: planId, description: planDescription }, context, conflict);
       if (attempt === 1) {
         // Reject-and-refine: tell the model the exact validation failures from
         // the previous attempt (collected below).
-        systemPrompt += `\n\n## Previous attempt REJECTED\nYour previous proposal was REJECTED for schema-invalid deltas. Fix these exact errors and return ONLY the corrected JSON contract:\n${this.chatProposeErrors}\n`;
+        systemPrompt += `\n\n## Previous attempt REJECTED\nYour previous proposal was REJECTED for schema-invalid deltas. Fix these exact errors and return ONLY the corrected JSON contract:\n${chatProposeErrors}\n`;
       }
 
       const { result, usage } = await this.callLLMMessages(systemPrompt, messages, { jsonMode: true, maxTokens });
@@ -375,17 +375,17 @@ export class LiteLLMProvider implements LLMProvider {
       }
 
       // Validation failures to feed a single refine attempt.
-      this.chatProposeErrors = [
+      chatProposeErrors = [
         !isObject || !Array.isArray((result as any)?.deltas) ? '"deltas" array is missing or not an array' : null,
         nothingValid && deltasIn.length === 0 ? '"deltas" array is empty' : null,
         allDropped ? `${droppedDeltas} delta(s) failed GraphDeltaSchema validation (nodeType/op/nodeId/fields rules)` : null,
       ].filter((x): x is string => !!x).join('; ');
-      if (this.chatProposeErrors === '') this.chatProposeErrors = 'deltas are invalid';
+      if (chatProposeErrors === '') chatProposeErrors = 'deltas are invalid';
 
       if (attempt === 0) continue; // exactly ONE refine retry
     }
 
-    console.warn(`[LiteLLM] chatPropose failed after refine; degrading to empty deltas (plan=${planId}): ${this.chatProposeErrors}`);
+    console.warn(`[LiteLLM] chatPropose failed after refine; degrading to empty deltas (plan=${planId}): ${chatProposeErrors}`);
     return { reply: 'Proposal generation could not produce valid deltas. Please rephrase or use explain mode.', deltas: [], deltaEdges: [], usage: null };
   }
 

@@ -32,13 +32,16 @@ adminStoryBuilderChatRouter.post('/plans/:id/chat', async (req: AuthRequest, res
       res.status(400).json({ success: false, error: '"messages" is required (non-empty array of ChatMessage)', timestamp: new Date().toISOString() });
       return;
     }
-    // Validate every message against ChatMessageSchema (role ∈ user|assistant, content min 1).
+    // Validate every message against ChatMessageSchema (role ∈ user|assistant,
+    // content min 1) and forward the parsed data — never the raw request objects.
+    const parsedMessages: ChatMessage[] = [];
     for (let i = 0; i < messagesIn.length; i++) {
       const parsed = ChatMessageSchema.safeParse(messagesIn[i]);
       if (!parsed.success) {
         res.status(400).json({ success: false, error: `messages[${i}]: ${parsed.error.issues.map((x) => x.message).join('; ')}`, timestamp: new Date().toISOString() });
         return;
       }
+      parsedMessages.push(parsed.data);
     }
 
     const mode = (req.body?.mode as string) || 'explain';
@@ -48,7 +51,15 @@ adminStoryBuilderChatRouter.post('/plans/:id/chat', async (req: AuthRequest, res
     }
 
     const annotationId = typeof req.body?.annotationId === 'string' ? req.body.annotationId : undefined;
-    const history = (messagesIn as ChatMessage[]).slice(-CHAT_HISTORY_CAP);
+    const capped = parsedMessages.slice(-CHAT_HISTORY_CAP);
+    // A truncated window must still start on a user turn (several chat APIs
+    // reject a history that opens with an assistant message).
+    const firstUser = capped.findIndex((m) => m.role === 'user');
+    const history = firstUser > 0 ? capped.slice(firstUser) : capped;
+    if (history.length === 0) {
+      res.status(400).json({ success: false, error: '"messages" must contain at least one user message', timestamp: new Date().toISOString() });
+      return;
+    }
 
     if (mode === 'propose') {
       const { reply, deltas, deltaEdges, usage } = await chatService.propose(id, history, annotationId);

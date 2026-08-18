@@ -73,6 +73,7 @@ export interface LLMProvider {
     messages: ChatMessage[],
     context: ExistingContentContext,
     conflict?: ConflictChatContext,
+    planDescription?: string,
   ): Promise<{ reply: string; usage: LLMUsage | null }>;
 
   chatPropose(
@@ -80,5 +81,6 @@ export interface LLMProvider {
     messages: ChatMessage[],
     context: ExistingContentContext,
     conflict?: ConflictChatContext,
+    planDescription?: string,
   ): Promise<{ reply: string; deltas: GraphDelta[]; deltaEdges: GraphDeltaEdge[]; usage: LLMUsage | null }>;
 }

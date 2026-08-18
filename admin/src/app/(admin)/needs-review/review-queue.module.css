@@ -15,13 +15,13 @@
 }
 
 .subtitle {
-  color: var(--text-muted, rgba(255, 255, 255, 0.6));
+  color: var(--text-muted);
   margin: 0.25rem 0 1rem;
   font-size: 0.9rem;
 }
 
 .empty {
-  color: var(--text-muted, rgba(255, 255, 255, 0.6));
+  color: var(--text-muted);
   padding: 2rem 0;
   text-align: center;
 }
@@ -36,10 +36,10 @@
 }
 
 .row {
-  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 0.75rem 1rem;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--hover-overlay);
 }
 
 .rowMain {

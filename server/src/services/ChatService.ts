@@ -100,17 +100,27 @@ export class ChatService {
     return this.neighborhoodProvider.gatherContext();
   }
 
+  /** Load the durable plan description so prompts render the plan context. */
+  private async loadPlanDescription(planId: string): Promise<string | undefined> {
+    const result = await queryOLTP<{ description: string | null }>(
+      `SELECT description FROM content_plans WHERE id = $1`,
+      [planId],
+    );
+    return result.rows[0]?.description ?? undefined;
+  }
+
   /** Prose reply — no structured side-effects. */
   async explain(
     planId: string,
     messages: ChatMessage[],
     annotationId?: string,
   ): Promise<{ reply: string; usage: LLMUsage | null }> {
-    const [context, conflict] = await Promise.all([
+    const [context, conflict, description] = await Promise.all([
       this.gather(),
       this.resolveConflict(planId, annotationId),
+      this.loadPlanDescription(planId),
     ]);
-    return this.provider.chatExplain(planId, messages, context, conflict);
+    return this.provider.chatExplain(planId, messages, context, conflict, description);
   }
 
   /** Structured proposal — returns schema-valid deltas (+ optional edges). */
@@ -119,11 +129,12 @@ export class ChatService {
     messages: ChatMessage[],
     annotationId?: string,
   ): Promise<{ reply: string; deltas: GraphDelta[]; deltaEdges: GraphDeltaEdge[]; usage: LLMUsage | null }> {
-    const [context, conflict] = await Promise.all([
+    const [context, conflict, description] = await Promise.all([
       this.gather(),
       this.resolveConflict(planId, annotationId),
+      this.loadPlanDescription(planId),
     ]);
-    return this.provider.chatPropose(planId, messages, context, conflict);
+    return this.provider.chatPropose(planId, messages, context, conflict, description);
   }
 
   /**
@@ -169,6 +180,12 @@ export class ChatService {
       throw new ChatDeltaValidationError(`Invalid delta payload: ${issues.join('; ')}`);
     }
 
+    // Resolve the target annotation before any write so a bad annotationId
+    // cannot leave the graph mutated while the route returns 404.
+    if (annotationId) {
+      await this.resolveConflict(planId, annotationId);
+    }
+
     // ③ the graph substrate must be present to write real deltas.
     if (!isNeo4jEnabled()) {
       throw new ChatGraphDisabledError('Neo4j authoring graph is disabled — cannot apply deltas. Enable NEO4J_ENABLED first.');
@@ -183,15 +200,9 @@ export class ChatService {
       await applyDeltaEdge(edge);
     }
 
-    // ⑤ resolve the conflict that started the chat (durable Postgres + graph sync).
+    // ⑤ mark the conflict that started the chat 'addressed' (durable Postgres
+    //    + graph sync). The annotation scope is already validated above.
     if (annotationId) {
-      const annotation = await this.critique.getAnnotation(annotationId);
-      if (!annotation) {
-        throw new ChatAnnotationNotFoundError(`Annotation not found: ${annotationId}`);
-      }
-      if (annotation.planId !== planId) {
-        throw new ChatAnnotationNotFoundError(`Annotation ${annotationId} does not belong to plan ${planId}`);
-      }
       await this.critique.setAnnotationStatus(annotationId, 'addressed');
     }
 
@@ -210,7 +221,7 @@ export class ChatService {
   /** Global `needs_review` queue: open annotations ∪ all deltas. */
   async getReviewQueue(): Promise<ReviewQueueItem[]> {
     const [annotations, deltas] = await Promise.all([
-      aiCritiqueService.getAllOpenAnnotations(),
+      this.critique.getAllOpenAnnotations(),
       getAllDeltas(),
     ]);
 
