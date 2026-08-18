@@ -156,6 +156,50 @@ export async function preflightDeltas(deltas: GraphDelta[]): Promise<void> {
 }
 
 /**
+ * Preflight-guard a whole delta-edge batch before any write: every edge's
+ * source `:ContentDelta` and target (canonical `:Content` or same-plan
+ * `:ContentDelta`) must exist, and the relationship type must be safe. Throws
+ * before any delta/edge is written so `applyDeltas` can never leave a
+ * partially-applied proposal in Neo4j when a later edge guard would fail.
+ */
+export async function preflightDeltaEdges(edges: GraphDeltaEdge[]): Promise<void> {
+  if (!isNeo4jEnabled()) return;
+  for (const edge of edges) {
+    const { planId, sourceNodeType, sourceNodeId, targetNodeType, targetNodeId, type } = edge;
+    if (!/^[A-Z][A-Z_0-9]*$/.test(type)) {
+      throw new Error(`Unsafe graph relationship type "${type}"`);
+    }
+    const nPlanId = normalizeKeyComponent(planId);
+    const nSourceId = normalizeKeyComponent(sourceNodeId);
+    const nTargetId = normalizeKeyComponent(targetNodeId);
+
+    const sourceExists = await runNeo4jQuery<{ count: unknown }>(
+      `MATCH (d:ContentDelta { planId: $planId, nodeType: $sourceNodeType, nodeId: $sourceNodeId })
+       RETURN count(d) AS count`,
+      { planId: nPlanId, sourceNodeType, sourceNodeId: nSourceId },
+    );
+    if (Number(sourceExists[0]?.count ?? 0) === 0) {
+      throw new Error(`Delta edge source references non-existent :ContentDelta [${sourceNodeType}:${sourceNodeId}] for plan ${planId}`);
+    }
+
+    const targetExists = await runNeo4jQuery<{ count: unknown }>(
+      `MATCH (c:Content { nodeType: $targetNodeType, nodeId: $targetNodeId })
+          WHERE c.planId IS null AND (c.isEvidence IS NULL OR c.isEvidence = false)
+        RETURN count(c) AS count
+        UNION ALL
+        MATCH (d:ContentDelta { planId: $planId, nodeType: $targetNodeType, nodeId: $targetNodeId })
+        RETURN count(d) AS count`,
+      { planId: nPlanId, targetNodeType, targetNodeId: nTargetId },
+    );
+    const targetCount = (targetExists[0]?.count != null ? Number(targetExists[0].count) : 0)
+      + (targetExists[1]?.count != null ? Number(targetExists[1].count) : 0);
+    if (targetCount === 0) {
+      throw new Error(`Delta edge target references non-existent :Content/:ContentDelta [${targetNodeType}:${targetNodeId}] for plan ${planId}`);
+    }
+  }
+}
+
+/**
  * Run a Cypher read inside an existing transaction when one is supplied, else a
  * standalone session query. Keeps reads and writes on the same transaction
  * snapshot (used by `commitGraph`, where the final delta delete must not drop

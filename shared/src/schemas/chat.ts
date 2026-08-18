@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { zodUuid } from './uuid.js';
 import { CritiqueEvidenceSchema, CritiqueRelatedEntitySchema } from './critique-annotation.js';
-import { GraphDeltaSchema } from './graph-delta.js';
+import { GraphDeltaSchema, GraphDeltaEdgeSchema } from './graph-delta.js';
 import { CritiqueAnnotationSchema } from './critique-annotation.js';
 
 // ---------------------------------------------------------------------------
@@ -58,5 +58,8 @@ export const ReviewQueueItemSchema = z.object({
   planDescription: z.string().optional(),
   annotation: CritiqueAnnotationSchema.optional(),
   delta: GraphDeltaSchema.optional(),
+  // Related delta edges authored alongside `delta` (e.g. OWNED_BY / IN_DISTRICT
+  // relationships proposed in the same plan). Empty for annotation rows.
+  deltaEdges: GraphDeltaEdgeSchema.array().default([]),
 });
 export type ReviewQueueItem = z.infer<typeof ReviewQueueItemSchema>;

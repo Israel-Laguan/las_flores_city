@@ -20,10 +20,10 @@ import crypto from 'node:crypto';
 import { withSchemaLock } from '../helpers/schemaLock.js';
 import { queryOLTP, closeConnections } from '@las-flores/infra';
 import { closeRedis } from '@las-flores/infra';
-import { GraphDeltaSchema } from '@las-flores/shared';
+import { GraphDeltaSchema, GraphDeltaEdgeSchema } from '@las-flores/shared';
 import { ChatService, ChatDeltaValidationError, ChatGraphDisabledError } from '../../src/services/ChatService.js';
 import { MockProvider } from '../../src/services/MockProvider.js';
-import { getDeltasForPlan } from '../../src/services/GraphDeltaService.js';
+import { getDeltasForPlan, getDeltaEdgesForPlan } from '../../src/services/GraphDeltaService.js';
 import { isNeo4jEnabled, verifyNeo4j, closeNeo4j, runNeo4jQuery } from '../../src/services/Neo4jClient.js';
 import { ensureGraphConstraints, upsertContentNode } from '../../src/services/GraphBaseService.js';
 import { aiCritiqueService } from '../../src/services/AICritiqueService.js';
@@ -204,5 +204,64 @@ describe('chat-apply-delta run (Neo4j-backed, optional)', () => {
 
     // The merged-view refresh surfaces the new shadow node (planId = the plan).
     expect(result.mergedView.nodes.some((n) => n.nodeId === CHAR_ID && n.planId === TEST_PLAN_ID)).toBe(true);
+  });
+
+  it('rejects a valid node delta + invalid trailing edge atomically (no partial write)', async () => {
+    if (!neo4jLive) return;
+    await cleanupNeo4j();
+    await upsertContentNode({ nodeType: 'Character', nodeId: CHAR_ID, name: canonicName });
+
+    // Valid MODIFY delta for an existing canonical node…
+    const goodDelta = validDelta();
+    // …plus an edge whose target does not exist (no canonical :Content, no
+    // :ContentDelta of the same plan) — preflight must catch this before any
+    // delta is written.
+    const badEdge = GraphDeltaEdgeSchema.parse({
+      planId: TEST_PLAN_ID,
+      sourceNodeType: 'Character',
+      sourceNodeId: CHAR_ID,
+      targetNodeType: 'Scene',
+      targetNodeId: 'f0000000-aaaa-4111-8111-00000000cf0a', // never seeded
+      type: 'SET_IN',
+    });
+
+    await expect(service.applyDeltas(TEST_PLAN_ID, [goodDelta], [badEdge], ANNOTATION_ID))
+      .rejects.toThrow();
+
+    // No delta was persisted — the proposal did not partially apply.
+    expect(await getDeltasForPlan(TEST_PLAN_ID)).toHaveLength(0);
+    // The conflict was NOT marked addressed (the request failed).
+    const ann = await queryOLTP<{ status: string }>(`SELECT status FROM critique_annotations WHERE id = $1`, [ANNOTATION_ID]);
+    expect(ann.rows[0].status).toBe('open');
+  });
+
+  it('exposes related deltaEdges in the review queue (getReviewQueue)', async () => {
+    if (!neo4jLive) return;
+    await cleanupNeo4j();
+    await upsertContentNode({ nodeType: 'Character', nodeId: CHAR_ID, name: canonicName });
+
+    // A MODIFY delta plus an edge from that delta's source node.
+    const d = validDelta();
+    await service.applyDeltas(TEST_PLAN_ID, [d], [], ANNOTATION_ID);
+    const edge = GraphDeltaEdgeSchema.parse({
+      planId: TEST_PLAN_ID,
+      sourceNodeType: 'Character',
+      sourceNodeId: CHAR_ID,
+      targetNodeType: 'Character',
+      targetNodeId: CHAR_ID,
+      type: 'OWNED_BY',
+    });
+    // Write the edge directly via the service under test's own path is internal;
+    // re-apply with the edge attached (now valid target = same canonical node).
+    await cleanupNeo4j();
+    await upsertContentNode({ nodeType: 'Character', nodeId: CHAR_ID, name: canonicName });
+    await service.applyDeltas(TEST_PLAN_ID, [d], [edge], ANNOTATION_ID);
+
+    const queue = await service.getReviewQueue();
+    const item = queue.find((q) => q.kind === 'delta' && q.delta?.nodeId === CHAR_ID);
+    expect(item).toBeDefined();
+    expect(item!.deltaEdges).toBeDefined();
+    // The queue item surfaces the edge so reviewers can inspect/accept it.
+    expect(item!.deltaEdges.some((e) => e.sourceNodeId === CHAR_ID && e.type === 'OWNED_BY')).toBe(true);
   });
 });

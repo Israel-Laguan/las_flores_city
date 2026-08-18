@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback } from 'react';
-import type { ReviewQueueItem, GraphDelta, CritiqueAnnotation } from '@las-flores/shared';
+import type { ReviewQueueItem, GraphDelta, GraphDeltaEdge, CritiqueAnnotation } from '@las-flores/shared';
 import { adminFetch } from '@/lib/client-api';
 
 interface ReviewQueueResponse {
@@ -29,10 +29,10 @@ export function useReviewQueueApi() {
     if (!res.success) throw new Error(res.error || 'Failed to dismiss annotation');
   }, []);
 
-  const acceptDelta = useCallback(async (planId: string, delta: GraphDelta): Promise<{ appliedCount: number }> => {
+  const acceptDelta = useCallback(async (planId: string, delta: GraphDelta, deltaEdges: GraphDeltaEdge[] = []): Promise<{ appliedCount: number }> => {
     const res = await adminFetch<{ success: boolean; data?: { appliedCount: number }; error?: string }>(
       `/admin/story-builder/plans/${planId}/chat/apply-delta`,
-      { method: 'POST', body: JSON.stringify({ deltas: [delta], deltaEdges: [] }) },
+      { method: 'POST', body: JSON.stringify({ deltas: [delta], deltaEdges }) },
     );
     if (!res.success || !res.data) throw new Error(res.error || 'Failed to accept delta');
     return { appliedCount: res.data.appliedCount };

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { cn } from '@las-flores/ui';
 import type { ChatMessage, GraphDelta, GraphDeltaEdge } from '@las-flores/shared';
 import { useChatPanel } from './ChatPanelContext';
@@ -159,12 +159,21 @@ export default function ChatPanel() {
   const [proposal, setProposal] = useState<{ reply: string; deltas: GraphDelta[]; deltaEdges: GraphDeltaEdge[] } | null>(null);
 
   const sessionKey = context ? `${context.planId}:${context.annotation?.id ?? ''}` : null;
+  // A monotonically-increasing token that changes whenever the active context
+  // changes. Unlike `sessionKey` (which lives in the render closure), this ref
+  // value is captured at async-request start and compared against the *current*
+  // token before any state update — so a late reply/error/proposal from a
+  // previous session can never mutate the new one.
+  const sessionTokenRef = useRef(0);
   // Fresh session per context — history is ephemeral and starts empty.
   useEffect(() => {
+    sessionTokenRef.current += 1;
     setMessages([]);
     setInput('');
     setProposal(null);
     setError(null);
+    setSending(false);
+    setApplying(false);
   }, [sessionKey]);
 
   const contextHeader = useMemo(() => {
@@ -185,12 +194,12 @@ export default function ChatPanel() {
     setInput('');
     setSending(true);
     setError(null);
-    // Guard stale responses: capture the active context key at request start and
-    // only apply the reply if the context hasn't switched mid-request.
-    const requestContextKey = sessionKey;
+    // Capture the current session token at request start; a context switch bumps
+    // the token so any late reply/error/proposal from this request is discarded.
+    const requestToken = sessionTokenRef.current;
     try {
       const r = await chat(planId, next, mode, annotationId);
-      if (requestContextKey !== sessionKey) {
+      if (requestToken !== sessionTokenRef.current) {
         // Context switched while in-flight — discard this stale response.
         return;
       }
@@ -200,36 +209,45 @@ export default function ChatPanel() {
       ]);
       setProposal(mode === 'propose' ? r : null);
     } catch (err: any) {
-      if (requestContextKey !== sessionKey) {
+      if (requestToken !== sessionTokenRef.current) {
         // Context switched — don't surface stale errors into the new session.
         return;
       }
       setError(err?.message || String(err));
     } finally {
-      setSending(false);
+      // Only clear sending if this request is still the active session; a stale
+      // finally block must never clear the newer session's loading state.
+      if (requestToken === sessionTokenRef.current) {
+        setSending(false);
+      }
     }
   }
 
   async function handleApply() {
     if (!planId || !proposal || applying) return;
+    const requestToken = sessionTokenRef.current;
     setApplying(true);
     setError(null);
     try {
       const res = await applyDelta(planId, proposal.deltas, proposal.deltaEdges, annotationId);
+      if (requestToken !== sessionTokenRef.current) return;
       setMessages(prev => [...prev, { role: 'assistant', content: `Applied ${res.appliedCount} delta(s) — the merged revision was refreshed.` }]);
       setProposal(null);
     } catch (err: any) {
+      if (requestToken !== sessionTokenRef.current) return;
       setError(err?.message || String(err));
     } finally {
-      setApplying(false);
+      if (requestToken === sessionTokenRef.current) setApplying(false);
     }
   }
 
   async function handleDiscard(delta: GraphDelta) {
     if (!planId) return;
+    const requestToken = sessionTokenRef.current;
     setError(null);
     try {
       await discardDelta(planId, delta.nodeType, delta.nodeId);
+      if (requestToken !== sessionTokenRef.current) return;
       setProposal(prev => {
         if (!prev) return prev;
         const deltas = prev.deltas.filter((d) => d !== delta);
@@ -243,6 +261,7 @@ export default function ChatPanel() {
         return { ...prev, deltas, deltaEdges: newDeltaEdges };
       });
     } catch (err: any) {
+      if (requestToken !== sessionTokenRef.current) return;
       setError(err?.message || String(err));
     }
   }

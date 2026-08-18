@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { cn } from '@las-flores/ui';
-import type { ReviewQueueItem, GraphDelta, CritiqueAnnotation } from '@las-flores/shared';
+import type { ReviewQueueItem, GraphDelta, GraphDeltaEdge, CritiqueAnnotation } from '@las-flores/shared';
 import { useReviewQueueApi } from './useReviewQueueApi';
 import { useChatPanel } from '@/components/ChatPanelContext';
 import styles from './review-queue.module.css';
@@ -100,7 +100,7 @@ export default function ReviewQueue() {
                 item={item}
                 busy={busy}
                 allBusy={busyKey !== null}
-                onAccept={(planId, d) => run(key, async () => { await acceptDelta(planId, d); removeItem(key); })}
+                onAccept={(planId, d, edges) => run(key, async () => { await acceptDelta(planId, d, edges); removeItem(key); })}
                 onKeep={(planId, d) => run(key, async () => { await keepDelta(planId, d.nodeType, d.nodeId); removeItem(key); })}
                 onMerge={(planId) => openForPlan(planId)}
               />
@@ -126,17 +126,18 @@ function DeltaRow({
   item: ReviewQueueItem;
   busy: boolean;
   allBusy: boolean;
-  onAccept: (planId: string, d: GraphDelta) => void;
+  onAccept: (planId: string, d: GraphDelta, edges: GraphDeltaEdge[]) => void;
   onKeep: (planId: string, d: GraphDelta) => void;
   onMerge: (planId: string) => void;
 }) {
   const d = item.delta!;
+  const edges = item.deltaEdges ?? [];
   return (
     <li className={styles.row}>
       <div className={styles.rowMain}>
         <span className={styles.preview}><code>{deltaSummary(d)}</code></span>
         <span className={styles.plan}>plan {shortId(item.planId)}</span>
-        {item.planDescription && <span className={styles.planDesc}>{item.planDescription}</span>}
+        {item.planDescription && <span className={styles.planDesc}>{item.planDescription}</span>
       </div>
       {Object.keys(d.fields ?? {}).length > 0 && (
         <ul className={styles.fields}>
@@ -145,8 +146,17 @@ function DeltaRow({
           ))}
         </ul>
       )}
+      {edges.length > 0 && (
+        <ul className={styles.fields}>
+          {edges.map((e, i) => (
+            <li key={`edge:${i}`} className={styles.evidence}>
+              <span className={styles.fieldKey}>{e.type}:</span> {shortId(e.sourceNodeId)} → {shortId(e.targetNodeId)}
+            </li>
+          ))}
+        </ul>
+      )}
       <div className={styles.actions}>
-        <button className={cn('btn', 'btn--primary', 'btn--small')} disabled={allBusy} onClick={() => onAccept(item.planId, d)}>
+        <button className={cn('btn', 'btn--primary', 'btn--small')} disabled={allBusy} onClick={() => onAccept(item.planId, d, edges)}>
           {busy ? '…' : 'Accept new'}
         </button>
         <button className={cn('btn', 'btn--secondary', 'btn--small')} disabled={allBusy} onClick={() => onKeep(item.planId, d)}>

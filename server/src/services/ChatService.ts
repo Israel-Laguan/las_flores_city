@@ -23,7 +23,7 @@ import { GraphDeltaSchema, GraphDeltaEdgeSchema, type ConflictChatContext, type 
 import { queryOLTP } from '@las-flores/infra';
 import { createLLMProvider } from './LLMService.js';
 import { buildMergedRevision } from './GraphMerger.js';
-import { applyDelta, applyDeltaEdge, removeDelta, getAllDeltas, preflightDeltas } from './GraphDeltaService.js';
+import { applyDelta, applyDeltaEdge, removeDelta, getAllDeltas, getDeltaEdgesForPlan, preflightDeltas, preflightDeltaEdges } from './GraphDeltaService.js';
 import { aiCritiqueService, type AICritiqueService } from './AICritiqueService.js';
 import { postgresNeighborhoodProvider, neo4jNeighborhoodProvider, type NeighborhoodProvider } from './NeighborhoodProvider.js';
 import { isNeo4jEnabled } from './Neo4jClient.js';
@@ -202,9 +202,11 @@ export class ChatService {
       throw new ChatGraphDisabledError('Neo4j authoring graph is disabled — cannot apply deltas. Enable NEO4J_ENABLED first.');
     }
 
-    // ④ preflight every MODIFY/DELETE base-node guard before the first write so
-    //    a later guard failure cannot leave a partially-applied proposal.
+    // ④ preflight every MODIFY/DELETE base-node guard AND every delta-edge
+    //    endpoint before the first write, so a later guard/edge failure cannot
+    //    leave a partially-applied proposal in Neo4j.
     await preflightDeltas(deltas);
+    await preflightDeltaEdges(deltaEdges);
     // ⑤ write the batch.
     for (const delta of deltas) {
       await applyDelta(delta);
@@ -260,18 +262,34 @@ export class ChatService {
     }
     const deltas = allDeltas.filter((d) => existingPlanIds.has(d.planId));
 
+    // Group each plan's delta edges by their source delta key so the queue item
+    // can expose the relationships authored alongside a proposed delta.
+    const edgesBySource = new Map<string, GraphDeltaEdge[]>();
+    if (isNeo4jEnabled()) {
+      for (const planId of existingPlanIds) {
+        for (const e of await getDeltaEdgesForPlan(planId)) {
+          const key = `${e.sourceNodeType}:${e.sourceNodeId}`;
+          const list = edgesBySource.get(key) ?? [];
+          list.push(e);
+          edgesBySource.set(key, list);
+        }
+      }
+    }
+
     const items: ReviewQueueItem[] = [
       ...annotations.map((a): ReviewQueueItem => ({
         kind: a.type, // 'conflict' | 'suggestion'
         planId: a.planId,
         planDescription: descById.get(a.planId),
         annotation: a,
+        deltaEdges: [],
       })),
       ...deltas.map((d): ReviewQueueItem => ({
         kind: 'delta',
         planId: d.planId,
         planDescription: descById.get(d.planId),
         delta: d,
+        deltaEdges: edgesBySource.get(`${d.nodeType}:${d.nodeId}`) ?? [],
       })),
     ];
 
