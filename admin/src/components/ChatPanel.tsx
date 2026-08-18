@@ -118,13 +118,15 @@ function Composer({
 }
 
 /** Chat transcript + empty-state hint. */
-function MessageList({ messages, hasConflict }: { messages: ChatMessage[]; hasConflict: boolean }) {
+function MessageList({ messages, annotationType }: { messages: ChatMessage[]; annotationType: 'conflict' | 'suggestion' | null }) {
   return (
     <div className={styles.messages}>
       {messages.length === 0 && (
         <div className={styles.empty}>
-          {hasConflict
+          {annotationType === 'conflict'
             ? 'Ask about this conflict, or Propose concrete canon changes to resolve it.'
+            : annotationType === 'suggestion'
+            ? 'Ask about this suggestion, or Propose concrete canon changes to implement it.'
             : 'Ask about this plan, or switch to Propose to request concrete canon deltas.'}
         </div>
       )}
@@ -183,14 +185,25 @@ export default function ChatPanel() {
     setInput('');
     setSending(true);
     setError(null);
+    // Guard stale responses: capture the active context key at request start and
+    // only apply the reply if the context hasn't switched mid-request.
+    const requestContextKey = sessionKey;
     try {
       const r = await chat(planId, next, mode, annotationId);
+      if (requestContextKey !== sessionKey) {
+        // Context switched while in-flight — discard this stale response.
+        return;
+      }
       setMessages(prev => [
         ...prev,
         { role: 'assistant', content: r.reply || (mode === 'propose' ? '(Proposal ready — review the deltas below.)' : '') },
       ]);
       setProposal(mode === 'propose' ? r : null);
     } catch (err: any) {
+      if (requestContextKey !== sessionKey) {
+        // Context switched — don't surface stale errors into the new session.
+        return;
+      }
       setError(err?.message || String(err));
     } finally {
       setSending(false);
@@ -220,7 +233,14 @@ export default function ChatPanel() {
       setProposal(prev => {
         if (!prev) return prev;
         const deltas = prev.deltas.filter((d) => d !== delta);
-        return deltas.length === 0 && prev.deltaEdges.length === 0 ? null : { ...prev, deltas };
+        // If this was the last delta, also remove connected edges so Apply doesn't send deltas: []
+        const newDeltaEdges = prev.deltaEdges.filter((e) => {
+          // Keep edges that don't reference the discarded delta's nodeId
+          return !(e.sourceNodeType === delta.nodeType && e.sourceNodeId === delta.nodeId) &&
+                 !(e.targetNodeType === delta.nodeType && e.targetNodeId === delta.nodeId);
+        });
+        if (deltas.length === 0 && newDeltaEdges.length === 0) return null;
+        return { ...prev, deltas, deltaEdges: newDeltaEdges };
       });
     } catch (err: any) {
       setError(err?.message || String(err));
@@ -228,7 +248,7 @@ export default function ChatPanel() {
   }
 
   return (
-    <div className={styles.panel} role="dialog" aria-label="Authoring chat assistant" aria-modal="true">
+    <div className={styles.panel} role="dialog" aria-label="Authoring chat assistant">
       <div className={styles.header}>
         <span className={styles.title}>Chat Assistant</span>
         <button className={cn('btn', 'btn--ghost', styles.closeBtn)} onClick={close} aria-label="Close chat" title="Close">✕</button>
@@ -244,7 +264,7 @@ export default function ChatPanel() {
         </div>
       )}
 
-      <MessageList messages={messages} hasConflict={!!context?.annotation} />
+      <MessageList messages={messages} annotationType={context?.annotation?.type ?? null} />
 
       {proposal && (
         <ProposalBox proposal={proposal} applying={applying} onApply={handleApply} onDiscard={handleDiscard} />

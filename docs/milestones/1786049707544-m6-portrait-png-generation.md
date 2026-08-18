@@ -33,7 +33,8 @@ The M3 text criteria that were the original blocker are now satisfied in-repo.
 
 - [x] Part A.1 Expression Variants coverage = 0 missing.
 - [x] Part A.2 Deprecated `docs/lore/figures/` source paths = 0.
-- [x] Part B: every character folder has `assets/` (195/195) + PNGs present (984).
+- [x] Part B (artifact presence only): every character folder has `assets/` (195/195) + PNGs present (984/985 on disk).
+- [ ] Part B (deferred): portrait generation quality and expression-variant fidelity verified.
 - [x] `node scripts/content-audit.mjs` passes.
 
 ## Verification (re-run to confirm)

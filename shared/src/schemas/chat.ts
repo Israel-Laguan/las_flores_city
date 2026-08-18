@@ -21,7 +21,7 @@ import { CritiqueAnnotationSchema } from './critique-annotation.js';
 /** One message in the ephemeral multi-turn chat history. */
 export const ChatMessageSchema = z.object({
   role: z.enum(['user', 'assistant']),
-  content: z.string().min(1),
+  content: z.string().min(1).max(8000),
 });
 export type ChatMessage = z.infer<typeof ChatMessageSchema>;
 

@@ -1,6 +1,6 @@
 # M28 — Graph Merge + Graph→ContentPlan Exporter (Write Path)
 
-> **Status:** Planned · **Branch:** `milestone/28-graph-write` · **PR size target:** ~25 files
+> **Status:** Implemented · **Branch:** `milestone/28-graph-write` · **PR size target:** ~25 files
 > **Phase:** 7 · **Source:** `ARCHITECTURE_SEPARATION_ANALYSIS.md` §8–§9
 
 ## Goal

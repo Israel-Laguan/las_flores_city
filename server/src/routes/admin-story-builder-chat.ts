@@ -55,7 +55,7 @@ adminStoryBuilderChatRouter.post('/plans/:id/chat', async (req: AuthRequest, res
     // A truncated window must still start on a user turn (several chat APIs
     // reject a history that opens with an assistant message).
     const firstUser = capped.findIndex((m) => m.role === 'user');
-    const history = firstUser > 0 ? capped.slice(firstUser) : capped;
+    const history = firstUser >= 0 ? capped.slice(firstUser) : [];
     if (history.length === 0) {
       res.status(400).json({ success: false, error: '"messages" must contain at least one user message', timestamp: new Date().toISOString() });
       return;

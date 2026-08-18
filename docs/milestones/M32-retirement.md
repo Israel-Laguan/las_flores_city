@@ -50,7 +50,7 @@ For every candidate, classify **Retire / Refactor-Reuse / Keep**:
      on the read path, falling back to them only when `content_url` is
      NULL/empty or the CDN fetch fails. Dropping these columns here is safe once
      every row carries a reachable content_url (M32 verification). -->
-| `dialogue_chunks.nodes` / `leaves`, `dialogue_trees.nodes` (JSONB) | Refactor-Reuse | columns dropped after M23 relocates content to CDN; disk keeps compiler |
+| `dialogue_chunks.nodes` / `leaves`, `dialogue_trees.nodes` (JSONB) | Refactor-Reuse | columns dropped after M23 relocates content to CDN; disk keeps compiler. **Drop conditional on explicit row-level coverage check: every `content_url` must resolve to a reachable CDN blob before dropping JSONB fields.** |
 | `plan_json` column | Retire | after M28 exporter is sole authoring path |
 | Orphan tests across the above | Retire / Port | 118 test files; port retained-domain tests, delete tests for retired services |
 

@@ -55,21 +55,17 @@ and a migration that backfills or verifies every row has a reachable `content_ur
 > Tracked in `M32-retirement.md:45`, but the concrete fix is a **precondition** here, not
 > just a ledger line.
 
-`DialogueResolver.loadBaseChunk` / `loadBaseChunkByKey` (`server/src/services/DialogueResolver.ts`)
-currently fetch **only `nodes`** from the CDN blob and **always take `leaves` from the DB
-`leaves` column** (`...row, nodes: cdnNodes ?? row.nodes`). The published chunk blob is written
-with `{ nodes, leaves }` (`compiler.ts`), so the leaves *are* in MinIO — but the resolver ignores
-them there. As long as the JSONB columns exist (Phase 1) this is harmless, because the DB column
-supplies `leaves`. **If M32 drops the JSONB columns before this is fixed, `leaves` silently
-becomes empty even though the CDN blob contains it**, breaking chunk leaf references on the hot
-path.
+`DialogueResolver.loadBaseChunk`/`loadBaseChunkByKey` (`server/src/services/DialogueResolver.ts`)
 
-Precondition for the M32 column drop:
-- Update `fetchNodesFromContentUrl` (or a sibling `fetchChunkFromContentUrl`) to return the full
-  `{ nodes, leaves }` shape from the CDN; have `loadBaseChunk`/`loadBaseChunkByKey` hydrate both
-  fields from the blob instead of the DB column.
-- Add a regression test asserting `resolved.chunk.leaves` is populated from `content_url` when
-  the DB `leaves` column is NULL (mirrors the existing `content_url`-NULL fallback test).
+already hydrate **both** `nodes` and `leaves` from the CDN blob via `fetchChunkFromContentUrl`
+(`server/src/services/contentFetch.ts`), which returns the full `{ nodes, leaves }` shape and
+falls back to the in-DB JSONB per field (`nodes: cdn?.nodes ?? row.nodes, leaves: cdn?.leaves ??
+row.leaves`). A regression test (`server/tests/integration/dialogue-cdn.integration.test.ts`) asserts
+`resolved.chunk.leaves` is populated from `content_url` when the DB `leaves` column is empty, so the M32
+column-drop precondition described here is already met.
+
+**Phase 2 column-drop caveat (verified):** the resolver already hydrates `leaves` from the CDN,
+and the regression test confirms the `content_url`-NULL fallback works.
 
 ## Risks & verification
 

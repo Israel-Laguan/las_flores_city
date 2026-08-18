@@ -24,7 +24,7 @@ game event loop or its DB pool.
 
 | Area | Files |
 |---|---|
-| New entrypoint | `server-intake/src/index.ts` (+ shared `app.ts` builder) |
+| New entrypoint | `server/src/intake.ts` (+ shared `app.ts` builder; `server/src/index.ts` slimmed to game app) |
 | Split | `server/src/index.ts` → `game` app + `intake` app |
 | Infra | `@las-flores/infra` package (from M19) |
 | Compose | `docker-compose.yml`, `docker-compose.prod.yml` |
@@ -35,7 +35,7 @@ game event loop or its DB pool.
 
 - **Risk:** Medium-High. Boot split, worker startup, and the firewall around the
   `content_migration` advisory lock (only the intake-worker should migrate).
-- **Verify:** `docker compose build server && docker compose up -d`; in-container health
+- **Verify:** `docker compose build server intake-worker && docker compose up -d server intake-worker`; in-container health
   on both services; run a plan generation end-to-end and confirm it completes on the worker
   while the game stays responsive.
 - **Accept:** game server returns sub-100ms while a StoryBuilder job runs concurrently.

@@ -28,7 +28,7 @@ composition, not a new provider method.
 | Area | Files |
 |---|---|
 | New service | `server/src/services/AICritiqueService.ts` |
-| Route | `server/src/routes/admin-story-builder-verification.ts` (analyze endpoint) |
+| Route | `server/src/routes/admin-story-builder-critique.ts` (analyze endpoint) |
 | Neo4j client | `server/src/services/Neo4jClient.ts` (reused by M27+) |
 | LLM | `LLMPrompts.ts`, `LiteLLMProvider.ts` (structured-output parse) |
 | Admin UI | analyze panel + conflict overlays (+ tests) |

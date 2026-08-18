@@ -41,7 +41,7 @@ treated as "no YAML" (`:91,104,121`).
 5. Change 1 (expand `FILL_TARGETS`) — **DONE**: `ContentFillService.ts:6-27` matches the plan
    byte-for-byte (faction/age/gender/occupation/mannerisms + `metadata.location` + location
    `conclusion`).
-6. Change 2 — **MISSING**: `buildFillFieldsPrompt` in `LLMPrompts.ts:305-353` has **no per-type
+6. Change 2 — **MISSING**: `buildFillFieldsPrompt` in `llmPromptsExtra.ts` has **no per-type
    instruction map** (no `character:` key, no faction allow-list). Grep `Write a compelling
    character description` → 0 hits. So the 17 newly-auto-filled character fields are prompted with
    only generic rules; `metadata.faction` fills are unconstrained.
@@ -78,7 +78,7 @@ retained by design.
 
 ### 4. Finish `FILL_TARGETS` guidance
 - Add a `character:` branch to the per-type prompt in `buildFillFieldsPrompt`
-  (`LLMPrompts.ts:305-353`) enumerating the faction allow-list and field intent, mirroring the
+  (`llmPromptsExtra.ts`) enumerating the faction allow-list and field intent, mirroring the
   plan's proposed block.
 
 ### 5. Lore nits
@@ -99,5 +99,5 @@ retained by design.
 npm run content:audit     # after tightening, expect missions/story_beats counted
 ls content/missions/great_lithium_leak/great_lithium_leak.md
 ls content/story_beats/beat_sofia_intro/   # expect .md + .prompt.md
-grep -n "Write a compelling character" server/src/services/LLMPrompts.ts
+grep -n "Write a compelling character" server/src/services/llmPromptsExtra.ts
 ```

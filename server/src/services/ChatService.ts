@@ -23,7 +23,7 @@ import { GraphDeltaSchema, GraphDeltaEdgeSchema, type ConflictChatContext, type 
 import { queryOLTP } from '@las-flores/infra';
 import { createLLMProvider } from './LLMService.js';
 import { buildMergedRevision } from './GraphMerger.js';
-import { applyDelta, applyDeltaEdge, removeDelta, getAllDeltas } from './GraphDeltaService.js';
+import { applyDelta, applyDeltaEdge, removeDelta, getAllDeltas, preflightDeltas } from './GraphDeltaService.js';
 import { aiCritiqueService, type AICritiqueService } from './AICritiqueService.js';
 import { postgresNeighborhoodProvider, neo4jNeighborhoodProvider, type NeighborhoodProvider } from './NeighborhoodProvider.js';
 import { isNeo4jEnabled } from './Neo4jClient.js';
@@ -180,6 +180,17 @@ export class ChatService {
       throw new ChatDeltaValidationError(`Invalid delta payload: ${issues.join('; ')}`);
     }
 
+    // ① validate annotation scope BEFORE any write loops
+    if (annotationId) {
+      const annotation = await this.critique.getAnnotation(annotationId);
+      if (!annotation) {
+        throw new ChatAnnotationNotFoundError(`Annotation not found: ${annotationId}`);
+      }
+      if (annotation.planId !== planId) {
+        throw new ChatAnnotationNotFoundError(`Annotation ${annotationId} does not belong to plan ${planId}`);
+      }
+    }
+
     // Resolve the target annotation before any write so a bad annotationId
     // cannot leave the graph mutated while the route returns 404.
     if (annotationId) {
@@ -191,8 +202,10 @@ export class ChatService {
       throw new ChatGraphDisabledError('Neo4j authoring graph is disabled — cannot apply deltas. Enable NEO4J_ENABLED first.');
     }
 
-    // ④ write sequentially; base-node guards inside applyDelta/applyDeltaEdge
-    //    throw before any corrected-write sticks.
+    // ④ preflight every MODIFY/DELETE base-node guard before the first write so
+    //    a later guard failure cannot leave a partially-applied proposal.
+    await preflightDeltas(deltas);
+    // ⑤ write the batch.
     for (const delta of deltas) {
       await applyDelta(delta);
     }
@@ -200,13 +213,13 @@ export class ChatService {
       await applyDeltaEdge(edge);
     }
 
-    // ⑤ mark the conflict that started the chat 'addressed' (durable Postgres
+    // ⑥ mark the conflict that started the chat 'addressed' (durable Postgres
     //    + graph sync). The annotation scope is already validated above.
     if (annotationId) {
       await this.critique.setAnnotationStatus(annotationId, 'addressed');
     }
 
-    // ⑥ return the merged-view refresh so the UI reflects the new shadow node.
+    // ⑦ return the merged-view refresh so the UI reflects the new shadow node.
     return {
       appliedCount: deltas.length,
       mergedView: await buildMergedRevision(planId),
@@ -220,16 +233,20 @@ export class ChatService {
 
   /** Global `needs_review` queue: open annotations ∪ all deltas. */
   async getReviewQueue(): Promise<ReviewQueueItem[]> {
-    const [annotations, deltas] = await Promise.all([
+    const [annotations, allDeltas] = await Promise.all([
       this.critique.getAllOpenAnnotations(),
       getAllDeltas(),
     ]);
 
     // Resolve plan descriptions for every plan referenced by the queue rows.
+    // Also exclude orphaned deltas whose plan no longer exists (e.g. Neo4j
+    // cleanup failed after a plan deletion), so a deleted plan is never
+    // presented as an actionable review item.
     const planIds = Array.from(new Set([
       ...annotations.map((a) => a.planId),
-      ...deltas.map((d) => d.planId),
+      ...allDeltas.map((d) => d.planId),
     ]));
+    const existingPlanIds = new Set<string>();
     const descById = new Map<string, string>();
     if (planIds.length > 0) {
       const result = await queryOLTP<{ id: string; description: string | null }>(
@@ -237,9 +254,11 @@ export class ChatService {
         [planIds],
       );
       for (const row of result.rows) {
+        existingPlanIds.add(row.id);
         if (row.description) descById.set(row.id, row.description);
       }
     }
+    const deltas = allDeltas.filter((d) => existingPlanIds.has(d.planId));
 
     const items: ReviewQueueItem[] = [
       ...annotations.map((a): ReviewQueueItem => ({

@@ -29,7 +29,7 @@ function capStr(s: string | undefined, max = SCALAR_CAP): string | undefined {
 function serializeConflictForChat(conflict?: ConflictChatContext): string {
   if (!conflict) return '(no conflict in context — answer in terms of the plan + canon)';
   const evidence = conflict.evidence
-    .map((e) => `- [${e.nodeType}${e.slug ? ` ${e.slug}` : ''}${e.field ? `:${e.field}` : ''}] ${capStr(e.excerpt, EXCERPT_CAP)}`)
+    .map((e) => `- [${e.nodeType} ${e.nodeId}${e.slug ? ` ${e.slug}` : ''}${e.field ? `:${e.field}` : ''}] ${capStr(e.excerpt, EXCERPT_CAP)}`)
     .join('\n') || '(no evidence excerpts)';
   const related = conflict.relatedEntities
     .map((r) => `${r.entityType}(${capStr(r.slug, REL_CAP)})`)
@@ -51,7 +51,7 @@ const DELTA_RULES = `
 - \`op\` MUST be one of: ADD, MODIFY, DELETE.
 - MODIFY and DELETE: \`nodeId\` MUST be the exact UUID (\`id\`) of an EXISTING canon entity — copy it from the context/evidence; never invent one.
 - ADD: \`nodeId\` is a NEW stable lowercase_slug (letters, digits, underscores) for the entity you are adding.
-- MODIFY carries the FULL proposed post-approve field set of the entity (a shadow copy of its current fields with your changes, e.g. name, description, district, role, faction, title...).
+- MODIFY carries the FULL proposed post-approve field set of the entity (a shadow copy of its current fields with your changes, e.g. name, description, district, role, faction, title...). To avoid erasing canon fields, the model should hydrate MODIFY.fields as a patch against the current canon before applying it, or the route should provide complete editable fields to the prompt.
 - ADD carries the new entity's initial field set; DELETE carries no meaningful fields (use \`fields: {}\`).
 - Only reference entity ids/slugs that appear in the provided context, proposed plan, or conflict evidence — never reference an id/slug that is not present.
 - \`deltaEdges\`: optional relationships to materialize. \`type\` is an UPPER_SNAKE edge name (\`OWNED_BY\`, \`SET_IN\`, \`SERVES\`, \`OVERLAYS\`, \`IN_DISTRICT\`). Endpoint ids must reference ADD deltas' slugs or existing entity UUIDs. Prefer empty \`deltaEdges: []\` when unsure.

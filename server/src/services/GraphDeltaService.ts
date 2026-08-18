@@ -124,6 +124,36 @@ export async function applyDelta(delta: GraphDelta): Promise<void> {
     { key: `${nodeType}:${nNodeId}:${nPlanId}`, nodeType, nodeId: nNodeId, planId: nPlanId, op, name, fieldsJson: JSON.stringify(fields), createdAt, id },
   );
 }
+/**
+ * Preflight-guard a whole delta batch before any write: every MODIFY/DELETE
+ * delta must reference an existing canonical `:Content` node (planId IS null).
+ * Throws before any delta/edge is written so `applyDeltas` can never leave a
+ * partially-applied proposal in Neo4j when a later guard would fail.
+ */
+export async function preflightDeltas(deltas: GraphDelta[]): Promise<void> {
+  if (!isNeo4jEnabled()) return;
+  for (const delta of deltas) {
+    const { nodeType, nodeId, op } = delta;
+    if (op === 'ADD') continue;
+    const nNodeId = normalizeKeyComponent(nodeId);
+    const base = await runNeo4jQuery<{ anyExists: boolean; canonical: boolean }>(
+      `MATCH (c:Content { nodeType: $nodeType, nodeId: $nodeId })
+       WHERE c.planId IS null
+       RETURN
+         count(c) > 0 AS anyExists,
+         count(CASE WHEN c.isEvidence IS NULL OR c.isEvidence = false THEN 1 END) > 0 AS canonical`,
+      { nodeType, nodeId: nNodeId },
+    );
+    const anyExists = base[0]?.anyExists ?? false;
+    const canonical = base[0]?.canonical ?? false;
+    if (!anyExists) {
+      throw new Error(`${op} delta references non-existent base :Content node [${nodeType}:${nodeId}]`);
+    }
+    if (!canonical) {
+      throw new Error(`${op} delta targets a base :Content node that exists only as evidence (no canonical node) [${nodeType}:${nodeId}]`);
+    }
+  }
+}
 
 /**
  * Run a Cypher read inside an existing transaction when one is supplied, else a
@@ -477,14 +507,6 @@ function safeToGraphDelta(nodeLike: unknown): GraphDelta | null {
   }
 }
 
-/** Coerce a raw delta-edge row into a validated GraphDeltaEdge, or null. */
-function safeToGraphDeltaEdge(row: Record<string, unknown>): GraphDeltaEdge | null {
-  try {
-    return toGraphDeltaEdge(row);
-  } catch {
-    return null;
-  }
-}
 
 /**
  * Every proposed delta across ALL plans (the global `needs_review` queue source).
@@ -501,22 +523,3 @@ export async function getAllDeltas(): Promise<GraphDelta[]> {
     .filter((d): d is GraphDelta => d !== null);
 }
 
-/**
- * Every delta edge (relationship carrying a planId) across ALL plans — the edge
- * half of the queue source. Empty when Neo4j is disabled.
- */
-export async function getAllDeltaEdges(): Promise<GraphDeltaEdge[]> {
-  if (!isNeo4jEnabled()) return [];
-  const rows = await runNeo4jQuery<Record<string, unknown>>(
-    `MATCH (s:ContentDelta)-[r]->(t)
-     WHERE r.planId IS NOT NULL
-     RETURN r.planId AS planId,
-            s.nodeType AS sourceNodeType, s.nodeId AS sourceNodeId,
-            t.nodeType AS targetNodeType, t.nodeId AS targetNodeId,
-            type(r) AS type
-     ORDER BY r.planId`,
-  );
-  return rows
-    .map((row) => safeToGraphDeltaEdge(row))
-    .filter((e): e is GraphDeltaEdge => e !== null);
-}

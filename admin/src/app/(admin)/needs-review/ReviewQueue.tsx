@@ -67,15 +67,15 @@ export default function ReviewQueue() {
     }
   }
 
-  function removeItem(key: string) {
-    setItems(prev => prev.filter((item, i) => `${item.planId}:${i}` !== key));
+    function removeItem(key: string) {
+    setItems(prev => prev.filter((item) => (item.delta?.id || item.annotation?.id || item.planId) !== key));
   }
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.header}>
         <h1 className={styles.heading}>Needs Review</h1>
-        <button className={cn('btn', 'btn--secondary', 'btn--small')} onClick={load} disabled={loading}>
+        <button className={cn('btn', 'btn--secondary', 'btn--small')} onClick={load} disabled={loading || busyKey !== null}>
           {loading ? 'Refreshing…' : 'Refresh'}
         </button>
       </div>
@@ -91,8 +91,8 @@ export default function ReviewQueue() {
         <div className={styles.empty}>🎉 Nothing needs review right now.</div>
       ) : (
         <ul className={styles.list}>
-          {items.map((item, i) => {
-            const key = `${item.planId}:${i}`;
+          {items.map((item) => {
+            const key = item.delta?.id || item.annotation?.id || item.planId;
             const busy = busyKey === key;
             return item.kind === 'delta' && item.delta ? (
               <DeltaRow

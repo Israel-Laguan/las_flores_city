@@ -46,9 +46,13 @@ to capture the *intent* (scoped entry) through the *mature* pipeline instead of 
      dead character/scene/dialogue selections (never emitted into YAML); client-side UUID/slug/escaping
      duplicating the server pipeline; no persisted plan → no review/refine/verify loop.
 
-4. **Entity coverage gap.** The general intake is free-form; there is no per-entity scaffolded entry.
-   The per-entity list/detail admin views (M31) let you *browse/edit existing* content, but authoring new
-   content routes through the free-form story-builder (or manual YAML). A scoped wizard closes that gap.
+4. **Templates already exist for entity entry.** `PlanTemplates.ts` already ships `add-mystery`,
+   `add-shopkeeper`, `add-location`, `add-gig`, `add-dialogue-scene`, `add-vault-collection`, and
+   `add-mission-from-scene`, all surfaced in the story-builder template picker via
+   `GET /admin/story-builder/templates`. So the "per-entity scaffolded entry" is largely covered by templates,
+   not a genuine gap. What's genuinely missing is **dedicated `mission` and `location` templates** and any
+   per-entity scaffolded *UI* beyond the free-form template picker (e.g. a field-driven form that feeds the
+   same pipeline). This milestone should be scoped to that delta, not re-do templates that already exist.
 
 ## Scope decision (exploration)
 

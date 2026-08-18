@@ -37,7 +37,7 @@ finish (NIM generation, asset publishing, verifier cleanup).
 
 - **Expressions:** vulnerable, happy, afraid, angry, tender, sad, determined,
   contemplative, shocked.
-- **Source prompts:** `content/characters/wen_zao/wen_zhao.prompt.md`
+- **Source prompts:** `content/characters/wen_zhao/wen_zhao.prompt.md`
   `## Expression Variants`.
 - **Generation:** NVIDIA NIM (`generate-drafts-unified.mjs` or direct NIM POST).
 - **Publish:** `SLUG_ONLY=wen_zhao FORCE=1 node server/scripts/publish-all-portraits.ts`
@@ -87,6 +87,5 @@ finish (NIM generation, asset publishing, verifier cleanup).
 
 ## Related
 
-- M34: `1786292762037-m34-story-builder-test-coverage.md` (test coverage)
 - M36: `1786292762037-m36-location-district-prompts.md` (depends on prompt-length work)
 - M37: `1786292762037-m37-prompt-variant-tooling.md` (depends on prompt-length work)

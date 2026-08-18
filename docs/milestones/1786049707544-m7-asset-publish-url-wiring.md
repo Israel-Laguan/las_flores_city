@@ -2,7 +2,7 @@
 
 **Milestone file:** `1786049707544-m7-asset-publish-url-wiring.md`
 **Depends on:** M6 (assets exist).
-**Status:** ⚠️ PARTIAL — YAML URL wiring MET; MinIO resolution unverifiable in this env (infra down).
+**Status:** ⚠️ PARTIAL — YAML URL wiring MET; MinIO resolution blocked on publishing staged content (reclassified 2026-08-10, see Remaining gaps).
 
 ---
 
@@ -14,7 +14,7 @@ The URL-wiring acceptance criteria are satisfied in-repo:
 - `grep -rl 'background_urls' content/scenes --include='*.yaml' | wc -l` → **20** (all scene YAMLs carry `background_urls`). ✅
 - No deprecated `docs/lore/figures/` references introduced. ✅
 
-`node scripts/asset-pipeline/scripts/verify-assets.mjs` reports **246 `Error: error`** rows, but this is an **infrastructure failure**: MinIO is unreachable from this host (`connection refused` on `:9000`). The script's "Errors" are TCP/connection failures, not missing URLs — `Present: 0 / Missing: 0` means the resolver could not reach MinIO to judge presence. Per `AGENTS.md`, MinIO reachability must be confirmed with the Podman/Docker stack up before `verify-assets.mjs` numbers can be trusted.
+`node scripts/asset-pipeline/scripts/verify-assets.mjs` reports **246 `Error: error`** rows. Initially classified as infrastructure failure (MinIO unreachable — `connection refused` on `:9000`), this was **reclassified 2026-08-10** (G7.1): the resolver reaches MinIO but the **real gap is publishing 20 staged scene backgrounds to MinIO + cleaning 11 legacy junk URLs from scene YAML `background_urls`**, not infra. Once those are published (tracked in M40 G-M40-3), `verify-assets.mjs` should report `Missing: 0` for backgrounds.
 
 ## Remaining gaps (tracked in M40 backlog)
 

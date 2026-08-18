@@ -243,7 +243,7 @@ async function callLLMMessages(
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     // Escalate the per-attempt timeout so a slow model isn't abandoned early.
-    let currentTimeoutMs = timeoutMs * (attempt + 1);
+    let currentTimeoutMs = timeoutMs * Math.pow(2, attempt);
     if (currentTimeoutMs > maxTimeoutMs) currentTimeoutMs = maxTimeoutMs;
     try {
       if (attempt > 0) {
@@ -291,14 +291,14 @@ async function callLLMMessages(
       // clear non-retryable error instead of corrupting the output.
       if (data.choices?.[0]?.finish_reason === 'length') {
         const truncError = new Error(
-          `LLM output truncated (finish_reason=length${maxTokens !== undefined ? `, max_tokens=${maxTokens}` : ''}). ` +
+          `LLM output truncated (finish_reason=length). ` +
           `Consider increasing the max token limit for this call or reducing input size.`,
         );
         (truncError as any).isRetryable = false;
         throw truncError;
       }
 
-      const content = data.choices?.[0]?.message?.content ?? '';
+      const content = data.choices?.[0]?.message?.content ?? data.choices?.[0]?.message?.reasoning_content ?? '';
       if (opts.jsonMode) {
         return { result: parseJsonContent(content), text: undefined, usage };
       }

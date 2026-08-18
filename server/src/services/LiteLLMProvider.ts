@@ -320,6 +320,7 @@ export class LiteLLMProvider implements LLMProvider {
   ): Promise<{ reply: string; deltas: GraphDelta[]; deltaEdges: GraphDeltaEdge[]; usage: LLMUsage | null }> {
     const maxTokens = finiteInt(process.env.LLM_CHAT_MAX_TOKENS, 4096);
     let chatProposeErrors = '';
+    let lastUsage: LLMUsage | null = null;
 
     for (let attempt = 0; attempt <= 1; attempt++) {
       let systemPrompt = buildChatProposePrompt({ id: planId, description: planDescription }, context, conflict);
@@ -330,6 +331,7 @@ export class LiteLLMProvider implements LLMProvider {
       }
 
       const { result, usage } = await this.callLLMMessages(systemPrompt, messages, { jsonMode: true, maxTokens });
+      lastUsage = usage;
 
       const isObject = result !== null && typeof result === 'object' && !Array.isArray(result);
       const deltasIn = isObject && Array.isArray((result as any).deltas) ? (result as any).deltas : [];
@@ -360,6 +362,16 @@ export class LiteLLMProvider implements LLMProvider {
         .filter((r: any) => r.success)
         .map((r: any) => r.data);
 
+      // Discard edges with unrecognized type before returning (validate early)
+      const validEdgeTypes = ['OWNED_BY', 'SET_IN', 'SERVES', 'OVERLAYS', 'IN_DISTRICT'];
+      const preFilterEdgeCount = deltaEdges.length;
+      const filteredEdges = deltaEdges.filter((e: GraphDeltaEdge) => validEdgeTypes.includes(e.type));
+      if (preFilterEdgeCount - filteredEdges.length > 0) {
+        console.warn(`[LiteLLM] chatPropose dropped ${preFilterEdgeCount - filteredEdges.length} edge(s) with invalid type (plan=${planId}).`);
+      }
+      // Replace contents in-place so the rest of the loop uses filtered edges
+      deltaEdges.splice(0, deltaEdges.length, ...filteredEdges);
+
       const droppedDeltas = deltasIn.length - deltas.length;
       const droppedEdges = edgesIn.length - deltaEdges.length;
       if (droppedDeltas > 0 || droppedEdges > 0) {
@@ -386,7 +398,7 @@ export class LiteLLMProvider implements LLMProvider {
     }
 
     console.warn(`[LiteLLM] chatPropose failed after refine; degrading to empty deltas (plan=${planId}): ${chatProposeErrors}`);
-    return { reply: 'Proposal generation could not produce valid deltas. Please rephrase or use explain mode.', deltas: [], deltaEdges: [], usage: null };
+    return { reply: 'Proposal generation could not produce valid deltas. Please rephrase or use explain mode.', deltas: [], deltaEdges: [], usage: lastUsage };
   }
 
 }
