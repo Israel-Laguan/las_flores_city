@@ -23,10 +23,6 @@ adminStoryBuilderActionsRouter.use(adminStoryBuilderCritiqueRouter);
 // M29 — conversational chat + review-queue handlers live in admin-story-builder-chat.ts
 adminStoryBuilderActionsRouter.use(adminStoryBuilderChatRouter);
 
-// POST /admin/story-builder/plans/:id/refine — Refine plan with AI feedback
-// Removed in M32 PR5 - use chatPropose for iterative refinement via /plans/:id/chat
-// adminStoryBuilderActionsRouter.post('/plans/:id/refine', async (req: AuthRequest, res) => {
-
 // POST /admin/story-builder/plans/:id/preview — Dry-run preview
 adminStoryBuilderActionsRouter.post('/plans/:id/preview', async (req, res) => {
   try {

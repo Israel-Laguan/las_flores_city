@@ -1,5 +1,19 @@
 import type { ContentPlan, ContentPlanItem, IntakeConflictPreview, CritiqueAnnotation, CritiqueScope, ChatMessage, ConflictChatContext, GraphDelta, GraphDeltaEdge } from '@las-flores/shared';
 
+// M32 - Extracted from OutlineChunking.ts
+export interface EntityCandidate {
+  name: string;
+  type: string;
+  description: string;
+}
+
+/**
+ * Normalize a name for deduplication: lowercase, strip separators (keep Unicode letters/numbers).
+ */
+export function normalizeName(name: string): string {
+  return String(name || '').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
+}
+
 export interface ExistingLocation {
   id: string;
   name: string;
