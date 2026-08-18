@@ -234,7 +234,7 @@ describe('GraphExporter — mapping table coverage', () => {
     const plan = await exportContentPlan(PLAN_ID, 'desc');
     expect(plan.links).toHaveLength(0);
     const source = plan.items.find((i) => i.type === 'dialogue');
-    expect(source.fields.character_id).toBe(CHAR_ID);
+    expect(source?.fields.character_id).toBe(CHAR_ID);
   });
 
   test('MODIFY item preserves the canonical entity slug from the merged node (name edit does not retarget the file)', async () => {

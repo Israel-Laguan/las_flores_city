@@ -202,6 +202,11 @@ export const GraphMergedViewSchema = z.object({
 
 export type GraphMergedView = z.infer<typeof GraphMergedViewSchema>;
 
+/** A merged revision = merged view + the plan's delta edges (resolved). */
+export interface GraphMergedRevision extends GraphMergedView {
+  deltaEdges: GraphDeltaEdge[];
+}
+
 /** Result of an impact-analysis traversal ("what links to X?"). */
 export const GraphImpactAnalysisSchema = z.object({
   target: GraphContentNodeSchema.optional(),

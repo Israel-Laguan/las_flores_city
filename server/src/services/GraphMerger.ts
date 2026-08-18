@@ -14,7 +14,6 @@
 import { isNeo4jEnabled, runNeo4jTransaction } from './Neo4jClient.js';
 import { withGraphWriteLock } from './graphLock.js';
 import { getMergedView } from './GraphQueryService.js';
-import type { GraphMergedView } from '@las-flores/shared';
 import {
   getDeltasForPlan,
   getDeltaEdgesForPlan,
@@ -26,13 +25,10 @@ import {
   type GraphDelta,
   type GraphDeltaEdge,
   type GraphEdge,
+  type GraphMergedRevision,
+  type GraphMergedView,
   findEdgeMapping,
 } from '@las-flores/shared';
-
-/** A merged revision = merged view + the plan's delta edges (resolved). */
-export interface GraphMergedRevision extends GraphMergedView {
-  deltaEdges: GraphDeltaEdge[];
-}
 
 /**
  * Build the merged revision for a plan: the canonical merged view (base ∪
@@ -267,4 +263,3 @@ export async function commitGraph(planId: string): Promise<boolean> {
 // Re-export the delta primitives the resync/gate tools build on, so callers
 // import the write surface from one module.
 export { clearDeltasForPlan, getDeltasForPlan, getDeltaEdgesForPlan };
-export type { GraphDelta, GraphDeltaEdge };

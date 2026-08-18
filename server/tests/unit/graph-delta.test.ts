@@ -10,6 +10,7 @@ import {
   type GraphEdge,
   type GraphImpactAnalysis,
   type GraphMergedView,
+  type GraphDeltaEdge,
 } from '@las-flores/shared';
 
 // M27 — mock the Neo4j seam (AGENTS.md rule: unit tests must never open real
@@ -47,7 +48,10 @@ const mockQuery = runNeo4jQuery as unknown as Mock<(c: string, p: Record<string,
 
 // Dummy transaction object handed to `runNeo4jTransaction`'s callback. Set to a
 // fresh default in beforeEach; the revision-wiring test overrides `.run`.
-let mockTx: { run: Mock; [k: string]: unknown } = { run: jest.fn() };
+let mockTx: {
+  run: Mock<(cypher: string, params?: Record<string, unknown>) => Promise<{ records: Array<{ toObject: () => Record<string, unknown> }> }>>;
+  [k: string]: unknown;
+} = { run: jest.fn(async (cypher: string, _params?: Record<string, unknown>) => ({ records: [] })) };
 
 const PLAN_ID = 'e0000000-e29b-41d4-a716-4466554400aa';
 const CHAR_ID = 'e0000000-e29b-41d4-a716-4466554400bb';
@@ -76,7 +80,7 @@ beforeEach(() => {
   mockEnabled.mockReturnValue(true);
   mockQuery.mockReset();
   mockQuery.mockReturnValue(Promise.resolve([]));
-  mockTx = { run: jest.fn(async () => ({ records: [] })) };
+  mockTx = { run: jest.fn(async (cypher: string, _params?: Record<string, unknown>) => ({ records: [] })) };
 });
 
 describe('graph-delta schema', () => {
@@ -304,7 +308,7 @@ describe('GraphDeltaService — revision builders (deltas + edges + resolved nam
   test('getPlanDeltaRevisionWithEdges folds resolved District names in a single transaction', async () => {
     mockEnabled.mockReturnValue(true);
     mockTx = {
-      run: jest.fn(async (cypher: string) => {
+      run: jest.fn(async (cypher: string, _params?: Record<string, unknown>) => {
         const rec = (o: Record<string, unknown>) => ({ toObject: () => o });
         const c = String(cypher);
         if (c.includes('ORDER BY d.createdAt')) {

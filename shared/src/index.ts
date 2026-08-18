@@ -307,6 +307,7 @@ export type {
   GraphContentNode,
   GraphEdge,
   GraphMergedView,
+  GraphMergedRevision,
   GraphImpactAnalysis,
   GraphDeltaEdge,
   EdgeFieldMapping,
