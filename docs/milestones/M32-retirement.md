@@ -1,7 +1,10 @@
 # M32 — Authoring-Path Retirement & Consolidation
 
-> **Status:** Planned · **Branch:** `milestone/32-authoring-retirement` · **PR size target:** ~25 files
+> **Status:** Pin complete · **Branch:** `milestone/32-authoring-retirement` · **PR size target:** ~25 files per PR
 > **Phase:** 7 (follows M28 graph write path) / 8 · **Source:** `ARCHITECTURE_SEPARATION_ANALYSIS.md` §8, §12–13, §15; **fixes the orphan gap** across M23/M27/M28/M29
+>
+> M32 is implemented as a **7-PR workstream** so each PR stays within the
+> ~25-file limit.  PR 1 (Pin) lands the frozen ledger and the coverage probe.
 
 ## Goal
 
@@ -32,32 +35,50 @@ For every candidate, classify **Retire / Refactor-Reuse / Keep**:
   depends on them).
 - **Keep** (no change) for anything the game hot path or runtime still reads.
 
-## Retirement ledger (candidates — final list set during **Pin**)
+## Retirement ledger (frozen during **Pin**)
 
-| Candidate | Class | Notes |
+The ledger below was finalised after re-evaluating every candidate against live
+code consumers. Three draft classifications changed materially:
+
+1. `ContentSkeletonGenerator.ts` → **Refactor-Reuse**, not Retire: its file-path
+   helpers are imported by the materialize pipeline that M32 explicitly keeps.
+2. `plan_json` column → **Keep**, not Retire: it is the M28 exporter's
+   transport for the same materialize pipeline; dropping it would rewrite the
+   very pipeline M32 mandates stays unchanged.
+3. `dialogue_overlays.nodes` → **not listed** (kept): overlays are not
+   externalised and the resolver still merges them from DB.
+
+| Candidate | Class | Notes / Evidence |
 |---|---|---|
-| `ContentPlanService.generateOutline` / `scaffoldPlanItems` / `refinePlan*` | Refactor-Reuse | identity/claims pieces reused; proposal-authoring superseded by graph deltas |
-| `PlanGenerationJob.ts`, `ContentSkeletonGenerator.ts`, `FillPlaceholders.ts`, `OutlineChunking.ts`, `PlanTemplates.ts`, `PlanTemplateBuilders.ts` | Retire | produce `plan_json` output that graph deltas replace |
-| `ContentPlanValidation.ts`, `StoryBuilderValidation.ts` | Refactor-Reuse / Retire | structural checks fold into M20 harness or retire |
-| `admin-story-builder-{generate,plans,drafts,staging,actions,lore}.ts` | Retire / Slim | keep only endpoints the new flow calls after M27–M29 |
-| `LLMProvider.parseDescription` (legacy Moment 1) | Retire | documented legacy |
-| `LLMProvider.refinePlan` / `refinePlanItems` (single-turn) | Retire | superseded by M29 `chatExplain`/`chatPropose` |
-<!-- M23 Phase 2 (prerequisite for this drop): DialogueResolver now hydrates BOTH
-     `nodes` and `leaves` from the CDN `content_url` blob for dialogue_chunks
-     (fetchChunkFromContentUrl in loadBaseChunk / loadBaseChunkByKey), and
-     `nodes` from CDN for dialogue_trees (fetchNodesFromContentUrl in
-     loadBaseTree). The resolver no longer reads the DB `nodes`/`leaves` columns
-     on the read path, falling back to them only when `content_url` is
-     NULL/empty or the CDN fetch fails. Dropping these columns here is safe once
-     every row carries a reachable content_url (M32 verification). -->
-| `dialogue_chunks.nodes` / `leaves`, `dialogue_trees.nodes` (JSONB) | Refactor-Reuse | columns dropped after M23 relocates content to CDN; disk keeps compiler. **Drop conditional on explicit row-level coverage check: every `content_url` must resolve to a reachable CDN blob before dropping JSONB fields.** |
-| `plan_json` column | Retire | after M28 exporter is sole authoring path |
-| Orphan tests across the above | Retire / Port | 118 test files; port retained-domain tests, delete tests for retired services |
+| `ContentPlanService.parseDescription` / `generateOutline` / `scaffoldPlanItems` / `refinePlan*` | Refactor-Reuse → Slim | `parseDescription`/`generateOutline`/`refinePlan*` retire with legacy intake; `gatherContext`, identity/claims pieces stay and move to a shared seam |
+| `PlanGenerationJob.ts`, `FillPlaceholders.ts`, `ContentFillService` | Retire | async fill / placeholder pipeline; replaced by fill-as-`MODIFY`-deltas |
+| `ContentSkeletonGenerator.ts` | Refactor-Reuse | `resolveFilePath`/`generateYaml` kept; imported by `StoryBuilderFileWriter`, `StoryBuilderPlanOps` (stagePlan), `StoryBuilderLore`, `PromptFileGenerator`, `AssetPublishService`, `PlanVerificationService` |
+| `OutlineChunking.ts` | Retire + extract | `EntityCandidate` type moves into `LLMTypes.ts` / shared; `chunkDescription`/`mergeCandidates` retire with the outline path |
+| `PlanTemplates.ts`, `PlanTemplateBuilders.ts` | Retire | only consumed by legacy template/clone meta routes |
+| `ContentPlanValidation.ts` | Retire + extract | `uuidv4` moves to a shared util (used by kept `RevisionService`); `validateAndRepairOutline`/`generateFallbackPlan` retire |
+| `StoryBuilderValidation.ts` | Keep | `buildValidationErrors` still feeds the kept `stagePlan` materializer |
+| `admin-story-builder-generate.ts`, `admin-story-builder-drafts.ts` | Retire | legacy intake + draft endpoints |
+| `admin-story-builder-meta.ts` (templates/clone/execute) | Retire | template/clone endpoints; `execute` verified unused after the UI rewiring |
+| `admin-story-builder-actions.ts` `/plans/:id/refine` | Retire | single-turn refine; chat panel replaces it |
+| `admin-story-builder-lore.ts` | Slim | rewired to emit `MODIFY` deltas instead of mutating `plan_json` |
+| `admin-story-builder-staging.ts` | Keep | `stagePlan` materializer endpoints survive |
+| `LLMProvider.parseDescription` (legacy Moment 1) | Retire | replaced by graph-intake + `chatPropose` |
+| `LLMProvider.generateOutline` / `refinePlan` / `refinePlanItems` (single-turn) | Retire | superseded by M29 `chatExplain`/`chatPropose` |
+| `LLMProvider.extractEntities` | Retire | only used by the outline-chunking intake path |
+| `dialogue_trees.nodes`, `dialogue_chunks.nodes` / `leaves` (JSONB) | Retire (column drop) | M23 CDN read path is live; M30 snapshots also read via `content_url`. **Drop gated by `npm run probe:content-urls` passing: every row's `content_url` must resolve.** `SnapshotService` must stop writing the dropped columns. |
+| `dialogue_overlays.nodes` (JSONB) | Keep | overlays are not externalised; still merged from DB |
+| `plan_json` column | Keep | M28 exporter transport for `approveAndSolidifyPlan` → `stagePlan`/`migrateContent`/`verifyPlan`; the kept materialize pipeline reads it |
+| `intake.ts` `resetOrphanedFillJobs` boot call | Retire | `PlanGenerationJob` is removed |
+| `server/src/scripts/fillExistingTodos.ts` | Retire | legacy fill CLI |
+| Orphan tests across the above | Retire / Port | ~14 test files touch retire candidates; port kept-domain tests, delete tests for retired services |
 
 ## Verify / Definition of Done
 
-- [ ] **Pin:** retirement ledger frozen (files/routes/methods/columns/tests), classified
-      Retire vs Refactor-Reuse
+- [x] **Pin:** retirement ledger frozen (files/routes/methods/columns/tests), classified
+      Retire vs Refactor-Reuse / Keep. Ledger delivered in this PR.
+- [x] **Coverage probe:** `npm run probe:content-urls` exists and can be run against
+      any environment to gate the `dialogue_trees.nodes` / `dialogue_chunks.nodes/leaves`
+      column drop (PR 6).
 - [ ] **Prove:** full build + test suite + `validate:content` green with new path active;
       in-container health OK on game + intake-worker
 - [ ] **Prune:** all Retire rows deleted in the same PR as the last flag flip; retained
