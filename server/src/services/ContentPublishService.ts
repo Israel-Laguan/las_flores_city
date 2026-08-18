@@ -71,3 +71,35 @@ export async function publishDialogueChunk(
   const objectKey = `chunks/${treeId}/${safeChunkKey}__${hash}.json`;
   return uploadToMinio(Buffer.from(payload, 'utf-8'), objectKey, CONTENT_TYPE_JSON);
 }
+
+/**
+ * Publish a pre-resolved dialogue tree snapshot to MinIO under a
+ * content-addressed key and return its `s3://` URL.
+ *
+ * M30 Phase A: snapshots are stored as content-addressed blobs under
+ * `snapshots/` prefix, with key:
+ * `snapshots/{treeId}__{setHash}__{nsfw}__{alignment}__{hash}.json`
+ *
+ * This mirrors the structure of `publishDialogueChunk` but with snapshot-specific
+ * encoding. The setHash is a 16-char truncated SHA-256 of the sorted mystery ID set.
+ *
+ * @param treeId UUID of the dialogue tree
+ * @param setHash 16-char hex hash of the sorted mystery ID set
+ * @param nsfw NSFW flag (true/false)
+ * @param alignment Alignment value ('neutral' | 'loyalist' | 'fugitive')
+ * @param payload The serialized snapshot content (nodes map + metadata)
+ * @returns `s3://bucket/snapshots/{treeId}__{setHash}__{nsfw}__{alignment}__{hash}.json`
+ */
+export async function publishDialogueSnapshot(
+  treeId: string,
+  setHash: string,
+  nsfw: boolean,
+  alignment: string,
+  payload: string
+): Promise<string> {
+  const hash = contentHash(payload);
+  const nsfwFlag = nsfw ? 't' : 'f';
+  // alignment is already URL-safe (neutral/loyalist/fugitive)
+  const objectKey = `snapshots/${treeId}__${setHash}__${nsfwFlag}__${alignment}__${hash}.json`;
+  return uploadToMinio(Buffer.from(payload, 'utf-8'), objectKey, CONTENT_TYPE_JSON);
+}

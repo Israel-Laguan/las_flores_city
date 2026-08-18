@@ -155,6 +155,12 @@ services:
       NEO4J_USER: ${NEO4J_USER:-neo4j}
       NEO4J_PASSWORD: ${NEO4J_PASSWORD:-lasfloresdev123}
       NEO4J_ENABLED: ${NEO4J_ENABLED:-false}
+      # M30 gate benchmark (docs/milestones/M30-benchmark-results.md, S4): the shared
+      # read-only contentPool (default 10) saturates under a 500-distinct-key herd after
+      # a Breakthrough invalidation. The game-server serves player dialogue traffic, so
+      # it gets a larger read-only content pool; intake-worker keeps the default (both
+      # processes share one Postgres capped by max_connections).
+      CONTENT_POOL_MAX: 30
       MINIO_ACCESS_KEY: ${MINIO_ROOT_USER:-minioadmin}
       MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
       JWT_SECRET: ${JWT_SECRET:-your-jwt-secret-change-in-production}

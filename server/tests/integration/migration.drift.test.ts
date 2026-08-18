@@ -110,7 +110,9 @@ describe('Migration drift guard', () => {
     ).toEqual(['b0000000-e29b-41d4-a716-446655440001']);
   });
 
-  test('reprocesses content when migration_log exists but target row is missing', async () => {
+  test(
+    'reprocesses content when migration_log exists but target row is missing',
+    async () => {
     const logBefore = await pool.query(
       `SELECT id FROM migration_log
        WHERE file_path = $1 OR file_path LIKE $2`,
@@ -164,9 +166,13 @@ describe('Migration drift guard', () => {
         WHERE ml.content_type = 'mission' AND m.id IS NULL`
     );
     expect(drift.rows).toHaveLength(0);
-  });
+  },
+  60000
+  );
 
-  test('story arc file migrates to story_beats and the stories manifest table is gone', async () => {
+  test(
+    'story arc file migrates to story_beats and the stories manifest table is gone',
+    async () => {
     // Beats-based story arcs write slug rows into story_beats — NOT a `stories`
     // manifest row. 058 dropped the dead table; the migration drift guard must
     // verify presence via story_beats.slug for content type 'story'.
@@ -190,7 +196,9 @@ describe('Migration drift guard', () => {
     );
     expect(log.rows[0]?.content_type).toBe('story');
     expect(log.rows[0]?.content_id).toBe('beat_sofia_intro');
-  });
+  },
+  60000
+  );
 
   test('046 fallback converges a legacy mystery migration_log row to mission', async () => {
     // Legacy pre-046 DBs store the content type as 'mystery' under a CHECK

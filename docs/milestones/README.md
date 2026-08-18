@@ -71,7 +71,7 @@ M31 (task-graph agent swarm ────────── optional, deferred)�
 | **M28** | Graph merge + graph→ContentPlan exporter (write path) | 7 | Approve triggers graph-merge → existing materialize | High |
 | **M29** | Chat assistant (chatExplain/chatPropose) + `needs_review` queue | 8 | Human-in-the-loop review & fix loop | Medium |
 | **M32** | Authoring-path retirement: Pin → Prove → Prune | 7/8 | Delete the superseded `plan_json` authoring surface + legacy LLM methods the same PR that flips the flags | Medium |
-| **M30** | Pre-resolved per-state overlay snapshots | endgame | Kill the Redis merge step | Med (deferred) |
+| **M30** | Pre-resolved per-state overlay snapshots | Phase A in progress | Kill the Redis merge step | Med (Phase A in progress) |
 | **M31** | Task-graph agent swarm | optional | 80% benefit already covered by M21–M22 + M29 | High (deferred) |
 
 ---

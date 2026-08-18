@@ -12,6 +12,7 @@ import { processContentFile } from './upsert.js';
 import { compileAllDialogueTrees } from './compiler.js';
 import { extractContentIds, getContentTypeFromPath, getProcessingOrder } from './path-utils.js';
 import { ZERO_UUID } from './uuid-utils.js';
+import { buildSnapshotsForAllTrees } from '../services/SnapshotService.js';
 
 export { extractContentIds };
 
@@ -387,6 +388,22 @@ async function runPostMigrationTasks(result: MigrationResult): Promise<void> {
   } catch (error: any) {
     console.error('❌ Chunk compilation failed (non-fatal):', error.message);
     result.errors.push(`Chunk compilation failed: ${error.message}`);
+  }
+
+  // M30 Phase A: Build pre-resolved overlay snapshots after chunk compilation.
+  // This runs under the same content_migration advisory lock held by the caller.
+  try {
+    console.log('\n📸 Building pre-resolved overlay snapshots (M30 Phase A)...');
+    const snapshotResult = await buildSnapshotsForAllTrees();
+    console.log(
+      `   ${snapshotResult.totalTrees} trees → ${snapshotResult.totalSnapshots} snapshots (${snapshotResult.errors.length} errors)`
+    );
+    if (snapshotResult.errors.length > 0) {
+      result.errors.push(...snapshotResult.errors);
+    }
+  } catch (error: any) {
+    console.error('❌ Snapshot compilation failed (non-fatal):', error.message);
+    result.errors.push(`Snapshot compilation failed: ${error.message}`);
   }
 
   await invalidateCaches();

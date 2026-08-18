@@ -65,7 +65,13 @@ function getContentPool(): pg.Pool {
       // `queryContent` write is rejected, even though it shares the OLTP
       // credential. Player writes must go through `oltpPool`/`withOLTPTransaction`.
       options: '-c default_transaction_read_only=on',
-      max: 10,                  // Small read-only pool; content reads are mostly cache-friendly
+      // Small read-only pool; content reads are mostly cache-friendly. Default 10,
+      // overridable via CONTENT_POOL_MAX. The M30 gate benchmark
+      // (docs/milestones/M30-benchmark-results.md, S4) found the shared contentPool
+      // saturates (8-9/10 active) under a 500-distinct-key thundering herd after a
+      // Breakthrough invalidation; game-server containers should bump this (e.g. 30)
+      // to absorb that queue. Kept read-only: player writes never route here.
+      max: parseInt(process.env.CONTENT_POOL_MAX ?? '10', 10),
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 5000,
     });

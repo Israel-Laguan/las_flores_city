@@ -18,6 +18,11 @@ import { getCache, setCache } from '@las-flores/infra';
 import { DialogueNode, Leaf } from '@las-flores/shared';
 import { fetchNodesFromContentUrl, fetchChunkFromContentUrl } from './contentFetch.js';
 import { buildOverlayFingerprint, contentVersionFromUrl, deepMergeNodes } from './dialogueResolverUtils.js';
+import { fetchContentJson } from './StorageService.js';
+import {
+  buildSetHash,
+  getSnapshotContentUrl,
+} from './SnapshotService.js';
 
 export interface ResolvedTree {
   rootId: string;
@@ -188,6 +193,41 @@ export class DialogueResolver {
     const cachedTree = await getCache<ResolvedTree>(versionedCacheKey);
     if (cachedTree) {
       return cachedTree;
+    }
+
+    // M30 Phase A: Try snapshot fast path before live merge.
+    // Compute the set hash from the mystery IDs.
+    const setHash = allMysteryIds.length > 0 ? buildSetHash(allMysteryIds) : buildSetHash([]);
+    const snapshotContentUrl = await getSnapshotContentUrl(
+      baseTreeId,
+      setHash,
+      isNsfwUnlocked,
+      alignment
+    );
+
+    if (snapshotContentUrl) {
+      // Snapshot exists — fetch from MinIO, parse, cache, and return.
+      try {
+        const snapshotData = (await fetchContentJson(snapshotContentUrl)) as {
+          nodes?: Record<string, DialogueNode>;
+          _meta?: { startNodeId?: string };
+        } | null;
+
+        if (snapshotData?.nodes && Object.keys(snapshotData.nodes).length > 0) {
+          const startNodeId = snapshotData._meta?.startNodeId ?? baseTree.start_node_id;
+          const finalTree: ResolvedTree = {
+            rootId: startNodeId,
+            nodes: snapshotData.nodes,
+          };
+
+          await setCache(versionedCacheKey, finalTree, CACHE_TTL_SECONDS);
+          return finalTree;
+        }
+      } catch (error: any) {
+        console.warn(
+          `[DialogueResolver] Snapshot fetch failed for ${snapshotContentUrl}: ${error?.message}. Falling back to live merge.`
+        );
+      }
     }
 
     for (const overlay of overlays) {
