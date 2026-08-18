@@ -1,6 +1,6 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import type { ContentPlan, ContentPlanItem, AssetNeed } from '@las-flores/shared';
+import type { ContentPlan, ContentPlanItem, AssetNeed, GraphDelta, GraphDeltaEdge } from '@las-flores/shared';
 import { generateYaml, resolveFilePath } from './ContentSkeletonGenerator.js';
 import { validateContent } from '../content/validate.js';
 import { migrateContent } from '../content/migrate.js';
@@ -15,6 +15,10 @@ import { buildValidationErrors } from './StoryBuilderValidation.js';
 import { resolveContentDir, generateLoreStubs } from './StoryBuilderLore.js';
 import { generatePromptFiles } from './PromptFileGenerator.js';
 import { fillFields, mergeFilledFields } from './ContentFillService.js';
+import { applyDelta, applyDeltaEdge, preflightDeltas, preflightDeltaEdges } from './GraphDeltaService.js';
+import { isNeo4jEnabled, runNeo4jTransaction } from './Neo4jClient.js';
+import { uuidv4 } from './ContentPlanValidation.js';
+import { CONTENT_TYPE_TO_NODE_TYPE } from '@las-flores/shared';
 import type { LLMProvider, ExistingContentContext } from './types/LLMTypes.js';
 
 export interface ExecutionResult {
@@ -225,6 +229,83 @@ export async function checkCreateConflicts(plan: ContentPlan, contentDir: string
 export interface StagePlanOptions {
   provider?: LLMProvider;
   context?: ExistingContentContext;
+  /** When provided, emit MODIFY deltas to Neo4j for filled fields and generated lore. */
+  planId?: string;
+}
+
+/**
+ * Create a MODIFY GraphDelta for an existing entity with changed fields.
+ * Used by fillPlanItemsWithLLM and lore generation to emit deltas to the graph.
+ */
+function createModifyDelta(
+  planId: string,
+  item: ContentPlanItem,
+  nodeId: string,
+  changedFields: Record<string, any>,
+): GraphDelta {
+  return {
+    id: uuidv4(),
+    planId,
+    nodeType: CONTENT_TYPE_TO_NODE_TYPE[item.type] ?? item.type,
+    nodeId,
+    op: 'MODIFY',
+    fields: changedFields,
+    createdAt: new Date().toISOString(),
+  };
+}
+
+/**
+ * Emit MODIFY deltas for filled fields to Neo4j.
+ * Only emits when Neo4j is enabled and planId is provided.
+ */
+async function emitFillDeltas(
+  planId: string,
+  item: ContentPlanItem,
+  filledFields: Record<string, string>,
+): Promise<void> {
+  if (!isNeo4jEnabled() || !planId) return;
+
+  // Look up the entity's nodeId from its fields (id field) or use the item id
+  const nodeId = (item.fields as any).id ?? item.id;
+  if (!nodeId) return;
+
+  const delta = createModifyDelta(planId, item, nodeId, filledFields);
+
+  try {
+    await runNeo4jTransaction(async (tx) => {
+      await preflightDeltas([delta], tx);
+      await applyDelta(delta, tx);
+    });
+  } catch (err: any) {
+    console.warn(`[story-builder] Failed to emit MODIFY delta for filled fields on ${item.name} (${item.type}:${nodeId}): ${err.message}`);
+  }
+}
+
+/**
+ * Emit a MODIFY delta for lore content to Neo4j.
+ * Lore is stored in fields like lore_path, narrative_path, or as a lore_content field.
+ */
+export async function emitLoreDelta(
+  planId: string,
+  item: ContentPlanItem,
+  loreContent: string,
+  fieldName: string = 'lore_content',
+): Promise<void> {
+  if (!isNeo4jEnabled() || !planId) return;
+
+  const nodeId = (item.fields as any).id ?? item.id;
+  if (!nodeId) return;
+
+  const delta = createModifyDelta(planId, item, nodeId, { [fieldName]: loreContent });
+
+  try {
+    await runNeo4jTransaction(async (tx) => {
+      await preflightDeltas([delta], tx);
+      await applyDelta(delta, tx);
+    });
+  } catch (err: any) {
+    console.warn(`[story-builder] Failed to emit MODIFY delta for lore on ${item.name} (${item.type}:${nodeId}): ${err.message}`);
+  }
 }
 
 export async function stagePlan(plan: ContentPlan, options?: StagePlanOptions): Promise<StagingResult> {
@@ -332,6 +413,7 @@ export async function stagePlan(plan: ContentPlan, options?: StagePlanOptions): 
 /**
  * Fill free-text fields via LLM for each plan item (non-fatal on error).
  * Shared by stagePlan for both scaffolded and non-scaffolded plans.
+ * When planId is provided and Neo4j is enabled, emits MODIFY deltas for filled fields.
  */
 async function fillPlanItemsWithLLM(
   sortedItems: ContentPlanItem[],
@@ -339,11 +421,17 @@ async function fillPlanItemsWithLLM(
 ): Promise<void> {
   if (!options?.provider || !options?.context) return;
 
+  const planId = options.planId;
+
   for (const item of sortedItems) {
     try {
       const fillResult = await fillFields(item, options.context, options.provider);
       if (Object.keys(fillResult.fields).length > 0) {
         mergeFilledFields(item, fillResult.fields);
+        // Emit MODIFY delta for filled fields
+        if (planId) {
+          await emitFillDeltas(planId, item, fillResult.fields);
+        }
       }
       if (fillResult.lore_refs && fillResult.lore_refs.length > 0) {
         const existing = item.lore_refs ?? [];

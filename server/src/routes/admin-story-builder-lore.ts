@@ -5,6 +5,8 @@ import type { AuthRequest } from '../middleware/auth.js';
 import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
 import { queryOLTP } from '@las-flores/infra';
 import { contentPlanService } from '../services/ContentPlanService.js';
+import { emitLoreDelta } from '../services/StoryBuilderPlanOps.js';
+import { isNeo4jEnabled } from '../services/Neo4jClient.js';
 
 export const adminStoryBuilderLoreRouter = express.Router();
 
@@ -49,6 +51,11 @@ adminStoryBuilderLoreRouter.post('/plans/:id/items/:itemId/lore', async (req: Au
     // Gather context and generate lore
     const context = await contentPlanService.gatherContext();
     const loreContent = await contentPlanService.generateLore(item, context);
+
+    // Emit MODIFY delta for lore content (M32: emit deltas instead of just mutating plan_json)
+    if (isNeo4jEnabled()) {
+      await emitLoreDelta(id, item, loreContent, 'lore_content');
+    }
 
     // Write to lore file (overwrite existing)
     const loreRoot = path.resolve(process.cwd(), 'docs', 'lore');

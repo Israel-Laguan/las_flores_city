@@ -63,7 +63,7 @@ export async function loadPlanForStaging(
 export async function runStagingPipeline(plan: ContentPlan, id: string): Promise<StagingOutcome> {
   const provider = createLLMProvider();
   const context = await contentPlanService.gatherContext();
-  const stagingResult = await stagePlan(plan, { provider, context });
+  const stagingResult = await stagePlan(plan, { provider, context, planId: id });
 
   if (!stagingResult.success) {
     return { plan, success: false, error: stagingResult.error };
