@@ -23,7 +23,7 @@ import { GraphDeltaSchema, GraphDeltaEdgeSchema, type ConflictChatContext, type 
 import { queryOLTP } from '@las-flores/infra';
 import { createLLMProvider } from './LLMService.js';
 import { buildMergedRevision } from './GraphMerger.js';
-import { applyDelta, applyDeltaEdge, removeDelta, getAllDeltas, getDeltaEdgesForPlan, getDeltaEdgesForPlans, preflightDeltas, preflightDeltaEdges } from './GraphDeltaService.js';
+import { applyDelta, applyDeltaEdge, removeDelta, getAllDeltas, getDeltaEdgesForPlans, preflightDeltas, preflightDeltaEdges } from './GraphDeltaService.js';
 import { aiCritiqueService, type AICritiqueService } from './AICritiqueService.js';
 import { postgresNeighborhoodProvider, neo4jNeighborhoodProvider, type NeighborhoodProvider } from './NeighborhoodProvider.js';
 import { isNeo4jEnabled, runNeo4jTransaction } from './Neo4jClient.js';
