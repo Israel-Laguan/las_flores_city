@@ -116,22 +116,54 @@ Retired the superseded async fill / placeholder pipeline and legacy LLM methods.
 **Gate:** All retired files deleted in the same PR. No orphaned imports remain. Grep verified.
 
 ### PR 5 — Retire Outline Chunking + Templates
-- Delete `OutlineChunking.ts` (extract `EntityCandidate` type to shared)
-- Delete `PlanTemplates.ts`, `PlanTemplateBuilders.ts`
-- Delete `admin-story-builder-meta.ts` (templates/clone/execute endpoints)
-- Delete `admin-story-builder-actions.ts` `/plans/:id/refine` endpoint
+**Status: Complete**
+
+Removed the legacy outline-chunking and template/clone surface.
+
+| Task | Candidate | Action |
+|------|-----------|--------|
+| 1 | `OutlineChunking.ts` | ✅ Delete file (extract `EntityCandidate` type to shared `LLMTypes.ts`) |
+| 2 | `PlanTemplates.ts` | ✅ Delete file + remove all imports |
+| 3 | `PlanTemplateBuilders.ts` | ✅ Delete file + remove all imports |
+| 4 | `admin-story-builder-meta.ts` | ✅ Delete file + unmount from admin-story-builder |
+| 5 | `admin-story-builder-actions.ts` `/plans/:id/refine` | ✅ Remove single-turn refine endpoint |
+
+**Gate:** No orphaned imports remain. Grep verified.
 
 ### PR 6 — Retire ContentPlanValidation + Column Drop
-- Delete `ContentPlanValidation.ts` (extract `uuidv4` to shared util)
-- Delete `dialogue_trees.nodes`, `dialogue_chunks.nodes`/`leaves` columns
-- **Gate:** `npm run probe:content-urls` must pass (every row's `content_url` must resolve)
-- Update `SnapshotService` to stop writing dropped columns
+**Status: Complete**
+
+Dropped `ContentPlanValidation.ts` (after extracting `uuidv4` into a shared
+util used by the kept `RevisionService`) and dropped the superseded JSONB
+columns now served via the M23/M30 CDN `content_url` read path.
+
+| Task | Candidate | Action |
+|------|-----------|--------|
+| 1 | `ContentPlanValidation.ts` | ✅ Delete file; `uuidv4` moved to `@las-flores/shared` |
+| 2 | `dialogue_trees.nodes` | ✅ Column dropped (`076_drop_dialogue_jsonb.sql`, `oltp`) |
+| 3 | `dialogue_chunks.nodes` / `leaves` | ✅ Columns dropped (same migration) |
+| 4 | `SnapshotService` | ✅ Stopped writing dropped columns |
+
+**Gate:** `npm run probe:content-urls` passed (947/947 rows reachable) before
+the column drop. Migration `076_drop_dialogue_jsonb.sql` registered under `oltp`.
 
 ### PR 7 — Final Prune + Docs
-- Delete any remaining orphans
-- Run final grep for retired symbols
-- Update `ARCHITECTURE_SEPARATION_ANALYSIS.md` §12–§15
-- Verify all references to retired symbols are removed
+**Status: Complete**
+
+- ✅ Deleted remaining orphans; no retire candidates left unaddressed
+- ✅ Final grep for retired symbols (`PlanGenerationJob`, `FillPlaceholders`,
+      `ContentFillService`, `parseDescription`, `generateOutline`,
+      `refinePlan`, `extractEntities`, `OutlineChunking`, `PlanTemplates`,
+      `ContentPlanValidation`, `resetOrphanedFillJobs`, `fillExistingTodos`)
+      returns only intentional doc-comment usages
+- ✅ `ARCHITECTURE_SEPARATION_ANALYSIS.md` §12–§15 updated with the M32
+      retirement callout naming which legacy LLM methods/services are gone
+- ✅ All references to retired symbols removed from live code and tests
+
+> **Branch note:** the originally-referenced `milestone/32-authoring-retirement`
+> branch does not exist locally; PR1–PR7 all landed on
+> `feat/graph-db-implementation`. The 7-PR split was a size-control device, not a
+> branch topology.
 
 ## Verify / Definition of Done
 
