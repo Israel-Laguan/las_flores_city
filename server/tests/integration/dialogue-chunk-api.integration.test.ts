@@ -168,15 +168,25 @@ beforeAll(async () => {
 
   // 2. Seed the dialogue tree. M32 dropped the in-DB `nodes` JSONB column, so
   //    the node map is published to the CDN and referenced via `content_url`.
+  //    `character_id` is set so the `resolveDialogueTree` fallback path
+  //    (scene-scoped lookup finds nothing for the synthetic MOCK_SCENE_ID)
+  //    can match on the start node's `speaker_id`.
+  await queryOLTP(
+    `INSERT INTO characters (id, name, title, description, avatar_url, available_dialogues, metadata)
+     VALUES ($1, 'Chunk API Test Character', 'Test', 'Chunk API test character', 'https://example.com/avatar.png', '{}'::uuid[], '{}'::jsonb)
+     ON CONFLICT (id) DO UPDATE SET updated_at = NOW()`,
+    [MOCK_CHARACTER_ID]
+  );
   const treeUrl = await publishDialogueTree(TEST_TREE_ID, JSON.stringify({ nodes: TREE_NODES }));
   await queryOLTP(
-    `INSERT INTO dialogue_trees (id, name, start_node_id, content_url)
-     VALUES ($1, 'Chunk API Integration Test Tree', 'chunk_start', $2)
+    `INSERT INTO dialogue_trees (id, name, character_id, start_node_id, content_url)
+     VALUES ($1, 'Chunk API Integration Test Tree', $2, 'chunk_start', $3)
      ON CONFLICT (id) DO UPDATE
        SET content_url = EXCLUDED.content_url,
+           character_id = EXCLUDED.character_id,
            start_node_id = EXCLUDED.start_node_id,
            updated_at = NOW()`,
-    [TEST_TREE_ID, treeUrl]
+    [TEST_TREE_ID, MOCK_CHARACTER_ID, treeUrl]
   );
 
   // 3. Compile the tree to populate dialogue_chunks
@@ -237,6 +247,7 @@ afterAll(async () => {
   await queryOLTP(`DELETE FROM dialogue_trees   WHERE id      = $1`, [TEST_TREE_ID]);
   await queryOLTP(`DELETE FROM player_states    WHERE user_id = $1`, [TEST_USER_ID]);
   await queryOLTP(`DELETE FROM users            WHERE id      = $1`, [TEST_USER_ID]);
+  await queryOLTP(`DELETE FROM characters        WHERE id      = $1`, [MOCK_CHARACTER_ID]);
 
   await deleteCache(`user:state:${TEST_USER_ID}`);
   await invalidatePattern(`dialogue:resolved:chunk:${TEST_TREE_ID}:*`);
