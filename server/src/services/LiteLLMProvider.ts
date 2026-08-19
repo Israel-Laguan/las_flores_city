@@ -3,6 +3,7 @@ import type { LLMProvider, ExistingContentContext, LLMUsage, CritiqueScopeType }
 import { buildLorePrompt, buildIntakeConflictPrompt, buildSemanticCritiquePrompt, buildChatExplainPrompt, buildChatProposePrompt } from './LLMPrompts.js';
 import { finiteInt } from '../utils/env.js';
 import { createLiteLLMCore, type LiteLLMCore } from './liteLLMCore.js';
+import { gatherExistingContentContext } from './ContentContext.js';
 
 export interface LiteLLMProviderOptions {
   timeoutMs?: number;
@@ -17,6 +18,10 @@ export class LiteLLMProvider implements LLMProvider {
   private defaultTimeoutMs: number;
   private retries: number;
   private core: LiteLLMCore;
+
+  async gatherContext(): Promise<ExistingContentContext> {
+    return gatherExistingContentContext();
+  }
 
   constructor(opts?: LiteLLMProviderOptions) {
     this.baseUrl = process.env.LITELLM_BASE_URL || 'http://litellm:4000';

@@ -14,11 +14,13 @@ export const adminStoryBuilderLoreRouter = express.Router();
 adminStoryBuilderLoreRouter.post('/plans/:id/items/:itemId/lore', async (req: AuthRequest, res) => {
   try {
     const { id, itemId } = req.params;
+    const planId = Array.isArray(id) ? id[0] : id;
+    const itemIdStr = Array.isArray(itemId) ? itemId[0] : itemId;
 
     // Load plan from DB
     const result = await queryOLTP<{ plan_json: any; status: string }>(
       'SELECT plan_json, status FROM content_plans WHERE id = $1',
-      [id]
+      [planId]
     );
 
     if (result.rows.length === 0) {
@@ -35,7 +37,7 @@ adminStoryBuilderLoreRouter.post('/plans/:id/items/:itemId/lore', async (req: Au
     }
 
     // Find the specific item
-    const item = plan.items.find(i => i.id === itemId);
+    const item = plan.items.find(i => i.id === itemIdStr);
     if (!item) {
       res.status(404).json({ success: false, error: 'Item not found in plan', timestamp: new Date().toISOString() });
       return;
@@ -54,7 +56,7 @@ adminStoryBuilderLoreRouter.post('/plans/:id/items/:itemId/lore', async (req: Au
 
     // Emit MODIFY delta for lore content (M32: emit deltas instead of just mutating plan_json)
     if (isNeo4jEnabled()) {
-      await emitLoreDelta(id, item, loreContent, 'lore_content');
+      await emitLoreDelta(planId, item, loreContent, 'lore_content');
     }
 
     // Write to lore file (overwrite existing)

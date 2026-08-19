@@ -66,7 +66,7 @@ function deltaToPlanItem(delta: GraphDelta, baseContext: ExistingContentContext)
     Location: 'location',
     District: 'district',
   };
-  const type = contentTypeMap[nodeType] ?? nodeType.toLowerCase();
+  const type = (contentTypeMap[nodeType] ?? nodeType.toLowerCase()) as ContentPlanItem['type'];
   
   // For MODIFY ops referencing an existing entity, look up its existing fields
   // from the base context to preserve unchanged values.
@@ -82,7 +82,7 @@ function deltaToPlanItem(delta: GraphDelta, baseContext: ExistingContentContext)
     name: mergedFields.name ?? nodeId,
     type,
     slug: mergedFields.slug ?? nodeId,
-    action: op === 'ADD' ? 'create' : op === 'MODIFY' ? 'update' : 'delete',
+    action: op === 'ADD' ? 'create' : 'update',
     fields: mergedFields,
     dependsOn: [],
     assetNeeds: [],
@@ -155,8 +155,7 @@ function synthesizePlanFromDeltas(
     items,
     links,
     _meta: {
-      source: 'graph-intake',
-      createdAt: new Date().toISOString(),
+      scaffolded_at: new Date().toISOString(),
     },
   };
 }
@@ -266,8 +265,8 @@ export class GraphIntakeService {
       return { deltas: [], edges: [] };
     }
     const [deltas, edges] = await Promise.all([
-      getDeltasForPlan(planId),
-      getDeltaEdgesForPlan(planId),
+      getDeltasForPlan(planId, undefined),
+      getDeltaEdgesForPlan(planId, undefined),
     ]);
     return { deltas, edges };
   }

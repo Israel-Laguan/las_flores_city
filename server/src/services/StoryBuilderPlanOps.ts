@@ -245,7 +245,7 @@ function createModifyDelta(
   return {
     id: uuidv4(),
     planId,
-    nodeType: CONTENT_TYPE_TO_NODE_TYPE[item.type] ?? item.type,
+    nodeType: (CONTENT_TYPE_TO_NODE_TYPE[item.type] ?? item.type) as GraphDelta['nodeType'],
     nodeId,
     op: 'MODIFY',
     fields: changedFields,

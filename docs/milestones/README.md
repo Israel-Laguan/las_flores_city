@@ -43,6 +43,8 @@ M19 (foundation: boundaries + content-read pool + analysis)
                               ├──► M25 (entity identity + bounded conflict detection)
                               │         │
                               │         └──► M26 (AI Critique Service ↗️ nodes)
+                              │              │
+                              │              └──► M27-b (AI Critique into Graph: lifts M26 annotations into Neo4j; waits on M27 graph substrate) [planned]
                               │
                               └──► M27 (graph authoring: seed + delta model)
                                        │
@@ -50,8 +52,8 @@ M19 (foundation: boundaries + content-read pool + analysis)
                                                 │
                                                 └──► M29 (chat assistant + review queue)
                                                          │
-M30 (pre-resolved overlay snapshots ── endgame, deferred) │
-M31 (task-graph agent swarm ────────── optional, deferred)┘
+M30 (pre-resolved overlay snapshots ── endgame, deferred; docs: M30-M31-deferred.md + M30-snapshots.md + M30-benchmark-results.md) │
+M31 (task-graph agent swarm ────────── optional, deferred; doc folded into M30-M31-deferred.md)┘
                                         │  after M28 + M29 flip flags
                                         ▼
                                        M32 (authoring-path retirement: Pin → Prove → Prune)
@@ -68,11 +70,12 @@ M31 (task-graph agent swarm ────────── optional, deferred)�
 | **M25** | Entity identity resolution + bounded conflict detection | 5 | Stable identity, no silent LLM best-guess | Medium |
 | **M26** | AI Critique Service + `:Conflict`/`:Suggestion` nodes | 6 | Semantic critique as graph annotations | Medium |
 | **M27** | Graph authoring canvas: seed + delta model (read path) | 7 | Neo4j becomes the authoring front-end | High |
+| **M27-b** | AI Critique into Graph: lifts M26 Postgres annotations into Neo4j graph nodes; waits on M27 graph substrate | 7 | `:Conflict`/`:Suggestion` nodes read back from graph | Med-High (planned, not yet scheduled) |
 | **M28** | Graph merge + graph→ContentPlan exporter (write path) | 7 | Approve triggers graph-merge → existing materialize | High |
 | **M29** | Chat assistant (chatExplain/chatPropose) + `needs_review` queue | 8 | Human-in-the-loop review & fix loop | Medium |
 | **M32** | Authoring-path retirement: Pin → Prove → Prune | 7/8 | Delete the superseded `plan_json` authoring surface + legacy LLM methods the same PR that flips the flags | Medium |
-| **M30** | Pre-resolved per-state overlay snapshots | Phase A in progress | Kill the Redis merge step | Med (Phase A in progress) |
-| **M31** | Task-graph agent swarm | optional | 80% benefit already covered by M21–M22 + M29 | High (deferred) |
+| **M30** | Pre-resolved per-state overlay snapshots | Phase A in progress | Kill the Redis merge step | Med (Phase A in progress) · docs: M30-M31-deferred.md, M30-snapshots.md, M30-benchmark-results.md |
+| **M31** | Task-graph agent swarm | optional | 80% benefit already covered by M21–M22 + M29 | High (deferred) · doc folded into M30-M31-deferred.md |
 
 ---
 

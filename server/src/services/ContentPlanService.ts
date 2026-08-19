@@ -8,7 +8,6 @@ import { createLLMProvider } from './LLMService.js';
 import type { LLMProvider, ExistingContentContext, LLMUsage, ExistingLocation } from './types/LLMTypes.js';
 import type { IntakeConflictPreview } from '@las-flores/shared';
 import { injectAssetNeeds } from './AssetNeedsService.js';
-import { generateForPlan } from './LoreGenerator.js';
 import { resolveContentDir } from './StoryBuilderLore.js';
 import { identityResolver } from './IdentityResolver.js';
 

@@ -1,6 +1,6 @@
 # M32 — Authoring-Path Retirement & Consolidation
 
-> **Status:** PR 5 residue + PR 6 + PR 7 complete · **Branch:** `feat/graph-db-implementation` (the originally-referenced `milestone/32-authoring-retirement` branch does not exist locally; PR1–PR4 and most of PR5 already landed here) · **PR size target:** ~25 files per PR
+> **Status:** Shipped (PR 1–PR 7 complete) · **Branch:** `feat/graph-db-implementation` (the originally-referenced `milestone/32-authoring-retirement` branch does not exist locally; PR1–PR7 landed here) · **PR size target:** ~25 files per PR
 > **Phase:** 7 (follows M28 graph write path) / 8 · **Source:** `ARCHITECTURE_SEPARATION_ANALYSIS.md` §8, §12–13, §15; **fixes the orphan gap** across M23/M27/M28/M29
 >
 > M32 is implemented as a **7-PR workstream** so each PR stays within the
@@ -40,7 +40,7 @@ For every candidate, classify **Retire / Refactor-Reuse / Keep**:
 ## Retirement ledger (frozen during **Pin**)
 
 The ledger below was finalised after re-evaluating every candidate against live
-code consumers. Three draft classifications changed materially:
+code consumers. Four draft classifications changed materially:
 
 1. `ContentSkeletonGenerator.ts` → **Refactor-Reuse**, not Retire: its file-path
    helpers are imported by the materialize pipeline that M32 explicitly keeps.
@@ -49,6 +49,12 @@ code consumers. Three draft classifications changed materially:
    very pipeline M32 mandates stays unchanged.
 3. `dialogue_overlays.nodes` → **not listed** (kept): overlays are not
    externalised and the resolver still merges them from DB.
+4. `ContentPlanService.validateAndRepairOutline` / `generateFallbackPlan` →
+   **Refactor-Reuse (kept)**, not Retire: the `ContentPlanValidation.ts` *file*
+   was deleted (its `uuidv4` moved to `@las-flores/shared`), but the methods
+   themselves were inlined into `ContentPlanService.ts` (L27–33) and their
+   `*Impl` helpers retain internal callers (`generateFallbackPlanImpl` at L304).
+   Misclassified as "Retire" in earlier drafts — they are live code.
 
 | Candidate | Class | Notes / Evidence |
 |---|---|---|
@@ -57,7 +63,8 @@ code consumers. Three draft classifications changed materially:
 | `ContentSkeletonGenerator.ts` | Refactor-Reuse | `resolveFilePath`/`generateYaml` kept; imported by `StoryBuilderFileWriter`, `StoryBuilderPlanOps` (stagePlan), `StoryBuilderLore`, `PromptFileGenerator`, `AssetPublishService`, `PlanVerificationService` |
 | `OutlineChunking.ts` | Retire + extract | `EntityCandidate` type moves into `LLMTypes.ts` / shared; `chunkDescription`/`mergeCandidates` retire with the outline path |
 | `PlanTemplates.ts`, `PlanTemplateBuilders.ts` | Retire | only consumed by legacy template/clone meta routes |
-| `ContentPlanValidation.ts` | Retire + extract | `uuidv4` moves to a shared util (used by kept `RevisionService`); `validateAndRepairOutline`/`generateFallbackPlan` retire |
+| `ContentPlanValidation.ts` (file) | Retire + extract | File deleted; `uuidv4` moved to `@las-flores/shared` (used by kept `RevisionService`) |
+| `ContentPlanService.validateAndRepairOutline` / `generateFallbackPlan` | Refactor-Reuse (kept) | Retained + inlined into `ContentPlanService.ts` (L27–33); `*Impl` helpers still have internal callers (`generateFallbackPlanImpl` at L304). NOT retired — misclassified as "Retire" in earlier drafts. |
 | `StoryBuilderValidation.ts` | Keep | `buildValidationErrors` still feeds the kept `stagePlan` materializer |
 | `admin-story-builder-generate.ts`, `admin-story-builder-drafts.ts` | Retire | legacy intake + draft endpoints |
 | `admin-story-builder-meta.ts` (templates/clone/execute) | Retire | template/clone endpoints; `execute` verified unused after the UI rewiring |
@@ -85,7 +92,9 @@ code consumers. Three draft classifications changed materially:
 - Rejects direct `plan_json` edits when graph deltas are present
 - Proved: 7 integration suites, 64/64 tests pass, build + `validate:content` green, in-container health OK
 
-### PR 3 — Graph Intake Path (current)
+### PR 3 — Graph Intake Path
+**Status: Complete**
+
 - Created `GraphIntakeService.ts` with `createPlanFromDescription` → `chatPropose` → `GraphDeltaService` write path
 - Added POST `/plans/graph-intake` route + mounted in `admin-story-builder.ts`
 - Tweaked `StoryBuilderPlanOps.ts` so `generateLore`/`generateFill` emit MODIFY deltas

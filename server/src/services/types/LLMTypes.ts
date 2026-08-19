@@ -67,6 +67,9 @@ export interface LLMProvider {
     scope: CritiqueScopeType,
   ): Promise<{ annotations: CritiqueAnnotation[]; usage: LLMUsage | null }>;
 
+  /** Gather the existing content context used as LLM authoring grounding. */
+  gatherContext(): Promise<ExistingContentContext>;
+
   /**
    * Resolve the model that `analyzePlanForConflicts` will actually use for a
    * given scope (the deep-model split for cross-entity audits). The critique

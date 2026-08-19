@@ -1,5 +1,6 @@
 import { ContentPlanSchema, GraphDeltaSchema, type ContentPlan, type ContentPlanItem, type IntakeConflictPreview, type CritiqueAnnotation, type GraphDelta, type GraphDeltaEdge, type ChatMessage, type ConflictChatContext } from '@las-flores/shared';
 import type { LLMProvider, ExistingContentContext, LLMUsage, CritiqueScopeType } from './types/LLMTypes.js';
+import { gatherExistingContentContext } from './ContentContext.js';
 
 const MOCK_IDS = {
   planId: 'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d',
@@ -22,6 +23,9 @@ function mockNodeType(t: string): string {
 }
 
 export class MockProvider implements LLMProvider {
+  async gatherContext(): Promise<ExistingContentContext> {
+    return gatherExistingContentContext();
+  }
   async generateLore(item: ContentPlanItem, _context: ExistingContentContext): Promise<string> {
     const name = item.name || 'Untitled';
     const description = item.fields.description || '';

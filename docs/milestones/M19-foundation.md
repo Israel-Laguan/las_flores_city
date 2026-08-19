@@ -1,6 +1,6 @@
 # M19 — Foundation: Module Boundaries + Content-Read Pool + Graph Analysis
 
-> **Status:** Implemented · **Branch:** `milestone/19-foundation` · **PR size target:** ~25 files
+> **Status:** Shipped · **Branch:** `milestone/19-foundation` · **PR size target:** ~25 files
 > **Phase:** 0 · **Source:** `ARCHITECTURE_SEPARATION_ANALYSIS.md` §3–4 (Option 1), §5 (A1), §11 (AGE vs Neo4j)
 
 ## Goal

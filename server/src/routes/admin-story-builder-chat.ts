@@ -62,7 +62,7 @@ adminStoryBuilderChatRouter.post('/plans/:id/chat', async (req: AuthRequest, res
     }
 
     if (mode === 'propose') {
-      const { reply, deltas, deltaEdges, usage } = await chatService.propose(id, history, annotationId);
+      const { reply, deltas, deltaEdges, usage } = await chatService.propose(id, history, undefined, annotationId);
       emitAdminEvent('plan_chat_reply', { mode: 'propose', turns: history.length, deltas: deltas.length, annotationId: annotationId ?? null }, id, req.userId);
       res.json({ success: true, data: { mode: 'propose', reply, deltas, deltaEdges, usage }, timestamp: new Date().toISOString() });
       return;

@@ -21,7 +21,6 @@ adminStoryBuilderPlansRouter.post('/plans', async (req: AuthRequest, res) => {
 
     const validatedPlan = ContentPlanSchema.parse(plan);
     validatedPlan.status = 'proposed';
-    const usage = null;
 
     const result = await queryOLTP(
       `INSERT INTO content_plans (description, plan_json, status, created_by)
@@ -33,16 +32,9 @@ adminStoryBuilderPlansRouter.post('/plans', async (req: AuthRequest, res) => {
     const planId = result.rows[0].id;
 
     const eventData: Record<string, unknown> = {
-      descriptionLength: description.trim().length,
+      descriptionLength: validatedPlan.description.trim().length,
       itemCount: validatedPlan.items.length,
     };
-    if (usage) {
-      eventData.totalTokens = usage.totalTokens;
-      eventData.promptTokens = usage.promptTokens;
-      eventData.completionTokens = usage.completionTokens;
-      eventData.model = usage.model;
-      eventData.estimatedCostUsd = usage.estimatedCostUsd;
-    }
     emitAdminEvent('plan_created', eventData, planId, req.userId);
 
     res.json({
