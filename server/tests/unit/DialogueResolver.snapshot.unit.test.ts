@@ -9,7 +9,12 @@
 // Mocking strategy (per AGENTS.md):
 //   - queryOLTP / queryContent mocked for DB-free tests
 //   - getCache / setCache mocked (Redis is never touched directly)
-//   - fetchContentJson mocked (MinIO is never touched directly)
+//   - fetchContentJson mocked (MinIO is never touched directly) — this is
+//     the SNAPSHOT blob fetch made directly by DialogueResolver
+//   - fetchNodesFromContentUrl mocked — M32 dropped dialogue_trees.nodes,
+//     so the BASE tree node map is hydrated from the CDN via `content_url`.
+//     Stubbing it separately from fetchContentJson keeps the assertions
+//     about the snapshot fetch unambiguous.
 //   - SnapshotService.getSnapshotContentUrl mocked
 // ============================================================
 
@@ -45,6 +50,15 @@ jestGlobals.mock('../../src/services/StorageService.js', () => ({
   resolveMediaUrl: jestGlobals.fn(async () => 'url'),
 }));
 
+// M32/M23: the base tree's node map is externalized to the CDN behind
+// `content_url` (the `nodes` JSONB column is dropped), so stub the tree
+// hydration helper. Keeping this separate from `fetchContentJson` means the
+// snapshot-fetch assertions below observe only the snapshot path.
+jestGlobals.mock('../../src/services/contentFetch.js', () => ({
+  fetchNodesFromContentUrl: jestGlobals.fn(),
+  fetchChunkFromContentUrl: jestGlobals.fn(),
+}));
+
 // Mock SnapshotService
 jestGlobals.mock('../../src/services/SnapshotService.js', () => ({
   getSnapshotContentUrl: jestGlobals.fn(async () => null),
@@ -62,12 +76,14 @@ jestGlobals.mock('../../src/services/SnapshotService.js', () => ({
 import { DialogueResolver } from '../../src/services/DialogueResolver.js';
 import { queryOLTP, queryContent, getCache, setCache } from '@las-flores/infra';
 import { fetchContentJson } from '../../src/services/StorageService.js';
+import { fetchNodesFromContentUrl } from '../../src/services/contentFetch.js';
 import { getSnapshotContentUrl } from '../../src/services/SnapshotService.js';
 
 // ── Test fixtures ───────────────────────────────────────────────
 
 const MOCK_TREE_ID = 'c0000000-0000-4000-8000-000000000001';
 const MOCK_USER_ID = 'u0000000-0000-4000-8000-000000000001';
+const MOCK_TREE_CONTENT_URL = 's3://bucket/trees/base.json';
 
 const MOCK_BASE_TREE = {
   id: MOCK_TREE_ID,
@@ -77,7 +93,9 @@ const MOCK_BASE_TREE = {
     node_002: { id: 'node_002', text: 'World', choices: [] },
   },
   updated_at: new Date('2024-01-01'),
-  content_url: null,
+  // M32: the tree row carries only a CDN pointer; `nodes` above is the
+  // payload served from that pointer, not a DB column.
+  content_url: MOCK_TREE_CONTENT_URL,
 };
 
 const MOCK_OVERLAY = {
@@ -103,6 +121,23 @@ const MOCK_MERGED_TREE = {
 describe('DialogueResolver - Snapshot Fast Path (M30 Phase A)', () => {
   beforeEach(() => {
     jestGlobals.clearAllMocks();
+    // M32: every path through _resolveTreeForUserInner loads the base tree
+    // (it feeds the versioned cache key), and the node map now comes from the
+    // CDN. Default it here so each test is self-contained rather than relying
+    // on a previous test's leftover mockImplementation.
+    (fetchNodesFromContentUrl as jest.Mock).mockResolvedValue(MOCK_BASE_TREE.nodes);
+    (queryContent as jest.Mock).mockImplementation(async (sql: string) => {
+      if (sql.includes('dialogue_trees')) return { rows: [MOCK_BASE_TREE] };
+      if (sql.includes('dialogue_overlays')) return { rows: [MOCK_OVERLAY] };
+      return { rows: [] };
+    });
+    (queryOLTP as jest.Mock).mockImplementation(async (sql: string) => {
+      if (sql.includes('user_entitlements')) return { rows: [{ is_nsfw_unlocked: false }] };
+      if (sql.includes('player_states')) {
+        return { rows: [{ alignment: 'neutral', story_beat: 'prologue' }] };
+      }
+      return { rows: [] };
+    });
   });
 
   afterEach(() => {

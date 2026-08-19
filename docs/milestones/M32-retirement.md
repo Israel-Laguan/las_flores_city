@@ -74,7 +74,7 @@ code consumers. Four draft classifications changed materially:
 | `LLMProvider.parseDescription` (legacy Moment 1) | Retire | replaced by graph-intake + `chatPropose` |
 | `LLMProvider.generateOutline` / `refinePlan` / `refinePlanItems` (single-turn) | Retire | superseded by M29 `chatExplain`/`chatPropose` |
 | `LLMProvider.extractEntities` | Retire | only used by the outline-chunking intake path |
-| `dialogue_trees.nodes`, `dialogue_chunks.nodes` / `leaves` (JSONB) | Retire (column drop) | M23 CDN read path is live; M30 snapshots also read via `content_url`. **Drop gated by `npm run probe:content-urls` passing: every row's `content_url` must resolve.** `SnapshotService` must stop writing the dropped columns. |
+| `dialogue_trees.nodes`, `dialogue_chunks.nodes` / `leaves` (JSONB) | Retired (column dropped) | Dropped via migration `076_drop_dialogue_jsonb.sql` (commit `5443b007`). The M23 CDN read path is now the sole source of truth: `DialogueResolver.loadBaseTree`/`loadBaseChunk` throw on a NULL `content_url` and hydrate `{nodes, leaves}` exclusively from the CDN via `server/src/services/contentFetch.ts`. `SnapshotService` no longer writes the dropped columns. Unit tests must stub `contentFetch` and supply a `content_url` pointer (see AGENTS.md Mocking Rule 7b); integration tests seed a real `content_url` via `ContentPublishService.publishDialogueTree(...)`. |
 | `dialogue_overlays.nodes` (JSONB) | Keep | overlays are not externalised; still merged from DB |
 | `plan_json` column | Keep | M28 exporter transport for `approveAndSolidifyPlan` → `stagePlan`/`migrateContent`/`verifyPlan`; the kept materialize pipeline reads it |
 | `intake.ts` `resetOrphanedFillJobs` boot call | Retire | `PlanGenerationJob` is removed |

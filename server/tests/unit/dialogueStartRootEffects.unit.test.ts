@@ -18,7 +18,10 @@ import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 
 const DIALOGUE_ID = 'd-1';
 const USER_ID = 'u-1';
+const CHARACTER_ID = 'c-1';
+const SCENE_ID = 's-1';
 const ROOT_TRUST_DELTA = 5;
+const TREE_CONTENT_URL = 's3://content/trees/d-1.json';
 
 // In-memory "player_states" row.
 const db: { activeDialogueId: string | null; stats: Record<string, number> } = {
@@ -60,8 +63,31 @@ const withOLTPTransactionMock = jest.fn(async (callback: any) => {
 });
 
 const queryOLTPMock = jest.fn(async (sql: string) => {
+  // resolveDialogueTree step 1: the scene's ordered dialogue ids.
+  // M32: this query no longer joins dialogue_trees (the `nodes` JSONB column
+  // it used to probe for `speaker_id` was dropped); it returns ids only.
   if (sql.includes('FROM scenes s')) {
-    return { rows: [{ id: DIALOGUE_ID, start_node_id: 'root', metadata: {}, nodes: {} }] };
+    return { rows: [{ dialogue_id: DIALOGUE_ID }] };
+  }
+  // resolveDialogueTree fallback: trees owned by the character.
+  if (sql.includes('FROM dialogue_trees') && sql.includes('character_id')) {
+    return { rows: [{ id: DIALOGUE_ID }] };
+  }
+  // resolveDialogueTree step 2 (loadTreeWithNodes): the tree row, which now
+  // carries a `content_url` pointer instead of an inline `nodes` map.
+  if (sql.includes('FROM dialogue_trees')) {
+    return {
+      rows: [
+        {
+          id: DIALOGUE_ID,
+          name: 'test tree',
+          description: null,
+          start_node_id: 'root',
+          metadata: {},
+          content_url: TREE_CONTENT_URL,
+        },
+      ],
+    };
   }
   if (sql.includes('FROM dialogue_chunks')) {
     return { rows: hasStartChunk ? [{ id: 'chunk-1', chunk_key: 'root' }] : [] };
@@ -77,10 +103,20 @@ jest.mock('@las-flores/infra', () => ({
 
 const rootNode = {
   id: 'root',
+  // resolveDialogueTree requires a node spoken by the requested character;
+  // this used to be asserted in SQL against dialogue_trees.nodes.
+  speaker_id: CHARACTER_ID,
   text: 'hello',
   effects: { stat_set: { adeyemi_trust: ROOT_TRUST_DELTA } },
   choices: [],
 };
+
+// M32/M23: the tree's node map is fetched from the CDN via `content_url`
+// rather than read from the dropped `dialogue_trees.nodes` column.
+jest.mock('../../src/services/contentFetch.js', () => ({
+  fetchNodesFromContentUrl: jest.fn(async () => ({ root: rootNode })),
+  fetchChunkFromContentUrl: jest.fn(async () => ({ nodes: { root: rootNode }, leaves: {} })),
+}));
 
 jest.mock('../../src/services/DialogueResolver.js', () => ({
   DialogueResolver: {
@@ -139,7 +175,7 @@ jest.mock('../../src/database/repositories/PlayerStateRepository.js', () => ({
 import { handleStartDialogue } from '../../src/routes/dialogue-start.js';
 
 function makeReq() {
-  return { userId: USER_ID, body: { characterId: 'c-1', sceneId: 's-1' } } as any;
+  return { userId: USER_ID, body: { characterId: CHARACTER_ID, sceneId: SCENE_ID } } as any;
 }
 
 function makeRes() {

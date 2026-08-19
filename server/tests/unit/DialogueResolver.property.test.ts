@@ -19,6 +19,10 @@ import { stringOf } from './__utils__/fastCheckV4';
 //     generator, keeping tests DB-free.
 //   - getCache / setCache are mocked so no Redis connection
 //     is needed.
+//   - fetchChunkFromContentUrl is mocked because M32 dropped the
+//     `nodes`/`leaves` JSONB columns from dialogue_chunks: the row
+//     now only carries a `content_url` pointer and the resolver
+//     hydrates `{nodes, leaves}` from the CDN.
 //   - The pure deepMergeNodes function is tested directly
 //     (no mocks needed — it is a pure dictionary patch).
 // ============================================================
@@ -37,12 +41,20 @@ jestGlobals.mock('@las-flores/infra', () => ({
   closeRedis: jestGlobals.fn(async () => undefined),
 }));
 
+// M32/M23: the chunk `{nodes, leaves}` blob lives in MinIO/CDN behind
+// `content_url`, so stub the CDN fetch instead of the dropped JSONB columns.
+jestGlobals.mock('../../src/services/contentFetch.js', () => ({
+  fetchNodesFromContentUrl: jestGlobals.fn(),
+  fetchChunkFromContentUrl: jestGlobals.fn(),
+}));
+
 // ── Imports (after mocks) ─────────────────────────────────────
 
 import { DialogueResolver } from '../../src/services/DialogueResolver.js';
 import { deepMergeNodes } from '../../src/services/dialogueResolverUtils.js';
 import { queryOLTP, queryContent } from '@las-flores/infra';
 import { closeRedis } from '@las-flores/infra';
+import { fetchChunkFromContentUrl } from '../../src/services/contentFetch.js';
 import type { DialogueNode, Leaf } from '@las-flores/shared';
 
 // ── Arbitraries ───────────────────────────────────────────────
@@ -113,14 +125,20 @@ const leavesArb = (): fc.Arbitrary<Record<string, Leaf>> =>
 const uuidArb = (): fc.Arbitrary<string> => fc.uuid();
 
 /**
- * Generates a complete BaseDialogueChunkRow fixture with at most
- * 15 nodes (the spec invariant we want to verify).
+ * Generates a complete chunk fixture with at most 15 nodes (the spec
+ * invariant we want to verify).
+ *
+ * M32: `nodes` / `leaves` are no longer DB columns — they live in the CDN
+ * blob addressed by `content_url`. The fixture keeps them together for
+ * convenience; `wireQueryOLTP` splits them into the DB row (id, tree_id,
+ * chunk_key, content_url) and the CDN payload ({nodes, leaves}).
  */
 const chunkRowArb = () =>
   fc.record({
     id: uuidArb(),
     tree_id: uuidArb(),
     chunk_key: nodeIdArb(),
+    content_url: uuidArb().map((k) => `s3://content/chunks/${k}.json`),
     nodes: nodesArb(15),
     leaves: leavesArb(),
   });
@@ -155,12 +173,17 @@ beforeEach(() => {
  *
  * Jest mock returns are consumed in call order, so we push them in the exact
  * execution order above per-mock (order is independent across the two mocks).
+ *
+ * M32: loadBaseChunk's SQL row no longer contains `nodes`/`leaves` (columns
+ * dropped); it returns a `content_url` pointer and the resolver hydrates the
+ * `{nodes, leaves}` blob via fetchChunkFromContentUrl, which we stub here.
  */
 function wireQueryOLTP(
   chunkRow: {
     id: string;
     tree_id: string;
     chunk_key: string;
+    content_url: string;
     nodes: Record<string, DialogueNode>;
     leaves: Record<string, Leaf>;
   },
@@ -168,12 +191,28 @@ function wireQueryOLTP(
 ): void {
   const mockContent = queryContent as jest.Mock<any>;
   const mockPlayer = queryOLTP as jest.Mock<any>;
+  const mockChunkCdn = fetchChunkFromContentUrl as jest.Mock<any>;
 
   const hasOverlay = Object.keys(overlayNodes).length > 0;
 
+  // CDN: the externalized `{nodes, leaves}` blob for this chunk.
+  mockChunkCdn.mockResolvedValue({
+    nodes: chunkRow.nodes,
+    leaves: chunkRow.leaves,
+  });
+
   // queryContent: content reads
-  // 1. loadBaseChunk (called before Promise.all)
-  mockContent.mockResolvedValueOnce({ rows: [chunkRow] });
+  // 1. loadBaseChunk (called before Promise.all) — post-M32 column set only.
+  mockContent.mockResolvedValueOnce({
+    rows: [
+      {
+        id: chunkRow.id,
+        tree_id: chunkRow.tree_id,
+        chunk_key: chunkRow.chunk_key,
+        content_url: chunkRow.content_url,
+      },
+    ],
+  });
   // 2. getActiveMysteries (Promise.all[1])
   mockContent.mockResolvedValueOnce({ rows: [] });
   // 3. loadMysteryOverlays — optionally inject overlay

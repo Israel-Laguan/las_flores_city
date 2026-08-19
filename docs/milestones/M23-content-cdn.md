@@ -58,14 +58,22 @@ and a migration that backfills or verifies every row has a reachable `content_ur
 `DialogueResolver.loadBaseChunk`/`loadBaseChunkByKey` (`server/src/services/DialogueResolver.ts`)
 
 already hydrate **both** `nodes` and `leaves` from the CDN blob via `fetchChunkFromContentUrl`
-(`server/src/services/contentFetch.ts`), which returns the full `{ nodes, leaves }` shape and
-falls back to the in-DB JSONB per field (`nodes: cdn?.nodes ?? row.nodes, leaves: cdn?.leaves ??
-row.leaves`). A regression test (`server/tests/integration/dialogue-cdn.integration.test.ts`) asserts
-`resolved.chunk.leaves` is populated from `content_url` when the DB `leaves` column is empty, so the M32
-column-drop precondition described here is already met.
+(`server/src/services/contentFetch.ts`), which returns the full `{ nodes, leaves }` shape.
 
-**Phase 2 column-drop caveat (verified):** the resolver already hydrates `leaves` from the CDN,
-and the regression test confirms the `content_url`-NULL fallback works.
+**Phase 2 column-drop (completed in M32):** Commit `5443b007` dropped the `dialogue_trees.nodes`
+and `dialogue_chunks.nodes`/`leaves` JSONB columns via migration `076_drop_dialogue_jsonb.sql`.
+There is **no longer any in-DB JSONB fallback** — `DialogueResolver.loadBaseTree`/`loadBaseChunk`
+throw on a NULL `content_url` and read the node/leaf maps exclusively from the CDN. This is the
+state the original Phase 2 caveat was gating on, and it is now shipped. The dual-write/fallback
+strategy described in "Phase 1 dual-write / fallback decision" therefore only applied during the
+Phase 1 → M32 transition; from M32 onward the columns no longer exist.
+
+**Unit-test impact of the M32 column drop:** dialogue unit tests can no longer return
+`nodes`/`leaves` in the DB row. They must (a) return a `content_url` pointer and (b) stub
+`server/src/services/contentFetch.js` (`fetchNodesFromContentUrl` / `fetchChunkFromContentUrl`)
+to supply the node/leaf map. The same contract applies to admin routes `admin-list-views`
+(`/dialogues` `nodeCount`) and `admin-story-beats` (`/:slug/usages`). See AGENTS.md Mocking
+Rule 7b for the canonical pattern.
 
 ## Risks & verification
 
@@ -78,7 +86,7 @@ and the regression test confirms the `content_url`-NULL fallback works.
 
 ## Definition of Done
 
-- [x] Chunks + tree nodes published to MinIO; DB rows reference via `content_url` (JSONB retained for fallback)
+- [x] Chunks + tree nodes published to MinIO; DB rows reference via `content_url` (JSONB retained for fallback during Phase 1)
 - [x] `DialogueResolver` fetches from CDN and merges overlays in Redis (Phase 1)
 - [x] Publish-first invalidation ordering correct; content-addressed keys in use; resolver cache keys include content-version token
 - [x] Full dialogue resolution works end-to-end (unit + integration)
@@ -95,5 +103,5 @@ Verified on the local Podman stack (OLTP + Redis + MinIO):
   yields a different hash/key (content-addressing confirmed). Real bucket already holds
   ~50 content-addressed dialogue blobs from actual migration runs.
 - **Tests:** `dialogue-cdn.integration.test.ts` + `dialogue-resolver.test.ts` pass;
-  full integration suite 51/51 (351 tests), unit suite 80/80 (912 tests).
+  full integration suite + unit/smoke suite green via `npx --no-install jest tests/unit tests/smoke --no-cache --forceExit`.
 - **Lint/build:** server lint 0 errors; `tsc` build clean.

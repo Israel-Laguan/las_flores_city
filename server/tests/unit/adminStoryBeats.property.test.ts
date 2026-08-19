@@ -34,6 +34,13 @@ jest.mock('@las-flores/infra', () => ({
   getCache: jest.fn(async () => null),
 }));
 
+// M32/M23: beat→dialogue linkage is no longer a `jsonb_each(dt.nodes)` SQL
+// join (that column is dropped); the route loads each tree's node map from
+// the CDN via `content_url` and scans it in Node.
+jest.mock('../../src/services/contentFetch.js', () => ({
+  fetchNodesFromContentUrl: jest.fn(async () => ({})),
+}));
+
 jest.mock('../../src/middleware/adminAuth.js', () => ({
   authAndAdminMiddleware: (_req: any, _res: any, next: any) => next(),
 }));
@@ -42,6 +49,7 @@ jest.mock('../../src/middleware/adminAuth.js', () => ({
 
 import { queryOLTP } from '@las-flores/infra';
 import { deleteCache, setCache } from '@las-flores/infra';
+import { fetchNodesFromContentUrl } from '../../src/services/contentFetch.js';
 import { adminStoryBeatsRouter } from '../../src/routes/admin-story-beats.js';
 
 // ── App fixture ──────────────────────────────────────────────
@@ -58,6 +66,9 @@ function makeApp() {
 const mockQuery = queryOLTP as jest.MockedFunction<typeof queryOLTP>;
 const mockDeleteCache = deleteCache as jest.MockedFunction<typeof deleteCache>;
 const mockSetCache = setCache as jest.MockedFunction<typeof setCache>;
+const mockFetchNodes = fetchNodesFromContentUrl as jest.MockedFunction<
+  typeof fetchNodesFromContentUrl
+>;
 
 // ── Arbitraries ──────────────────────────────────────────────
 
@@ -574,7 +585,13 @@ describe('Property 6: Validation rejects invalid inputs', () => {
 // Validates: Requirements 5.2, 5.3
 // ============================================================
 
-/** Generates mock dialogue usage rows */
+/**
+ * Generates mock dialogue usage rows.
+ *
+ * M32: these are no longer SQL rows. Each one is realized below as a
+ * dialogue_trees row (id, name, content_url) plus a CDN node map holding a
+ * node whose `effects.story_beat` is the beat under test.
+ */
 const dialogueRowArb = () =>
   fc.record({
     dialogue_id: fc.uuid(),
@@ -601,12 +618,27 @@ describe('Property 7: Usages query completeness', () => {
           jest.clearAllMocks();
           const app = makeApp();
 
+          // Realize each expected dialogue usage as one tree row + CDN blob.
+          // Index-keyed content_url keeps the blob mapping unique.
+          const treeRows = dialogueRows.map((row, i) => ({
+            id: row.dialogue_id,
+            name: row.dialogue_name,
+            content_url: `s3://content/trees/${i}.json`,
+          }));
+          const nodesByUrl = new Map(
+            treeRows.map((tree, i) => [
+              tree.content_url,
+              { [dialogueRows[i].node_id]: { effects: { story_beat: slug } } },
+            ]),
+          );
+          mockFetchNodes.mockImplementation(async (url) => nodesByUrl.get(url as string) ?? {});
+
           // exists check
           mockQuery.mockResolvedValueOnce({ rows: [{ slug }], rowCount: 1 } as any);
-          // dialogue query
-          mockQuery.mockResolvedValueOnce({ rows: dialogueRows, rowCount: dialogueRows.length } as any);
           // scene query
           mockQuery.mockResolvedValueOnce({ rows: sceneRows, rowCount: sceneRows.length } as any);
+          // loadAllDialogueTreeNodes: SELECT id, name, content_url FROM dialogue_trees
+          mockQuery.mockResolvedValueOnce({ rows: treeRows, rowCount: treeRows.length } as any);
 
           const res = await request(app).get(`/${slug}/usages`);
 

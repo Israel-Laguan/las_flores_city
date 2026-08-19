@@ -18,6 +18,9 @@ import express from 'express';
 //
 // Mocking strategy:
 //   - queryOLTP is mocked via jest.mock.
+//   - fetchNodesFromContentUrl is mocked: M32 dropped dialogue_trees.nodes,
+//     so /dialogues derives `nodeCount` from the CDN blob addressed by the
+//     row's `content_url` instead of from a SQL-computed column.
 //   - authAndAdminMiddleware is mocked to pass through (bypass auth).
 //   - Tests use supertest against a minimal Express app.
 // ============================================================
@@ -28,6 +31,10 @@ jest.mock('@las-flores/infra', () => ({
   queryOLTP: jest.fn(),
 }));
 
+jest.mock('../../src/services/contentFetch.js', () => ({
+  fetchNodesFromContentUrl: jest.fn(async () => ({})),
+}));
+
 jest.mock('../../src/middleware/adminAuth.js', () => ({
   authAndAdminMiddleware: (_req: any, _res: any, next: any) => next(),
 }));
@@ -35,6 +42,7 @@ jest.mock('../../src/middleware/adminAuth.js', () => ({
 // ── Imports (after mocks) ────────────────────────────────────
 
 import { queryOLTP } from '@las-flores/infra';
+import { fetchNodesFromContentUrl } from '../../src/services/contentFetch.js';
 import { adminListViewsRouter } from '../../src/routes/admin-list-views.js';
 
 // ── App fixture ──────────────────────────────────────────────
@@ -49,6 +57,18 @@ function makeApp() {
 // ── Typed mock helpers ───────────────────────────────────────
 
 const mockQuery = queryOLTP as jest.MockedFunction<typeof queryOLTP>;
+const mockFetchNodes = fetchNodesFromContentUrl as jest.MockedFunction<
+  typeof fetchNodesFromContentUrl
+>;
+
+/** Builds a synthetic CDN node map with exactly `count` entries. */
+function makeNodeMap(count: number): Record<string, any> {
+  const nodes: Record<string, any> = {};
+  for (let i = 0; i < count; i++) {
+    nodes[`node_${i}`] = { id: `node_${i}`, text: 'x' };
+  }
+  return nodes;
+}
 
 // ── beforeEach: clear mocks ──────────────────────────────────
 
@@ -113,7 +133,9 @@ describe('Property 1: Pagination slice correctness', () => {
       orderKey: 'name',
       makeRow: (item: { id: string; name: string; description: string }) => ({
         ...item,
-        nodeCount: 0,
+        // M32: no `nodes` column — the row carries only a CDN pointer, and a
+        // null pointer yields nodeCount 0 without any CDN fetch.
+        content_url: null,
         beatAssociation: null,
         createdAt: new Date('2025-01-01').toISOString(),
         updatedAt: new Date('2025-01-01').toISOString(),
@@ -321,9 +343,27 @@ describe('Property 2: Response field mapping correctness', () => {
           jest.clearAllMocks();
           const app = makeApp();
 
+          // M32: `nodeCount` is no longer a SQL-computed column. The DB row
+          // exposes a `content_url` pointer and the route counts the keys of
+          // the CDN blob, so build the row/blob pair per fixture. Index-keyed
+          // URLs keep the mapping unique even if fc.uuid() repeats an id.
+          const dbRows = rows.map((row, i) => ({
+            id: row.id,
+            name: row.name,
+            description: row.description,
+            content_url: `s3://content/trees/${i}.json`,
+            beatAssociation: row.beatAssociation,
+            createdAt: row.createdAt,
+            updatedAt: row.updatedAt,
+          }));
+          const nodesByUrl = new Map(
+            dbRows.map((row, i) => [row.content_url, makeNodeMap(rows[i].nodeCount)]),
+          );
+          mockFetchNodes.mockImplementation(async (url) => nodesByUrl.get(url as string) ?? {});
+
           mockQuery
             .mockResolvedValueOnce({ rows: [{ count: rows.length }], rowCount: 1 } as any)
-            .mockResolvedValueOnce({ rows, rowCount: rows.length } as any);
+            .mockResolvedValueOnce({ rows: dbRows, rowCount: dbRows.length } as any);
 
           const res = await request(app).get('/dialogues').query({ page: 1, pageSize: 200 });
 
