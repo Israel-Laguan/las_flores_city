@@ -13,6 +13,7 @@ import { dialogueRouter } from '../../src/routes/dialogue.js';
 import { generateToken } from '../../src/middleware/auth.js';
 import { closeRedis, deleteCache, invalidatePattern } from '@las-flores/infra';
 import { MediaSigner } from '../../src/services/MediaSigner.js';
+import { publishDialogueTree } from '../../src/services/ContentPublishService.js';
 
 const { Pool } = pg;
 
@@ -114,14 +115,19 @@ beforeAll(async () => {
 
   const welcomeYamlPath = path.resolve(process.cwd(), '../content/dialogues/welcome_dialogue.yaml');
   const welcomeDialogue = yaml.load(fs.readFileSync(welcomeYamlPath, 'utf-8')) as any;
+  // M32: externalize the node map to the CDN; the in-DB `nodes` column is dropped.
+  const welcomeUrl = await publishDialogueTree(
+    welcomeDialogue.id,
+    JSON.stringify({ nodes: welcomeDialogue.nodes || {} }),
+  );
   await oltpPool.query(
-    `INSERT INTO dialogue_trees (id, name, description, start_node_id, nodes, metadata)
+    `INSERT INTO dialogue_trees (id, name, description, start_node_id, content_url, metadata)
      VALUES ($1, $2, $3, $4, $5, $6)
      ON CONFLICT (id) DO UPDATE SET
        name = EXCLUDED.name,
        description = EXCLUDED.description,
        start_node_id = EXCLUDED.start_node_id,
-       nodes = EXCLUDED.nodes,
+       content_url = EXCLUDED.content_url,
        metadata = EXCLUDED.metadata,
        updated_at = NOW()`,
     [
@@ -129,7 +135,7 @@ beforeAll(async () => {
       welcomeDialogue.name,
       welcomeDialogue.description || null,
       welcomeDialogue.start_node_id,
-      JSON.stringify(welcomeDialogue.nodes || {}),
+      welcomeUrl,
       JSON.stringify(welcomeDialogue.metadata || {}),
     ]
   );

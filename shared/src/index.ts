@@ -368,3 +368,4 @@ export type {
 } from './schemas/claim.js';
 
 export { isUuid } from './schemas/uuid.js';
+export { uuidv4 } from './utils/uuid.js';

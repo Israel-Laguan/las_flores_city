@@ -13,8 +13,8 @@ import { queryOLTP, closeConnections, invalidatePattern, closeRedis } from '@las
 //  3. Re-publishing changed content bumps the content-addressed key
 //     → the resolver's versioned cache key forces fresh resolution
 //     (no stale CDN reads).
-//  4. When `content_url` is NULL, the resolver falls back to the
-//     in-DB JSONB.
+//  4. `content_url` is the sole source of node/leaf maps; a NULL `content_url`
+//     is a hard error (the in-DB JSONB fallback was dropped in M32).
 //
 // Uses an in-memory MinIO simulation (mocked StorageService) for a
 // deterministic CDN without requiring a live MinIO during CI/Jest.
@@ -47,6 +47,7 @@ jest.doMock('../../src/services/StorageService.js', () => ({
 // are evaluated — mirrors the asset-promotion.test.ts pattern.
 let compileDialogueTree: typeof import('../../src/content/compiler.js').compileDialogueTree;
 let DialogueResolver: typeof import('../../src/services/DialogueResolver.js').DialogueResolver;
+let publishDialogueTree: (id: string, payload: string) => Promise<string>;
 import type { DialogueNode } from '@las-flores/shared';
 
 // Dedicated synthetic UUIDs + a read-only resolver user (no player rows
@@ -76,11 +77,14 @@ function baseNodes(text = 'v1'): Record<string, DialogueNode> {
 }
 
 async function seedTree(nodes: Record<string, DialogueNode>): Promise<void> {
+  // M32: the tree node map is externalized to the (mocked) CDN; the in-DB
+  // `nodes` JSONB column is dropped, so we publish and store `content_url`.
+  const url = await publishDialogueTree(TEST_TREE_ID, JSON.stringify({ nodes }));
   await queryOLTP(
-    `INSERT INTO dialogue_trees (id, name, start_node_id, nodes, content_url)
-     VALUES ($1, 'M23 CDN Tree', 'start', $2, NULL)
-     ON CONFLICT (id) DO UPDATE SET nodes = EXCLUDED.nodes, start_node_id = EXCLUDED.start_node_id, content_url = NULL, updated_at = NOW()`,
-    [TEST_TREE_ID, JSON.stringify(nodes)],
+    `INSERT INTO dialogue_trees (id, name, start_node_id, content_url)
+     VALUES ($1, 'M23 CDN Tree', 'start', $2)
+     ON CONFLICT (id) DO UPDATE SET content_url = EXCLUDED.content_url, start_node_id = EXCLUDED.start_node_id, updated_at = NOW()`,
+    [TEST_TREE_ID, url],
   );
 }
 
@@ -99,6 +103,8 @@ beforeAll(async () => {
   compileDialogueTree = compilerMod.compileDialogueTree;
   const resolverMod = await import('../../src/services/DialogueResolver.js');
   DialogueResolver = resolverMod.DialogueResolver;
+  const publishMod = await import('../../src/services/ContentPublishService.js');
+  publishDialogueTree = publishMod.publishDialogueTree;
 
   await seedTree(baseNodes('v1'));
   await compileDialogueTree(TEST_TREE_ID);
@@ -188,18 +194,21 @@ describe('M23 dialogue CDN externalization', () => {
     expect(resolved.mergedNodes.next.text).toBe('end-v2');
   });
 
-  it('falls back to in-DB nodes when content_url is NULL', async () => {
+  it('throws when content_url is NULL (no in-DB fallback after M32 drop)', async () => {
     // Insert a chunk row with content_url NULL (no externalized blob) using a
     // private fixture UUID, inserted explicitly (no transaction wrapper).
+    // M32 dropped the in-DB `nodes`/`leaves` JSONB columns and the resolver's
+    // fallback, so a NULL content_url is a hard error, not a silent DB read.
     await queryOLTP(
-      `INSERT INTO dialogue_chunks (id, tree_id, chunk_key, nodes, leaves, content_url)
-       VALUES ($1, $2, 'fallback_chunk', $3, '{}', NULL)`,
-      [FALLBACK_CHUNK_ID, TEST_TREE_ID, JSON.stringify({ root: { id: 'root', type: 'narrator', text: 'from-db' } })],
+      `INSERT INTO dialogue_chunks (id, tree_id, chunk_key, content_url)
+       VALUES ($1, $2, 'fallback_chunk', NULL)`,
+      [FALLBACK_CHUNK_ID, TEST_TREE_ID],
     );
 
     // loadBaseChunk resolves by the chunk's UUID id, which has content_url NULL.
-    const resolved = await DialogueResolver.resolveChunkForUser(TEST_USER_ID, FALLBACK_CHUNK_ID, 'fallback_chunk');
-    expect(resolved.mergedNodes.root.text).toBe('from-db');
+    await expect(
+      DialogueResolver.resolveChunkForUser(TEST_USER_ID, FALLBACK_CHUNK_ID, 'fallback_chunk')
+    ).rejects.toThrow(/content_url|not found|failed to load/i);
   });
 
   it('hydrates chunk.leaves from content_url when the DB leaves column holds no content', async () => {
@@ -224,11 +233,12 @@ describe('M23 dialogue CDN externalization', () => {
     const leafUrl = `s3://las-flores/${leafKey}`;
 
     // Insert a leaf chunk fixture with its own private UUID (no transaction
-    // wrapper), pointing at the published blob via content_url.
+    // wrapper), pointing at the published blob via content_url. M32 dropped the
+    // in-DB `nodes`/`leaves` columns, so only `content_url` is written here.
     await queryOLTP(
-      `INSERT INTO dialogue_chunks (id, tree_id, chunk_key, nodes, leaves, content_url)
-       VALUES ($1, $2, 'leaf_chunk', $3, '{}', $4)`,
-      [LEAF_CHUNK_ID, TEST_TREE_ID, JSON.stringify(cdnNodes), leafUrl],
+      `INSERT INTO dialogue_chunks (id, tree_id, chunk_key, content_url)
+       VALUES ($1, $2, 'leaf_chunk', $3)`,
+      [LEAF_CHUNK_ID, TEST_TREE_ID, leafUrl],
     );
 
     const resolved = await DialogueResolver.resolveChunkForUser(TEST_USER_ID, LEAF_CHUNK_ID, 'leaf_chunk');

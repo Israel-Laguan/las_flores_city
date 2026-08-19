@@ -6,6 +6,7 @@ import { closeRedis } from '@las-flores/infra';
 import { dialogueRouter } from '../../src/routes/dialogue.js';
 import { generateToken } from '../../src/middleware/auth.js';
 import { processBreakthroughSolve } from '../../src/routes/dialogue-breakthrough-helpers.js';
+import { publishDialogueTree } from '../../src/services/ContentPublishService.js';
 
 // ============================================================
 // Breakthrough Concurrency Test (50 simultaneous requests)
@@ -60,13 +61,15 @@ const generateTestUserIds = (): string[] => {
 };
 
 async function seedDialogueTree(): Promise<void> {
+  // M32: externalize the node map to the CDN; the in-DB `nodes` column is dropped.
+  const url = await publishDialogueTree(TEST_TREE_ID, JSON.stringify({ nodes: solveNodes }));
   await queryOLTP(
-    `INSERT INTO dialogue_trees (id, name, start_node_id, nodes)
+    `INSERT INTO dialogue_trees (id, name, start_node_id, content_url)
      VALUES ($1, 'Concurrency Solve Tree', $2, $3)
      ON CONFLICT (id) DO UPDATE SET
        start_node_id = EXCLUDED.start_node_id,
-       nodes = EXCLUDED.nodes`,
-    [TEST_TREE_ID, SOLVE_NODE_ID, JSON.stringify(solveNodes)]
+       content_url = EXCLUDED.content_url`,
+    [TEST_TREE_ID, SOLVE_NODE_ID, url]
   );
 }
 

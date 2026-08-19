@@ -16,8 +16,7 @@ import { resolveContentDir, generateLoreStubs } from './StoryBuilderLore.js';
 import { generatePromptFiles } from './PromptFileGenerator.js';
 import { applyDelta, applyDeltaEdge, preflightDeltas, preflightDeltaEdges } from './GraphDeltaService.js';
 import { isNeo4jEnabled, runNeo4jTransaction } from './Neo4jClient.js';
-import { uuidv4 } from './ContentPlanValidation.js';
-import { CONTENT_TYPE_TO_NODE_TYPE } from '@las-flores/shared';
+import { uuidv4, CONTENT_TYPE_TO_NODE_TYPE } from '@las-flores/shared';
 import type { LLMProvider, ExistingContentContext } from './types/LLMTypes.js';
 import { buildFillFieldsPrompt } from './LLMPrompts.js';
 

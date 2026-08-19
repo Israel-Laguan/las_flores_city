@@ -3,6 +3,7 @@ import { authAndAdminMiddleware } from '../middleware/adminAuth.js';
 import { queryOLTP } from '@las-flores/infra';
 import { deleteCache, setCache } from '@las-flores/infra';
 import { StoryBeatSchema } from '@las-flores/shared';
+import { fetchNodesFromContentUrl } from '../services/contentFetch.js';
 
 /**
  * Admin Story Beats Router
@@ -28,6 +29,29 @@ async function refreshSlugCache(): Promise<void> {
     `SELECT slug FROM story_beats ORDER BY "order" ASC`
   );
   await setCache('story_beats:slugs', result.rows.map((r: { slug: string }) => r.slug), 0);
+}
+
+/**
+ * M32/M23: the tree node map is externalized to the CDN (`content_url`);
+ * the in-DB `nodes` JSONB column is dropped. These helpers load every
+ * dialogue tree's node map from the CDN once (admin-only, low frequency)
+ * so we can compute story-beat linkage client-side instead of via
+ * `jsonb_each(dt.nodes)` SQL joins.
+ */
+async function loadAllDialogueTreeNodes(): Promise<
+  Array<{ id: string; name: string; nodes: Record<string, any> }>
+> {
+  const result = await queryOLTP<{ id: string; name: string; content_url: string | null }>(
+    `SELECT id, name, content_url FROM dialogue_trees`
+  );
+  const out: Array<{ id: string; name: string; nodes: Record<string, any> }> = [];
+  for (const row of result.rows) {
+    if (!row.content_url) continue;
+    const nodes = await fetchNodesFromContentUrl(row.content_url, {});
+    if (!nodes) continue;
+    out.push({ id: row.id, name: row.name, nodes });
+  }
+  return out;
 }
 
 // ---------------------------------------------------------------------------
@@ -64,16 +88,9 @@ adminStoryBeatsRouter.get('/', async (_req, res) => {
 const SERVER_SIDE_BEATS = new Set(['act2_mystery_active', 'act3_finale_unlocked']);
 
 async function loadStoryArcData() {
-  const [beatsResult, dialogueResult, sceneResult] = await Promise.all([
+  const [beatsResult, sceneResult] = await Promise.all([
     queryOLTP(
       `SELECT slug, label, "order", description FROM story_beats ORDER BY "order" ASC`
-    ),
-    queryOLTP(
-      `SELECT dt.id AS dialogue_id, dt.name AS dialogue_name, node_entry.key AS node_id,
-              node_entry.value -> 'effects' ->> 'story_beat' AS beat_slug
-       FROM dialogue_trees dt,
-            jsonb_each(COALESCE(dt.nodes, '{}'::jsonb)) AS node_entry
-       WHERE node_entry.value -> 'effects' ->> 'story_beat' IS NOT NULL`
     ),
     queryOLTP(
       `SELECT id AS scene_id, name AS scene_name,
@@ -83,12 +100,17 @@ async function loadStoryArcData() {
     ),
   ]);
 
+  // M32/M23: build beat→dialogue linkage from CDN-loaded node maps
+  // (was `jsonb_each(dt.nodes)` SQL join on the dropped `nodes` column).
+  const trees = await loadAllDialogueTreeNodes();
   const beatToDialogues = new Map<string, Array<{ id: string; name: string; nodeId: string }>>();
-  for (const row of dialogueResult.rows) {
-    if (!beatToDialogues.has(row.beat_slug)) beatToDialogues.set(row.beat_slug, []);
-    beatToDialogues.get(row.beat_slug)!.push({
-      id: row.dialogue_id, name: row.dialogue_name, nodeId: row.node_id,
-    });
+  for (const tree of trees) {
+    for (const [nodeId, node] of Object.entries(tree.nodes)) {
+      const beatSlug = (node as any)?.effects?.story_beat;
+      if (!beatSlug) continue;
+      if (!beatToDialogues.has(beatSlug)) beatToDialogues.set(beatSlug, []);
+      beatToDialogues.get(beatSlug)!.push({ id: tree.id, name: tree.name, nodeId });
+    }
   }
 
   const beatToScenes = new Map<string, Array<{ id: string; name: string }>>();
@@ -281,23 +303,20 @@ adminStoryBeatsRouter.delete('/:slug', async (req, res) => {
       });
     }
 
-    // Check for active references in dialogues and scenes (independent queries)
-    const [dialogueCheck, sceneCheck] = await Promise.all([
-      queryOLTP(
-        `SELECT dt.id FROM dialogue_trees dt
-         CROSS JOIN LATERAL jsonb_each(dt.nodes) AS node_entry
-         WHERE dt.nodes IS NOT NULL
-           AND node_entry.value -> 'effects' ->> 'story_beat' = $1
-         LIMIT 1`,
-        [slug]
-      ),
-      queryOLTP(
-        `SELECT id FROM scenes WHERE metadata ->> 'required_story_beat' = $1 LIMIT 1`,
-        [slug]
-      ),
-    ]);
+    // Check for active references in dialogues and scenes (independent checks)
+    const sceneCheck = await queryOLTP(
+      `SELECT id FROM scenes WHERE metadata ->> 'required_story_beat' = $1 LIMIT 1`,
+      [slug]
+    );
 
-    if ((dialogueCheck.rowCount ?? 0) > 0 || (sceneCheck.rowCount ?? 0) > 0) {
+    // M32/M23: scan CDN-loaded node maps for any node setting this beat
+    // (was `jsonb_each(dt.nodes)` SQL join on the dropped `nodes` column).
+    const trees = await loadAllDialogueTreeNodes();
+    const dialogueInUse = trees.some((t) =>
+      Object.values(t.nodes).some((n: any) => n?.effects?.story_beat === slug)
+    );
+
+    if (dialogueInUse || (sceneCheck.rowCount ?? 0) > 0) {
       return res.status(409).json({
         success: false,
         error: `Cannot delete story beat "${slug}" because it is currently in use.`,
@@ -351,32 +370,25 @@ adminStoryBeatsRouter.get('/:slug/usages', async (req, res) => {
       });
     }
 
-    // Dialogue and scene queries are independent — run in parallel
-    const [dialogueResult, sceneResult] = await Promise.all([
-      // Dialogue nodes that set this beat via effects.story_beat
-      queryOLTP(
-        `SELECT dt.id AS dialogue_id,
-                dt.name AS dialogue_name,
-                node_entry.key AS node_id
-         FROM dialogue_trees dt,
-              jsonb_each(dt.nodes) AS node_entry
-         WHERE node_entry.value -> 'effects' ->> 'story_beat' = $1`,
-        [slug]
-      ),
-      // Scenes that require this beat via metadata.required_story_beat
-      queryOLTP(
-        `SELECT id AS scene_id, name AS scene_name
-         FROM scenes
-         WHERE metadata ->> 'required_story_beat' = $1`,
-        [slug]
-      ),
-    ]);
+    // Scenes that require this beat via metadata.required_story_beat
+    const sceneResult = await queryOLTP(
+      `SELECT id AS scene_id, name AS scene_name
+       FROM scenes
+       WHERE metadata ->> 'required_story_beat' = $1`,
+      [slug]
+    );
 
-    const dialogueUsages = dialogueResult.rows.map((row: any) => ({
-      dialogueId: row.dialogue_id,
-      dialogueName: row.dialogue_name,
-      nodeId: row.node_id,
-    }));
+    // M32/M23: scan CDN-loaded node maps for nodes setting this beat
+    // (was `jsonb_each(dt.nodes)` SQL join on the dropped `nodes` column).
+    const trees = await loadAllDialogueTreeNodes();
+    const dialogueUsages: Array<{ dialogueId: string; dialogueName: string; nodeId: string }> = [];
+    for (const tree of trees) {
+      for (const [key, node] of Object.entries(tree.nodes)) {
+        if ((node as any)?.effects?.story_beat === slug) {
+          dialogueUsages.push({ dialogueId: tree.id, dialogueName: tree.name, nodeId: key });
+        }
+      }
+    }
 
     const sceneUsages = sceneResult.rows.map((row: any) => ({
       sceneId: row.scene_id,

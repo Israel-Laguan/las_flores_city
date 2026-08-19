@@ -19,7 +19,7 @@
 
 import type { ContentPlan, ContentPlanItem, ContentLink, ChatMessage, GraphDelta, GraphDeltaEdge } from '@las-flores/shared';
 import { queryOLTP } from '@las-flores/infra';
-import { uuidv4 } from './ContentPlanValidation.js';
+import { uuidv4 } from '@las-flores/shared';
 import { createLLMProvider } from './LLMService.js';
 import { chatService } from './ChatService.js';
 import { applyDelta, applyDeltaEdge, getDeltasForPlan, getDeltaEdgesForPlan, clearDeltasForPlan, preflightDeltas, preflightDeltaEdges } from './GraphDeltaService.js';

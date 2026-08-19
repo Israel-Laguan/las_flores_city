@@ -17,6 +17,7 @@ import {
 } from '@las-flores/shared';
 import type { DialogueNode } from '@las-flores/shared';
 import { publishDialogueTree, publishDialogueChunk } from '../services/ContentPublishService.js';
+import { fetchNodesFromContentUrl } from '../services/contentFetch.js';
 
 // ---- constants ----
 
@@ -198,14 +199,21 @@ async function safePublish(publish: () => Promise<string>): Promise<string | nul
 export async function compileDialogueTree(treeId: string): Promise<CompiledChunk[]> {
   const result = await queryOLTP<{
     start_node_id: string;
-    nodes: Record<string, DialogueNode>;
-  }>('SELECT start_node_id, nodes FROM dialogue_trees WHERE id = $1', [treeId]);
+    content_url: string | null;
+  }>('SELECT start_node_id, content_url FROM dialogue_trees WHERE id = $1', [treeId]);
 
   if (result.rows.length === 0) {
     throw new Error(`Dialogue tree not found: ${treeId}`);
   }
 
-  const { start_node_id, nodes } = result.rows[0];
+  const { start_node_id, content_url } = result.rows[0];
+  if (!content_url) {
+    throw new Error(`Dialogue tree ${treeId} has no content_url (M23 externalization required before nodes column drop)`);
+  }
+  const nodes = await fetchNodesFromContentUrl(content_url, {});
+  if (!nodes || Object.keys(nodes).length === 0) {
+    throw new Error(`Dialogue tree ${treeId} content_url ${content_url} resolved to empty nodes`);
+  }
 
   // Load gate set: union of overlay.nodes keys for this tree
   const overlayResult = await queryOLTP<{ nodes: Record<string, DialogueNode> }>(
@@ -240,9 +248,9 @@ export async function compileDialogueTree(treeId: string): Promise<CompiledChunk
 
     for (const chunk of chunks) {
       await client.query(
-        `INSERT INTO dialogue_chunks (tree_id, chunk_key, nodes, leaves, content_url)
-         VALUES ($1, $2, $3, $4, $5)`,
-        [chunk.tree_id, chunk.chunk_key, JSON.stringify(chunk.nodes), JSON.stringify(chunk.leaves), chunkContentUrls.get(chunk.chunk_key) ?? null]
+        `INSERT INTO dialogue_chunks (tree_id, chunk_key, content_url)
+         VALUES ($1, $2, $3)`,
+        [chunk.tree_id, chunk.chunk_key, chunkContentUrls.get(chunk.chunk_key) ?? null]
       );
     }
 

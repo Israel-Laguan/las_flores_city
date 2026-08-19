@@ -16,6 +16,7 @@ import { queryOLTP, queryContent } from '@las-flores/infra';
 import type { DialogueNode } from '@las-flores/shared';
 import { publishDialogueSnapshot } from './ContentPublishService.js';
 import { deepMergeNodes } from './dialogueResolverUtils.js';
+import { fetchNodesFromContentUrl } from './contentFetch.js';
 
 // Re-export for use by DialogueResolver (shared pure helper)
 export { deepMergeNodes };
@@ -145,11 +146,20 @@ interface OverlayRow {
  * Mirrors DialogueResolver.loadBaseTree but returns the raw row.
  */
 async function loadBaseTreeRow(treeId: string): Promise<BaseDialogueTreeRow | null> {
-  const result = await queryContent<BaseDialogueTreeRow>(
-    `SELECT id, start_node_id, nodes, updated_at, content_url FROM dialogue_trees WHERE id = $1`,
+  const result = await queryContent<BaseDialogueTreeRow & { content_url: string | null }>(
+    `SELECT id, start_node_id, updated_at, content_url FROM dialogue_trees WHERE id = $1`,
     [treeId]
   );
-  return result.rows.length > 0 ? result.rows[0] : null;
+  if (result.rows.length === 0) return null;
+  const row = result.rows[0];
+  if (!row.content_url) {
+    throw new Error(`Dialogue tree ${treeId} has no content_url (M23 externalization required before nodes column drop)`);
+  }
+  const nodes = await fetchNodesFromContentUrl(row.content_url, {});
+  if (!nodes || Object.keys(nodes).length === 0) {
+    throw new Error(`Dialogue tree ${treeId} content_url ${row.content_url} resolved to empty nodes`);
+  }
+  return { ...row, nodes };
 }
 
 /**
@@ -382,14 +392,12 @@ async function upsertSnapshotChunk(
     .slice(0, 32);
 
   await queryOLTP(
-    `INSERT INTO dialogue_chunks (id, tree_id, chunk_key, nodes, leaves, content_url, created_at)
-     VALUES ($1, $2, $3, $4::jsonb, '{}'::jsonb, $5, NOW())
+    `INSERT INTO dialogue_chunks (id, tree_id, chunk_key, content_url, created_at)
+     VALUES ($1, $2, $3, $4, NOW())
      ON CONFLICT (tree_id, chunk_key) DO UPDATE
-       SET nodes = EXCLUDED.nodes,
-           leaves = EXCLUDED.leaves,
-           content_url = EXCLUDED.content_url,
+       SET content_url = EXCLUDED.content_url,
            created_at = NOW()`,
-    [idHash, treeId, chunkKey, JSON.stringify(mergedNodes), contentUrl]
+    [idHash, treeId, chunkKey, contentUrl]
   );
 }
 

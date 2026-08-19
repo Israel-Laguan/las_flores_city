@@ -382,9 +382,10 @@ are pure reference joins — IDs, names, FKs. None fetch the heavy `nodes` text.
 in Postgres and get *faster* (rows are tiny, no JSONB bloat).
 
 **Class 2 — Read the actual content (moves to CDN):**
-`DialogueResolver` fetches `dialogue_chunks.nodes` + `dialogue_overlays.nodes` by key.
-Under the proposal, this is a CDN GET by `content_url`. The chunk is ≤15 nodes, immutable,
-perfectly cacheable. **This is the read that benefits most from CDN.**
+`DialogueResolver` fetches `dialogue_chunks`/`dialogue_trees` node maps by `content_url`
+via `contentFetch.ts` (M23 externalization, finalized in M32 — the `nodes`/`leaves` JSONB
+columns are dropped). `dialogue_overlays.nodes` is still read by key. The chunk is ≤15
+nodes, immutable, perfectly cacheable. **This is the read that benefits most from CDN.**
 
 ### The catch: dynamic overlay merging
 
@@ -841,6 +842,24 @@ The authoring experience decomposes into four distinct LLM moments. Two are buil
 today, two need new work. This section captures the full lifecycle so all five LLM
 concerns (generation, intake analysis, fill, critique, chat) are a coherent surface.
 
+> **M32 retirement — authoring-path cleanup (finalized).** The legacy single-pass
+> authoring surface is fully retired:
+> - **LLM methods retired:** `parseDescription`, `generateOutline`, `refinePlan`,
+>   `refinePlanItems`, `extractEntities` are no longer part of the authoring flow.
+>   Intake now goes through the graph-delta path (`GraphIntakeService` →
+>   `chatService.propose` → `GraphDeltaService`).
+> - **Services retired:** `PlanGenerationJob`, `FillPlaceholders`,
+>   `ContentFillService`, `ContentPlanValidation` (folded into
+>   `ContentPlanService`), and the `/plans/:id/refine` endpoint.
+> - **Dialogue JSONB dropped:** `dialogue_trees.nodes` and
+>   `dialogue_chunks.nodes`/`leaves` are dropped. Node/leaf maps are externalized
+>   to the CDN via `content_url` (M23) and read through
+>   `contentFetch.ts` (`fetchNodesFromContentUrl` / `fetchChunkFromContentUrl`).
+>   The drop migration is `076_drop_dialogue_jsonb.sql` and is gated by
+>   `npm run probe:content-urls` (0 gaps required).
+> - **Sole authoring entry point:** graph deltas. The materialize pipeline
+>   (`stagePlan` → `migrateContent` → verify) still consumes the synthesized plan.
+
 ### The current LLM call surface (7 provider methods)
 
 The `LLMProvider` interface (`server/src/services/types/LLMTypes.ts:30-37`) is the
@@ -849,13 +868,13 @@ service tomorrow) must satisfy all of these. **No provider method is AI-critique
 
 | Method | Line | Purpose | Moment |
 |---|---|---|---|
-| `parseDescription(description, context)` | :31 | Legacy single-pass plan from a text idea | 1 (legacy) |
-| `generateOutline(description, context)` | :32 | Main intake: outline plan + two-pass chunking | 1 |
-| `refinePlan(existingPlan, feedback, context)` | :33 | Whole-plan refinement from one feedback string | 4 (single-turn) |
-| `refinePlanItems(selectedItems, fullPlan, feedback, context)` | :34 | Item-scoped refinement | 4 (single-turn) |
+| `parseDescription(description, context)` | :31 | **Retired in M32** — legacy single-pass plan | 1 (legacy, removed) |
+| `generateOutline(description, context)` | :32 | **Retired in M32** — replaced by graph-delta intake | 1 (removed) |
+| `refinePlan(existingPlan, feedback, context)` | :33 | **Retired in M32** — replaced by chat/propose deltas | 4 (removed) |
+| `refinePlanItems(selectedItems, fullPlan, feedback, context)` | :34 | **Retired in M32** — replaced by chat/propose deltas | 4 (removed) |
 | `generateLore(item, context)` | :35 | Lore `.md` generation | 2 |
-| `generateFill(prompt)` | :36 | Fills TODO fields in plan items | 2 |
-| `extractEntities(systemPrompt, chunk)` | :37 | Entity extraction for large inputs | 1 (helper) |
+| `generateFill(prompt)` | :36 | **Retired in M32** — `ContentFillService` removed | 2 (removed) |
+| `extractEntities(systemPrompt, chunk)` | :37 | **Retired in M32** — entity extraction helper removed | 1 (helper, removed) |
 
 ### The four moments
 

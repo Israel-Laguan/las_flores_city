@@ -1,6 +1,7 @@
 import express from 'express';
 import { authAndAdminMiddleware } from '../middleware/adminAuth.js';
 import { queryOLTP } from '@las-flores/infra';
+import { fetchNodesFromContentUrl } from '../services/contentFetch.js';
 
 /**
  * Admin List Views Router
@@ -38,6 +39,7 @@ function makeListHandler(opts: {
   countSql: string;
   listSql: string;
   entityLabel: string;
+  augmentRows?: (rows: any[]) => Promise<any[]>;
 }) {
   return async (req: express.Request, res: express.Response) => {
     const pagination = parsePagination(req.query as Record<string, unknown>);
@@ -57,11 +59,14 @@ function makeListHandler(opts: {
       const total: number = countResult.rows[0].count;
 
       const listResult = await queryOLTP(opts.listSql, [pageSize, offset]);
+      const items = opts.augmentRows
+        ? await opts.augmentRows(listResult.rows)
+        : listResult.rows;
 
       return res.json({
         success: true,
         data: {
-          items: listResult.rows,
+          items,
           total,
           page,
           pageSize,
@@ -119,11 +124,15 @@ function makeDetailHandler(opts: {
 
 adminListViewsRouter.get('/dialogues', makeListHandler({
   countSql: 'SELECT count(*)::int FROM dialogue_trees',
+  // M32/M23: the tree node map is externalized to the CDN (`content_url`);
+  // the in-DB `nodes` JSONB column is dropped, so `nodeCount` can no longer
+  // be computed in SQL. We fetch `content_url` and derive the count from the
+  // CDN blob in `augmentRows` below.
   listSql: `SELECT
     id,
     name,
     description,
-    (SELECT count(*) FROM jsonb_object_keys(nodes))::int AS "nodeCount",
+    content_url,
     metadata->>'story_beat' AS "beatAssociation",
     created_at AS "createdAt",
     updated_at AS "updatedAt"
@@ -131,6 +140,19 @@ adminListViewsRouter.get('/dialogues', makeListHandler({
   ORDER BY name ASC
   LIMIT $1 OFFSET $2`,
   entityLabel: 'dialogues',
+  augmentRows: async (rows: any[]) => {
+    return Promise.all(
+      rows.map(async (row) => {
+        let nodeCount = 0;
+        if (row.content_url) {
+          const nodes = await fetchNodesFromContentUrl(row.content_url, {});
+          nodeCount = nodes ? Object.keys(nodes).length : 0;
+        }
+        const { content_url: _content_url, ...rest } = row;
+        return { ...rest, nodeCount };
+      })
+    );
+  },
 }));
 
 adminListViewsRouter.get('/dialogues/:id', makeDetailHandler({

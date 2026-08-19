@@ -1,4 +1,4 @@
-import { queryOLTP, queryOLAP, withOLTPTransaction } from '@las-flores/infra';
+import { queryOLAP, withOLTPTransaction } from '@las-flores/infra';
 import {
   filterChoices,
   processChoiceInTransaction,
@@ -34,20 +34,20 @@ export async function handleChoose(req: any, res: any): Promise<any> {
       });
     }
 
-    const chunkResult = await queryOLTP(
-      `SELECT id, tree_id, chunk_key, nodes, leaves FROM dialogue_chunks WHERE id = $1`,
-      [current_chunk_id]
-    );
-
-    if (chunkResult.rows.length === 0) {
-      return res.status(404).json({
-        success: false,
-        error: 'chunk_not_found',
-        timestamp: new Date().toISOString(),
-      });
+    let currentChunk;
+    try {
+      currentChunk = await DialogueResolver.loadChunkNodesAndLeaves(current_chunk_id);
+    } catch (err: any) {
+      if (err?.message?.includes('not found')) {
+        return res.status(404).json({
+          success: false,
+          error: 'chunk_not_found',
+          timestamp: new Date().toISOString(),
+        });
+      }
+      throw err;
     }
 
-    const currentChunk = chunkResult.rows[0];
     const leaves = currentChunk.leaves as Record<string, any>;
     const chunkNodes = currentChunk.nodes as Record<string, any>;
     const leaf = leaves[choice_id] ?? findLeafByChoiceId(leaves, choice_id);

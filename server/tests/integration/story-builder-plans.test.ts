@@ -228,33 +228,3 @@ describe('DELETE /admin/story-builder/plans/:id', () => {
   });
 });
 
-describe('POST /admin/story-builder/plans/:id/refine', () => {
-  const app = makeApp();
-
-  test('returns 400 for missing feedback', async () => {
-    const res = await request(app)
-      .post(`/admin/story-builder/plans/${TEST_PLAN_ID}/refine`)
-      .send({});
-
-    expect(res.status).toBe(400);
-    expect(res.body.success).toBe(false);
-    expect(res.body.error).toMatch(/feedback/i);
-  });
-
-  test('refines a plan with feedback', async () => {
-    mockQueryOLTP
-      .mockResolvedValueOnce({
-        rows: [{ plan_json: MOCK_PLAN, description: 'Test' }],
-        rowCount: 1, command: 'SELECT', oid: 0, fields: [],
-      })
-      .mockResolvedValueOnce({ rows: [], rowCount: 1, command: 'UPDATE', oid: 0, fields: [] });
-
-    const res = await request(app)
-      .post(`/admin/story-builder/plans/${TEST_PLAN_ID}/refine`)
-      .send({ feedback: 'Make Diego more cynical' });
-
-    expect(res.status).toBe(200);
-    expect(res.body.success).toBe(true);
-    expect(res.body.data.plan).toBeDefined();
-  });
-});

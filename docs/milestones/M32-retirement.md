@@ -1,6 +1,6 @@
 # M32 — Authoring-Path Retirement & Consolidation
 
-> **Status:** PR 4 complete · **Branch:** `milestone/32-authoring-retirement` · **PR size target:** ~25 files per PR
+> **Status:** PR 5 residue + PR 6 + PR 7 complete · **Branch:** `feat/graph-db-implementation` (the originally-referenced `milestone/32-authoring-retirement` branch does not exist locally; PR1–PR4 and most of PR5 already landed here) · **PR size target:** ~25 files per PR
 > **Phase:** 7 (follows M28 graph write path) / 8 · **Source:** `ARCHITECTURE_SEPARATION_ANALYSIS.md` §8, §12–13, §15; **fixes the orphan gap** across M23/M27/M28/M29
 >
 > M32 is implemented as a **7-PR workstream** so each PR stays within the
@@ -157,9 +157,12 @@ Retired the superseded async fill / placeholder pipeline and legacy LLM methods.
       + Removed parseDescription path from admin-story-builder-plans.ts (now requires plan object)
       + Deleted 6 related test files, updated 3 test files
       + No orphaned imports remain (grep verified)
-- [ ] **Prune:** all Retire rows deleted in the same PR as the last flag flip; retained
-      consumers refactored to shared services; dead DB columns/migrations dropped
-- [ ] No orphaned `import`/references remain (`grep` for retired symbols returns only
-      intentional, documented usages)
-- [ ] `ARCHITECTURE_SEPARATION_ANALYSIS.md` §12–§15 updated to reflect which legacy LLM
-      methods and services are gone
+- [x] **Prune:** all Retire rows deleted in the same PR as the last flag flip; retained
+       consumers refactored to shared services; dead DB columns/migrations dropped
+       (`ContentPlanValidation.ts` deleted, `uuidv4` moved to `@las-flores/shared`;
+       `076_drop_dialogue_jsonb.sql` drops `dialogue_trees.nodes` +
+       `dialogue_chunks.nodes`/`leaves`, registered under `oltp`).
+- [x] No orphaned `import`/references remain (`grep` for retired symbols returns only
+       intentional, documented usages in doc comments).
+- [x] `ARCHITECTURE_SEPARATION_ANALYSIS.md` §12–§15 updated to reflect which legacy LLM
+       methods and services are gone (M32 retirement callout added to §12).

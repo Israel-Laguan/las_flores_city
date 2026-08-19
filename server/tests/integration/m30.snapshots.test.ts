@@ -23,6 +23,7 @@ import {
   buildSetHash,
 } from '../../src/services/SnapshotService.js';
 import { compileDialogueTree } from '../../src/content/compiler.js';
+import { publishDialogueTree } from '../../src/services/ContentPublishService.js';
 
 // ⚠️ COLLISION-AVOIDANCE: All test fixtures use dedicated 'c0'-prefixed UUID namespace
 // to avoid conflicts with real content (a0*) or other test namespaces (d0*).
@@ -68,12 +69,14 @@ async function seedTestFixtures(): Promise<void> {
       );
     }
 
-    // Insert dialogue tree
+    // Insert dialogue tree. M32 dropped the in-DB `nodes` column, so publish
+    // the node map to the CDN and reference it via `content_url`.
+    const treeUrl = await publishDialogueTree(TEST_TREE_ID, JSON.stringify({ nodes: TEST_BASE_NODES }));
     await c.query(
-      `INSERT INTO dialogue_trees (id, name, start_node_id, nodes, updated_at, dialogue_scope)
-       VALUES ($1, $2, $3, $4::jsonb, NOW(), 'system')
-       ON CONFLICT (id) DO UPDATE SET nodes = EXCLUDED.nodes, updated_at = NOW()`,
-      [TEST_TREE_ID, 'test_tree_m30', 'start', JSON.stringify(TEST_BASE_NODES)]
+      `INSERT INTO dialogue_trees (id, name, start_node_id, content_url, updated_at, dialogue_scope)
+       VALUES ($1, $2, $3, $4, NOW(), 'system')
+       ON CONFLICT (id) DO UPDATE SET content_url = EXCLUDED.content_url, updated_at = NOW()`,
+      [TEST_TREE_ID, 'test_tree_m30', 'start', treeUrl]
     );
 
     // Insert overlays for each mystery
@@ -325,10 +328,12 @@ describe('M30 Snapshots Integration Test', () => {
       const NEW_TREE_ID = 'c0000000-0000-4000-8000-000000000010';
 
       await withClient(async (c) => {
+        // M32: externalize the node map to the CDN; `nodes` column is dropped.
+        const newTreeUrl = await publishDialogueTree(NEW_TREE_ID, JSON.stringify({ nodes: TEST_BASE_NODES }));
         await c.query(
-          `INSERT INTO dialogue_trees (id, name, start_node_id, nodes, updated_at, dialogue_scope)
-           VALUES ($1, $2, $3, $4::jsonb, NOW(), 'system')`,
-          [NEW_TREE_ID, 'new_test_tree', 'start', JSON.stringify(TEST_BASE_NODES)]
+          `INSERT INTO dialogue_trees (id, name, start_node_id, content_url, updated_at, dialogue_scope)
+           VALUES ($1, $2, $3, $4, NOW(), 'system')`,
+          [NEW_TREE_ID, 'new_test_tree', 'start', newTreeUrl]
         );
       });
 

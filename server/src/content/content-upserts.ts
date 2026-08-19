@@ -1,6 +1,7 @@
 import { queryOLTP } from '@las-flores/infra';
 import { sanitizeText } from './validate-xss.js';
 import { normalizeUuid } from './uuid-utils.js';
+import { publishDialogueTree } from '../services/ContentPublishService.js';
 
 export async function upsertCharacter(data: any): Promise<string> {
   const result = await queryOLTP(
@@ -24,15 +25,25 @@ export async function upsertCharacter(data: any): Promise<string> {
 }
 
 export async function upsertDialogueTree(data: any): Promise<string> {
+  // M23 externalization: publish the tree's node map to MinIO/CDN and store
+  // the resulting `content_url`. The in-DB `nodes` JSONB column is dropped in
+  // M32, so this pointer is now the sole source of the node map at runtime.
+  let contentUrl: string | null = null;
+  try {
+    contentUrl = await publishDialogueTree(data.id, JSON.stringify({ nodes: data.nodes || {} }));
+  } catch (error: any) {
+    console.warn(`[content-upserts] Failed to publish dialogue tree ${data.id} to CDN: ${error?.message}`);
+  }
+
   const result = await queryOLTP(
-    `INSERT INTO dialogue_trees (id, name, description, start_node_id, nodes, metadata,
+    `INSERT INTO dialogue_trees (id, name, description, start_node_id, content_url, metadata,
                                 character_id, scene_id, mission_id, dialogue_scope)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
       ON CONFLICT (id) DO UPDATE SET
         name = EXCLUDED.name,
         description = EXCLUDED.description,
         start_node_id = EXCLUDED.start_node_id,
-        nodes = EXCLUDED.nodes,
+        content_url = EXCLUDED.content_url,
         metadata = EXCLUDED.metadata,
         character_id = EXCLUDED.character_id,
         scene_id = EXCLUDED.scene_id,
@@ -40,7 +51,7 @@ export async function upsertDialogueTree(data: any): Promise<string> {
         dialogue_scope = EXCLUDED.dialogue_scope,
         updated_at = NOW()
       RETURNING id`,
-    [data.id, data.name, data.description || null, data.start_node_id, JSON.stringify(data.nodes || {}), JSON.stringify(data.metadata || {}),
+    [data.id, data.name, data.description || null, data.start_node_id, contentUrl, JSON.stringify(data.metadata || {}),
      normalizeUuid(data.character_id), normalizeUuid(data.scene_id), normalizeUuid(data.mission_id), data.dialogue_scope || 'character']
   );
   return result.rows[0].id;

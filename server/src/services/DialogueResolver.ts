@@ -367,9 +367,8 @@ export class DialogueResolver {
     const result = await queryContent<{
       start_node_id: string;
       updated_at: Date;
-      nodes: Record<string, DialogueNode>;
       content_url: string | null;
-    }>(`SELECT start_node_id, updated_at, nodes, content_url FROM dialogue_trees WHERE id = $1`, [
+    }>(`SELECT start_node_id, updated_at, content_url FROM dialogue_trees WHERE id = $1`, [
       baseTreeId,
     ]);
 
@@ -378,11 +377,17 @@ export class DialogueResolver {
     }
 
     const row = result.rows[0];
-    const cdnNodes = await fetchNodesFromContentUrl(row.content_url, row.nodes);
+    if (!row.content_url) {
+      throw new Error(`Dialogue tree ${baseTreeId} has no content_url (M23 externalization required before nodes column drop)`);
+    }
+    const cdnNodes = await fetchNodesFromContentUrl(row.content_url, {});
+    if (!cdnNodes || Object.keys(cdnNodes).length === 0) {
+      throw new Error(`Dialogue tree ${baseTreeId} content_url ${row.content_url} resolved to empty nodes`);
+    }
     return {
       start_node_id: row.start_node_id,
       updated_at: row.updated_at,
-      nodes: cdnNodes ?? row.nodes,
+      nodes: cdnNodes,
       content_url: row.content_url,
     };
   }
@@ -552,7 +557,7 @@ export class DialogueResolver {
   ): Promise<BaseDialogueChunkRow> {
     const where = column === 'id' ? 'id' : 'chunk_key';
     const result = await queryContent<BaseDialogueChunkRow>(
-      `SELECT id, tree_id, chunk_key, nodes, leaves, content_url
+      `SELECT id, tree_id, chunk_key, content_url
           FROM dialogue_chunks
          WHERE ${where} = $1
          LIMIT 1`,
@@ -565,13 +570,16 @@ export class DialogueResolver {
 
     const row = result.rows[0];
     const cdn = await fetchChunkFromContentUrl(row.content_url, {
-      nodes: row.nodes,
-      leaves: row.leaves,
+      nodes: {},
+      leaves: {},
     });
+    if (!cdn) {
+      throw new Error(`Dialogue chunk ${column} = ${param} failed to load nodes/leaves from content_url ${row.content_url}`);
+    }
     return {
       ...row,
-      nodes: cdn?.nodes ?? row.nodes,
-      leaves: cdn?.leaves ?? row.leaves,
+      nodes: cdn.nodes,
+      leaves: cdn.leaves,
     };
   }
 
@@ -583,6 +591,17 @@ export class DialogueResolver {
    */
   private static async loadBaseChunk(chunkId: string): Promise<BaseDialogueChunkRow> {
     return DialogueResolver.loadBaseChunkRow('id', chunkId);
+  }
+
+  /**
+   * Public helper used by the live game choice handler (dialogue-choose.ts)
+   * to load a chunk's `{ nodes, leaves }` exclusively from the CDN via
+   * `content_url` (M23 externalization; the in-DB JSONB columns are dropped
+   * in M32). Reuses the same `loadBaseChunk` CDN path as chunk resolution.
+   * Returns the full chunk row so callers keep `id`/`tree_id`/`chunk_key`.
+   */
+  public static async loadChunkNodesAndLeaves(chunkId: string): Promise<BaseDialogueChunkRow> {
+    return DialogueResolver.loadBaseChunk(chunkId);
   }
 
   /**

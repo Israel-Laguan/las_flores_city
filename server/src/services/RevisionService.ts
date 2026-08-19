@@ -28,7 +28,7 @@ import {
   PatchNotFoundError,
   PatchStatusError,
 } from './errors.js';
-import { uuidv4 } from './ContentPlanValidation.js';
+import { uuidv4 } from '@las-flores/shared';
 
 // Content tables that have a UUID `id` column and can be snapshotted /
 // restored generically. `story` / `story_beat` use a text slug PKs and are

@@ -20,6 +20,7 @@ import { dialogueRouter } from '../../src/routes/dialogue.js';
 import { generateToken } from '../../src/middleware/auth.js';
 import { deleteCache, invalidatePattern, closeRedis } from '@las-flores/infra';
 import { compileDialogueTree } from '../../src/content/compiler.js';
+import { publishDialogueTree } from '../../src/services/ContentPublishService.js';
 import type { DialogueNode } from '@las-flores/shared';
 
 export interface MissionRewardFixtureConfig {
@@ -92,14 +93,20 @@ export function createMissionRewardFixture(
       [config.vaultItemId, config.vaultItemTitle, config.vaultItemDescription],
     );
 
+    // M32: the tree node map is externalized to the CDN; the in-DB `nodes`
+    // JSONB column is dropped, so publish and store `content_url`.
+    const treeUrl = await publishDialogueTree(
+      config.treeId,
+      JSON.stringify({ nodes: config.treeNodes }),
+    );
     await queryOLTP(
-      `INSERT INTO dialogue_trees (id, name, start_node_id, nodes)
+      `INSERT INTO dialogue_trees (id, name, start_node_id, content_url)
        VALUES ($1, $2, 'start', $3)
        ON CONFLICT (id) DO UPDATE
-         SET nodes = EXCLUDED.nodes,
+         SET content_url = EXCLUDED.content_url,
              start_node_id = EXCLUDED.start_node_id,
              updated_at = NOW()`,
-      [config.treeId, config.treeName, JSON.stringify(config.treeNodes)],
+      [config.treeId, config.treeName, treeUrl],
     );
 
     await compileDialogueTree(config.treeId);

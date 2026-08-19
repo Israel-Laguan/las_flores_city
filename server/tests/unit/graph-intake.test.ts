@@ -12,10 +12,11 @@ import { GraphDeltaSchema, GraphDeltaEdgeSchema, type GraphDelta, type GraphDelt
 //   - uuidv4 (local util)
 // All are mocked below.
 
-// Mock uuidv4 before importing the module under test
-jest.mock('../../src/services/ContentPlanValidation.js', () => ({
-  uuidv4: jest.fn(() => 'mock-plan-id'),
-}));
+// Mock uuidv4 (now sourced from @las-flores/shared) before importing the module under test
+jest.mock('@las-flores/shared', () => {
+  const actual = jest.requireActual('@las-flores/shared');
+  return { ...actual, uuidv4: jest.fn(() => 'mock-plan-id') };
+});
 
 // Mock Neo4j (AGENTS.md: unit tests must mock database/redis.js when importing
 // Redis-using modules; same rule for Neo4j).
@@ -88,7 +89,7 @@ const TEST_PLAN_ID = 'f0000000-e29b-41d4-a716-4466554400f0';
 const TEST_CHAR_ID = 'f0000000-e29b-41d4-a716-4466554400f1';
 
 // Mock the uuidv4 import
-import { uuidv4 } from '../../src/services/ContentPlanValidation.js';
+import { uuidv4 } from '@las-flores/shared';
 const mockUuid = uuidv4 as unknown as Mock<() => string>;
 
 describe('GraphIntakeService — unit tests (Neo4j mocked)', () => {

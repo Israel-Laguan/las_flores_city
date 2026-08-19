@@ -1,5 +1,6 @@
 import { queryOLTP, withOLTPTransaction, closeConnections } from '@las-flores/infra';
 import { compileDialogueTree } from '../../src/content/compiler.js';
+import { publishDialogueTree } from '../../src/services/ContentPublishService.js';
 import type { DialogueNode } from '@las-flores/shared';
 
 // ============================================================
@@ -44,12 +45,15 @@ const TEST_NODES: Record<string, DialogueNode> = {
 beforeAll(async () => {
   // Seed the test tree + overlay. Overlay targets n2 so the
   // compiler produces an overlay_gate boundary on start->n2.
+  // M32: the tree node map is externalized to the CDN; the in-DB
+  // `nodes` JSONB column is dropped, so we publish and store `content_url`.
+  const treeContentUrl = await publishDialogueTree(TEST_TREE_ID, JSON.stringify({ nodes: TEST_NODES }));
   await withOLTPTransaction(async (client) => {
     await client.query(
-      `INSERT INTO dialogue_trees (id, name, start_node_id, nodes)
+      `INSERT INTO dialogue_trees (id, name, start_node_id, content_url)
        VALUES ($1, 'Compiler Test Tree', 'start', $2)
-       ON CONFLICT (id) DO UPDATE SET nodes = EXCLUDED.nodes, start_node_id = EXCLUDED.start_node_id, updated_at = NOW()`,
-      [TEST_TREE_ID, JSON.stringify(TEST_NODES)]
+       ON CONFLICT (id) DO UPDATE SET content_url = EXCLUDED.content_url, start_node_id = EXCLUDED.start_node_id, updated_at = NOW()`,
+      [TEST_TREE_ID, treeContentUrl]
     );
     await client.query(
       `INSERT INTO dialogue_overlays (id, name, target_tree_id, nodes)
@@ -105,11 +109,13 @@ describe('Compiler Integration Tests', () => {
 
   it('cleans up stale chunks on recompile', async () => {
     // Insert a fake stale chunk that a previous (buggy) compile
-    // might have left behind.
+    // might have left behind. M32: the chunk row stores only `content_url`
+    // (node/leaf maps are externalized); a null content_url is sufficient
+    // to exercise the stale-row cleanup.
     await withOLTPTransaction(async (client) => {
       await client.query(
-        `INSERT INTO dialogue_chunks (tree_id, chunk_key, nodes, leaves)
-         VALUES ($1, 'stale_chunk', '{}', '{}')`,
+        `INSERT INTO dialogue_chunks (tree_id, chunk_key)
+         VALUES ($1, 'stale_chunk')`,
         [TEST_TREE_ID]
       );
     });
