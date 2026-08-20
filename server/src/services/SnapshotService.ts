@@ -111,6 +111,10 @@ export function parseSnapshotChunkKey(
     return null;
   }
 
+  if (nsfwFlag !== 't' && nsfwFlag !== 'f') {
+    return null;
+  }
+
   const nsfw = nsfwFlag === 't';
 
   return {
@@ -164,9 +168,12 @@ async function loadBaseTreeRow(treeId: string): Promise<BaseDialogueTreeRow | nu
 
 /**
  * Load all overlays for a given tree.
- * Returns overlays grouped by mystery_id.
+ * Returns overlays grouped by mystery_id — preserving ALL rows per mystery
+ * (a tree may have multiple overlays for one mystery, e.g. different
+ * unlock_condition gating). This mirrors DialogueResolver's pattern of
+ * returning an array and flattening before the deterministic merge.
  */
-async function loadAllOverlaysForTree(treeId: string): Promise<Map<string, OverlayRow>> {
+async function loadAllOverlaysForTree(treeId: string): Promise<Map<string, OverlayRow[]>> {
   const result = await queryContent<OverlayRow>(
     `SELECT id, target_tree_id, mystery_id, nodes, updated_at, is_nsfw, unlock_condition
      FROM dialogue_overlays
@@ -176,9 +183,11 @@ async function loadAllOverlaysForTree(treeId: string): Promise<Map<string, Overl
     [treeId]
   );
 
-  const byMystery = new Map<string, OverlayRow>();
+  const byMystery = new Map<string, OverlayRow[]>();
   for (const row of result.rows) {
-    byMystery.set(row.mystery_id, row);
+    const existing = byMystery.get(row.mystery_id) ?? [];
+    existing.push(row);
+    byMystery.set(row.mystery_id, existing);
   }
   return byMystery;
 }
@@ -222,7 +231,10 @@ async function generateReachableSets(
     `SELECT DISTINCT mystery_id FROM dialogue_overlays WHERE target_tree_id = $1`,
     [treeId]
   );
-  const treeMysteryIds = overlayResult.rows.map((row) => row.mystery_id).sort();
+    const treeMysteryIds = overlayResult.rows
+    .map((row) => row.mystery_id)
+    .filter((id): id is string => Boolean(id))
+    .sort();
 
   // Reachable sets = all subsets of (activeMysteryIds + treeMysteryIds)
   // But we must include at minimum the active mysteries (for hook visibility)
@@ -233,19 +245,36 @@ async function generateReachableSets(
   //
   // We generate all subsets of the combined set of mysteries that have overlays
   // on this tree OR are ACTIVE (since ACTIVE overlays are always merged).
-  const relevantMysteryIds = [...new Set([...activeMysteryIds, ...treeMysteryIds])].sort();
+    const relevantMysteryIds = [...new Set([...activeMysteryIds, ...treeMysteryIds])].sort();
 
   if (relevantMysteryIds.length === 0) {
     // No overlays at all for this tree → only the base tree (empty set)
     return [[]];
   }
 
+  // Cap the subset space to avoid 2^n explosion. A 32-bit shift breaks
+  // enumeration at n >= 31, and even n=20 yields over 1M subsets
+  // (× 6 variants = 6M snapshots per tree). Cap at a safe limit and leave
+  // excess states on the live resolver path — the resolver falls back to
+  // on-demand merge for any state without a pre-resolved snapshot.
+  const MAX_RELEVANT_MYSTERIES = 12;
+  const MAX_SUBSETS = 4096;
+
+  if (relevantMysteryIds.length > MAX_RELEVANT_MYSTERIES) {
+    console.warn(
+      `[SnapshotService] Tree ${treeId} has ${relevantMysteryIds.length} relevant mysteries — ` +
+      `capping to ${MAX_RELEVANT_MYSTERIES} for snapshot pre-computation. ` +
+      `Excess states will be resolved live at runtime.`
+    );
+    relevantMysteryIds.splice(MAX_RELEVANT_MYSTERIES);
+  }
+
   // Generate all subsets of relevantMysteryIds
-  // 2^n subsets where n = relevantMysteryIds.length
   const allSubsets: string[][] = [];
   const n = relevantMysteryIds.length;
+  const subsetLimit = Math.min(1 << n, MAX_SUBSETS);
 
-  for (let mask = 0; mask < (1 << n); mask++) {
+  for (let mask = 0; mask < subsetLimit; mask++) {
     const subset: string[] = [];
     for (let i = 0; i < n; i++) {
       if (mask & (1 << i)) {
@@ -307,7 +336,7 @@ function applyGateAndMerge(
 async function buildSingleSnapshot(
   treeId: string,
   baseTree: BaseDialogueTreeRow,
-  allOverlays: Map<string, OverlayRow>,
+  allOverlays: Map<string, OverlayRow[]>,
   mysterySet: string[],
   nsfw: boolean,
   alignment: 'neutral' | 'loyalist' | 'fugitive'
@@ -316,9 +345,9 @@ async function buildSingleSnapshot(
   const setMysteryIds = new Set(mysterySet);
   const relevantOverlays: OverlayRow[] = [];
 
-  for (const [mysteryId, overlay] of allOverlays) {
+  for (const [mysteryId, overlays] of allOverlays) {
     if (setMysteryIds.has(mysteryId)) {
-      relevantOverlays.push(overlay);
+      relevantOverlays.push(...overlays);
     }
   }
 
@@ -408,7 +437,8 @@ async function upsertSnapshotChunk(
 async function deleteStaleSnapshots(treeId: string): Promise<number> {
   const result = await queryOLTP<{ count: number }>(
     `DELETE FROM dialogue_chunks 
-     WHERE tree_id = $1 AND chunk_key LIKE ${'\'__snapshot_%\''}
+     WHERE tree_id = $1
+       AND chunk_key LIKE '\\\\_\\\\_snapshot\\\\_%' ESCAPE '\\\\'
      RETURNING 1`,
     [treeId]
   );

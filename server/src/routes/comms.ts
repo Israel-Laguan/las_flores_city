@@ -170,6 +170,11 @@ export async function findDialogueTreeForCharacter(characterId: string) {
   // character FK (the speaking character) and confirm a node's `speaker_id`
   // in the loaded blob — preserving the prior `jsonb_each(dt.nodes)`
   // speaker lookup semantics without touching the dropped column.
+  //
+  // Some scene/onboarding-scoped trees have NULL character_id (they carry
+  // the speaker in the CDN node map, not the FK). The character_id filter
+  // excludes those, so we also query trees with NULL character_id and rely
+  // on the node-level speaker_id check below to preserve the old lookup.
   const result = await queryOLTP<{
     id: string;
     name: string;
@@ -178,7 +183,9 @@ export async function findDialogueTreeForCharacter(characterId: string) {
   }>(
     `SELECT id, name, start_node_id, content_url
      FROM dialogue_trees dt
-     WHERE dt.character_id = $1`,
+     WHERE dt.character_id = $1 OR dt.character_id IS NULL
+     ORDER BY dt.created_at ASC, dt.id ASC
+     LIMIT 50`,
     [characterId]
   );
 

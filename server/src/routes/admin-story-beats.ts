@@ -38,20 +38,22 @@ async function refreshSlugCache(): Promise<void> {
  * so we can compute story-beat linkage client-side instead of via
  * `jsonb_each(dt.nodes)` SQL joins.
  */
-async function loadAllDialogueTreeNodes(): Promise<
-  Array<{ id: string; name: string; nodes: Record<string, any> }>
-> {
+async function loadAllDialogueTreeNodes(): Promise<{
+  trees: Array<{ id: string; name: string; nodes: Record<string, any> }>;
+  failed: number;
+}> {
   const result = await queryOLTP<{ id: string; name: string; content_url: string | null }>(
     `SELECT id, name, content_url FROM dialogue_trees`
   );
   const out: Array<{ id: string; name: string; nodes: Record<string, any> }> = [];
+  let failed = 0;
   for (const row of result.rows) {
-    if (!row.content_url) continue;
+    if (!row.content_url) { failed++; continue; }
     const nodes = await fetchNodesFromContentUrl(row.content_url, {});
-    if (!nodes) continue;
+    if (!nodes) { failed++; continue; }
     out.push({ id: row.id, name: row.name, nodes });
   }
-  return out;
+  return { trees: out, failed };
 }
 
 // ---------------------------------------------------------------------------
@@ -102,7 +104,7 @@ async function loadStoryArcData() {
 
   // M32/M23: build beat→dialogue linkage from CDN-loaded node maps
   // (was `jsonb_each(dt.nodes)` SQL join on the dropped `nodes` column).
-  const trees = await loadAllDialogueTreeNodes();
+  const { trees } = await loadAllDialogueTreeNodes();
   const beatToDialogues = new Map<string, Array<{ id: string; name: string; nodeId: string }>>();
   for (const tree of trees) {
     for (const [nodeId, node] of Object.entries(tree.nodes)) {
@@ -311,7 +313,10 @@ adminStoryBeatsRouter.delete('/:slug', async (req, res) => {
 
     // M32/M23: scan CDN-loaded node maps for any node setting this beat
     // (was `jsonb_each(dt.nodes)` SQL join on the dropped `nodes` column).
-    const trees = await loadAllDialogueTreeNodes();
+    const { trees, failed } = await loadAllDialogueTreeNodes();
+    if (failed > 0) {
+      return res.status(409).json({ success: false, error: `Cannot verify story beat usage: ${failed} dialogue tree(s) could not be loaded.`, timestamp: new Date().toISOString() });
+    }
     const dialogueInUse = trees.some((t) =>
       Object.values(t.nodes).some((n: any) => n?.effects?.story_beat === slug)
     );
@@ -380,7 +385,10 @@ adminStoryBeatsRouter.get('/:slug/usages', async (req, res) => {
 
     // M32/M23: scan CDN-loaded node maps for nodes setting this beat
     // (was `jsonb_each(dt.nodes)` SQL join on the dropped `nodes` column).
-    const trees = await loadAllDialogueTreeNodes();
+    const { trees, failed } = await loadAllDialogueTreeNodes();
+    if (failed > 0) {
+      return res.status(503).json({ success: false, error: `Content store unavailable for ${failed} dialogue tree(s).`, timestamp: new Date().toISOString() });
+    }
     const dialogueUsages: Array<{ dialogueId: string; dialogueName: string; nodeId: string }> = [];
     for (const tree of trees) {
       for (const [key, node] of Object.entries(tree.nodes)) {

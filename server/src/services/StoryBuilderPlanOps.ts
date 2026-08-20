@@ -235,6 +235,12 @@ export interface StagePlanOptions {
 /**
  * Create a MODIFY GraphDelta for an existing entity with changed fields.
  * Used by fillPlanItemsWithLLM and lore generation to emit deltas to the graph.
+ *
+ * The `fields` on a MODIFY delta must be the FULL post-approve field set
+ * (a shadow copy of the canon node), not just the changed fields — otherwise
+ * the materialize pipeline would erase unchanged fields (including name)
+ * when applying the delta. We merge the changed fields onto the item's
+ * existing fields to produce the complete set.
  */
 function createModifyDelta(
   planId: string,
@@ -248,7 +254,9 @@ function createModifyDelta(
     nodeType: (CONTENT_TYPE_TO_NODE_TYPE[item.type] ?? item.type) as GraphDelta['nodeType'],
     nodeId,
     op: 'MODIFY',
-    fields: changedFields,
+    // Merge changed fields onto the item's complete field set so unchanged
+    // fields (name, description, etc.) are preserved in the shadow node.
+    fields: { ...(item.fields || {}), ...changedFields },
     createdAt: new Date().toISOString(),
   };
 }
@@ -256,6 +264,13 @@ function createModifyDelta(
 /**
  * Emit MODIFY deltas for filled fields to Neo4j.
  * Only emits when Neo4j is enabled and planId is provided.
+ *
+ * New (ADD) items — those without a stable entity_id — are skipped here
+ * because their canonical :Content node does not exist in Neo4j yet (it is
+ * created at graph commit / materialize time). Emitting a MODIFY for them
+ * would be rejected by the canonical-node preflight. Instead, the filled
+ * fields are merged into the item in-memory (done by the caller) so they
+ * flow to the graph as part of the ADD delta when the plan is staged.
  */
 async function emitFillDeltas(
   planId: string,
@@ -264,8 +279,14 @@ async function emitFillDeltas(
 ): Promise<void> {
   if (!isNeo4jEnabled() || !planId) return;
 
-  // Look up the entity's nodeId from its fields (id field) or use the item id
-  const nodeId = (item.fields as any).id ?? item.id;
+  // New items have no entity_id yet — skip delta emission. The filled fields
+  // are applied to the item's own fields by the caller (fillPlanItemsWithLLM),
+  // so they will be included in the eventual ADD delta at stage time.
+  if (!item.entity_id) return;
+
+  // Resolve the stable canonical node identity from entity_id, falling back
+  // to fields.id (a persisted entity UUID) before the transient item.id.
+  const nodeId = item.entity_id ?? (item.fields as any).id;
   if (!nodeId) return;
 
   const delta = createModifyDelta(planId, item, nodeId, filledFields);
@@ -292,7 +313,12 @@ export async function emitLoreDelta(
 ): Promise<void> {
   if (!isNeo4jEnabled() || !planId) return;
 
-  const nodeId = (item.fields as any).id ?? item.id;
+  // New (ADD) items have no canonical node yet — skip delta emission.
+  if (!item.entity_id) return;
+
+  // Resolve the stable canonical node identity from entity_id, falling back
+  // to fields.id (a persisted entity UUID) before the transient item.id.
+  const nodeId = item.entity_id ?? (item.fields as any).id;
   if (!nodeId) return;
 
   const delta = createModifyDelta(planId, item, nodeId, { [fieldName]: loreContent });
@@ -507,7 +533,7 @@ async function fillPlanItemsWithLLM(
           await emitFillDeltas(planId, item, filteredFields);
         }
       }
-      if (response.lore_refs && response.lore_refs.length > 0) {
+      if (response?.lore_refs && response.lore_refs.length > 0) {
         const existing = item.lore_refs ?? [];
         item.lore_refs = Array.from(new Set([...existing, ...response.lore_refs]));
       }

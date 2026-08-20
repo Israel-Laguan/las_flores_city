@@ -13,7 +13,7 @@ import type {
   StagingResult,
 } from './StoryBuilderPlanOps.js';
 import type { PublishResult } from './AssetPublishService.js';
-import { PlanNotFoundError, PlanStatusError } from './errors.js';
+import { GraphDisabledError, PlanNotFoundError, PlanStatusError } from './errors.js';
 import { isNeo4jEnabled } from './Neo4jClient.js';
 import { detectGraphDrift } from './GraphMerger.js';
 import { exportContentPlan, GraphExportError } from './GraphExporter.js';
@@ -121,7 +121,7 @@ export interface SolidifyResult {
 export async function approveAndSolidifyPlan(planId: string, userId?: string): Promise<SolidifyResult> {
   // --- M32: graph is now the sole authoring entry point for approvals. ---
   if (!isNeo4jEnabled()) {
-    throw new PlanStatusError(
+    throw new GraphDisabledError(
       'Neo4j authoring graph is disabled (NEO4J_ENABLED !== "true"). Authoring approvals require the graph.',
     );
   }

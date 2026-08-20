@@ -17,14 +17,23 @@
 // can still consume it via the exporter (GraphExporter).
 // ============================================================
 
-import type { ContentPlan, ContentPlanItem, ContentLink, ChatMessage, GraphDelta, GraphDeltaEdge } from '@las-flores/shared';
+import {
+  type ContentPlan,
+  type ContentPlanItem,
+  type ContentLink,
+  type ChatMessage,
+  type GraphDelta,
+  type GraphDeltaEdge,
+  findEdgeMapping,
+  NODE_TYPE_TO_CONTENT_TYPE,
+} from '@las-flores/shared';
 import { queryOLTP } from '@las-flores/infra';
 import { uuidv4 } from '@las-flores/shared';
-import { createLLMProvider } from './LLMService.js';
 import { chatService } from './ChatService.js';
+import { contentPlanService } from './ContentPlanService.js';
 import { applyDelta, applyDeltaEdge, getDeltasForPlan, getDeltaEdgesForPlan, clearDeltasForPlan, preflightDeltas, preflightDeltaEdges } from './GraphDeltaService.js';
 import { isNeo4jEnabled, runNeo4jTransaction } from './Neo4jClient.js';
-import type { LLMProvider, ExistingContentContext, LLMUsage } from './types/LLMTypes.js';
+import type { ExistingContentContext, LLMUsage } from './types/LLMTypes.js';
 
 /** GraphIntakeService error when Neo4j is disabled. */
 export class GraphIntakeDisabledError extends Error {
@@ -52,10 +61,19 @@ export interface CreatePlanFromDescriptionResult {
   timestamp: string;
 }
 
-/** Transforms GraphDelta nodes into ContentPlanItem shape for the legacy pipeline. */
+/** Reject DELETE deltas before synthesis — the legacy ContentPlanItem contract
+ * has no tombstone representation. Callers must surface DELETEs as an error
+ * rather than silently dropping them so references cannot be bypassed. */
 function deltaToPlanItem(delta: GraphDelta, baseContext: ExistingContentContext): ContentPlanItem {
   const { nodeType, nodeId, op, fields } = delta;
-  
+
+  if (op === 'DELETE') {
+    throw new GraphIntakeValidationError(
+      `Cannot synthesize a plan item from a DELETE delta for [${nodeType}:${nodeId}] — ` +
+      `delete materialization is not supported by the legacy plan contract. Remove the tombstone before approving.`,
+    );
+  }
+
   // Map graph nodeType to ContentPlan item type
   const contentTypeMap: Record<string, string> = {
     Character: 'character',
@@ -67,16 +85,16 @@ function deltaToPlanItem(delta: GraphDelta, baseContext: ExistingContentContext)
     District: 'district',
   };
   const type = (contentTypeMap[nodeType] ?? nodeType.toLowerCase()) as ContentPlanItem['type'];
-  
+
   // For MODIFY ops referencing an existing entity, look up its existing fields
   // from the base context to preserve unchanged values.
   const baseEntity = op === 'MODIFY' ? findBaseEntity(baseContext, nodeType, nodeId) : null;
-  
+
   // Merge delta fields onto base entity fields (MODIFY) or use delta fields directly (ADD)
-  const mergedFields = baseEntity 
+  const mergedFields = baseEntity
     ? { ...baseEntity, ...fields }
     : { ...fields };
-  
+
   return {
     id: delta.id,
     name: mergedFields.name ?? nodeId,
@@ -112,29 +130,39 @@ function findBaseEntity(context: ExistingContentContext, nodeType: string, nodeI
   return entities.find(e => e.id === nodeId) ?? null;
 }
 
-/** Transforms GraphDeltaEdge edges into ContentLink shape for the legacy pipeline. */
-function deltaEdgeToPlanLink(edge: GraphDeltaEdge): ContentLink {
+/** Transforms GraphDeltaEdge edges into ContentLink shape for the legacy pipeline.
+ *
+ * Resolves both `fromItem` and `toItem` through the plan-item index (mapping
+ * `(nodeType, nodeId)` → `item.id`), because graph node IDs are NOT the
+ * generated plan-item IDs. The `field` is resolved via `findEdgeMapping` from
+ * the shared schema — falling back to the edge type so applyLink can still
+ * route unsupported edges. */
+function deltaEdgeToPlanLink(
+  edge: GraphDeltaEdge,
+  itemIndex: Map<string, string>,
+): ContentLink {
   const { sourceNodeType, sourceNodeId, targetNodeType, targetNodeId, type } = edge;
-  
-  // Map graph nodeTypes to content types
-  const contentTypeMap: Record<string, string> = {
-    Character: 'character',
-    Scene: 'scene',
-    Dialogue: 'dialogue',
-    Mission: 'mission',
-    Overlay: 'overlay',
-    Location: 'location',
-    District: 'district',
-  };
-  
-  // Find the source item by looking through plan items
-  // This is a placeholder - actual resolution happens in stagePlan
+
+  const sourceKey = `${sourceNodeType}:${normalizeKeyComponent(sourceNodeId)}`;
+  const targetKey = `${targetNodeType}:${normalizeKeyComponent(targetNodeId)}`;
+
+  const fromItem = itemIndex.get(sourceKey) ?? sourceNodeId;
+  const toItem = itemIndex.get(targetKey) ?? targetNodeId;
+
+  const mapping = findEdgeMapping(type, sourceNodeType, targetNodeType);
+
   return {
-    fromItem: sourceNodeId,
-    toItem: targetNodeId,
-    field: '', // Will be resolved by applyLink
+    fromItem,
+    toItem,
+    field: mapping?.field ?? type.toLowerCase(),
     action: 'add',
   };
+}
+
+// Normalize a key component to lowercase UUID for index lookups.
+function normalizeKeyComponent(value: string): string {
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return UUID_RE.test(value) ? value.toLowerCase() : value;
 }
 
 /** Synthesize a ContentPlan from deltas+edges for compatibility with the legacy pipeline. */
@@ -146,8 +174,25 @@ function synthesizePlanFromDeltas(
   context: ExistingContentContext,
 ): ContentPlan {
   const items = deltas.map(d => deltaToPlanItem(d, context));
-  const links = edges.map(e => deltaEdgeToPlanLink(e));
-  
+
+  // Build an index mapping (nodeType:graphNodeId) → plan-item id so edge links
+  // resolve to generated item IDs, not raw graph node IDs. Edges reference the
+  // delta's `nodeId` (the graph identity), so we key on that — NOT the
+  // transient plan-item id.
+  const itemIndex = new Map<string, string>();
+  for (let i = 0; i < deltas.length; i++) {
+    const delta = deltas[i];
+    const item = items[i];
+    const nodeTypeForItem =
+      Object.entries(NODE_TYPE_TO_CONTENT_TYPE).find(([, v]) => v === item.type)?.[0] ?? item.type;
+    itemIndex.set(
+      `${nodeTypeForItem}:${normalizeKeyComponent(delta.nodeId)}`,
+      item.id,
+    );
+  }
+
+  const links = edges.map(e => deltaEdgeToPlanLink(e, itemIndex));
+
   return {
     id: planId,
     description,
@@ -161,12 +206,6 @@ function synthesizePlanFromDeltas(
 }
 
 export class GraphIntakeService {
-  private provider: LLMProvider;
-
-  constructor(provider?: LLMProvider) {
-    this.provider = provider || createLLMProvider();
-  }
-
   /**
    * Create a new content plan from a natural language description using the
    * graph-based authoring path. This:
@@ -191,10 +230,16 @@ export class GraphIntakeService {
       throw new GraphIntakeDisabledError('Neo4j authoring graph is disabled — cannot create graph-based plan. Enable NEO4J_ENABLED first.');
     }
 
-    // Step 1: Gather existing content context
+    // Step 1: Generate planId FIRST so it can be passed to chatPropose.
+    // The provider requires a valid UUID planId to associate deltas; passing ''
+    // causes every delta to be silently discarded.
+    const planId = uuidv4();
+    const timestamp = new Date().toISOString();
+
+    // Step 2: Gather existing content context
     const context = await this.gatherContext();
 
-    // Step 2: Call chatPropose to generate structured deltas + edges
+    // Step 3: Call chatPropose to generate structured deltas + edges
     const messages: ChatMessage[] = [
       {
         role: 'user',
@@ -204,19 +249,15 @@ export class GraphIntakeService {
     ];
 
     const { deltas, deltaEdges, usage } = await chatService.propose(
-      '', // planId is empty for new plans (will be created)
+      planId,
       messages,
       context,
     );
 
-    // Step 3: Validate we got deltas back
+    // Step 4: Validate we got deltas back
     if (!deltas || deltas.length === 0) {
       throw new GraphIntakeValidationError('chatPropose returned no deltas for the description');
     }
-
-    // Step 4: Generate a new planId
-    const planId = uuidv4();
-    const timestamp = new Date().toISOString();
 
     // Step 5: Create the plan row in OLTP (minimal metadata; no plan_json)
     await queryOLTP(
@@ -230,21 +271,35 @@ export class GraphIntakeService {
     const planDeltas = deltas.map(d => ({ ...d, planId }));
     const planEdges = deltaEdges.map(e => ({ ...e, planId }));
 
-    await runNeo4jTransaction(async (tx) => {
-      // Preflight validation before any writes
-      await preflightDeltas(planDeltas, tx);
-      await preflightDeltaEdges(planEdges, tx);
+    // If the graph write fails, roll back the OLTP plan row so it is not orphaned.
+    try {
+      await runNeo4jTransaction(async (tx) => {
+        // Write all deltas first, THEN preflight edges — edge preflight checks
+        // that edge endpoints exist in the graph, so deltas must already be
+        // applied for those endpoints to resolve.
+        await preflightDeltas(planDeltas, tx);
 
-      // Write all deltas
-      for (const delta of planDeltas) {
-        await applyDelta(delta, tx);
-      }
+        for (const delta of planDeltas) {
+          await applyDelta(delta, tx);
+        }
 
-      // Write all edges
-      for (const edge of planEdges) {
-        await applyDeltaEdge(edge, tx);
+        // Edge preflight runs AFTER deltas are written so endpoint lookups succeed.
+        await preflightDeltaEdges(planEdges, tx);
+
+        for (const edge of planEdges) {
+          await applyDeltaEdge(edge, tx);
+        }
+      });
+    } catch (graphErr) {
+      // Clean up the orphaned OLTP plan row so we never leave a 'draft' plan
+      // with no corresponding graph deltas.
+      try {
+        await queryOLTP('DELETE FROM content_plans WHERE id = $1', [planId]);
+      } catch (cleanupErr: any) {
+        console.error(`[graph-intake] Failed to clean up orphaned plan ${planId} after graph failure:`, cleanupErr.message);
       }
-    });
+      throw graphErr;
+    }
 
     return {
       planId,
@@ -310,7 +365,7 @@ export class GraphIntakeService {
 
   /** Gather existing content context (shared with ContentPlanService). */
   private async gatherContext(): Promise<ExistingContentContext> {
-    return this.provider.gatherContext();
+    return contentPlanService.gatherContext();
   }
 }
 

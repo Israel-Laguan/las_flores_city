@@ -25,14 +25,20 @@ export async function upsertCharacter(data: any): Promise<string> {
 }
 
 export async function upsertDialogueTree(data: any): Promise<string> {
-  // M23 externalization: publish the tree's node map to MinIO/CDN and store
+    // M23 externalization: publish the tree's node map to MinIO/CDN and store
   // the resulting `content_url`. The in-DB `nodes` JSONB column is dropped in
   // M32, so this pointer is now the sole source of the node map at runtime.
   let contentUrl: string | null = null;
   try {
     contentUrl = await publishDialogueTree(data.id, JSON.stringify({ nodes: data.nodes || {} }));
   } catch (error: any) {
-    console.warn(`[content-upserts] Failed to publish dialogue tree ${data.id} to CDN: ${error?.message}`);
+    // Re-throw: after M32 drops the JSONB fallback, a NULL content_url means
+    // the tree is unloadable at runtime. A caught-and-continued failure would
+    // commit a dead pointer, causing runtime resolution failures and causing
+    // later migrations to skip the row (ON CONFLICT DO UPDATE keeps the stale null).
+    throw new Error(
+      `[content-upserts] Failed to publish dialogue tree ${data.id} to CDN: ${error?.message}`
+    );
   }
 
   const result = await queryOLTP(

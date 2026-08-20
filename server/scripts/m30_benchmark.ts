@@ -26,6 +26,7 @@ import dotenv from 'dotenv';
 import { oltpPool, closeConnections, getRedis, invalidatePattern, setCache } from '@las-flores/infra';
 import { DialogueResolver } from '../src/services/DialogueResolver.js';
 import { buildSnapshotsForTree } from '../src/services/SnapshotService.js';
+import { publishDialogueTree } from '../src/services/ContentPublishService.js';
 import { buildOverlayFingerprint, contentVersionFromUrl, deepMergeNodes } from '../src/services/dialogueResolverUtils.js';
 
 dotenv.config();
@@ -119,13 +120,19 @@ async function seed() {
       );
     }
 
-    // Base tree
+    // Base tree — publish the node map to MinIO/CDN (M23/M32) and store the
+    // returned content_url. The `nodes` JSONB column is dropped in M32, so the
+    // pointer is mandatory for the snapshot builder and resolver to load it.
     const baseNodes = mkNodeMap(NODES_BASE, 'base', 0);
+    const baseContentUrl = await publishDialogueTree(
+      BENCH_TREE_ID,
+      JSON.stringify({ nodes: baseNodes }),
+    );
     await c.query(
-      `INSERT INTO dialogue_trees (id, name, start_node_id, nodes, updated_at, dialogue_scope)
-       VALUES ($1, $2, $3, $4::jsonb, NOW(), 'system')
-       ON CONFLICT (id) DO UPDATE SET nodes = EXCLUDED.nodes, updated_at = NOW()`,
-      [BENCH_TREE_ID, 'bench_tree', 'base_0000', JSON.stringify(baseNodes)]
+      `INSERT INTO dialogue_trees (id, name, start_node_id, content_url, updated_at, dialogue_scope)
+       VALUES ($1, $2, $3, $4, NOW(), 'system')
+       ON CONFLICT (id) DO UPDATE SET content_url = EXCLUDED.content_url, updated_at = NOW()`,
+      [BENCH_TREE_ID, 'bench_tree', 'base_0000', baseContentUrl]
     );
 
     // Overlays: one 60-node overlay per ACTIVE mystery.
@@ -164,10 +171,38 @@ async function teardown() {
     await c.query(`DELETE FROM dialogue_overlays WHERE target_tree_id = $1`, [BENCH_TREE_ID]);
     await c.query(`DELETE FROM mysteries WHERE id::text LIKE 'd0d00000%'`);
   });
-  // Clear any benchmark cache keys + seeded keyspace from S5.
-  await invalidatePattern('dialogue:resolved:*');
-  await getRedis().flushall();
-  console.log('  teardown complete (DB rows + Redis flushed).');
+  // Remove ONLY benchmark-prefixed cache keys (S5 seeded keys, S6 s6 key, and
+  // any dialogue:resolved keys this run created). NEVER flush the shared Redis
+  // instance — unrelated users' sessions/caches must survive this benchmark.
+  await clearBenchmarkRedis();
+  console.log('  teardown complete (DB rows removed + benchmark Redis keys cleared).');
+}
+
+/**
+ * Delete ONLY the Redis keys this benchmark seeded/created. The shared Redis
+ * instance may hold unrelated users' sessions/caches — a flushall() here would
+ * wipe those, so we scope deletion to keys matching `*:bench:*` plus the S6
+ * memory-probe key.
+ */
+async function clearBenchmarkRedis(): Promise<void> {
+  const redis = getRedis();
+  try {
+    let cursor = '0';
+    const toDelete: string[] = [];
+    do {
+      const [next, keys] = await redis.scan(cursor, 'MATCH', '*:bench:*', 'COUNT', 200);
+      cursor = next;
+      toDelete.push(...keys);
+    } while (cursor !== '0');
+    // Include the S6 memory-probe key explicitly (it is bench-scoped but may
+    // not match the `:bench:` pattern if the prefix differs).
+    toDelete.push('dialogue:resolved:bench:s6');
+    if (toDelete.length > 0) {
+      await redis.del(...toDelete);
+    }
+  } catch (err: any) {
+    console.warn('[bench] Could not scope-clear benchmark Redis keys:', err?.message);
+  }
 }
 
 // Ensure a synthetic user exists with the given alignment/nsfw/beat + investigating mystery.
@@ -474,7 +509,8 @@ async function runS5() {
   // to mirror a real mixed keyspace.
   const sizes = [500, 5000, 20000];
   for (const total of sizes) {
-    await redis.flushall();
+    // Clear only prior benchmark-seeded keys; never flush the shared instance.
+    await clearBenchmarkRedis();
     const dialogueCount = Math.floor(total * 0.3);
     const otherCount = total - dialogueCount;
     // Seed dialogue:resolved keys
@@ -502,13 +538,15 @@ async function runS5() {
     summary(`concurrent GET during sweep (${total} keys)`, getSamples);
     console.log(`  invalidate dialogue:resolved:* @ ${total} total keys: wall=${wall.toFixed(1)}ms, deleted=${dialogueCount}`);
   }
-  await redis.flushall();
+  // Clear only benchmark-seeded keys; never flush unrelated sessions/caches.
+  await clearBenchmarkRedis();
 }
 
 async function runS6() {
   console.log('\n=== S6 — Redis memory footprint per resolved tree ===');
   const redis = getRedis();
-  await redis.flushall();
+  // Clear only benchmark-prefixed keys from any prior run.
+  await clearBenchmarkRedis();
   const userId = await ensureUser(0x0003, 'neutral', false, 'prologue');
   const tree = await DialogueResolver.resolveTreeForUser(userId, BENCH_TREE_ID);
   const serialized = JSON.stringify(tree);
@@ -527,7 +565,8 @@ async function runS6() {
   }
   // MinIO storage trade: each distinct tree is one object; estimate object count ceiling.
   console.log(`  Combinatorial ceiling (nsfw x align x beat x mystery-subset): 2 x 3 x ${STORY_BEATS.length} x 2^${BENCH_MYSTERY_IDS.length} = ${2 * 3 * STORY_BEATS.length * Math.pow(2, BENCH_MYSTERY_IDS.length)} state keys`);
-  await redis.flushall();
+  // Clear only benchmark-prefixed keys; the S6 probe key is bench-scoped.
+  await clearBenchmarkRedis();
   return { bytes, memUsage };
 }
 
@@ -537,6 +576,7 @@ async function runS6() {
 async function main() {
   const only = process.env.BENCH_SCENARIO; // e.g. S2 to run one
   const results: Record<string, unknown> = {};
+  let exitCode = 0;
   try {
     await seed();
     if (!only || only === 'S1') await runS1();
@@ -554,11 +594,14 @@ async function main() {
     if (!only || only === 'S6') results.S6 = await runS6();
   } catch (err) {
     console.error('BENCH ERROR:', err);
+    // A failed scenario must not exit 0: preserve cleanup but signal failure
+    // so automation treats the run as a non-pass.
+    exitCode = 1;
   } finally {
     await teardown();
     await closeConnections();
     try { (await import('@las-flores/infra')).closeRedis?.(); } catch {}
-    process.exit(0);
+    process.exit(exitCode);
   }
 }
 

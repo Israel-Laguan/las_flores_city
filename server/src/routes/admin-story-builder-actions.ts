@@ -9,7 +9,7 @@ import {
   verifyPlan,
   getSolidifyJobStatus,
 } from '../services/StoryBuilderOrchestrator.js';
-import { isPlanNotFoundError, isPlanStatusError } from '../services/errors.js';
+import { isPlanNotFoundError, isPlanStatusError, GraphDisabledError } from '../services/errors.js';
 import { handleGetVerificationReport } from './admin-story-builder-verification.js';
 import { emitAdminEvent } from '../services/AdminEventEmitter.js';
 import { loadPlanForStaging, runStagingPipeline } from './admin-story-builder-staging.js';
@@ -161,7 +161,9 @@ adminStoryBuilderActionsRouter.post('/plans/:id/approve-and-solidify', async (re
   } catch (error: any) {
     console.error('[story-builder] POST /plans/:id/approve-and-solidify error:', error);
     const message = error.message || 'Failed to approve and solidify plan';
-    const statusCode = isPlanNotFoundError(error) || message.includes('not found')
+    const statusCode = error instanceof GraphDisabledError
+      ? 503
+      : isPlanNotFoundError(error) || message.includes('not found')
       ? 404
       : isPlanStatusError(error) || message.includes('must be') || message.includes("'proposed'")
         ? 400

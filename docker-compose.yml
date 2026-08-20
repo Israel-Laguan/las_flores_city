@@ -237,12 +237,14 @@ services:
     environment:
       NODE_ENV: development
       PORT: 3001
-      # Neo4j graph authoring canvas (M27/M32). The intake-worker is the sole
-      # authoring process, so the graph is **required** here.
+            # Neo4j graph authoring canvas (M27/M32). The graph is OPTIONAL:
+      # the intake-worker treats Neo4j connectivity as non-fatal, so boot
+      # succeeds even when NEO4J_ENABLED=false (the graph never blocks
+      # schema/content migrations or the health endpoint).
       NEO4J_URI: bolt://neo4j:7687
       NEO4J_USER: ${NEO4J_USER:-neo4j}
       NEO4J_PASSWORD: ${NEO4J_PASSWORD:-lasfloresdev123}
-      NEO4J_ENABLED: "true"
+            NEO4J_ENABLED: ${NEO4J_ENABLED:-false}
       DATABASE_URL: postgresql://las_flores:${POSTGRES_PASSWORD:-las_flores_dev_password}@postgres-oltp:5432/las_flores
       ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:${POSTGRES_ANALYTICS_PASSWORD:-las_flores_analytics_dev_password}@postgres-olap:5432/las_flores_analytics
       REDIS_URL: redis://redis:6379
@@ -277,8 +279,10 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      neo4j:
-        condition: service_healthy
+      # Neo4j is intentionally NOT a depends_on health gate: the graph is
+      # optional (NEO4J_ENABLED defaults false, intake.ts treats Neo4j
+      # connectivity as non-fatal). A Neo4j outage must NOT block intake-worker
+      # boot, schema/content migrations, or the health endpoint.
     extra_hosts:
       - "host.containers.internal:host-gateway"
     # `npm run dev:intake --workspace=server` resolves to `npx tsx watch

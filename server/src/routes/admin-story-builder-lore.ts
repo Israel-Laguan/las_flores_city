@@ -6,7 +6,6 @@ import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
 import { queryOLTP } from '@las-flores/infra';
 import { contentPlanService } from '../services/ContentPlanService.js';
 import { emitLoreDelta } from '../services/StoryBuilderPlanOps.js';
-import { isNeo4jEnabled } from '../services/Neo4jClient.js';
 
 export const adminStoryBuilderLoreRouter = express.Router();
 
@@ -54,11 +53,6 @@ adminStoryBuilderLoreRouter.post('/plans/:id/items/:itemId/lore', async (req: Au
     const context = await contentPlanService.gatherContext();
     const loreContent = await contentPlanService.generateLore(item, context);
 
-    // Emit MODIFY delta for lore content (M32: emit deltas instead of just mutating plan_json)
-    if (isNeo4jEnabled()) {
-      await emitLoreDelta(planId, item, loreContent, 'lore_content');
-    }
-
     // Write to lore file (overwrite existing)
     const loreRoot = path.resolve(process.cwd(), 'docs', 'lore');
     const fullPath = path.resolve(process.cwd(), lorePath);
@@ -72,6 +66,12 @@ adminStoryBuilderLoreRouter.post('/plans/:id/items/:itemId/lore', async (req: Au
     const dir = path.dirname(fullPath);
     await fs.mkdir(dir, { recursive: true });
     await fs.writeFile(fullPath, loreContent, 'utf-8');
+
+    // Emit MODIFY delta for lore content AFTER the durable file write succeeds,
+    // so the graph never gets ahead of the filesystem. emitLoreDelta resolves
+    // the nodeId from item.entity_id (the stable canonical identity), not the
+    // transient plan-item id.
+    await emitLoreDelta(planId, item, loreContent, 'lore_content');
 
     res.json({
       success: true,

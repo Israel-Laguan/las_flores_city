@@ -200,8 +200,15 @@ export async function resolveDialogueTree(
     // to the fallback if no scene-scoped tree passes all gates.
   }
 
+    // Also include trees with NULL character_id (scene/onboarding-scoped trees
+  // whose speaker is encoded in CDN node maps, not the FK). Migration 057
+  // left character_id nullable without backfilling, so a speaker-based
+  // fallback is required to find these trees.
   const fallbackResult = await queryOLTP<{ id: string }>(
-    `SELECT id FROM dialogue_trees WHERE character_id = $1 LIMIT 5`,
+    `SELECT id FROM dialogue_trees
+      WHERE character_id = $1 OR character_id IS NULL
+      ORDER BY created_at ASC, id ASC
+      LIMIT 10`,
     [characterId]
   );
 

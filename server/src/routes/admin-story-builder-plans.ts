@@ -19,7 +19,13 @@ adminStoryBuilderPlansRouter.post('/plans', async (req: AuthRequest, res) => {
       return;
     }
 
-    const validatedPlan = ContentPlanSchema.parse(plan);
+    let validatedPlan: ContentPlan;
+    try {
+      validatedPlan = ContentPlanSchema.parse(plan);
+    } catch {
+      res.status(400).json({ success: false, error: 'Invalid plan: schema validation failed', timestamp: new Date().toISOString() });
+      return;
+    }
     validatedPlan.status = 'proposed';
 
     const result = await queryOLTP(
@@ -118,32 +124,21 @@ adminStoryBuilderPlansRouter.put('/plans/:id', async (req, res) => {
       return;
     }
 
-    // M32 — the graph is the sole authoring entry point. Direct plan_json edits
-    // are only allowed for legacy plans that carry no graph deltas, and only
-    // when the graph service is actually available.
-    if (!isNeo4jEnabled()) {
-      res.status(503).json({
-        success: false,
-        error: 'graph authoring service unavailable (NEO4J_ENABLED !== "true")',
-        timestamp: new Date().toISOString(),
-      });
-      return;
-    }
-
-    // Fail closed when the graph service is enabled but unreachable: never fall
-    // back to treating an unavailable graph as an empty delta set (which would
-    // let a plan_json edit clobber graph-authored deltas).
-    let deltas;
-    try {
-      deltas = await getDeltasForPlan(id);
-    } catch (err) {
-      console.warn('[story-builder] delta lookup failed for plan', id, (err as Error).message);
-      res.status(503).json({ success: false, error: 'graph authoring service unavailable', timestamp: new Date().toISOString() });
-      return;
-    }
-    if (deltas.length > 0) {
-      res.status(400).json({ success: false, error: 'plan authored via graph deltas; edit through the graph canvas, not plan_json', timestamp: new Date().toISOString() });
-      return;
+    // Graph-authored plans must be edited through the canvas. Legacy plans may
+    // still be edited directly when graph authoring is disabled.
+    if (isNeo4jEnabled()) {
+      let deltas;
+      try {
+        deltas = await getDeltasForPlan(id);
+      } catch (err) {
+        console.warn('[story-builder] delta lookup failed for plan', id, (err as Error).message);
+        res.status(503).json({ success: false, error: 'graph authoring service unavailable', timestamp: new Date().toISOString() });
+        return;
+      }
+      if (deltas.length > 0) {
+        res.status(400).json({ success: false, error: 'plan authored via graph deltas; edit through the graph canvas, not plan_json', timestamp: new Date().toISOString() });
+        return;
+      }
     }
 
     let validatedPlan: ContentPlan;

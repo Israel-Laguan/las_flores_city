@@ -231,18 +231,27 @@ export async function compileDialogueTree(treeId: string): Promise<CompiledChunk
   // Pure compile
   const chunks = compileTree(treeId, start_node_id, nodes, gateSet);
 
-  // M23 publish-first: externalize tree nodes + chunk sub-graphs to MinIO.
+    // M23 publish-first: externalize tree nodes + chunk sub-graphs to MinIO.
+  // After M32 drops the in-DB JSONB fallback, a NULL content_url means the
+  // tree/chunk is unloadable at runtime. Abort the entire write unless EVERY
+  // publish produced a reachable URL.
   const treeContentUrl = await safePublish(() => publishDialogueTree(treeId, JSON.stringify({ nodes })));
+  if (treeContentUrl === null) {
+    throw new Error(`Dialogue tree ${treeId}: MinIO publish failed — aborting chunk compilation (no NULL content_url fallback after M32)`);
+  }
+
   const chunkContentUrls = new Map<string, string>();
   for (const chunk of chunks) {
     const payload = JSON.stringify({ nodes: chunk.nodes, leaves: chunk.leaves });
     const url = await safePublish(() => publishDialogueChunk(treeId, chunk.chunk_key, payload));
-    if (url) chunkContentUrls.set(chunk.chunk_key, url);
+    if (url === null) {
+      throw new Error(`Chunk ${chunk.chunk_key} for tree ${treeId}: MinIO publish failed — aborting (no NULL content_url fallback after M32)`);
+    }
+    chunkContentUrls.set(chunk.chunk_key, url);
   }
 
   // DB write: delete stale + insert fresh, in one transaction.
-  // `content_url` references the (already-published) CDN objects; the
-  // nodes/leaves JSONB columns are kept for backward-compat fallback.
+  // `content_url` references the (already-published) CDN objects.
   await withOLTPTransaction(async (client) => {
     await client.query('DELETE FROM dialogue_chunks WHERE tree_id = $1', [treeId]);
 
@@ -250,7 +259,7 @@ export async function compileDialogueTree(treeId: string): Promise<CompiledChunk
       await client.query(
         `INSERT INTO dialogue_chunks (tree_id, chunk_key, content_url)
          VALUES ($1, $2, $3)`,
-        [chunk.tree_id, chunk.chunk_key, chunkContentUrls.get(chunk.chunk_key) ?? null]
+        [chunk.tree_id, chunk.chunk_key, chunkContentUrls.get(chunk.chunk_key)]
       );
     }
 

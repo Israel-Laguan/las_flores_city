@@ -199,8 +199,21 @@ function addTodoFields(item: ContentPlanItem): boolean {
     const parts = field.split('.');
     let current: any = item.fields;
     for (let i = 0; i < parts.length - 1; i++) {
-      if (!current[parts[i]]) current[parts[i]] = {};
-      current = current[parts[i]];
+      const part = parts[i];
+      const existing = current[part];
+      // Guard against a truthy non-object intermediate (e.g. fields.metadata is
+      // a string): replace it with an object rather than descending into a
+      // primitive and throwing on `current[part] = {}`.
+      if (
+        !existing ||
+        typeof existing !== 'object' ||
+        Array.isArray(existing) ||
+        Array.isArray(current) ||
+        typeof current !== 'object'
+      ) {
+        current[part] = {};
+      }
+      current = current[part];
     }
     const lastField = parts[parts.length - 1];
     if (!current[lastField]) {

@@ -399,11 +399,20 @@ async function runPostMigrationTasks(result: MigrationResult): Promise<void> {
       `   ${snapshotResult.totalTrees} trees → ${snapshotResult.totalSnapshots} snapshots (${snapshotResult.errors.length} errors)`
     );
     if (snapshotResult.errors.length > 0) {
-      result.errors.push(...snapshotResult.errors);
+      // Snapshot pre-computation is an optimization (M30 Phase A). Its errors must
+      // NOT fail the content migration: the compiler publishes content_urls that
+      // the live resolver can still load on-demand. Log snapshot errors as
+      // warnings so migration success is not coupled to MinIO availability during
+      // snapshot publication. The live resolver falls back to on-demand merge
+      // for any state that lacks a pre-resolved snapshot.
+      console.warn(
+        `   [non-fatal] ${snapshotResult.errors.length} snapshot error(s) — ` +
+        `live resolver will handle these trees on-demand:`,
+        snapshotResult.errors.join(', ')
+      );
     }
   } catch (error: any) {
-    console.error('❌ Snapshot compilation failed (non-fatal):', error.message);
-    result.errors.push(`Snapshot compilation failed: ${error.message}`);
+    console.warn('⚠️ Snapshot compilation failed (non-fatal — will resolve live):', error.message);
   }
 
   await invalidateCaches();

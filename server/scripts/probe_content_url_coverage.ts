@@ -55,10 +55,34 @@ async function probeRows(
     }
 
     try {
-      // Reuse the resolver's fetch path.  This fetches the blob body; for a
-      // coverage check a HEAD would be cheaper, but using the same code path
-      // means a green probe guarantees the resolver can read the same blob.
-      await fetchContentString(row.content_url);
+      // Reuse the resolver's fetch path and VALIDATE the blob shape. A blob
+      // that returns HTTP 200 but contains malformed/empty/wrongly-shaped JSON
+      // would still trip the resolver at runtime — the M32 drop must not pass
+      // just because the byte fetch succeeded. Trees must carry a non-empty
+      // `nodes` record; chunks must carry `nodes` (and `leaves`).
+      const raw = await fetchContentString(row.content_url);
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(raw);
+      } catch {
+        throw new Error(`blob is not valid JSON (${raw.slice(0, 80)}…)`);
+      }
+      const nodes = (parsed as { nodes?: unknown })?.nodes;
+      const isRecordOfRecords =
+        nodes &&
+        typeof nodes === 'object' &&
+        !Array.isArray(nodes) &&
+        Object.keys(nodes).length > 0 &&
+        Object.values(nodes as Record<string, unknown>).every(
+          (n) => typeof n === 'object' && n !== null && !Array.isArray(n),
+        );
+      if (!isRecordOfRecords) {
+        throw new Error(
+          isChunk
+            ? `blob is missing a non-empty nodes record (${Object.keys(parsed as object).join(',') || 'empty'})`
+            : `blob is missing a non-empty nodes record (${Object.keys(parsed as object).join(',') || 'empty'})`,
+        );
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       gaps.push({
