@@ -14,11 +14,15 @@ import { describe, it, expect, jest as jestGlobals, beforeEach } from '@jest/glo
 // ============================================================
 
 const poolInstances: Array<{ query: ReturnType<typeof jestGlobals.fn> }> = [];
+// Captures the config each mock Pool was constructed with, so tests can assert the
+// env-driven sizing (`max` from `CONTENT_POOL_MAX`).
+const poolConfigs: Array<Record<string, unknown>> = [];
 
 jestGlobals.mock('pg', () => {
   class Pool {
     query = jestGlobals.fn<(sql: string, params?: any[]) => Promise<unknown>>();
-    constructor() {
+    constructor(config?: Record<string, unknown>) {
+      poolConfigs.push(config ?? {});
       poolInstances.push({ query: this.query });
     }
     end = jestGlobals.fn(async () => undefined);
@@ -87,5 +91,29 @@ describe('M19 contentPool', () => {
     await oltpPool.query('SELECT 1');
     const created = poolInstances[poolInstances.length - 1];
     expect(created.query.mock.calls[0]?.[0]).toBe('SELECT 1');
+  });
+
+  it('contentPool defaults to max 10 when CONTENT_POOL_MAX is unset', async () => {
+    const prev = process.env.CONTENT_POOL_MAX;
+    delete process.env.CONTENT_POOL_MAX;
+    try {
+      await queryContent<{ id: string }>('SELECT 1 FROM dialogue_chunks');
+      expect(poolConfigs[poolConfigs.length - 1].max).toBe(10);
+    } finally {
+      if (prev === undefined) delete process.env.CONTENT_POOL_MAX;
+      else process.env.CONTENT_POOL_MAX = prev;
+    }
+  });
+
+  it('contentPool honors CONTENT_POOL_MAX override', async () => {
+    const prev = process.env.CONTENT_POOL_MAX;
+    process.env.CONTENT_POOL_MAX = '30';
+    try {
+      await queryContent<{ id: string }>('SELECT 1 FROM dialogue_chunks');
+      expect(poolConfigs[poolConfigs.length - 1].max).toBe(30);
+    } finally {
+      if (prev === undefined) delete process.env.CONTENT_POOL_MAX;
+      else process.env.CONTENT_POOL_MAX = prev;
+    }
   });
 });

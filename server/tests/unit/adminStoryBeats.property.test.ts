@@ -20,18 +20,29 @@ import express from 'express';
 //   Example-based error paths                     (task 7.9)
 //
 // Mocking strategy:
-//   - queryOLTP and deleteCache/setCache are mocked via jest.mock.
+//   - queryOLTP, queryContent, and deleteCache/setCache are mocked via jest.mock.
 //   - authAndAdminMiddleware is mocked to pass through (bypass auth).
 //   - Tests use supertest against a minimal Express app.
+//   - Isolation uses mockReset() (not clearAllMocks()): Once-queues from
+//     property-based runs must be drained or they bleed into later tests.
 // ============================================================
 
 // ── Module mocks (hoisted by Jest) ──────────────────────────
 
 jest.mock('@las-flores/infra', () => ({
   queryOLTP: jest.fn(),
+  // loadAllDialogueTreeNodes() reads dialogue_trees via queryContent.
+  queryContent: jest.fn(async () => ({ rows: [], rowCount: 0 })),
   deleteCache: jest.fn(async () => true),
   setCache: jest.fn(async () => true),
   getCache: jest.fn(async () => null),
+}));
+
+// M32/M23: beat→dialogue linkage is no longer a `jsonb_each(dt.nodes)` SQL
+// join (that column is dropped); the route loads each tree's node map from
+// the CDN via `content_url` and scans it in Node.
+jest.mock('../../src/services/contentFetch.js', () => ({
+  fetchNodesFromContentUrl: jest.fn(async () => ({})),
 }));
 
 jest.mock('../../src/middleware/adminAuth.js', () => ({
@@ -40,8 +51,8 @@ jest.mock('../../src/middleware/adminAuth.js', () => ({
 
 // ── Imports (after mocks) ────────────────────────────────────
 
-import { queryOLTP } from '@las-flores/infra';
-import { deleteCache, setCache } from '@las-flores/infra';
+import { queryOLTP, queryContent, deleteCache, setCache } from '@las-flores/infra';
+import { fetchNodesFromContentUrl } from '../../src/services/contentFetch.js';
 import { adminStoryBeatsRouter } from '../../src/routes/admin-story-beats.js';
 
 // ── App fixture ──────────────────────────────────────────────
@@ -56,8 +67,12 @@ function makeApp() {
 // ── Typed mock helpers ───────────────────────────────────────
 
 const mockQuery = queryOLTP as jest.MockedFunction<typeof queryOLTP>;
+const mockQueryContent = queryContent as jest.MockedFunction<typeof queryContent>;
 const mockDeleteCache = deleteCache as jest.MockedFunction<typeof deleteCache>;
 const mockSetCache = setCache as jest.MockedFunction<typeof setCache>;
+const mockFetchNodes = fetchNodesFromContentUrl as jest.MockedFunction<
+  typeof fetchNodesFromContentUrl
+>;
 
 // ── Arbitraries ──────────────────────────────────────────────
 
@@ -112,10 +127,27 @@ function beatToRow(beat: { slug: string; label: string; order: number; descripti
   };
 }
 
-// ── beforeEach: clear mocks ──────────────────────────────────
+// ── Isolation: drain Once-queues and restore defaults ────────
+//
+// `jest.clearAllMocks()` only clears call history. Leftover
+// mockResolvedValueOnce / mockRejectedValueOnce values from Properties 1–7
+// otherwise bleed into later tests (wrong 200/404 vs 409/500).
+
+function resetMocks() {
+  mockQuery.mockReset();
+  mockQueryContent.mockReset();
+  mockDeleteCache.mockReset();
+  mockSetCache.mockReset();
+  mockFetchNodes.mockReset();
+
+  mockDeleteCache.mockResolvedValue(true as any);
+  mockSetCache.mockResolvedValue(true as any);
+  mockFetchNodes.mockImplementation(async () => ({}));
+  mockQueryContent.mockResolvedValue({ rows: [], rowCount: 0 } as any);
+}
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  resetMocks();
 });
 
 // ============================================================
@@ -133,11 +165,9 @@ describe('Property 1: List ordering invariant', () => {
     // Feature: milestone-5-story-beat-admin-ui, Property 1: List ordering invariant
     await fc.assert(
       fc.asyncProperty(uniqueBeatsArb(2, 20), async (beats) => {
-        jest.clearAllMocks();
+        resetMocks();
         const app = makeApp();
 
-        // Shuffle the rows before returning them from the mock DB
-        const shuffled = [...beats].sort(() => Math.random() - 0.5);
         // The route sorts in SQL ORDER BY "order" ASC — we return pre-sorted to simulate
         // the DB doing its job (the route does ORDER BY, not the test)
         const sortedByOrder = [...beats].sort((a, b) => a.order - b.order);
@@ -175,7 +205,7 @@ describe('Property 2: Create round-trip', () => {
     // Feature: milestone-5-story-beat-admin-ui, Property 2: Create round-trip
     await fc.assert(
       fc.asyncProperty(validBeatArb(), async (beat) => {
-        jest.clearAllMocks();
+        resetMocks();
         const app = makeApp();
 
         const row = beatToRow(beat);
@@ -228,7 +258,7 @@ describe('Property 3: Update round-trip', () => {
         validOrderArb(),
         validDescriptionArb(),
         async (original, newLabel, newOrder, newDesc) => {
-          jest.clearAllMocks();
+          resetMocks();
           const app = makeApp();
 
           const updatedRow = {
@@ -285,15 +315,15 @@ describe('Property 4: Delete removes from list', () => {
     // Feature: milestone-5-story-beat-admin-ui, Property 4: Delete removes from list
     await fc.assert(
       fc.asyncProperty(validSlugArb(), async (slug) => {
-        jest.clearAllMocks();
+        resetMocks();
         const app = makeApp();
 
         // 1. Check if slug exists: rowCount = 1 (found)
         mockQuery.mockResolvedValueOnce({ rows: [{ slug }], rowCount: 1 } as any);
-        // 2. Dialogue reference check: no references
+        // 2. Scene reference check: no references
         mockQuery.mockResolvedValueOnce({ rows: [], rowCount: 0 } as any);
-        // 3. Scene reference check: no references
-        mockQuery.mockResolvedValueOnce({ rows: [], rowCount: 0 } as any);
+        // 3. Dialogue tree load (queryContent): no trees / no references
+        mockQueryContent.mockResolvedValueOnce({ rows: [], rowCount: 0 } as any);
         // 4. DELETE: rowCount = 1 means it was found and deleted
         mockQuery.mockResolvedValueOnce({ rows: [], rowCount: 1 } as any);
         // refreshSlugCache
@@ -338,7 +368,7 @@ describe('Property 5: Cache reflects DB state after any mutation', () => {
         validBeatArb(),
         uniqueBeatsArb(0, 10),
         async (newBeat, existingBeats) => {
-          jest.clearAllMocks();
+          resetMocks();
           const app = makeApp();
 
           // All slugs that will be in DB after insert
@@ -382,7 +412,7 @@ describe('Property 5: Cache reflects DB state after any mutation', () => {
         validBeatArb(),
         uniqueBeatsArb(0, 10),
         async (beat, otherBeats) => {
-          jest.clearAllMocks();
+          resetMocks();
           const app = makeApp();
 
           const slugsInDB = [beat.slug, ...otherBeats.map(b => b.slug)];
@@ -417,17 +447,17 @@ describe('Property 5: Cache reflects DB state after any mutation', () => {
         validSlugArb(),
         uniqueBeatsArb(0, 10),
         async (slug, remainingBeats) => {
-          jest.clearAllMocks();
+          resetMocks();
           const app = makeApp();
 
           const slugsAfterDelete = remainingBeats.map(b => b.slug);
 
           // 1. Check if slug exists: rowCount = 1 (found)
           mockQuery.mockResolvedValueOnce({ rows: [{ slug }], rowCount: 1 } as any);
-          // 2. Dialogue reference check: no references
+          // 2. Scene reference check: no references
           mockQuery.mockResolvedValueOnce({ rows: [], rowCount: 0 } as any);
-          // 3. Scene reference check: no references
-          mockQuery.mockResolvedValueOnce({ rows: [], rowCount: 0 } as any);
+          // 3. Dialogue tree load (queryContent): no trees / no references
+          mockQueryContent.mockResolvedValueOnce({ rows: [], rowCount: 0 } as any);
           // 4. DELETE rowCount=1
           mockQuery.mockResolvedValueOnce({ rows: [], rowCount: 1 } as any);
           // refreshSlugCache SELECT
@@ -511,7 +541,7 @@ describe('Property 6: Validation rejects invalid inputs', () => {
     // Feature: milestone-5-story-beat-admin-ui, Property 6: Validation rejects invalid inputs
     await fc.assert(
       fc.asyncProperty(invalidBeatBodyArb(), async (body) => {
-        jest.clearAllMocks();
+        resetMocks();
         const app = makeApp();
 
         const res = await request(app).post('/').send(body);
@@ -549,7 +579,7 @@ describe('Property 6: Validation rejects invalid inputs', () => {
           }),
         ),
         async (slug, body) => {
-          jest.clearAllMocks();
+          resetMocks();
           const app = makeApp();
 
           const res = await request(app).put(`/${slug}`).send(body);
@@ -574,7 +604,13 @@ describe('Property 6: Validation rejects invalid inputs', () => {
 // Validates: Requirements 5.2, 5.3
 // ============================================================
 
-/** Generates mock dialogue usage rows */
+/**
+ * Generates mock dialogue usage rows.
+ *
+ * M32: these are no longer SQL rows. Each one is realized below as a
+ * dialogue_trees row (id, name, content_url) plus a CDN node map holding a
+ * node whose `effects.story_beat` is the beat under test.
+ */
 const dialogueRowArb = () =>
   fc.record({
     dialogue_id: fc.uuid(),
@@ -598,15 +634,37 @@ describe('Property 7: Usages query completeness', () => {
         fc.array(dialogueRowArb(), { minLength: 0, maxLength: 10 }),
         fc.array(sceneRowArb(), { minLength: 0, maxLength: 10 }),
         async (slug, dialogueRows, sceneRows) => {
-          jest.clearAllMocks();
+          resetMocks();
           const app = makeApp();
+
+          // Realize each expected dialogue usage as one tree row + CDN blob.
+          // Index-keyed content_url keeps the blob mapping unique.
+          const treeRows = dialogueRows.map((row, i) => ({
+            id: row.dialogue_id,
+            name: row.dialogue_name,
+            content_url: `s3://content/trees/${i}.json`,
+          }));
+          // Each tree carries its expected matching node PLUS an extra node
+          // with a different story_beat. The route must filter on
+          // `effects.story_beat === slug` and exclude the non-matching node,
+          // so dialogueUsages stays at one entry per tree.
+          const nodesByUrl = new Map(
+            treeRows.map((tree, i) => [
+              tree.content_url,
+              {
+                [dialogueRows[i].node_id]: { effects: { story_beat: slug } },
+                [`other_${i}`]: { effects: { story_beat: `other-beat-${i}` } },
+              },
+            ]),
+          );
+          mockFetchNodes.mockImplementation(async (url) => nodesByUrl.get(url as string) ?? {});
 
           // exists check
           mockQuery.mockResolvedValueOnce({ rows: [{ slug }], rowCount: 1 } as any);
-          // dialogue query
-          mockQuery.mockResolvedValueOnce({ rows: dialogueRows, rowCount: dialogueRows.length } as any);
           // scene query
           mockQuery.mockResolvedValueOnce({ rows: sceneRows, rowCount: sceneRows.length } as any);
+          // loadAllDialogueTreeNodes: queryContent SELECT id, name, content_url FROM dialogue_trees
+          mockQueryContent.mockResolvedValueOnce({ rows: treeRows, rowCount: treeRows.length } as any);
 
           const res = await request(app).get(`/${slug}/usages`);
 
@@ -625,6 +683,12 @@ describe('Property 7: Usages query completeness', () => {
             expect(found).toBeDefined();
             expect(found!.dialogueName).toBe(row.dialogue_name);
             expect(found!.nodeId).toBe(row.node_id);
+          }
+
+          // The non-matching `other_<i>` nodes must be filtered out, proving
+          // the route's `effects.story_beat === slug` filter is exercised.
+          for (let i = 0; i < dialogueRows.length; i++) {
+            expect(dialogueUsages.find(u => u.nodeId === `other_${i}`)).toBeUndefined();
           }
 
           // Every scene row from DB must appear in response
@@ -658,7 +722,7 @@ describe('Example-based: Error paths (task 7.9)', () => {
 
   // GET / with mocked DB failure → 500
   test('GET / with DB failure returns 500', async () => {
-    jest.clearAllMocks();
+    resetMocks();
     mockQuery.mockRejectedValueOnce(new Error('DB connection lost') as never);
 
     const res = await request(app).get('/');
@@ -670,7 +734,7 @@ describe('Example-based: Error paths (task 7.9)', () => {
 
   // POST / with duplicate slug (23505 + story_beats_pkey) → 409 "Slug already exists"
   test('POST / with duplicate slug returns 409 with "Slug already exists"', async () => {
-    jest.clearAllMocks();
+    resetMocks();
     const dupError = Object.assign(new Error('duplicate key'), {
       code: '23505',
       constraint: 'story_beats_pkey',
@@ -686,7 +750,7 @@ describe('Example-based: Error paths (task 7.9)', () => {
 
   // POST / with duplicate order (23505 + idx_story_beats_order) → 409 "Order already taken"
   test('POST / with duplicate order returns 409 with "Order already taken"', async () => {
-    jest.clearAllMocks();
+    resetMocks();
     const dupError = Object.assign(new Error('duplicate key'), {
       code: '23505',
       constraint: 'idx_story_beats_order',
@@ -702,7 +766,7 @@ describe('Example-based: Error paths (task 7.9)', () => {
 
   // PUT /:slug with 0 rows updated → 404
   test('PUT /:slug when slug does not exist returns 404', async () => {
-    jest.clearAllMocks();
+    resetMocks();
     mockQuery.mockResolvedValueOnce({ rows: [], rowCount: 0 } as any);
 
     const res = await request(app)
@@ -715,7 +779,7 @@ describe('Example-based: Error paths (task 7.9)', () => {
 
   // DELETE /:slug with 0 rows deleted → 404
   test('DELETE /:slug when slug does not exist returns 404', async () => {
-    jest.clearAllMocks();
+    resetMocks();
     mockQuery.mockResolvedValueOnce({ rows: [], rowCount: 0 } as any);
 
     const res = await request(app).delete('/nonexistent_slug');
@@ -726,7 +790,7 @@ describe('Example-based: Error paths (task 7.9)', () => {
 
   // GET /:slug/usages when slug not found (existsResult rowCount = 0) → 404
   test('GET /:slug/usages with non-existent slug returns 404', async () => {
-    jest.clearAllMocks();
+    resetMocks();
     mockQuery.mockResolvedValueOnce({ rows: [], rowCount: 0 } as any);
 
     const res = await request(app).get('/nonexistent_slug/usages');
@@ -737,7 +801,7 @@ describe('Example-based: Error paths (task 7.9)', () => {
 
   // GET /:slug/usages with DB failure → 500
   test('GET /:slug/usages with DB failure returns 500', async () => {
-    jest.clearAllMocks();
+    resetMocks();
     mockQuery.mockRejectedValueOnce(new Error('DB timeout') as never);
 
     const res = await request(app).get('/some_slug/usages');

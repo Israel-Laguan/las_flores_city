@@ -20,12 +20,14 @@ import { dialogueRouter } from '../../src/routes/dialogue.js';
 import { generateToken } from '../../src/middleware/auth.js';
 import { deleteCache, invalidatePattern, closeRedis } from '@las-flores/infra';
 import { compileDialogueTree } from '../../src/content/compiler.js';
+import { publishDialogueTree } from '../../src/services/ContentPublishService.js';
 import type { DialogueNode } from '@las-flores/shared';
 
 export interface MissionRewardFixtureConfig {
   /** Synthetic UUIDs (collision-avoidance per AGENTS.md). */
   userId: string;
   treeId: string;
+  characterId: string;
   vaultItemId: string;
   /** Human labels + seeded row content. */
   treeName: string;
@@ -79,6 +81,13 @@ export function createMissionRewardFixture(
     );
 
     await queryOLTP(
+      `INSERT INTO characters (id, name, title, description, avatar_url, available_dialogues, metadata)
+       VALUES ($1, $2, 'Test Character', 'Mission reward test character', 'https://example.com/avatar.png', '{}'::uuid[], '{}'::jsonb)
+       ON CONFLICT (id) DO UPDATE SET updated_at = NOW()`,
+      [config.characterId, config.treeName],
+    );
+
+    await queryOLTP(
       `INSERT INTO player_states (user_id, time_blocks, credits, gold_credits, current_day, story_beat, flags, alignment)
        VALUES ($1, 48, 200, 0, 1, 'prologue', '{}'::jsonb, 'neutral')
        ON CONFLICT (user_id) DO UPDATE SET credits = 200, time_blocks = 48, updated_at = NOW()`,
@@ -92,14 +101,21 @@ export function createMissionRewardFixture(
       [config.vaultItemId, config.vaultItemTitle, config.vaultItemDescription],
     );
 
+    // M32: the tree node map is externalized to the CDN; the in-DB `nodes`
+    // JSONB column is dropped, so publish and store `content_url`.
+    const treeUrl = await publishDialogueTree(
+      config.treeId,
+      JSON.stringify({ nodes: config.treeNodes }),
+    );
     await queryOLTP(
-      `INSERT INTO dialogue_trees (id, name, start_node_id, nodes)
-       VALUES ($1, $2, 'start', $3)
+      `INSERT INTO dialogue_trees (id, name, character_id, start_node_id, content_url)
+       VALUES ($1, $2, $3, 'start', $4)
        ON CONFLICT (id) DO UPDATE
-         SET nodes = EXCLUDED.nodes,
+         SET content_url = EXCLUDED.content_url,
+             character_id = EXCLUDED.character_id,
              start_node_id = EXCLUDED.start_node_id,
              updated_at = NOW()`,
-      [config.treeId, config.treeName, JSON.stringify(config.treeNodes)],
+      [config.treeId, config.treeName, config.characterId, treeUrl],
     );
 
     await compileDialogueTree(config.treeId);
@@ -150,6 +166,7 @@ export function createMissionRewardFixture(
     await queryOLTP(`DELETE FROM player_states WHERE user_id = $1`, [config.userId]);
     await queryOLTP(`DELETE FROM vault_items WHERE id = $1`, [config.vaultItemId]);
     await queryOLTP(`DELETE FROM users WHERE id = $1`, [config.userId]);
+    await queryOLTP(`DELETE FROM characters WHERE id = $1`, [config.characterId]);
 
     await deleteCache(`user:state:${config.userId}`);
     await invalidatePattern(`dialogue:resolved:chunk:${config.treeId}:*`);

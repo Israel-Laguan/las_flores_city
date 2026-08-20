@@ -18,6 +18,11 @@ import { getCache, setCache } from '@las-flores/infra';
 import { DialogueNode, Leaf } from '@las-flores/shared';
 import { fetchNodesFromContentUrl, fetchChunkFromContentUrl } from './contentFetch.js';
 import { buildOverlayFingerprint, contentVersionFromUrl, deepMergeNodes } from './dialogueResolverUtils.js';
+import { fetchContentJson } from './StorageService.js';
+import {
+  buildSetHash,
+  getSnapshotContentUrl,
+} from './SnapshotService.js';
 
 export interface ResolvedTree {
   rootId: string;
@@ -56,6 +61,7 @@ interface BaseDialogueChunkRow {
 }
 
 interface OverlayRow {
+  mystery_id: string;
   nodes: Record<string, DialogueNode>;
   updated_at: Date;
   is_nsfw: boolean;
@@ -190,7 +196,48 @@ export class DialogueResolver {
       return cachedTree;
     }
 
-    for (const overlay of overlays) {
+    // M30 Phase A: Try snapshot fast path before live merge.
+    // Compute the set hash from the mystery IDs.
+    const setHash = allMysteryIds.length > 0 ? buildSetHash(allMysteryIds) : buildSetHash([]);
+    const snapshotContentUrl = await getSnapshotContentUrl(
+      baseTreeId,
+      setHash,
+      isNsfwUnlocked,
+      alignment
+    );
+
+    if (snapshotContentUrl) {
+      // Snapshot exists — fetch from MinIO, parse, cache, and return.
+      try {
+        const snapshotData = (await fetchContentJson(snapshotContentUrl)) as {
+          nodes?: Record<string, DialogueNode>;
+          _meta?: { startNodeId?: string };
+        } | null;
+
+        if (snapshotData?.nodes && Object.keys(snapshotData.nodes).length > 0) {
+          const startNodeId = snapshotData._meta?.startNodeId ?? baseTree.start_node_id;
+          const finalTree: ResolvedTree = {
+            rootId: startNodeId,
+            nodes: snapshotData.nodes,
+          };
+
+          await setCache(versionedCacheKey, finalTree, CACHE_TTL_SECONDS);
+          return finalTree;
+        }
+      } catch (error: any) {
+        console.warn(
+          `[DialogueResolver] Snapshot fetch failed for ${snapshotContentUrl}: ${error?.message}. Falling back to live merge.`
+        );
+      }
+    }
+
+    // M30 Phase A gate parity: deterministic overlay ordering (sorted by
+    // mystery_id), matching SnapshotService.applyGateAndMerge so a snapshot's
+    // pre-merged nodes are byte-for-byte identical to a live merge.
+    const sortedOverlays = [...overlays].sort((a, b) =>
+      a.mystery_id.localeCompare(b.mystery_id)
+    );
+    for (const overlay of sortedOverlays) {
       // Entitlement gate: skip NSFW overlays for users without the unlock
       if (overlay.is_nsfw && !isNsfwUnlocked) {
         continue;
@@ -320,9 +367,8 @@ export class DialogueResolver {
     const result = await queryContent<{
       start_node_id: string;
       updated_at: Date;
-      nodes: Record<string, DialogueNode>;
       content_url: string | null;
-    }>(`SELECT start_node_id, updated_at, nodes, content_url FROM dialogue_trees WHERE id = $1`, [
+    }>(`SELECT start_node_id, updated_at, content_url FROM dialogue_trees WHERE id = $1`, [
       baseTreeId,
     ]);
 
@@ -331,11 +377,17 @@ export class DialogueResolver {
     }
 
     const row = result.rows[0];
-    const cdnNodes = await fetchNodesFromContentUrl(row.content_url, row.nodes);
+    if (!row.content_url) {
+      throw new Error(`Dialogue tree ${baseTreeId} has no content_url (M23 externalization required before nodes column drop)`);
+    }
+    const cdnNodes = await fetchNodesFromContentUrl(row.content_url, {});
+    if (!cdnNodes || Object.keys(cdnNodes).length === 0) {
+      throw new Error(`Dialogue tree ${baseTreeId} content_url ${row.content_url} resolved to empty nodes`);
+    }
     return {
       start_node_id: row.start_node_id,
       updated_at: row.updated_at,
-      nodes: cdnNodes ?? row.nodes,
+      nodes: cdnNodes,
       content_url: row.content_url,
     };
   }
@@ -349,7 +401,7 @@ export class DialogueResolver {
     mysteryIds: string[]
   ): Promise<OverlayRow[]> {
     const result = await queryContent<OverlayRow>(
-      `SELECT nodes, updated_at, is_nsfw, unlock_condition
+      `SELECT mystery_id, nodes, updated_at, is_nsfw, unlock_condition
        FROM dialogue_overlays
        WHERE target_tree_id = $1
          AND mystery_id = ANY($2::uuid[])
@@ -370,7 +422,7 @@ export class DialogueResolver {
     mysteryId: string
   ): Promise<OverlayRow[]> {
     const result = await queryContent<OverlayRow>(
-      `SELECT nodes, updated_at, is_nsfw, unlock_condition
+      `SELECT mystery_id, nodes, updated_at, is_nsfw, unlock_condition
          FROM dialogue_overlays
         WHERE target_tree_id = $1
           AND mystery_id = $2
@@ -437,7 +489,12 @@ export class DialogueResolver {
 
     // 5. Merge overlays into base nodes (same entitlement gates as resolveTreeForUser)
     let mergedNodes: Record<string, DialogueNode> = { ...chunkRow.nodes };
-    for (const overlay of overlays) {
+    // M30 Phase A gate parity: deterministic overlay ordering (sorted by
+    // mystery_id), matching SnapshotService.applyGateAndMerge.
+    const sortedOverlays = [...overlays].sort((a, b) =>
+      a.mystery_id.localeCompare(b.mystery_id)
+    );
+    for (const overlay of sortedOverlays) {
       if (overlay.is_nsfw && !isNsfwUnlocked) {
         continue;
       }
@@ -500,7 +557,7 @@ export class DialogueResolver {
   ): Promise<BaseDialogueChunkRow> {
     const where = column === 'id' ? 'id' : 'chunk_key';
     const result = await queryContent<BaseDialogueChunkRow>(
-      `SELECT id, tree_id, chunk_key, nodes, leaves, content_url
+      `SELECT id, tree_id, chunk_key, content_url
           FROM dialogue_chunks
          WHERE ${where} = $1
          LIMIT 1`,
@@ -513,13 +570,16 @@ export class DialogueResolver {
 
     const row = result.rows[0];
     const cdn = await fetchChunkFromContentUrl(row.content_url, {
-      nodes: row.nodes,
-      leaves: row.leaves,
+      nodes: {},
+      leaves: {},
     });
+    if (!cdn) {
+      throw new Error(`Dialogue chunk ${column} = ${param} failed to load nodes/leaves from content_url ${row.content_url}`);
+    }
     return {
       ...row,
-      nodes: cdn?.nodes ?? row.nodes,
-      leaves: cdn?.leaves ?? row.leaves,
+      nodes: cdn.nodes,
+      leaves: cdn.leaves,
     };
   }
 
@@ -531,6 +591,17 @@ export class DialogueResolver {
    */
   private static async loadBaseChunk(chunkId: string): Promise<BaseDialogueChunkRow> {
     return DialogueResolver.loadBaseChunkRow('id', chunkId);
+  }
+
+  /**
+   * Public helper used by the live game choice handler (dialogue-choose.ts)
+   * to load a chunk's `{ nodes, leaves }` exclusively from the CDN via
+   * `content_url` (M23 externalization; the in-DB JSONB columns are dropped
+   * in M32). Reuses the same `loadBaseChunk` CDN path as chunk resolution.
+   * Returns the full chunk row so callers keep `id`/`tree_id`/`chunk_key`.
+   */
+  public static async loadChunkNodesAndLeaves(chunkId: string): Promise<BaseDialogueChunkRow> {
+    return DialogueResolver.loadBaseChunk(chunkId);
   }
 
   /**

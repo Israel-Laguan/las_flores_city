@@ -5,6 +5,8 @@
  *
  * The orchestrator `verifyPlan` is mocked so the routes maintain their contract.
  */
+import '../helpers/enableTestNeo4j.js';
+
 import express from 'express';
 import request from 'supertest';
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';

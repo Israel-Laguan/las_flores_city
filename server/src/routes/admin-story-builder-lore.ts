@@ -5,6 +5,10 @@ import type { AuthRequest } from '../middleware/auth.js';
 import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
 import { queryOLTP } from '@las-flores/infra';
 import { contentPlanService } from '../services/ContentPlanService.js';
+import { graphIntakeService } from '../services/GraphIntakeService.js';
+import { getDeltasForPlan } from '../services/GraphDeltaService.js';
+import { isNeo4jEnabled } from '../services/Neo4jClient.js';
+import { emitLoreDelta } from '../services/StoryBuilderPlanOps.js';
 
 export const adminStoryBuilderLoreRouter = express.Router();
 
@@ -12,11 +16,13 @@ export const adminStoryBuilderLoreRouter = express.Router();
 adminStoryBuilderLoreRouter.post('/plans/:id/items/:itemId/lore', async (req: AuthRequest, res) => {
   try {
     const { id, itemId } = req.params;
+    const planId = Array.isArray(id) ? id[0] : id;
+    const itemIdStr = Array.isArray(itemId) ? itemId[0] : itemId;
 
     // Load plan from DB
     const result = await queryOLTP<{ plan_json: any; status: string }>(
       'SELECT plan_json, status FROM content_plans WHERE id = $1',
-      [id]
+      [planId]
     );
 
     if (result.rows.length === 0) {
@@ -25,15 +31,46 @@ adminStoryBuilderLoreRouter.post('/plans/:id/items/:itemId/lore', async (req: Au
     }
 
     let plan: ContentPlan;
-    try {
-      plan = ContentPlanSchema.parse(result.rows[0].plan_json);
-    } catch {
-      res.status(400).json({ success: false, error: 'Stored plan failed schema validation', timestamp: new Date().toISOString() });
-      return;
+
+    // Graph-authored plans store their proposed changes as Neo4j deltas and do
+    // not carry a usable plan_json (the legacy authoring surface is retired
+    // under M32). Detect that case and synthesize a legacy ContentPlan from the
+    // graph deltas so lore regeneration works through the same pipeline.
+    if (isNeo4jEnabled()) {
+      let deltas;
+      try {
+        deltas = await getDeltasForPlan(planId);
+      } catch (err) {
+        console.warn('[story-builder] delta lookup failed for plan', planId, (err as Error).message);
+        res.status(503).json({ success: false, error: 'graph authoring service unavailable', timestamp: new Date().toISOString() });
+        return;
+      }
+      if (deltas.length > 0) {
+        const synthesized = await graphIntakeService.synthesizeLegacyPlan(planId);
+        if (!synthesized) {
+          res.status(400).json({ success: false, error: 'Stored plan failed schema validation', timestamp: new Date().toISOString() });
+          return;
+        }
+        plan = synthesized;
+      } else {
+        try {
+          plan = ContentPlanSchema.parse(result.rows[0].plan_json);
+        } catch {
+          res.status(400).json({ success: false, error: 'Stored plan failed schema validation', timestamp: new Date().toISOString() });
+          return;
+        }
+      }
+    } else {
+      try {
+        plan = ContentPlanSchema.parse(result.rows[0].plan_json);
+      } catch {
+        res.status(400).json({ success: false, error: 'Stored plan failed schema validation', timestamp: new Date().toISOString() });
+        return;
+      }
     }
 
     // Find the specific item
-    const item = plan.items.find(i => i.id === itemId);
+    const item = plan.items.find(i => i.id === itemIdStr);
     if (!item) {
       res.status(404).json({ success: false, error: 'Item not found in plan', timestamp: new Date().toISOString() });
       return;
@@ -63,6 +100,12 @@ adminStoryBuilderLoreRouter.post('/plans/:id/items/:itemId/lore', async (req: Au
     const dir = path.dirname(fullPath);
     await fs.mkdir(dir, { recursive: true });
     await fs.writeFile(fullPath, loreContent, 'utf-8');
+
+    // Emit MODIFY delta for lore content AFTER the durable file write succeeds,
+    // so the graph never gets ahead of the filesystem. emitLoreDelta resolves
+    // the nodeId from item.entity_id (the stable canonical identity), not the
+    // transient plan-item id.
+    await emitLoreDelta(planId, item, loreContent, 'lore_content');
 
     res.json({
       success: true,

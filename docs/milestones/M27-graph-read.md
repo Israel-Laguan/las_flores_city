@@ -1,7 +1,9 @@
 # M27 — Graph Authoring Canvas: Seed + Delta Model (Read Path)
 
-> **Status:** Planned · **Branch:** `milestone/27-graph-read` · **PR size target:** ~25 files
+> **Status:** Shipped · **Branch:** `milestone/27-graph-read` · **PR size target:** ~25 files
 > **Phase:** 7 · **Source:** `ARCHITECTURE_SEPARATION_ANALYSIS.md` §8; decision locked in M19 (Neo4j)
+>
+> **Note:** The Neo4j substrate (compose service, `Neo4jClient`, base `(:Content)` seed, `NEO4J_*` env) shipped here and is partly inlined via M27-b (which depends on it). The read/query path is live; `graph-write.integration.test.ts` requires a live Neo4j (`NEO4J_ENABLED=true`) to execute.
 
 ## Goal
 

@@ -27,7 +27,7 @@
     "resync:graph": "tsx scripts/resync-graph.ts",
     "seed:all": "npm run seed:dev && npm run seed:players",
     "backfill:critique-graph": "tsx scripts/backfill-critique-graph.ts",
-    "fill-todos": "tsx src/scripts/fillExistingTodos.ts"
+    "probe:content-urls": "tsx scripts/probe_content_url_coverage.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "~3.1110.0",

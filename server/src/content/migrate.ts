@@ -12,6 +12,7 @@ import { processContentFile } from './upsert.js';
 import { compileAllDialogueTrees } from './compiler.js';
 import { extractContentIds, getContentTypeFromPath, getProcessingOrder } from './path-utils.js';
 import { ZERO_UUID } from './uuid-utils.js';
+import { buildSnapshotsForAllTrees } from '../services/SnapshotService.js';
 
 export { extractContentIds };
 
@@ -387,6 +388,31 @@ async function runPostMigrationTasks(result: MigrationResult): Promise<void> {
   } catch (error: any) {
     console.error('❌ Chunk compilation failed (non-fatal):', error.message);
     result.errors.push(`Chunk compilation failed: ${error.message}`);
+  }
+
+  // M30 Phase A: Build pre-resolved overlay snapshots after chunk compilation.
+  // This runs under the same content_migration advisory lock held by the caller.
+  try {
+    console.log('\n📸 Building pre-resolved overlay snapshots (M30 Phase A)...');
+    const snapshotResult = await buildSnapshotsForAllTrees();
+    console.log(
+      `   ${snapshotResult.totalTrees} trees → ${snapshotResult.totalSnapshots} snapshots (${snapshotResult.errors.length} errors)`
+    );
+    if (snapshotResult.errors.length > 0) {
+      // Snapshot pre-computation is an optimization (M30 Phase A). Its errors must
+      // NOT fail the content migration: the compiler publishes content_urls that
+      // the live resolver can still load on-demand. Log snapshot errors as
+      // warnings so migration success is not coupled to MinIO availability during
+      // snapshot publication. The live resolver falls back to on-demand merge
+      // for any state that lacks a pre-resolved snapshot.
+      console.warn(
+        `   [non-fatal] ${snapshotResult.errors.length} snapshot error(s) — ` +
+        `live resolver will handle these trees on-demand:`,
+        snapshotResult.errors.join(', ')
+      );
+    }
+  } catch (error: any) {
+    console.warn('⚠️ Snapshot compilation failed (non-fatal — will resolve live):', error.message);
   }
 
   await invalidateCaches();

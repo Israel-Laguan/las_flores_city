@@ -7,6 +7,43 @@ import {
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
 import type { DialogueChoice, PlayerConditionState } from '@las-flores/shared';
 import { choicePassesFilters, metadataConditionsPass } from '@las-flores/shared';
+import { fetchNodesFromContentUrl } from '../services/contentFetch.js';
+
+/**
+ * M32/M23: load a dialogue tree's row (without the dropped `nodes` JSONB
+ * column) and hydrate its node map from the CDN via `content_url`. Returns
+ * the row augmented with `nodes`, or null if the row is missing / has no
+ * reachable blob. This is the replacement for reading `dialogue_trees.nodes`
+ * directly in SQL.
+ */
+async function loadTreeWithNodes(treeId: string): Promise<{
+  id: string;
+  name: string;
+  description: string | null;
+  start_node_id: string;
+  metadata: any;
+  content_url: string | null;
+  nodes: Record<string, any>;
+} | null> {
+  const result = await queryOLTP<{
+    id: string;
+    name: string;
+    description: string | null;
+    start_node_id: string;
+    metadata: any;
+    content_url: string | null;
+  }>(
+    `SELECT id, name, description, start_node_id, metadata, content_url
+     FROM dialogue_trees WHERE id = $1`,
+    [treeId]
+  );
+  if (result.rows.length === 0) return null;
+  const row = result.rows[0];
+  if (!row.content_url) return null;
+  const nodes = await fetchNodesFromContentUrl(row.content_url, {});
+  if (!nodes || Object.keys(nodes).length === 0) return null;
+  return { ...row, nodes };
+}
 
 // ============================================================
 // Shared effect application pipeline
@@ -137,21 +174,22 @@ export async function resolveDialogueTree(
   // explicit ORDER BY, so without this identical player state could
   // start different trees when a scene lists multiple eligible
   // dialogues for the same character.
-  const sceneResult = await queryOLTP(
-    `SELECT dt.id, dt.name, dt.description, dt.start_node_id, dt.nodes, dt.metadata
+  const sceneResult = await queryOLTP<{ dialogue_id: string }>(
+    `SELECT ad.dialogue_id
      FROM scenes s
      JOIN LATERAL unnest(s.available_dialogues) WITH ORDINALITY AS ad(dialogue_id, ord) ON true
-     JOIN dialogue_trees dt ON dt.id = ad.dialogue_id
      WHERE s.id = $1
-       AND EXISTS (
-         SELECT 1 FROM jsonb_each(dt.nodes) AS node(key, value)
-         WHERE (node.value->>'speaker_id') = $2
-       )
      ORDER BY ad.ord`,
-    [sceneId, characterId]
+    [sceneId]
   );
 
-  for (const tree of sceneResult.rows) {
+  for (const { dialogue_id } of sceneResult.rows) {
+    const tree = await loadTreeWithNodes(dialogue_id);
+    if (!tree) continue;
+    const hasSpeaker = Object.values(tree.nodes).some(
+      (n: any) => n && n.speaker_id === characterId
+    );
+    if (!hasSpeaker) continue;
     if (
       isStoryBeatAllowed(tree.metadata?.required_story_beat, storyBeat) &&
       metadataConditionsPass(tree.metadata, playerCondition)
@@ -162,23 +200,41 @@ export async function resolveDialogueTree(
     // to the fallback if no scene-scoped tree passes all gates.
   }
 
-  const fallbackResult = await queryOLTP(
-    `SELECT dt.id, dt.name, dt.description, dt.start_node_id, dt.nodes, dt.metadata
-     FROM dialogue_trees dt
-     WHERE (dt.nodes->dt.start_node_id->>'speaker_id') = $1
-     LIMIT 1`,
-    [characterId]
+    // Also include trees with NULL character_id (scene/onboarding-scoped trees
+  // whose speaker is encoded in CDN node maps, not the FK). Migration 057
+  // left character_id nullable without backfilling, so a speaker-based
+  // fallback is required to find these trees.
+  const fallbackResult = await queryOLTP<{ id: string; scene_id: string | null; character_id: string | null }>(
+    `SELECT id, scene_id, character_id FROM dialogue_trees
+      WHERE character_id = $1
+         OR (character_id IS NULL AND (scene_id = $2
+             OR (scene_id IS NULL AND dialogue_scope IN ('onboarding', 'system'))))
+      ORDER BY created_at ASC, id ASC
+      LIMIT 10`,
+    [characterId, sceneId]
   );
 
-  if (fallbackResult.rows.length === 0) return null;
-  const fallback = fallbackResult.rows[0];
-  if (
-    !isStoryBeatAllowed(fallback.metadata?.required_story_beat, storyBeat) ||
-    !metadataConditionsPass(fallback.metadata, playerCondition)
-  ) {
-    return null;
+  for (const { id, scene_id, character_id } of fallbackResult.rows) {
+    const tree = await loadTreeWithNodes(id);
+    if (!tree) continue;
+    // A scene-scoped (nullable character_id) tree may be narrator-rooted, so
+    // accept any node carrying the speaker — mirroring the scene-mapped path
+    // above. Character-owned trees keep the stricter start-node speaker check.
+    const hasSpeaker = Object.values(tree.nodes).some(
+      (n: any) => n && n.speaker_id === characterId
+    );
+    const startNode = tree.nodes[tree.start_node_id];
+    const startMatch = startNode && startNode.speaker_id === characterId;
+    if (!(startMatch || (character_id == null && scene_id === sceneId && hasSpeaker))) continue;
+    if (
+      !isStoryBeatAllowed(tree.metadata?.required_story_beat, storyBeat) ||
+      !metadataConditionsPass(tree.metadata, playerCondition)
+    ) {
+      continue;
+    }
+    return tree;
   }
-  return fallback;
+  return null;
 }
 
 export async function filterChoices(choices: any[], userId: string) {

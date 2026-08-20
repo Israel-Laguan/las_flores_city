@@ -45,15 +45,6 @@ jest.mock('../../src/middleware/adminAuth.js', () => ({
 
 jest.mock('../../src/services/ContentPlanService.js', () => ({
   contentPlanService: {
-    parseDescription: jest.fn(async (description: string) => ({
-      ...MOCK_PLAN,
-      description,
-    })),
-    refinePlan: jest.fn(async (_planId: string, feedback: string) => ({
-      ...MOCK_PLAN,
-      description: `${MOCK_PLAN.description} [Refined: ${feedback}]`,
-      status: 'proposed',
-    })),
     gatherContext: jest.fn(async () => ({
       characters: [],
       scenes: [],

@@ -1,6 +1,5 @@
 import express from 'express';
 import type { AuthRequest } from '../middleware/auth.js';
-import { ContentPlanSchema } from '@las-flores/shared';
 import { queryOLTP } from '@las-flores/infra';
 import {
   previewPlan,
@@ -9,102 +8,33 @@ import {
   verifyPlan,
   getSolidifyJobStatus,
 } from '../services/StoryBuilderOrchestrator.js';
-import { isPlanNotFoundError, isPlanStatusError } from '../services/errors.js';
+import { isPlanNotFoundError, isPlanStatusError, GraphDisabledError } from '../services/errors.js';
 import { handleGetVerificationReport } from './admin-story-builder-verification.js';
 import { emitAdminEvent } from '../services/AdminEventEmitter.js';
 import { loadPlanForStaging, runStagingPipeline } from './admin-story-builder-staging.js';
-import { contentPlanService } from '../services/ContentPlanService.js';
-import { adminStoryBuilderGenerateRouter } from './admin-story-builder-generate.js';
+import { graphIntakeService } from '../services/GraphIntakeService.js';
 import { adminStoryBuilderCritiqueRouter } from './admin-story-builder-critique.js';
 import { adminStoryBuilderChatRouter } from './admin-story-builder-chat.js';
 
 export const adminStoryBuilderActionsRouter = express.Router();
 
-// Generate endpoint (outline → scaffold → async fill) lives in admin-story-builder-generate.ts
-adminStoryBuilderActionsRouter.use(adminStoryBuilderGenerateRouter);
 // M26 — AI semantic critique handlers live in admin-story-builder-critique.ts
 adminStoryBuilderActionsRouter.use(adminStoryBuilderCritiqueRouter);
 // M29 — conversational chat + review-queue handlers live in admin-story-builder-chat.ts
 adminStoryBuilderActionsRouter.use(adminStoryBuilderChatRouter);
-
-// POST /admin/story-builder/plans/:id/refine — Refine plan with AI feedback
-adminStoryBuilderActionsRouter.post('/plans/:id/refine', async (req: AuthRequest, res) => {
-  try {
-    const { id } = req.params as Record<string, string>;
-    const { feedback, itemIds } = req.body;
-
-    if (!feedback || typeof feedback !== 'string' || feedback.trim().length === 0) {
-      res.status(400).json({ success: false, error: 'feedback is required', timestamp: new Date().toISOString() });
-      return;
-    }
-
-    // Validate itemIds if provided
-    if (itemIds != null) {
-      if (!Array.isArray(itemIds) || itemIds.length === 0) {
-        res.status(400).json({ success: false, error: 'itemIds must be a non-empty array of strings', timestamp: new Date().toISOString() });
-        return;
-      }
-      if (!itemIds.every((id: unknown) => typeof id === 'string' && id.length > 0)) {
-        res.status(400).json({ success: false, error: 'Each itemIds entry must be a non-empty string', timestamp: new Date().toISOString() });
-        return;
-      }
-    }
-
-    const isScoped = itemIds && Array.isArray(itemIds) && itemIds.length > 0;
-    const { plan: refinedPlan, usage: refinedUsage } =
-      isScoped
-        ? await contentPlanService.refinePlanItems(id, feedback.trim(), itemIds)
-        : await contentPlanService.refinePlan(id, feedback.trim());
-
-    const refinedEventData: Record<string, unknown> = {
-      feedbackLength: feedback.trim().length,
-      itemCount: refinedPlan.items.length,
-    };
-    if (isScoped) {
-      refinedEventData.refinedItemCount = itemIds.length;
-    }
-    if (refinedUsage) {
-      refinedEventData.totalTokens = refinedUsage.totalTokens;
-      refinedEventData.promptTokens = refinedUsage.promptTokens;
-      refinedEventData.completionTokens = refinedUsage.completionTokens;
-      refinedEventData.model = refinedUsage.model;
-      refinedEventData.estimatedCostUsd = refinedUsage.estimatedCostUsd;
-    }
-
-    emitAdminEvent('plan_refined', refinedEventData, refinedPlan.id, req.userId);
-
-    res.json({
-      success: true,
-      data: { plan: refinedPlan },
-      timestamp: new Date().toISOString(),
-    });
-  } catch (error: any) {
-    console.error('[story-builder] POST /plans/:id/refine error:', error);
-    const status = error.message.includes('not found') ? 404 : 500;
-    res.status(status).json({ success: false, error: error.message || 'Failed to refine plan', timestamp: new Date().toISOString() });
-  }
-});
 
 // POST /admin/story-builder/plans/:id/preview — Dry-run preview
 adminStoryBuilderActionsRouter.post('/plans/:id/preview', async (req, res) => {
   try {
     const { id } = req.params as Record<string, string>;
 
-    const result = await queryOLTP<{ plan_json: any }>(
-      'SELECT plan_json FROM content_plans WHERE id = $1',
-      [id]
-    );
-
-    if (result.rows.length === 0) {
+    const { notFound, error, plan } = await graphIntakeService.loadPlanForLegacyActions(id);
+    if (notFound) {
       res.status(404).json({ success: false, error: 'Plan not found', timestamp: new Date().toISOString() });
       return;
     }
-
-    let plan;
-    try {
-      plan = ContentPlanSchema.parse(result.rows[0].plan_json);
-    } catch {
-      res.status(400).json({ success: false, error: 'Stored plan failed schema validation', timestamp: new Date().toISOString() });
+    if (error || !plan) {
+      res.status(400).json({ success: false, error, timestamp: new Date().toISOString() });
       return;
     }
 
@@ -223,12 +153,16 @@ adminStoryBuilderActionsRouter.post('/plans/:id/approve-and-solidify', async (re
   } catch (error: any) {
     console.error('[story-builder] POST /plans/:id/approve-and-solidify error:', error);
     const message = error.message || 'Failed to approve and solidify plan';
-    const statusCode = isPlanNotFoundError(error) || message.includes('not found')
+    const statusCode = error instanceof GraphDisabledError
+      ? 503
+      : isPlanNotFoundError(error) || message.includes('not found')
       ? 404
       : isPlanStatusError(error) || message.includes('must be') || message.includes("'proposed'")
         ? 400
         : 500;
-    emitAdminEvent('plan_failed', { success: false, error: message }, id, req.userId);
+    if (!(error instanceof GraphDisabledError)) {
+      emitAdminEvent('plan_failed', { success: false, error: message }, id, req.userId);
+    }
     res.status(statusCode).json({
       success: false,
       error: message,

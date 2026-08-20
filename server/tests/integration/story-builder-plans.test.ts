@@ -44,19 +44,11 @@ jest.mock('../../src/middleware/adminAuth.js', () => ({
 
 jest.mock('../../src/services/ContentPlanService.js', () => ({
   contentPlanService: {
-    parseDescription: jest.fn(async (description: string) => ({
-      plan: { ...MOCK_PLAN, description },
-      usage: null,
-    })),
-    refinePlan: jest.fn(async (_planId: string, feedback: string) => ({
-      plan: {
-        ...MOCK_PLAN,
-        description: `${MOCK_PLAN.description} [Refined: ${feedback}]`,
-        status: 'proposed',
-      },
-      usage: null,
-    })),
     getLastUsage: jest.fn(() => null),
+  },
+  ContentPlanService: {
+    setStatus: jest.fn(),
+    updatePlanJson: jest.fn(),
   },
 }));
 
@@ -74,9 +66,21 @@ jest.mock('../../src/services/AdminEventEmitter.js', () => ({
   emitAdminEvent: jest.fn(),
 }));
 
+// This suite exercises plan CRUD against a fully mocked OLTP layer and does
+// not stand up a real Neo4j. The plans router gates its graph-delta lookups
+// on `isNeo4jEnabled()`; pin it off so the suite is deterministic regardless
+// of the ambient NEO4J_ENABLED env (the graph-authoritative path is covered
+// by graph-intake.integration.test.ts).
+jest.mock('../../src/services/Neo4jClient.js', () => ({
+  ...jest.requireActual('../../src/services/Neo4jClient.js'),
+  isNeo4jEnabled: () => false,
+}));
+
 afterAll(() => {
   jest.clearAllMocks();
 });
+
+import '../helpers/enableTestNeo4j.js';
 
 import { adminStoryBuilderRouter } from '../../src/routes/admin-story-builder.js';
 import { queryOLTP } from '@las-flores/infra';
@@ -93,27 +97,14 @@ function makeApp() {
 describe('POST /admin/story-builder/plans', () => {
   const app = makeApp();
 
-  test('returns 400 for missing description', async () => {
+  test('returns 400 for missing plan', async () => {
     const res = await request(app)
       .post('/admin/story-builder/plans')
       .send({});
 
     expect(res.status).toBe(400);
     expect(res.body.success).toBe(false);
-    expect(res.body.error).toMatch(/description/i);
-  });
-
-  test('creates a plan from description', async () => {
-    mockQueryOLTP.mockResolvedValueOnce({ rows: [{ id: TEST_PLAN_ID }], rowCount: 1, command: 'INSERT', oid: 0, fields: [] });
-
-    const res = await request(app)
-      .post('/admin/story-builder/plans')
-      .send({ description: 'Add a bartender named Diego' });
-
-    expect(res.status).toBe(200);
-    expect(res.body.success).toBe(true);
-    expect(res.body.data.planId).toBe(TEST_PLAN_ID);
-    expect(res.body.data.plan.items.length).toBeGreaterThan(0);
+    expect(res.body.error).toMatch(/plan/i);
   });
 
   test('creates a plan with pre-built plan object', async () => {
@@ -121,10 +112,11 @@ describe('POST /admin/story-builder/plans', () => {
 
     const res = await request(app)
       .post('/admin/story-builder/plans')
-      .send({ description: 'Test plan', plan: MOCK_PLAN });
+      .send({ plan: MOCK_PLAN });
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
+    expect(res.body.data.planId).toBe(TEST_PLAN_ID);
   });
 });
 
@@ -246,33 +238,3 @@ describe('DELETE /admin/story-builder/plans/:id', () => {
   });
 });
 
-describe('POST /admin/story-builder/plans/:id/refine', () => {
-  const app = makeApp();
-
-  test('returns 400 for missing feedback', async () => {
-    const res = await request(app)
-      .post(`/admin/story-builder/plans/${TEST_PLAN_ID}/refine`)
-      .send({});
-
-    expect(res.status).toBe(400);
-    expect(res.body.success).toBe(false);
-    expect(res.body.error).toMatch(/feedback/i);
-  });
-
-  test('refines a plan with feedback', async () => {
-    mockQueryOLTP
-      .mockResolvedValueOnce({
-        rows: [{ plan_json: MOCK_PLAN, description: 'Test' }],
-        rowCount: 1, command: 'SELECT', oid: 0, fields: [],
-      })
-      .mockResolvedValueOnce({ rows: [], rowCount: 1, command: 'UPDATE', oid: 0, fields: [] });
-
-    const res = await request(app)
-      .post(`/admin/story-builder/plans/${TEST_PLAN_ID}/refine`)
-      .send({ feedback: 'Make Diego more cynical' });
-
-    expect(res.status).toBe(200);
-    expect(res.body.success).toBe(true);
-    expect(res.body.data.plan).toBeDefined();
-  });
-});

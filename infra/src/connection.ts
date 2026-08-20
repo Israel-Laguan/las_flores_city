@@ -14,6 +14,17 @@ let _oltpPool: pg.Pool | null = null;
 let _olapPool: pg.Pool | null = null;
 let _contentPool: pg.Pool | null = null;
 
+function parseContentPoolMax(): number {
+  const raw = process.env.CONTENT_POOL_MAX;
+  if (raw === undefined || raw === '') return 10;
+  if (!/^\d+$/.test(raw)) throw new Error('CONTENT_POOL_MAX must be a positive integer');
+  const value = Number(raw);
+  if (!Number.isSafeInteger(value) || value <= 0) {
+    throw new Error('CONTENT_POOL_MAX must be a positive integer');
+  }
+  return value;
+}
+
 function getOltpPool(): pg.Pool {
   if (!_oltpPool) {
     connectionsClosed = false;
@@ -65,7 +76,10 @@ function getContentPool(): pg.Pool {
       // `queryContent` write is rejected, even though it shares the OLTP
       // credential. Player writes must go through `oltpPool`/`withOLTPTransaction`.
       options: '-c default_transaction_read_only=on',
-      max: 10,                  // Small read-only pool; content reads are mostly cache-friendly
+      // Small read-only pool; content reads are mostly cache-friendly. Default 10,
+      // Optional read-only headroom; validate configuration before constructing
+      // the pool so malformed values cannot reach pg.Pool.
+      max: parseContentPoolMax(),
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 5000,
     });

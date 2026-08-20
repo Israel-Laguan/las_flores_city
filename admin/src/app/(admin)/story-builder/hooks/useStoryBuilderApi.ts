@@ -2,6 +2,7 @@
 
 import type { ContentPlan } from '@las-flores/shared';
 import type { IntakeConflictPreview } from '@las-flores/shared';
+import type { GenerationStatus } from '../types';
 import { adminFetch } from '@/lib/client-api';
 
 async function postJSON<T>(url: string, payload: unknown): Promise<T> {
@@ -11,72 +12,129 @@ async function postJSON<T>(url: string, payload: unknown): Promise<T> {
   });
 }
 
-export async function loadPlanFromDb(id: string) {
-  return adminFetch<{ success: boolean; data?: { plan_json: ContentPlan; description: string }; error?: string }>(
+export async function loadPlanFromDb(id: string): Promise<{
+  success: boolean;
+  data?: { plan_json: ContentPlan; description: string };
+  error?: string;
+}> {
+  const res = await adminFetch<{ success: boolean; data?: { plan_json: ContentPlan; description: string }; error?: string }>(
     `/admin/story-builder/plans/${id}`,
   );
+
+  // M32 graph-based plans have no `plan_json` (deltas live in the graph). For
+  // those, synthesize a ContentPlan from the plan's deltas/edges so the review
+  // UI can render them.
+  if (res.success && !res.data?.plan_json) {
+    let synth;
+    try { synth = await adminFetch<{ success: boolean; data?: { plan: ContentPlan }; error?: string }>(`/admin/story-builder/plans/${id}/graph-plan`); }
+    catch (error: any) { return { success: false, data: undefined, error: error?.message || 'Failed to synthesize plan from graph deltas' }; }
+    if (synth.success && synth.data?.plan) {
+      return { success: true, data: { plan_json: synth.data.plan, description: res.data?.description ?? '' } };
+    }
+    return { success: false, data: undefined, error: synth.error || 'Plan has no plan_json and could not be synthesized from graph deltas' };
+  }
+
+  return res;
 }
 
 export async function generatePlan(description: string) {
-  return postJSON<{
+  // M32: the legacy two-phase `/plan` → `/plan/scaffold` intake was retired in
+  // favor of graph-based authoring. Create the plan (and its graph deltas)
+  // synchronously via graph-intake, then synthesize a ContentPlan so the
+  // existing review/approve/stage steps continue to work.
+  let created: {
     success: boolean;
-    data?: {
-      plan: ContentPlan;
-      conflicts?: IntakeConflictPreview[];
-      fileConflicts?: string[];
-      status: string;
-    };
+    data?: { planId: string; description: string; deltaCount: number; edgeCount: number };
     error?: string;
-  }>(
-    '/admin/story-builder/plan',
-    { description },
-  );
+  };
+  try {
+    created = await postJSON<{
+      success: boolean;
+      data?: { planId: string; description: string; deltaCount: number; edgeCount: number };
+      error?: string;
+    }>(
+      '/admin/story-builder/plans/graph-intake',
+      { description },
+    );
+  } catch (error: any) {
+    // postJSON throws for non-2xx (e.g. HTTP 409 when the graph is disabled),
+    // so the success check below is unreachable on failure. Return the
+    // documented structured failure instead of rejecting.
+    return { success: false, error: error?.message || 'Failed to create graph-based plan' };
+  }
+
+  if (!created.success || !created.data?.planId) {
+    return { success: created.success ?? false, error: created.error || 'Failed to create graph-based plan' };
+  }
+
+  const planId = created.data.planId;
+  let synth;
+  try { synth = await adminFetch<{ success: boolean; data?: { plan: ContentPlan }; error?: string }>(`/admin/story-builder/plans/${planId}/graph-plan`); }
+  catch (error: any) { return { success: false, error: error?.message || 'Failed to load synthesized plan' }; }
+
+  if (!synth.success || !synth.data?.plan) {
+    return { success: false, error: synth.error || 'Failed to load synthesized plan' };
+  }
+
+  return {
+    success: true,
+    data: {
+      plan: synth.data.plan,
+      planId,
+      status: 'proposed',
+      conflicts: [],
+      fileConflicts: [],
+    } as {
+      plan: ContentPlan;
+      planId: string;
+      status: string;
+      conflicts: IntakeConflictPreview[];
+      fileConflicts: string[];
+    },
+  };
 }
 
 /**
- * Phase-2 commit ("Generate Full Plan"). Takes the phase-1 outline, scaffolds the
- * create items, inserts the content_plans row, and kicks off the async fill job.
- * Returns a planId and status 'generating'.
+ * Phase-2 commit (\"Generate Full Plan\").
+ * With graph-based intake the plan (and its deltas) are already persisted by
+ * `generatePlan` → graph-intake, so this is a no-op that returns the existing
+ * plan id rather than hitting the retired `/plan/scaffold` endpoint.
  */
 export async function scaffoldPlan(plan: ContentPlan) {
-  return postJSON<{
-    success: boolean;
-    data?: { planId: string; plan: ContentPlan; status: string };
-    error?: string;
-  }>(
-    '/admin/story-builder/plan/scaffold',
-    { plan },
-  );
+  const planId = (plan as { id?: string }).id;
+  if (!planId) {
+    return { success: false, error: 'No plan id available; plan was not created' };
+  }
+  return { success: true, data: { planId, plan, status: 'proposed' } };
 }
 
 /**
- * In-memory refine of a phase-1 outline ("Refine Instead"). Returns the refined
- * plan + re-scanned conflicts. No persistence.
+ * In-memory refine of a phase-1 outline ("Refine Instead").
+ * M32 retired the legacy `/plan/refine-preview` route in favor of the
+ * graph-intake / conversational propose flow. Returns a clear structured error
+ * so the stale control degrades gracefully instead of hitting a 404.
  */
 export async function refinePlanPreview(plan: ContentPlan, feedback: string) {
-  return postJSON<{
-    success: boolean;
-    data?: { plan: ContentPlan; conflicts: IntakeConflictPreview[]; fileConflicts?: string[] };
-    error?: string;
-  }>(
-    '/admin/story-builder/plan/refine-preview',
-    { plan, feedback },
-  );
+  return {
+    success: false,
+    error: 'In-memory plan refinement was retired in M32 — use the graph-intake / chat propose flow to revise a plan.',
+  } as { success: boolean; data?: { plan: ContentPlan; conflicts: IntakeConflictPreview[]; fileConflicts?: string[] }; error?: string };
 }
 
 export async function getGenerationStatus(planId: string) {
-  return adminFetch<{
-    success: boolean;
-    data?: {
-      planId: string;
-      status: string;
-      progress?: { total: number; completed: number; failed: number };
-      items?: Array<{ itemId: string; status: string; error?: string }>;
-      startedAt?: string;
-      updatedAt?: string;
-    };
-    error?: string;
-  }>(`/admin/story-builder/plans/${planId}/generation-status`);
+  // M32 graph-intake creates the plan synchronously (no background fill job),
+  // so there is no `/plans/:id/generation-status` to poll. Report terminal
+  // status so the surviving generation UI stops polling immediately.
+  return {
+    success: true,
+    data: {
+      planId,
+      status: 'proposed',
+      progress: { total: 0, completed: 0, failed: 0 },
+      startedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    } as GenerationStatus,
+  };
 }
 
 export async function savePlan(description: string, plan: ContentPlan) {
@@ -87,10 +145,12 @@ export async function savePlan(description: string, plan: ContentPlan) {
 }
 
 export async function refinePlan(planId: string, feedback: string, itemIds?: string[]) {
-  return postJSON<{ success: boolean; data?: { plan: ContentPlan }; error?: string }>(
-    `/admin/story-builder/plans/${planId}/refine`,
-    { feedback, ...(itemIds ? { itemIds } : {}) },
-  );
+  // M32 retired the single-turn `/plans/:id/refine` route; refinement now lives
+  // in the chat/propose flow. Fail closed with a clear message rather than 404.
+  return {
+    success: false,
+    error: 'Plan refinement has moved to the graph-intake / chat propose flow (M32); the legacy /plans/:id/refine endpoint is retired.',
+  } as { success: boolean; data?: { plan: ContentPlan }; error?: string };
 }
 
 export async function previewPlan(planId: string) {
@@ -122,23 +182,27 @@ export async function retryPlan(planId: string) {
 }
 
 export async function selectTemplate(templateId: string, description: string) {
-  return postJSON<{ success: boolean; data?: { plan: ContentPlan }; error?: string }>(
-    `/admin/story-builder/templates/${templateId}`,
-    { description },
-  );
+  // M32 retired the templates/clone meta routes alongside the draft router.
+  // The template picker is superseded by graph-intake description authoring.
+  return {
+    success: false,
+    error: 'Plan templates were retired in M32 — author from a description via graph-intake instead.',
+  } as { success: boolean; data?: { plan: ContentPlan }; error?: string };
 }
 
 export async function fetchTemplates() {
-  return adminFetch<{ success: boolean; data?: { templates: Array<{ id: string; label: string; description: string; icon: string }> } }>(
-    '/admin/story-builder/templates',
-  );
+  // M32 retired GET /admin/story-builder/templates; template authoring moved to
+  // graph-intake description authoring. Return an empty catalog so the picker
+  // degrades gracefully rather than 404ing.
+  return { success: true, data: { templates: [] } as { templates: Array<{ id: string; label: string; description: string; icon: string }> } };
 }
 
 export async function cloneEntity(sourcePath: string, newName: string) {
-  return postJSON<{ success: boolean; data?: { item: any }; error?: string }>(
-    '/admin/story-builder/clone',
-    { sourcePath, newName },
-  );
+  // M32 retired the clone route with the meta router.
+  return {
+    success: false,
+    error: 'Entity cloning was retired in M32 — author new content via graph-intake.',
+  } as { success: boolean; data?: { item: any }; error?: string };
 }
 
 export async function fetchContentTree() {
@@ -265,12 +329,8 @@ export async function deletePlan(planId: string) {
 }
 
 export async function generateDrafts(planId: string, count?: number) {
-  const params = new URLSearchParams();
-  if (count) params.set('count', String(count));
-  return postJSON<{ success: boolean; data?: any; error?: string }>(
-    `/admin/story-builder/plans/${planId}/generate-drafts?${params.toString()}`,
-    {},
-  );
+  // M32 retired the drafts router; asset drafting moved elsewhere.
+  return { success: false, error: 'Draft generation was retired in M32 — asset authoring moved to graph-intake/CDN.' };
 }
 
 export interface DraftAsset {
@@ -288,29 +348,25 @@ export interface DraftItem {
 }
 
 export async function listDrafts(planId: string) {
-  return adminFetch<{ success: boolean; data?: { planId: string; items: DraftItem[] }; error?: string }>(
-    `/admin/story-builder/plans/${planId}/drafts`,
-  );
+  // M32 retired the drafts router; the draft picker is superseded by asset
+  // authoring via graph-intake/CDN. Fail closed with a clear message rather
+  // than 404ing on the removed `/plans/:id/drafts` endpoint.
+  return { success: false, error: 'Draft assets were retired in M32 — asset drafting moved to graph-intake/CDN.' } as {
+    success: boolean;
+    data?: { planId: string; items: DraftItem[] };
+    error?: string;
+  };
 }
 
 export async function chooseDraft(planId: string, itemId: string, promptType: string, filename: string) {
-  return postJSON<{ success: boolean; data?: { planId: string; itemId: string; promptType: string; filename: string; status: string }; error?: string }>(
-    `/admin/story-builder/plans/${planId}/choose-draft`,
-    { itemId, promptType, filename },
-  );
+  // M32 retired the drafts router.
+  return { success: false, error: 'Draft selection was retired in M32.' };
 }
 
 export async function getPlanVersions(planId: string) {
-  return adminFetch<{
-    success: boolean;
-    data?: {
-      id: string;
-      description: string;
-      status: string;
-      created_at: string;
-      parent_plan_id: string | null;
-      children: any[];
-    };
-    error?: string;
-  }>(`/admin/story-builder/plans/${planId}/versions`);
+  // M32 retired the version-history meta route (`/plans/:id/versions`).
+  return {
+    success: true,
+    data: { id: planId, description: '', status: '', created_at: '', updated_at: '', parent_plan_id: null, children: [] },
+  };
 }

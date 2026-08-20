@@ -17,7 +17,7 @@ import * as yaml from 'js-yaml';
 import { glob } from 'glob';
 import type { ContentPlan, ContentPlanItem, IdentityResolution, ResolutionAlternative } from '@las-flores/shared';
 import { queryOLTP } from '@las-flores/infra';
-import { normalizeName } from './OutlineChunking.js';
+import { normalizeName } from './types/LLMTypes.js';
 import { resolveContentDir } from './StoryBuilderLore.js';
 
 /** Raw `entity_aliases` row returned by the lookup query. */

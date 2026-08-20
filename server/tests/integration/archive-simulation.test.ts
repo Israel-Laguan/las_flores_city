@@ -2,6 +2,7 @@ import { queryOLTP, withOLTPTransaction, closeConnections } from '@las-flores/in
 import { closeRedis, invalidatePattern } from '@las-flores/infra';
 import { DialogueResolver } from '../../src/services/DialogueResolver.js';
 import { deepMergeNodes } from '../../src/services/dialogueResolverUtils.js';
+import { publishDialogueTree } from '../../src/services/ContentPublishService.js';
 import type { DialogueNode } from '@las-flores/shared';
 import fs from 'fs';
 import path from 'path';
@@ -112,12 +113,14 @@ describe('Archive Simulation', () => {
       [ARCHIVED_MYSTERY_ID]
     );
 
-    // Seed a base dialogue tree.
+    // Seed a base dialogue tree. M32 dropped the in-DB `nodes` column, so
+    // publish the node map to the CDN and reference it via `content_url`.
+    const baseUrl = await publishDialogueTree(BASE_TREE_ID, JSON.stringify({ nodes: BASE_NODES }));
     await queryOLTP(
-      `INSERT INTO dialogue_trees (id, name, description, start_node_id, nodes)
+      `INSERT INTO dialogue_trees (id, name, description, start_node_id, content_url)
        VALUES ($1, 'Archive Test Tree', 'Test', 'root', $2)
-       ON CONFLICT (id) DO UPDATE SET nodes = EXCLUDED.nodes`,
-      [BASE_TREE_ID, JSON.stringify(BASE_NODES)]
+       ON CONFLICT (id) DO UPDATE SET content_url = EXCLUDED.content_url`,
+      [BASE_TREE_ID, baseUrl]
     );
 
     // Seed a mystery overlay for this tree.

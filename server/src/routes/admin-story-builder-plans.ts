@@ -2,7 +2,6 @@ import express from 'express';
 import type { AuthRequest } from '../middleware/auth.js';
 import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
 import { queryOLTP } from '@las-flores/infra';
-import { contentPlanService } from '../services/ContentPlanService.js';
 import { emitAdminEvent } from '../services/AdminEventEmitter.js';
 import { isNeo4jEnabled } from '../services/Neo4jClient.js';
 import { getDeltasForPlan, clearDeltasForPlan } from '../services/GraphDeltaService.js';
@@ -10,28 +9,22 @@ import { getDeltasForPlan, clearDeltasForPlan } from '../services/GraphDeltaServ
 export const adminStoryBuilderPlansRouter = express.Router();
 
 // POST /admin/story-builder/plans — Create a new plan
+// Use POST /plans/graph-intake for description-based plan creation (M32)
 adminStoryBuilderPlansRouter.post('/plans', async (req: AuthRequest, res) => {
   try {
-    const { description, plan } = req.body;
+    const { plan } = req.body;
 
-    if (!description || typeof description !== 'string' || description.trim().length === 0) {
-      res.status(400).json({ success: false, error: 'description is required and must be a non-empty string', timestamp: new Date().toISOString() });
+    if (!plan) {
+      res.status(400).json({ success: false, error: 'plan is required', timestamp: new Date().toISOString() });
       return;
     }
 
     let validatedPlan: ContentPlan;
-    let usage = null;
-    if (plan) {
-      try {
-        validatedPlan = ContentPlanSchema.parse(plan);
-      } catch {
-        res.status(400).json({ success: false, error: 'Invalid plan: schema validation failed', timestamp: new Date().toISOString() });
-        return;
-      }
-    } else {
-      const result = await contentPlanService.parseDescription(description.trim());
-      validatedPlan = result.plan;
-      usage = result.usage;
+    try {
+      validatedPlan = ContentPlanSchema.parse(plan);
+    } catch {
+      res.status(400).json({ success: false, error: 'Invalid plan: schema validation failed', timestamp: new Date().toISOString() });
+      return;
     }
     validatedPlan.status = 'proposed';
 
@@ -45,16 +38,9 @@ adminStoryBuilderPlansRouter.post('/plans', async (req: AuthRequest, res) => {
     const planId = result.rows[0].id;
 
     const eventData: Record<string, unknown> = {
-      descriptionLength: description.trim().length,
+      descriptionLength: validatedPlan.description.trim().length,
       itemCount: validatedPlan.items.length,
     };
-    if (usage) {
-      eventData.totalTokens = usage.totalTokens;
-      eventData.promptTokens = usage.promptTokens;
-      eventData.completionTokens = usage.completionTokens;
-      eventData.model = usage.model;
-      eventData.estimatedCostUsd = usage.estimatedCostUsd;
-    }
     emitAdminEvent('plan_created', eventData, planId, req.userId);
 
     res.json({
@@ -138,13 +124,9 @@ adminStoryBuilderPlansRouter.put('/plans/:id', async (req, res) => {
       return;
     }
 
-    // M28 — in graph-authoritative mode, the graph deltas are the sole authoring
-    // entry point for plans that carry deltas. Direct plan_json edits bypass the
-    // merge/export path, so reject them (the dual-path drop).
+    // Graph-authored plans must be edited through the canvas. Legacy plans may
+    // still be edited directly when graph authoring is disabled.
     if (isNeo4jEnabled()) {
-      // Fail closed when the graph service is enabled but unreachable: never fall
-      // back to treating an unavailable graph as an empty delta set (which would
-      // let a plan_json edit clobber graph-authored deltas).
       let deltas;
       try {
         deltas = await getDeltasForPlan(id);

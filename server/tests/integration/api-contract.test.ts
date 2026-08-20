@@ -15,6 +15,51 @@ import { generateToken } from '../../src/middleware/auth.js';
 import { vaultRouter } from '../../src/routes/vault.js';
 import { deleteCache, closeRedis } from '@las-flores/infra';
 
+// M32: dialogue node maps are externalized to the CDN via `content_url`.
+// The comms routes fetch the node map through `fetchNodesFromContentUrl`,
+// which hits MinIO/CDN at runtime. Make the contract test self-contained by
+// stubbing that fetch and seeding the character + tree the test expects.
+const mockHandlerNodes: Record<string, any> = {
+  n_start: {
+    id: 'n_start',
+    speaker_id: '550e8400-e29b-41d4-a716-446655440004',
+    text: 'Handler: Welcome, operative.',
+    is_end: false,
+    choices: [{ id: 'c1', text: 'Understood, Handler.', next_node_id: 'n_two' }],
+  },
+  n_two: {
+    id: 'n_two',
+    speaker_id: '550e8400-e29b-41d4-a716-446655440004',
+    text: 'Handler: Stay sharp out there.',
+    is_end: true,
+    choices: [],
+  },
+};
+// M32: dialogue node maps are externalized to the CDN via `content_url`.
+// The comms contract tests (and the dialogue contract tests below) seed a
+// *synthetic* handler tree whose `content_url` (`http://test.local/handler-tree.json`)
+// is not a real CDN pointer, so we stub it with the in-test node map. The
+// dialogue contract tests exercise the Handler tree (stubbed here), keeping
+// the suite self-contained rather than depending on a reachable MinIO/CDN for
+// a migrated tree. Any other URL delegates to the real implementation.
+jest.mock('../../src/services/contentFetch.js', () => {
+  const actual = jest.requireActual('../../src/services/contentFetch.js');
+  return {
+    ...actual,
+    fetchNodesFromContentUrl: jest.fn(async (url: string, fallback: any) =>
+      url === 'http://test.local/handler-tree.json'
+        ? mockHandlerNodes
+        : actual.fetchNodesFromContentUrl(url, fallback)),
+    fetchChunkFromContentUrl: jest.fn(async (url: string, fallback: any) =>
+      url === 'http://test.local/handler-tree.json'
+        ? { nodes: mockHandlerNodes, leaves: {} }
+        : actual.fetchChunkFromContentUrl(url, fallback)),
+  };
+});
+
+const HANDLER_TREE_ID = 'f1000000-e29b-41d4-a716-446655440004';
+const HANDLER_CHUNK_ID = 'f1000001-e29b-41d4-a716-446655440004';
+
 const { Pool } = pg;
 
 async function applyMigration(filename: string): Promise<void> {
@@ -34,7 +79,6 @@ async function applyMigration(filename: string): Promise<void> {
 const TEST_USER_ID = '00000000-0000-0000-0000-000000000001';
 const WELCOME_SCENE_ID = '550e8400-e29b-41d4-a716-446655440002';
 const APARTMENT_SCENE_ID = '55555555-6666-4777-8888-999999990001';
-const TEST_CHARACTER_ID = '3b2b8000-e29b-41d4-a716-446655440001'; // Vance — speaker in The Awakening
 const HANDLER_CHARACTER_ID = '550e8400-e29b-41d4-a716-446655440004'; // The Handler — has dialogue at Welcome Center
 const DISTRICT_ID = 'd2000000-0000-0000-0000-000000000004';
 
@@ -71,6 +115,8 @@ beforeAll(async () => {
   await applyMigration('028_metaplot_oltp.sql');
   await applyMigration('018_vault_system.sql');
   await applyMigration('026_vault_signed_urls.sql');
+  await applyMigration('030_dialogue_chunks.sql');
+  await applyMigration('063_content_url.sql');
 
   // Ensure districts exist for scenes
   await pool.query(
@@ -112,8 +158,33 @@ beforeAll(async () => {
        credits = 100,
        current_location_id = $2,
        updated_at = NOW()`,
-    [TEST_USER_ID, WELCOME_SCENE_ID]
+     [TEST_USER_ID, WELCOME_SCENE_ID]
   );
+
+  // Seed the character + dialogue tree the comms contract tests rely on
+  // (M32 externalized the node map to content_url; the fetch is stubbed above).
+  await pool.query(
+    `INSERT INTO characters (id, name, description)
+     VALUES ($1, 'The Handler', 'API contract test character')
+     ON CONFLICT (id) DO NOTHING`,
+    [HANDLER_CHARACTER_ID]
+  );
+  await pool.query(
+    `INSERT INTO dialogue_trees (id, name, character_id, start_node_id, content_url)
+     VALUES ($1, 'The Handler Tree', $2, 'n_start', 'http://test.local/handler-tree.json')
+     ON CONFLICT (id) DO NOTHING`,
+    [HANDLER_TREE_ID, HANDLER_CHARACTER_ID]
+  );
+  await pool.query(
+    `INSERT INTO dialogue_chunks (id, tree_id, chunk_key, content_url)
+     VALUES ($1, $2, 'n_start', 'http://test.local/handler-tree.json')
+     ON CONFLICT (id) DO UPDATE SET
+       tree_id = EXCLUDED.tree_id,
+       chunk_key = EXCLUDED.chunk_key,
+       content_url = EXCLUDED.content_url`,
+    [HANDLER_CHUNK_ID, HANDLER_TREE_ID]
+  );
+
   await deleteCache(`user:state:${TEST_USER_ID}`);
   await pool.query(
     'DELETE FROM player_sms_threads WHERE user_id = $1',
@@ -139,6 +210,8 @@ afterAll(async () => {
   await pool.query('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);
   await pool.query('DELETE FROM player_sms_threads WHERE user_id = $1', [TEST_USER_ID]);
   await pool.query('DELETE FROM user_relationships WHERE user_id = $1', [TEST_USER_ID]);
+  await pool.query('DELETE FROM dialogue_chunks WHERE id = $1', [HANDLER_CHUNK_ID]);
+  await pool.query('DELETE FROM dialogue_trees WHERE id = $1', [HANDLER_TREE_ID]);
   // Note: We don't delete scenes/districts here as they may be shared with other tests
   // and have FK constraints. The test data will be cleaned up by other test suites.
   await pool.end();
@@ -252,7 +325,7 @@ describe('API Contract Tests', () => {
       const res = await fetch(`http://localhost:${port}/dialogue/start`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeaders() },
-        body: JSON.stringify({ characterId: TEST_CHARACTER_ID, sceneId: APARTMENT_SCENE_ID }),
+        body: JSON.stringify({ characterId: HANDLER_CHARACTER_ID, sceneId: APARTMENT_SCENE_ID }),
       });
       const data = await jsonResponse(res);
 
@@ -323,7 +396,7 @@ describe('API Contract Tests', () => {
       const start = await fetch(`http://localhost:${port}/dialogue/start`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeaders() },
-        body: JSON.stringify({ characterId: TEST_CHARACTER_ID, sceneId: APARTMENT_SCENE_ID }),
+        body: JSON.stringify({ characterId: HANDLER_CHARACTER_ID, sceneId: APARTMENT_SCENE_ID }),
       });
       const startData = await jsonResponse(start);
       expect(start.status).toBe(201);

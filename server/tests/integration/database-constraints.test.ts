@@ -105,8 +105,8 @@ describe('Database Constraints', () => {
     const treeId = '00000000-0000-0000-0000-000000000040';
 
     await pool.query(
-      `INSERT INTO dialogue_trees (id, name, start_node_id, nodes) VALUES ($1, $2, $3, $4)`,
-      [treeId, 'Test Tree', '{}', '{}']
+      `INSERT INTO dialogue_trees (id, name, start_node_id, content_url) VALUES ($1, $2, $3, $4)`,
+      [treeId, 'Test Tree', '{}', 's3://las-flores/dialogues/constraint-test.json']
     );
 
     await pool.query(

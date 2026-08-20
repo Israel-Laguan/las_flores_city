@@ -217,7 +217,7 @@ async function runHarnessStagePublish(
   );
 
   const provider = createLLMProvider();
-  const stageResult = await stagePlan(plan, { provider, context });
+  const stageResult = await stagePlan(plan, { provider, context, planId });
   if (!stageResult.success) {
     throw new Error(stageResult.error ?? 'Staging failed');
   }

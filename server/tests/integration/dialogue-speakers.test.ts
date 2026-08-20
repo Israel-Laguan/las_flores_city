@@ -4,6 +4,7 @@ import express from 'express';
 import { withSchemaLock } from '../helpers/schemaLock.js';
 import { dialogueRouter } from '../../src/routes/dialogue.js';
 import { generateToken } from '../../src/middleware/auth.js';
+import { publishDialogueTree, publishDialogueChunk } from '../../src/services/ContentPublishService.js';
 
 // ============================================================
 // Dialogue speakers enrichment integration tests
@@ -93,19 +94,23 @@ describe('Dialogue speakers enrichment', () => {
     );
 
     // Dialogue tree whose root node references the character + visual.
+    // M32 dropped the in-DB `nodes` column, so publish to the CDN.
+    const treeUrl = await publishDialogueTree(TEST_TREE_ID, JSON.stringify(TEST_NODES));
     await queryOLTP(
-      `INSERT INTO dialogue_trees (id, name, start_node_id, nodes)
-       VALUES ($1, 'speakers_test_tree', 'root', $2::jsonb)
-       ON CONFLICT (id) DO UPDATE SET nodes = EXCLUDED.nodes`,
-      [TEST_TREE_ID, JSON.stringify(TEST_NODES)]
+      `INSERT INTO dialogue_trees (id, name, start_node_id, content_url)
+       VALUES ($1, 'speakers_test_tree', 'root', $2)
+       ON CONFLICT (id) DO UPDATE SET content_url = EXCLUDED.content_url`,
+      [TEST_TREE_ID, treeUrl]
     );
 
     // AOT-compiled chunk for the tree (as the content compiler would write).
+    // M32 dropped the in-DB `nodes`/`leaves` columns, so publish to the CDN.
+    const chunkUrl = await publishDialogueChunk(TEST_TREE_ID, 'root', JSON.stringify({ nodes: TEST_NODES, leaves: {} }));
     await queryOLTP(
-      `INSERT INTO dialogue_chunks (id, tree_id, chunk_key, nodes, leaves)
-       VALUES ($1, $2, 'root', $3::jsonb, '{}'::jsonb)
-       ON CONFLICT (id) DO UPDATE SET nodes = EXCLUDED.nodes`,
-      [TEST_CHUNK_ID, TEST_TREE_ID, JSON.stringify(TEST_NODES)]
+      `INSERT INTO dialogue_chunks (id, tree_id, chunk_key, content_url)
+       VALUES ($1, $2, 'root', $3)
+       ON CONFLICT (id) DO UPDATE SET content_url = EXCLUDED.content_url`,
+      [TEST_CHUNK_ID, TEST_TREE_ID, chunkUrl]
     );
 
     // Player cursor pointing at the chunk + node.

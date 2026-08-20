@@ -1,6 +1,7 @@
 import { queryOLTP, withOLTPTransaction, closeConnections } from '@las-flores/infra';
 import { closeRedis, invalidatePattern } from '@las-flores/infra';
 import { getDialogState } from '../../src/routes/dialogue-helpers.js';
+import { publishDialogueTree } from '../../src/services/ContentPublishService.js';
 import fs from 'fs';
 import path from 'path';
 import { withSchemaLock } from '../helpers/schemaLock.js';
@@ -120,12 +121,14 @@ describe('In-Flight Conversation Protection', () => {
       [TEST_USER_ID, MYSTERY_ID]
     );
 
-    // Seed base tree + overlay.
+    // Seed base tree + overlay. M32 dropped the in-DB `nodes` column, so
+    // publish to the CDN and reference it via `content_url`.
+    const baseUrl = await publishDialogueTree(BASE_TREE_ID, JSON.stringify({ nodes: BASE_NODES }));
     await queryOLTP(
-      `INSERT INTO dialogue_trees (id, name, description, start_node_id, nodes)
+      `INSERT INTO dialogue_trees (id, name, description, start_node_id, content_url)
        VALUES ($1, 'InFlight Tree', 'Test', 'root', $2)
-       ON CONFLICT (id) DO UPDATE SET nodes = EXCLUDED.nodes`,
-      [BASE_TREE_ID, JSON.stringify(BASE_NODES)]
+       ON CONFLICT (id) DO UPDATE SET content_url = EXCLUDED.content_url`,
+      [BASE_TREE_ID, baseUrl]
     );
     await queryOLTP(
       `INSERT INTO dialogue_overlays (id, name, description, target_tree_id, mystery_id, nodes)

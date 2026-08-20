@@ -7,6 +7,8 @@
  * failure (the route returns 200 so adminFetch can parse the JSON), 404 when
  * the plan is absent, 400 when the plan status is invalid, 500 on a throw.
  */
+import '../helpers/enableTestNeo4j.js';
+
 import express from 'express';
 import request from 'supertest';
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';

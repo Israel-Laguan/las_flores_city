@@ -7,7 +7,6 @@ import { runAllMigrations } from './database/migrate.js';
 import { seedPlayers } from './database/seedPlayers.js';
 import { ContentAssetWorker } from './workers/ContentAssetWorker.js';
 import { resumeSolidify } from './services/StoryBuilderOrchestrator.js';
-import { resetOrphanedFillJobs } from './services/PlanGenerationJob.js';
 import { markOrphanedResumable } from './services/JobRunService.js';
 import { verifyNeo4j } from './services/Neo4jClient.js';
 import { resolveFileEnvVars } from './config/resolveFileEnvVars.js';
@@ -86,15 +85,16 @@ async function initializeServer() {
     console.warn('[seed:players] skipped:', (err as Error).message || err);
   }
 
-  // M27 — Neo4j authoring canvas connectivity check (non-fatal). When
-  // NEO4J_ENABLED is on but the graph is unreachable, log a warning and continue:
-  // existing Postgres/plan_json paths keep working, and the graph only ever
-  // *skips*, never aborts `initializeServer()`.
+  // M27/M32 — Neo4j authoring canvas connectivity check (non-fatal boot, but
+  // graph is now required for authoring approvals). When NEO4J_ENABLED is on
+  // but the graph is unreachable, log a warning and continue so the health
+  // endpoint stays alive; `approveAndSolidifyPlan` will fail loudly at runtime
+  // until Neo4j is reachable.
   const neo4jOk = await verifyNeo4j();
   if (neo4jOk) {
-    console.log('🕸️  Neo4j authoring graph reachable (M27 substrate ready).');
+    console.log('🕸️  Neo4j authoring graph reachable (M27/M32 substrate ready).');
   } else if (process.env.NEO4J_ENABLED === 'true') {
-    console.warn('[Neo4j] graph enabled but unreachable — authoring graph reads degraded to empty (plan_json path unaffected).');
+    console.warn('[Neo4j] graph enabled but unreachable — authoring approvals will fail until Neo4j is reachable.');
   }
 
   // Start server
@@ -147,15 +147,7 @@ async function initializeServer() {
     }
   }
 
-  // Startup recovery: reset orphaned fill jobs to failed (legacy reclaim) +
-  // resume any resumable plan_fill jobs. Pass the already-claimed orphans so
-  // plan_fill rows are not lost (they were flipped to `resumable` above), and
-  // the startup cutoff so any fallback claim stays bounded. Retried so a
-  // transient failure cannot strand durable fill jobs until the next restart.
-  await withStartupRetry(
-    () => resetOrphanedFillJobs(claimedOrphans, startupCutoff),
-    'resetOrphanedFillJobs',
-  );
+
 
   // Content asset worker — generate pending image drafts for verified plans every 30 seconds
   const ASSET_WORKER_INTERVAL_MS = 30 * 1000;

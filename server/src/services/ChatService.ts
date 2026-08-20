@@ -127,14 +127,15 @@ export class ChatService {
   async propose(
     planId: string,
     messages: ChatMessage[],
+    context?: ExistingContentContext,
     annotationId?: string,
   ): Promise<{ reply: string; deltas: GraphDelta[]; deltaEdges: GraphDeltaEdge[]; usage: LLMUsage | null }> {
-    const [context, conflict, description] = await Promise.all([
-      this.gather(),
+    const [resolvedContext, conflict, description] = await Promise.all([
+      context ?? this.gather(),
       this.resolveConflict(planId, annotationId),
       this.loadPlanDescription(planId),
     ]);
-    return this.provider.chatPropose(planId, messages, context, conflict, description);
+    return this.provider.chatPropose(planId, messages, resolvedContext, conflict, description);
   }
 
   /**

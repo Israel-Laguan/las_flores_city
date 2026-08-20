@@ -17,6 +17,7 @@ import {
 } from '@las-flores/shared';
 import type { DialogueNode } from '@las-flores/shared';
 import { publishDialogueTree, publishDialogueChunk } from '../services/ContentPublishService.js';
+import { fetchNodesFromContentUrl } from '../services/contentFetch.js';
 
 // ---- constants ----
 
@@ -173,16 +174,6 @@ export function compileTree(
 /**
  * Best-effort content publish: returns the `s3://` content URL on
  * success, or `null` when MinIO is unavailable/unreachable. Publishing
- * is never fatal to a migration — the resolver falls back to the
- * in-DB JSONB when `content_url` is NULL.
- */
-async function safePublish(publish: () => Promise<string>): Promise<string | null> {
-  try {
-    return await publish();
-  } catch (error: any) {
-    console.warn(`[compiler] Content publish skipped (MinIO unavailable?): ${error?.message}`);
-    return null;
-  }
 }
 
 /**
@@ -198,14 +189,21 @@ async function safePublish(publish: () => Promise<string>): Promise<string | nul
 export async function compileDialogueTree(treeId: string): Promise<CompiledChunk[]> {
   const result = await queryOLTP<{
     start_node_id: string;
-    nodes: Record<string, DialogueNode>;
-  }>('SELECT start_node_id, nodes FROM dialogue_trees WHERE id = $1', [treeId]);
+    content_url: string | null;
+  }>('SELECT start_node_id, content_url FROM dialogue_trees WHERE id = $1', [treeId]);
 
   if (result.rows.length === 0) {
     throw new Error(`Dialogue tree not found: ${treeId}`);
   }
 
-  const { start_node_id, nodes } = result.rows[0];
+  const { start_node_id, content_url } = result.rows[0];
+  if (!content_url) {
+    throw new Error(`Dialogue tree ${treeId} has no content_url (M23 externalization required before nodes column drop)`);
+  }
+  const nodes = await fetchNodesFromContentUrl(content_url, {});
+  if (!nodes || Object.keys(nodes).length === 0) {
+    throw new Error(`Dialogue tree ${treeId} content_url ${content_url} resolved to empty nodes`);
+  }
 
   // Load gate set: union of overlay.nodes keys for this tree
   const overlayResult = await queryOLTP<{ nodes: Record<string, DialogueNode> }>(
@@ -223,26 +221,37 @@ export async function compileDialogueTree(treeId: string): Promise<CompiledChunk
   // Pure compile
   const chunks = compileTree(treeId, start_node_id, nodes, gateSet);
 
-  // M23 publish-first: externalize tree nodes + chunk sub-graphs to MinIO.
-  const treeContentUrl = await safePublish(() => publishDialogueTree(treeId, JSON.stringify({ nodes })));
+    // M23 publish-first: externalize tree nodes + chunk sub-graphs to MinIO.
+  // After M32 drops the in-DB JSONB fallback, a NULL content_url means the
+  // tree/chunk is unloadable at runtime. Abort the entire write unless EVERY
+  // publish produced a reachable URL.
+  let treeContentUrl: string;
+  try {
+    treeContentUrl = await publishDialogueTree(treeId, JSON.stringify({ nodes }));
+  } catch (error: any) {
+    throw new Error(`Dialogue tree ${treeId}: MinIO publish failed (${error?.message}) — aborting chunk compilation`);
+  }
+
   const chunkContentUrls = new Map<string, string>();
   for (const chunk of chunks) {
     const payload = JSON.stringify({ nodes: chunk.nodes, leaves: chunk.leaves });
-    const url = await safePublish(() => publishDialogueChunk(treeId, chunk.chunk_key, payload));
-    if (url) chunkContentUrls.set(chunk.chunk_key, url);
+    try {
+      chunkContentUrls.set(chunk.chunk_key, await publishDialogueChunk(treeId, chunk.chunk_key, payload));
+    } catch (error: any) {
+      throw new Error(`Chunk ${chunk.chunk_key} for tree ${treeId}: MinIO publish failed (${error?.message}) — aborting`);
+    }
   }
 
   // DB write: delete stale + insert fresh, in one transaction.
-  // `content_url` references the (already-published) CDN objects; the
-  // nodes/leaves JSONB columns are kept for backward-compat fallback.
+  // `content_url` references the (already-published) CDN objects.
   await withOLTPTransaction(async (client) => {
     await client.query('DELETE FROM dialogue_chunks WHERE tree_id = $1', [treeId]);
 
     for (const chunk of chunks) {
       await client.query(
-        `INSERT INTO dialogue_chunks (tree_id, chunk_key, nodes, leaves, content_url)
-         VALUES ($1, $2, $3, $4, $5)`,
-        [chunk.tree_id, chunk.chunk_key, JSON.stringify(chunk.nodes), JSON.stringify(chunk.leaves), chunkContentUrls.get(chunk.chunk_key) ?? null]
+        `INSERT INTO dialogue_chunks (tree_id, chunk_key, content_url)
+         VALUES ($1, $2, $3)`,
+        [chunk.tree_id, chunk.chunk_key, chunkContentUrls.get(chunk.chunk_key)]
       );
     }
 

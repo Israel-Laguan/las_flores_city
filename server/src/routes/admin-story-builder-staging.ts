@@ -12,6 +12,8 @@ import { markDrafted, markChosen } from '../services/AssetNeedsService.js';
 import { createLLMProvider } from '../services/LLMService.js';
 import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
 import { resolveContentDir } from '../services/StoryBuilderLore.js';
+import { graphIntakeService } from '../services/GraphIntakeService.js';
+import { isNeo4jEnabled } from '../services/Neo4jClient.js';
 
 export interface StagingOutcome {
   plan: ContentPlan;
@@ -54,6 +56,21 @@ export async function loadPlanForStaging(
   try {
     return { plan: ContentPlanSchema.parse(result.rows[0].plan_json) };
   } catch {
+    // Graph-authored plans persist an empty plan_json until export; synthesize
+    // a legacy ContentPlan from the graph deltas so staging can proceed.
+    if (isNeo4jEnabled()) {
+      try {
+        const synthesized = await graphIntakeService.synthesizeLegacyPlan(id);
+        // Only graph-authored plans carry real deltas, so gate on items.length > 0.
+        // synthesizeLegacyPlan returns a non-null plan even with no deltas, and an
+        // empty-items plan would silently proceed to staging instead of surfacing
+        // the genuine 'Stored plan failed schema validation' error for a corrupt
+        // legacy plan_json.
+        if (synthesized && synthesized.items.length > 0) return { plan: synthesized };
+      } catch {
+        /* fall through to the validation error below */
+      }
+    }
     return { plan: null as any, error: { status: 400, message: 'Stored plan failed schema validation' } };
   }
 }
@@ -63,7 +80,7 @@ export async function loadPlanForStaging(
 export async function runStagingPipeline(plan: ContentPlan, id: string): Promise<StagingOutcome> {
   const provider = createLLMProvider();
   const context = await contentPlanService.gatherContext();
-  const stagingResult = await stagePlan(plan, { provider, context });
+  const stagingResult = await stagePlan(plan, { provider, context, planId: id });
 
   if (!stagingResult.success) {
     return { plan, success: false, error: stagingResult.error };

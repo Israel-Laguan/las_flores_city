@@ -1,5 +1,18 @@
 import type { ContentPlan, ContentPlanItem, IntakeConflictPreview, CritiqueAnnotation, CritiqueScope, ChatMessage, ConflictChatContext, GraphDelta, GraphDeltaEdge } from '@las-flores/shared';
-import type { EntityCandidate } from '../OutlineChunking.js';
+
+// M32 - Extracted from OutlineChunking.ts
+export interface EntityCandidate {
+  name: string;
+  type: string;
+  description: string;
+}
+
+/**
+ * Normalize a name for deduplication: lowercase, strip separators (keep Unicode letters/numbers).
+ */
+export function normalizeName(name: string): string {
+  return String(name || '').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
+}
 
 export interface ExistingLocation {
   id: string;
@@ -32,13 +45,8 @@ export interface LLMUsage {
 export type CritiqueScopeType = CritiqueScope;
 
 export interface LLMProvider {
-  parseDescription(description: string, context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }>;
-  generateOutline(description: string, context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }>;
-  refinePlan(existingPlan: ContentPlan, feedback: string, context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }>;
-  refinePlanItems(selectedItems: ContentPlanItem[], fullPlan: ContentPlan, feedback: string, context: ExistingContentContext): Promise<{ items: ContentPlanItem[]; usage: LLMUsage | null }>;
   generateLore(item: ContentPlanItem, context: ExistingContentContext): Promise<string>;
   generateFill(prompt: string): Promise<{ fields: Record<string, string>; lore_refs?: string[] }>;
-  extractEntities(systemPrompt: string, chunk: string): Promise<{ entities: EntityCandidate[] }>;
   analyzeIntakeConflicts(plan: ContentPlan, context: ExistingContentContext): Promise<{ conflicts: IntakeConflictPreview[]; usage: LLMUsage | null }>;
 
   /**
@@ -58,6 +66,9 @@ export interface LLMProvider {
     context: ExistingContentContext,
     scope: CritiqueScopeType,
   ): Promise<{ annotations: CritiqueAnnotation[]; usage: LLMUsage | null }>;
+
+  /** Gather the existing content context used as LLM authoring grounding. */
+  gatherContext(): Promise<ExistingContentContext>;
 
   /**
    * Resolve the model that `analyzePlanForConflicts` will actually use for a

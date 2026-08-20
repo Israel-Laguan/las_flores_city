@@ -13,7 +13,7 @@ needed yet.
 
 | Item | Detail |
 |---|---|
-| **Deterministic validation harness** | `ValidationHarnessService`: cheap rules the LLM can't be trusted to do faithfully — timeline overlap, duplicate slug/name, FK integrity, ordering/succession. Runs inside `approveAndSolidifyPlan` **before** staging; blocks only on `error`-severity |
+| **Deterministic validation harness** | `ValidationHarnessService` (module exporting `runValidationHarness(plan, context)` — a function, not a class): cheap rules the LLM can't be trusted to do faithfully — timeline overlap, duplicate slug/name, FK integrity, ordering/succession. Runs inside `approveAndSolidifyPlan` **before** staging; blocks only on `error`-severity |
 | **Intake conflict scan (Moment 1)** | New `LLMProvider.analyzeIntakeConflicts(plan, context)` returning `IntakeConflictPreview[]`; reuses `gatherContext()`'s `ExistingContentContext` — no new data plumbing |
 | **Shared schemas** | `IntakeConflictPreviewSchema`, harness result types in `shared/src/schemas/` |
 | **Admin UI** | `DescribeStep`/`ReviewStep` show "⚠️ N potential conflicts" + `[Generate Full Plan]` / `[Refine Instead]` |
@@ -22,7 +22,7 @@ needed yet.
 
 | Area | Files |
 |---|---|
-| New service | `server/src/services/ValidationHarnessService.ts` |
+| New service | `server/src/services/ValidationHarnessService.ts` (exports `runValidationHarness`, a function — not a class) |
 | LLM seam | `server/src/services/types/LLMTypes.ts`, `LiteLLMProvider.ts`, `MockProvider.ts`, `LLMPrompts.ts` |
 | Orchestration | `server/src/services/StoryBuilderOrchestrator.ts`, `ContentPlanService.ts` |
 | Shared schemas | `shared/src/schemas/story-builder.ts` (conflict/harness schemas) |

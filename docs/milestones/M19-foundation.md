@@ -1,6 +1,6 @@
 # M19 — Foundation: Module Boundaries + Content-Read Pool + Graph Analysis
 
-> **Status:** Implemented · **Branch:** `milestone/19-foundation` · **PR size target:** ~25 files
+> **Status:** Shipped · **Branch:** `milestone/19-foundation` · **PR size target:** ~25 files
 > **Phase:** 0 · **Source:** `ARCHITECTURE_SEPARATION_ANALYSIS.md` §3–4 (Option 1), §5 (A1), §11 (AGE vs Neo4j)
 
 ## Goal
@@ -14,7 +14,6 @@ milestones (M27–M28) are de-risked. No behavior change to players.
 | Item | Detail | Status |
 |---|---|---|
 | **A1 — Content-read pool** | A dedicated read-only `contentPool` lives in `@las-flores/infra` (`infra/src/connection.ts`); `DialogueResolver` chunk/overlay reads and `location.ts` / `location.npcs.ts` browse JOINs route through `queryContent`, leaving player `oltpPool` writes untouched | ✅ Done |
-| **Domains reorg** *(deferred to follow-up PR)* | Reorganize `server/src/` into `domains/{game,intake,ai}/` + `infra/`; add ESLint `no-restricted-imports` so `game/` cannot import `ai/` or `intake/` and `ai/` cannot import `game/` | ⏸ Deferred |
 | **`@las-flores/infra` extraction** | `connection.ts`/`redis.ts` wiring extracted into the shared `@las-flores/infra` workspace package (prep for the M21 process split); importers updated to `@las-flores/infra` | ✅ Done |
 | **Analysis: AGE vs Neo4j** | Decision record produced (see below); graph store locked for M27 | ✅ Done |
 
@@ -73,4 +72,8 @@ M27 does not re-litigate it.
 - [x] `AGENTS.md` pool constraint reconciled with the read-only content pool
 - [x] `contentPool.unit.test.ts` + `DialogueResolver.property.test.ts` pass; server test suite + health check pass
 
-> Deferred to the follow-up PR (not part of M19 DoD): `domains/{game,intake,ai}/` structure and the ESLint `no-restricted-imports` boundary enforcement.
+> **Domains reorg** is a deferred follow-up (not part of M19 DoD): split `server/src` into
+> `domains/{game,intake,ai}/` + `infra/` with ESLint `no-restricted-imports` boundary
+> enforcement. Currently the boundary is enforced only by the physical intake-worker /
+> game-server process split (there is no `domains/` folder yet). Tracked under
+> `1786292762037-m35-content-completeness.md` → "Deferred follow-ups".

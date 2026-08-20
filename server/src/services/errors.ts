@@ -19,6 +19,14 @@ export class PlanStatusError extends Error {
   }
 }
 
+export class GraphDisabledError extends Error {
+  readonly isGraphDisabled = true;
+  constructor(message = 'Neo4j authoring graph is disabled') {
+    super(message);
+    this.name = 'GraphDisabledError';
+  }
+}
+
 export function isPlanNotFoundError(err: unknown): err is PlanNotFoundError {
   return err instanceof PlanNotFoundError;
 }

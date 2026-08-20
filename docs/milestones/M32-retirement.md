@@ -1,7 +1,12 @@
 # M32 — Authoring-Path Retirement & Consolidation
 
-> **Status:** Planned · **Branch:** `milestone/32-authoring-retirement` · **PR size target:** ~25 files
+> **Status:** Shipped (PR 1–PR 7 complete) · **Branch:** `feat/graph-db-implementation` (the originally-referenced `milestone/32-authoring-retirement` branch does not exist locally; PR1–PR7 landed here) · **PR size target:** ~25 files per PR
 > **Phase:** 7 (follows M28 graph write path) / 8 · **Source:** `ARCHITECTURE_SEPARATION_ANALYSIS.md` §8, §12–13, §15; **fixes the orphan gap** across M23/M27/M28/M29
+>
+> M32 is implemented as a **7-PR workstream** so each PR stays within the
+> ~25-file limit.  PR 1 (Pin) lands the frozen ledger and the coverage probe.
+> PR 2 (Flag flip) makes graph the sole authoring entry point for approvals and
+> rejects direct `plan_json` edits when graph deltas are present.
 
 ## Goal
 
@@ -32,37 +37,173 @@ For every candidate, classify **Retire / Refactor-Reuse / Keep**:
   depends on them).
 - **Keep** (no change) for anything the game hot path or runtime still reads.
 
-## Retirement ledger (candidates — final list set during **Pin**)
+## Retirement ledger (frozen during **Pin**)
 
-| Candidate | Class | Notes |
+The ledger below was finalised after re-evaluating every candidate against live
+code consumers. Four draft classifications changed materially:
+
+1. `ContentSkeletonGenerator.ts` → **Refactor-Reuse**, not Retire: its file-path
+   helpers are imported by the materialize pipeline that M32 explicitly keeps.
+2. `plan_json` column → **Keep**, not Retire: it is the M28 exporter's
+   transport for the same materialize pipeline; dropping it would rewrite the
+   very pipeline M32 mandates stays unchanged.
+3. `dialogue_overlays.nodes` → **not listed** (kept): overlays are not
+   externalised and the resolver still merges them from DB.
+4. `ContentPlanService.validateAndRepairOutline` / `generateFallbackPlan` →
+   **Refactor-Reuse (kept)**, not Retire: the `ContentPlanValidation.ts` *file*
+   was deleted (its `uuidv4` moved to `@las-flores/shared`), but the methods
+   themselves were inlined into `ContentPlanService.ts` (L27–33) and their
+   `*Impl` helpers retain internal callers (`generateFallbackPlanImpl` at L304).
+   Misclassified as "Retire" in earlier drafts — they are live code.
+
+| Candidate | Class | Notes / Evidence |
 |---|---|---|
-| `ContentPlanService.generateOutline` / `scaffoldPlanItems` / `refinePlan*` | Refactor-Reuse | identity/claims pieces reused; proposal-authoring superseded by graph deltas |
-| `PlanGenerationJob.ts`, `ContentSkeletonGenerator.ts`, `FillPlaceholders.ts`, `OutlineChunking.ts`, `PlanTemplates.ts`, `PlanTemplateBuilders.ts` | Retire | produce `plan_json` output that graph deltas replace |
-| `ContentPlanValidation.ts`, `StoryBuilderValidation.ts` | Refactor-Reuse / Retire | structural checks fold into M20 harness or retire |
-| `admin-story-builder-{generate,plans,drafts,staging,actions,lore}.ts` | Retire / Slim | keep only endpoints the new flow calls after M27–M29 |
-| `LLMProvider.parseDescription` (legacy Moment 1) | Retire | documented legacy |
-| `LLMProvider.refinePlan` / `refinePlanItems` (single-turn) | Retire | superseded by M29 `chatExplain`/`chatPropose` |
-<!-- M23 Phase 2 (prerequisite for this drop): DialogueResolver now hydrates BOTH
-     `nodes` and `leaves` from the CDN `content_url` blob for dialogue_chunks
-     (fetchChunkFromContentUrl in loadBaseChunk / loadBaseChunkByKey), and
-     `nodes` from CDN for dialogue_trees (fetchNodesFromContentUrl in
-     loadBaseTree). The resolver no longer reads the DB `nodes`/`leaves` columns
-     on the read path, falling back to them only when `content_url` is
-     NULL/empty or the CDN fetch fails. Dropping these columns here is safe once
-     every row carries a reachable content_url (M32 verification). -->
-| `dialogue_chunks.nodes` / `leaves`, `dialogue_trees.nodes` (JSONB) | Refactor-Reuse | columns dropped after M23 relocates content to CDN; disk keeps compiler. **Drop conditional on explicit row-level coverage check: every `content_url` must resolve to a reachable CDN blob before dropping JSONB fields.** |
-| `plan_json` column | Retire | after M28 exporter is sole authoring path |
-| Orphan tests across the above | Retire / Port | 118 test files; port retained-domain tests, delete tests for retired services |
+| `ContentPlanService.parseDescription` / `generateOutline` / `scaffoldPlanItems` / `refinePlan*` | Refactor-Reuse → Slim | `parseDescription`/`generateOutline`/`refinePlan*` retire with legacy intake; `gatherContext`, identity/claims pieces stay and move to a shared seam |
+| `PlanGenerationJob.ts`, `FillPlaceholders.ts`, `ContentFillService` | Retire | async fill / placeholder pipeline; replaced by fill-as-`MODIFY`-deltas |
+| `ContentSkeletonGenerator.ts` | Refactor-Reuse | `resolveFilePath`/`generateYaml` kept; imported by `StoryBuilderFileWriter`, `StoryBuilderPlanOps` (stagePlan), `StoryBuilderLore`, `PromptFileGenerator`, `AssetPublishService`, `PlanVerificationService` |
+| `OutlineChunking.ts` | Retire + extract | `EntityCandidate` type moves into `LLMTypes.ts` / shared; `chunkDescription`/`mergeCandidates` retire with the outline path |
+| `PlanTemplates.ts`, `PlanTemplateBuilders.ts` | Retire | only consumed by legacy template/clone meta routes |
+| `ContentPlanValidation.ts` (file) | Retire + extract | File deleted; `uuidv4` moved to `@las-flores/shared` (used by kept `RevisionService`) |
+| `ContentPlanService.validateAndRepairOutline` / `generateFallbackPlan` | Refactor-Reuse (kept) | Retained + inlined into `ContentPlanService.ts` (L27–33); `*Impl` helpers still have internal callers (`generateFallbackPlanImpl` at L304). NOT retired — misclassified as "Retire" in earlier drafts. |
+| `StoryBuilderValidation.ts` | Keep | `buildValidationErrors` still feeds the kept `stagePlan` materializer |
+| `admin-story-builder-generate.ts`, `admin-story-builder-drafts.ts` | Retire | legacy intake + draft endpoints |
+| `admin-story-builder-meta.ts` (templates/clone/execute) | Retire | template/clone endpoints; `execute` verified unused after the UI rewiring |
+| `admin-story-builder-actions.ts` `/plans/:id/refine` | Retire | single-turn refine; chat panel replaces it |
+| `admin-story-builder-lore.ts` | Slim | rewired to emit `MODIFY` deltas instead of mutating `plan_json` |
+| `admin-story-builder-staging.ts` | Keep | `stagePlan` materializer endpoints survive |
+| `LLMProvider.parseDescription` (legacy Moment 1) | Retire | replaced by graph-intake + `chatPropose` |
+| `LLMProvider.generateOutline` / `refinePlan` / `refinePlanItems` (single-turn) | Retire | superseded by M29 `chatExplain`/`chatPropose` |
+| `LLMProvider.extractEntities` | Retire | only used by the outline-chunking intake path |
+| `dialogue_trees.nodes`, `dialogue_chunks.nodes` / `leaves` (JSONB) | Retired (column dropped) | Dropped via migration `076_drop_dialogue_jsonb.sql` (commit `5443b007`). The M23 CDN read path is now the sole source of truth: `DialogueResolver.loadBaseTree`/`loadBaseChunk` throw on a NULL `content_url` and hydrate `{nodes, leaves}` exclusively from the CDN via `server/src/services/contentFetch.ts`. `SnapshotService` no longer writes the dropped columns. Unit tests must stub `contentFetch` and supply a `content_url` pointer (see AGENTS.md Mocking Rule 7b); integration tests seed a real `content_url` via `ContentPublishService.publishDialogueTree(...)`. |
+| `dialogue_overlays.nodes` (JSONB) | Keep | overlays are not externalised; still merged from DB |
+| `plan_json` column | Keep | M28 exporter transport for `approveAndSolidifyPlan` → `stagePlan`/`migrateContent`/`verifyPlan`; the kept materialize pipeline reads it |
+| `intake.ts` `resetOrphanedFillJobs` boot call | Retire | `PlanGenerationJob` is removed |
+| `server/src/scripts/fillExistingTodos.ts` | Retire | legacy fill CLI |
+| Orphan tests across the above | Retire / Port | ~14 test files touch retire candidates; port kept-domain tests, delete tests for retired services |
+
+## PR Breakdown
+
+### PR 1 — Pin
+- Froze the retirement ledger
+- Delivered `npm run probe:content-urls` coverage probe
+
+### PR 2 — Flag Flip + Prove  
+- Made graph the sole authoring entry point for approvals
+- Rejects direct `plan_json` edits when graph deltas are present
+- Proved: 7 integration suites, 64/64 tests pass, build + `validate:content` green, in-container health OK
+
+### PR 3 — Graph Intake Path
+**Status: Complete**
+
+- Created `GraphIntakeService.ts` with `createPlanFromDescription` → `chatPropose` → `GraphDeltaService` write path
+- Added POST `/plans/graph-intake` route + mounted in `admin-story-builder.ts`
+- Tweaked `StoryBuilderPlanOps.ts` so `generateLore`/`generateFill` emit MODIFY deltas
+- Added Neo4j-gated integration tests + unit mocks
+- Full prove gate passed
+
+### PR 4 — Retire Legacy Intake Surface
+**Status: Complete**
+
+Retired the superseded async fill / placeholder pipeline and legacy LLM methods.
+
+| Task | Candidate | Action |
+|------|-----------|--------|
+| 1 | `PlanGenerationJob.ts` | ✅ Delete file + remove all imports |
+| 2 | `FillPlaceholders.ts` | ✅ Delete file + remove all imports |
+| 3 | `ContentFillService.ts` | ✅ Delete file + remove all imports (inlined into StoryBuilderPlanOps.ts) |
+| 4 | `admin-story-builder-generate.ts` | ✅ Delete file + unmount from admin-story-builder |
+| 5 | `admin-story-builder-drafts.ts` | ✅ Delete file + unmount from admin-story-builder |
+| 6 | `intake.ts` `resetOrphanedFillJobs` | ✅ Remove boot call |
+| 7 | `server/src/scripts/fillExistingTodos.ts` | ✅ Delete file |
+| 8 | `LLMProvider.parseDescription` | ✅ Remove from interface + implementations |
+| 9 | `LLMProvider.generateOutline` | ✅ Remove from interface + implementations |
+| 10 | `LLMProvider.refinePlan` | ✅ Remove from interface + implementations |
+| 11 | `LLMProvider.refinePlanItems` | ✅ Remove from interface + implementations |
+| 12 | `LLMProvider.extractEntities` | ✅ Remove from interface + implementations |
+| 13 | Related tests | ✅ Delete or port to new services |
+
+**Gate:** All retired files deleted in the same PR. No orphaned imports remain. Grep verified.
+
+### PR 5 — Retire Outline Chunking + Templates
+**Status: Complete**
+
+Removed the legacy outline-chunking and template/clone surface.
+
+| Task | Candidate | Action |
+|------|-----------|--------|
+| 1 | `OutlineChunking.ts` | ✅ Delete file (extract `EntityCandidate` type to shared `LLMTypes.ts`) |
+| 2 | `PlanTemplates.ts` | ✅ Delete file + remove all imports |
+| 3 | `PlanTemplateBuilders.ts` | ✅ Delete file + remove all imports |
+| 4 | `admin-story-builder-meta.ts` | ✅ Delete file + unmount from admin-story-builder |
+| 5 | `admin-story-builder-actions.ts` `/plans/:id/refine` | ✅ Remove single-turn refine endpoint |
+
+**Gate:** No orphaned imports remain. Grep verified.
+
+### PR 6 — Retire ContentPlanValidation + Column Drop
+**Status: Complete**
+
+Dropped `ContentPlanValidation.ts` (after extracting `uuidv4` into a shared
+util used by the kept `RevisionService`) and dropped the superseded JSONB
+columns now served via the M23/M30 CDN `content_url` read path.
+
+| Task | Candidate | Action |
+|------|-----------|--------|
+| 1 | `ContentPlanValidation.ts` | ✅ Delete file; `uuidv4` moved to `@las-flores/shared` |
+| 2 | `dialogue_trees.nodes` | ✅ Column dropped (`076_drop_dialogue_jsonb.sql`, `oltp`) |
+| 3 | `dialogue_chunks.nodes` / `leaves` | ✅ Columns dropped (same migration) |
+| 4 | `SnapshotService` | ✅ Stopped writing dropped columns |
+
+**Gate:** `npm run probe:content-urls` passed (947/947 rows reachable) before
+the column drop. Migration `076_drop_dialogue_jsonb.sql` registered under `oltp`.
+
+### PR 7 — Final Prune + Docs
+**Status: Complete**
+
+- ✅ Deleted remaining orphans; no retire candidates left unaddressed
+- ✅ Final grep for retired symbols (`PlanGenerationJob`, `FillPlaceholders`,
+      `ContentFillService`, `parseDescription`, `generateOutline`,
+      `refinePlan`, `extractEntities`, `OutlineChunking`, `PlanTemplates`,
+      `ContentPlanValidation`, `resetOrphanedFillJobs`, `fillExistingTodos`)
+      returns only intentional doc-comment usages
+- ✅ `ARCHITECTURE_SEPARATION_ANALYSIS.md` §12–§15 updated with the M32
+      retirement callout naming which legacy LLM methods/services are gone
+- ✅ All references to retired symbols removed from live code and tests
+
+> **Branch note:** the originally-referenced `milestone/32-authoring-retirement`
+> branch does not exist locally; PR1–PR7 all landed on
+> `feat/graph-db-implementation`. The 7-PR split was a size-control device, not a
+> branch topology.
 
 ## Verify / Definition of Done
 
-- [ ] **Pin:** retirement ledger frozen (files/routes/methods/columns/tests), classified
-      Retire vs Refactor-Reuse
-- [ ] **Prove:** full build + test suite + `validate:content` green with new path active;
-      in-container health OK on game + intake-worker
-- [ ] **Prune:** all Retire rows deleted in the same PR as the last flag flip; retained
-      consumers refactored to shared services; dead DB columns/migrations dropped
-- [ ] No orphaned `import`/references remain (`grep` for retired symbols returns only
-      intentional, documented usages)
-- [ ] `ARCHITECTURE_SEPARATION_ANALYSIS.md` §12–§15 updated to reflect which legacy LLM
-      methods and services are gone
+- [x] **Pin:** retirement ledger frozen (files/routes/methods/columns/tests), classified
+      Retire vs Refactor-Reuse / Keep. Ledger delivered in PR 1.
+- [x] **Coverage probe:** `npm run probe:content-urls` exists and can be run against
+      any environment to gate the `dialogue_trees.nodes` / `dialogue_chunks.nodes/leaves`
+      column drop (PR 6). Green on current environment (947/947 rows reachable).
+- [x] **Prove:** full build + test suite + `validate:content` green with new path active;
+      in-container health OK on game + intake-worker. PR 2: 7 integration suites, 64/64 tests pass.
+- [x] **PR 3:** GraphIntakeService (createPlanFromDescription → chatPropose → GraphDeltaService write path)
+      + POST /plans/graph-intake route + admin-story-builder mount
+      + StoryBuilderPlanOps tweaked: generateLore/generateFill emit MODIFY deltas
+      + Neo4j-gated integration tests + unit mocks
+      + Full prove gate passed
+- [x] **PR 4:** Retire Legacy Intake Surface — all 13 tasks complete:
+      + Deleted PlanGenerationJob.ts, FillPlaceholders.ts, ContentFillService.ts, PlanFillRecovery.ts
+      + Deleted admin-story-builder-generate.ts, admin-story-builder-drafts.ts, admin-story-builder-generate-helpers.ts
+      + Removed resetOrphanedFillJobs from intake.ts
+      + Deleted fillExistingTodos.ts
+      + Removed parseDescription, generateOutline, refinePlan, refinePlanItems, extractEntities from LLMProvider
+      + Inlined ContentFillService logic into StoryBuilderPlanOps.ts
+      + Removed parseDescription path from admin-story-builder-plans.ts (now requires plan object)
+      + Deleted 6 related test files, updated 3 test files
+      + No orphaned imports remain (grep verified)
+- [x] **Prune:** all Retire rows deleted in the same PR as the last flag flip; retained
+       consumers refactored to shared services; dead DB columns/migrations dropped
+       (`ContentPlanValidation.ts` deleted, `uuidv4` moved to `@las-flores/shared`;
+       `076_drop_dialogue_jsonb.sql` drops `dialogue_trees.nodes` +
+       `dialogue_chunks.nodes`/`leaves`, registered under `oltp`).
+- [x] No orphaned `import`/references remain (`grep` for retired symbols returns only
+       intentional, documented usages in doc comments).
+- [x] `ARCHITECTURE_SEPARATION_ANALYSIS.md` §12–§15 updated to reflect which legacy LLM
+       methods and services are gone (M32 retirement callout added to §12).

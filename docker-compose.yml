@@ -155,6 +155,12 @@ services:
       NEO4J_USER: ${NEO4J_USER:-neo4j}
       NEO4J_PASSWORD: ${NEO4J_PASSWORD:-lasfloresdev123}
       NEO4J_ENABLED: ${NEO4J_ENABLED:-false}
+      # M30 gate benchmark (docs/milestones/M30-benchmark-results.md, S4): the shared
+      # read-only contentPool (default 10) saturates under a 500-distinct-key herd after
+      # a Breakthrough invalidation. The game-server serves player dialogue traffic, so
+      # it gets a larger read-only content pool; intake-worker keeps the default (both
+      # processes share one Postgres capped by max_connections).
+      CONTENT_POOL_MAX: 30
       MINIO_ACCESS_KEY: ${MINIO_ROOT_USER:-minioadmin}
       MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
       JWT_SECRET: ${JWT_SECRET:-your-jwt-secret-change-in-production}
@@ -231,8 +237,10 @@ services:
     environment:
       NODE_ENV: development
       PORT: 3001
-      # Neo4j graph authoring canvas (M27). Internal-only; authoring reads/writes
-      # (delta model, merged view, M27-b critique) run here.
+            # Neo4j graph authoring canvas (M27/M32). The graph is OPTIONAL:
+      # the intake-worker treats Neo4j connectivity as non-fatal, so boot
+      # succeeds even when NEO4J_ENABLED=false (the graph never blocks
+      # schema/content migrations or the health endpoint).
       NEO4J_URI: bolt://neo4j:7687
       NEO4J_USER: ${NEO4J_USER:-neo4j}
       NEO4J_PASSWORD: ${NEO4J_PASSWORD:-lasfloresdev123}
@@ -271,6 +279,10 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      # Neo4j is intentionally NOT a depends_on health gate: the graph is
+      # optional (NEO4J_ENABLED defaults false, intake.ts treats Neo4j
+      # connectivity as non-fatal). A Neo4j outage must NOT block intake-worker
+      # boot, schema/content migrations, or the health endpoint.
     extra_hosts:
       - "host.containers.internal:host-gateway"
     # `npm run dev:intake --workspace=server` resolves to `npx tsx watch

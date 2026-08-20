@@ -18,6 +18,7 @@ import type {
   SMSInboxResponse,
 } from '../../../shared/src/types/sms.js';
 import { choicePassesFilters, type PlayerConditionState } from '@las-flores/shared';
+import { fetchNodesFromContentUrl } from '../services/contentFetch.js';
 
 export const commsRouter = express.Router();
 
@@ -164,24 +165,47 @@ export function toDetail(row: ThreadRow, choices: SMSThreadChoice[], isEnd: bool
 }
 
 export async function findDialogueTreeForCharacter(characterId: string) {
+  // M32/M23: the tree node map is externalized to the CDN (content_url);
+  // the in-DB `nodes` JSONB column is dropped. We pre-filter by the tree's
+  // character FK (the speaking character) and confirm a node's `speaker_id`
+  // in the loaded blob — preserving the prior `jsonb_each(dt.nodes)`
+  // speaker lookup semantics without touching the dropped column.
+  //
+  // Some scene/onboarding-scoped trees have NULL character_id (they carry
+  // the speaker in the CDN node map, not the FK). The character_id filter
+  // excludes those, so we also query trees with NULL character_id and rely
+  // on the node-level speaker_id check below to preserve the old lookup.
   const result = await queryOLTP<{
     id: string;
     name: string;
     start_node_id: string;
-    nodes: Record<string, any>;
+    content_url: string | null;
   }>(
-    `
-    SELECT id, name, start_node_id, nodes
-    FROM dialogue_trees dt
-    WHERE EXISTS (
-      SELECT 1 FROM jsonb_each(dt.nodes) AS node(key, value)
-      WHERE (node.value->>'speaker_id') = $1
-    )
-    LIMIT 1
-    `,
+    `SELECT id, name, start_node_id, content_url
+     FROM dialogue_trees dt
+     WHERE dt.character_id = $1
+        OR (dt.character_id IS NULL AND dt.dialogue_scope IN ('onboarding', 'system'))
+     ORDER BY (dt.character_id = $1) DESC, dt.created_at ASC, dt.id ASC`,
     [characterId]
   );
-  return result.rows.length > 0 ? result.rows[0] : null;
+
+  for (const row of result.rows) {
+    if (!row.content_url) continue;
+    const nodes = await fetchNodesFromContentUrl(row.content_url, {});
+    if (!nodes || Object.keys(nodes).length === 0) continue;
+    const hasSpeaker = Object.values(nodes).some(
+      (n: any) => n && n.speaker_id === characterId
+    );
+    if (hasSpeaker) {
+      return {
+        id: row.id,
+        name: row.name,
+        start_node_id: row.start_node_id,
+        nodes,
+      };
+    }
+  }
+  return null;
 }
 
 export async function applyChoiceFilters(

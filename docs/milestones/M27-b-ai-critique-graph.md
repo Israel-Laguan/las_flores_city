@@ -1,6 +1,6 @@
 # M27-b — AI Critique into the Graph (follow-up to M26)
 
-> **Status:** Planned (defers the Neo4j write from M26) · **Branch:** `milestone/27b-ai-critique-graph` · **PR size target:** ~25 files
+> **Status:** Shipped (defers the Neo4j write from M26) · **Branch:** `milestone/27b-ai-critique-graph` · **PR size target:** ~25 files
 > **Phase:** 7 · **Source:** `ARCHITECTURE_SEPARATION_ANALYSIS.md` §12 Moment 3, §13; `M26-ai-critique.md`
 
 ## Goal

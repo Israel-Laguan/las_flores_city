@@ -1,9 +1,9 @@
 import { ContentPlanSchema, IntakeConflictPreviewSchema, CritiqueAnnotationSchema, CritiqueEvidenceSchema, CritiqueRelatedEntitySchema, GraphDeltaSchema, GraphDeltaEdgeSchema, type ContentPlan, type ContentPlanItem, type IntakeConflictPreview, type CritiqueAnnotation, type ChatMessage, type ConflictChatContext, type GraphDelta, type GraphDeltaEdge } from '@las-flores/shared';
 import type { LLMProvider, ExistingContentContext, LLMUsage, CritiqueScopeType } from './types/LLMTypes.js';
-import type { EntityCandidate } from './OutlineChunking.js';
-import { buildLorePrompt, buildRefinementPrompt, buildItemScopedRefinementPrompt, buildSystemPrompt, buildOutlinePrompt, buildIntakeConflictPrompt, buildSemanticCritiquePrompt, buildChatExplainPrompt, buildChatProposePrompt } from './LLMPrompts.js';
+import { buildLorePrompt, buildIntakeConflictPrompt, buildSemanticCritiquePrompt, buildChatExplainPrompt, buildChatProposePrompt } from './LLMPrompts.js';
 import { finiteInt } from '../utils/env.js';
 import { createLiteLLMCore, type LiteLLMCore } from './liteLLMCore.js';
+import { gatherExistingContentContext } from './ContentContext.js';
 
 export interface LiteLLMProviderOptions {
   timeoutMs?: number;
@@ -18,6 +18,10 @@ export class LiteLLMProvider implements LLMProvider {
   private defaultTimeoutMs: number;
   private retries: number;
   private core: LiteLLMCore;
+
+  async gatherContext(): Promise<ExistingContentContext> {
+    return gatherExistingContentContext();
+  }
 
   constructor(opts?: LiteLLMProviderOptions) {
     this.baseUrl = process.env.LITELLM_BASE_URL || 'http://litellm:4000';
@@ -66,66 +70,6 @@ export class LiteLLMProvider implements LLMProvider {
     return this.core.callLLMMessages(systemPrompt, messages, opts);
   }
 
-  async parseDescription(description: string, context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }> {
-    const systemPrompt = buildSystemPrompt(context);
-    const { result, usage } = await this.callLLM(systemPrompt, description);
-    return { plan: ContentPlanSchema.parse(result), usage };
-  }
-
-  async generateOutline(description: string, context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }> {
-    const outlineModel = process.env.LLM_OUTLINE_MODEL || this.model;
-    const provider = outlineModel !== this.model
-      ? new LiteLLMProvider({ model: outlineModel, timeoutMs: this.defaultTimeoutMs, retries: this.retries })
-      : this;
-
-    const maxTokens = finiteInt(process.env.LLM_OUTLINE_MAX_TOKENS, 4096);
-    const initialMaxItems = finiteInt(process.env.LLM_OUTLINE_INITIAL_MAX_ITEMS, 15);
-
-    const attemptOutline = async (maxItems?: number): Promise<{ plan: ContentPlan; usage: LLMUsage | null }> => {
-      const systemPrompt = buildOutlinePrompt(context, { maxItems });
-      const { result, usage } = await provider.callLLM(systemPrompt, description, undefined, maxTokens);
-      return { plan: result as ContentPlan, usage };
-    };
-
-    let maxItems = initialMaxItems;
-    for (;;) {
-      try {
-        return await attemptOutline(maxItems);
-      } catch (err: any) {
-        if (!err.message?.includes('LLM output truncated')) throw err;
-        const reduced = Math.floor(maxItems / 2);
-        if (reduced < 3) {
-          console.warn(`[LiteLLMProvider] Item count already at minimum, not retrying`);
-          throw err;
-        }
-        console.log(`[LiteLLMProvider] Outline truncated, retrying with reduced item count (${reduced})`);
-        maxItems = reduced;
-      }
-    }
-  }
-
-  async refinePlan(existingPlan: ContentPlan, feedback: string, context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }> {
-    const systemPrompt = buildRefinementPrompt(existingPlan, feedback, context);
-    const { result, usage } = await this.callLLM(systemPrompt, feedback);
-    result.id = existingPlan.id;
-    return { plan: ContentPlanSchema.parse(result), usage };
-  }
-
-  async refinePlanItems(selectedItems: ContentPlanItem[], fullPlan: ContentPlan, feedback: string, context: ExistingContentContext): Promise<{ items: ContentPlanItem[]; usage: LLMUsage | null }> {
-    const systemPrompt = buildItemScopedRefinementPrompt(selectedItems, fullPlan, feedback, context);
-    const { result, usage } = await this.callLLM(systemPrompt, feedback);
-    if (!Array.isArray(result.items)) {
-      throw new Error('LiteLLM refinePlanItems returned invalid response: expected items array');
-    }
-    const items = result.items as ContentPlanItem[];
-    if (!items.some(item => selectedItems.some(selected => selected.id === item.id))) {
-      throw new Error('LiteLLM refinePlanItems returned no selected items to refine');
-    }
-    // Accept partial subset — unchanged selected items may be omitted by the LLM.
-    // The caller's merge logic will preserve items not present in the returned subset.
-    return { items, usage };
-  }
-
   async generateLore(item: ContentPlanItem, context: ExistingContentContext): Promise<string> {
     const prompt = buildLorePrompt(item, context);
     return this.callLLMText(prompt, item.fields.description || item.name);
@@ -137,17 +81,6 @@ export class LiteLLMProvider implements LLMProvider {
       fields: (result.fields as Record<string, string>) || {},
       lore_refs: Array.isArray(result.lore_refs) ? result.lore_refs : [],
     };
-  }
-
-  async extractEntities(systemPrompt: string, chunk: string): Promise<{ entities: EntityCandidate[] }> {
-    const maxTokens = finiteInt(process.env.LLM_OUTLINE_MAX_TOKENS, 4096);
-    const { result } = await this.callLLM(systemPrompt, chunk, undefined, maxTokens);
-    const raw = Array.isArray((result as any).entities) ? (result as any).entities : [];
-    const entities = raw.filter((e: any) =>
-      e && typeof e.name === 'string' && e.name.trim() &&
-      typeof e.type === 'string' && e.type.trim()
-    );
-    return { entities };
   }
 
   async analyzeIntakeConflicts(plan: ContentPlan, context: ExistingContentContext): Promise<{ conflicts: IntakeConflictPreview[]; usage: LLMUsage | null }> {

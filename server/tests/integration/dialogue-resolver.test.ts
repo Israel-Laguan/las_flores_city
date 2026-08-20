@@ -3,6 +3,7 @@ import { queryOLTP, queryOLAP, queryContent, withOLTPTransaction, closeConnectio
 import { getCache, invalidatePattern, closeRedis } from '@las-flores/infra';
 import { deepMergeNodes } from '../../src/services/dialogueResolverUtils.js';
 import { DialogueResolver } from '../../src/services/DialogueResolver.js';
+import { publishDialogueTree } from '../../src/services/ContentPublishService.js';
 import type { DialogueNode } from '@las-flores/shared';
 import express from 'express';
 import { withSchemaLock } from '../helpers/schemaLock.js';
@@ -30,6 +31,7 @@ const TEST_USER_ID = '00000000-0000-0000-0000-000000000001';
 const TEST_TREE_ID = '9e8d7c6b-5a4f-4e3d-2c1b-0a9b8c7d6e5f';
 const TEST_MYSTERY_ID = 'a1b2c3d4-1111-4111-8111-aaaaaaaaaaaa';
 let baseUpdatedAt: Date;
+let baseContentUrl: string;
 
 function buildOverlayFingerprint(overlays: Array<{ nodes: Record<string, DialogueNode>; updated_at: Date }>): string {
   const fingerprints = overlays
@@ -145,11 +147,14 @@ describe('DialogueResolver', () => {
 
     // Seed a known tree shape so the resolver tests have a
     // concrete fixture independent of the content migration.
+    // M32: externalize the tree node map to the CDN; the in-DB
+    // `nodes` JSONB column is dropped, so we publish and store `content_url`.
+    baseContentUrl = await publishDialogueTree(TEST_TREE_ID, JSON.stringify({ nodes: baseNodes }));
     await queryOLTP(
-      `INSERT INTO dialogue_trees (id, name, start_node_id, nodes)
+      `INSERT INTO dialogue_trees (id, name, start_node_id, content_url)
        VALUES ($1, $2, $3, $4)
-       ON CONFLICT (id) DO UPDATE SET nodes = EXCLUDED.nodes`,
-      [TEST_TREE_ID, 'test_resolver_tree', 'root', JSON.stringify(baseNodes)]
+       ON CONFLICT (id) DO UPDATE SET content_url = EXCLUDED.content_url`,
+      [TEST_TREE_ID, 'test_resolver_tree', 'root', baseContentUrl]
     );
     const treeRow = await queryContent<{ updated_at: Date }>(
       'SELECT updated_at FROM dialogue_trees WHERE id = $1',
@@ -342,7 +347,7 @@ describe('DialogueResolver', () => {
 
       const cacheSuffix = await buildExpectedCacheSuffix(TEST_USER_ID, [TEST_MYSTERY_ID]);
       const expectedContentVersion = createHash('sha256')
-        .update(baseUpdatedAt.toISOString())
+        .update(baseContentUrl)
         .digest('hex')
         .slice(0, 16);
       const expectedKey = `dialogue:resolved:${TEST_TREE_ID}:nsfw:false:align:neutral:beat:prologue:mysteries:${cacheSuffix}:content:${expectedContentVersion}`;
@@ -378,7 +383,7 @@ describe('DialogueResolver', () => {
       );
       const cacheSuffix = await buildExpectedCacheSuffix(TEST_USER_ID, []);
       const expectedContentVersion = createHash('sha256')
-        .update(baseUpdatedAt.toISOString())
+        .update(baseContentUrl)
         .digest('hex')
         .slice(0, 16);
       const expectedKey = `dialogue:resolved:${TEST_TREE_ID}:nsfw:false:align:neutral:beat:prologue:mysteries:${cacheSuffix}:content:${expectedContentVersion}`;
@@ -491,11 +496,13 @@ describe('DialogueResolver', () => {
          ON CONFLICT (user_id) DO NOTHING`,
         [TB_TEST_USER_ID]
       );
+      // M32: externalize the tree node map to the CDN; store `content_url`.
+      const tbContentUrl = await publishDialogueTree(TB_TEST_TREE_ID, JSON.stringify({ nodes: tbNodes }));
       await queryOLTP(
-        `INSERT INTO dialogue_trees (id, name, start_node_id, nodes)
+        `INSERT INTO dialogue_trees (id, name, start_node_id, content_url)
          VALUES ($1, 'TB OLAP Tree', $2, $3)
-         ON CONFLICT (id) DO UPDATE SET nodes = EXCLUDED.nodes`,
-        [TB_TEST_TREE_ID, TB_ROOT_NODE, JSON.stringify(tbNodes)]
+         ON CONFLICT (id) DO UPDATE SET content_url = EXCLUDED.content_url`,
+        [TB_TEST_TREE_ID, TB_ROOT_NODE, tbContentUrl]
       );
       await queryOLTP(
         `UPDATE player_states SET active_dialogue_id = $1, current_node_id = $2 WHERE user_id = $3`,
