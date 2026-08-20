@@ -168,7 +168,9 @@ adminStoryBuilderActionsRouter.post('/plans/:id/approve-and-solidify', async (re
       : isPlanStatusError(error) || message.includes('must be') || message.includes("'proposed'")
         ? 400
         : 500;
-    emitAdminEvent('plan_failed', { success: false, error: message }, id, req.userId);
+    if (!(error instanceof GraphDisabledError)) {
+      emitAdminEvent('plan_failed', { success: false, error: message }, id, req.userId);
+    }
     res.status(statusCode).json({
       success: false,
       error: message,

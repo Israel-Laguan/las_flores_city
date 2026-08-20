@@ -21,9 +21,9 @@ export async function loadPlanFromDb(id: string) {
   // those, synthesize a ContentPlan from the plan's deltas/edges so the review
   // UI can render them.
   if (res.success && !res.data?.plan_json) {
-    const synth = await adminFetch<{ success: boolean; data?: { plan: ContentPlan }; error?: string }>(
-      `/admin/story-builder/plans/${id}/graph-plan`,
-    );
+    let synth;
+    try { synth = await adminFetch<{ success: boolean; data?: { plan: ContentPlan }; error?: string }>(`/admin/story-builder/plans/${id}/graph-plan`); }
+    catch (error: any) { return { success: false, error: error?.message || 'Failed to synthesize plan from graph deltas' }; }
     if (synth.success && synth.data?.plan) {
       return { success: true, data: { plan_json: synth.data.plan, description: res.data?.description ?? '' } };
     }
@@ -52,9 +52,9 @@ export async function generatePlan(description: string) {
   }
 
   const planId = created.data.planId;
-  const synth = await adminFetch<{ success: boolean; data?: { plan: ContentPlan }; error?: string }>(
-    `/admin/story-builder/plans/${planId}/graph-plan`,
-  );
+  let synth;
+  try { synth = await adminFetch<{ success: boolean; data?: { plan: ContentPlan }; error?: string }>(`/admin/story-builder/plans/${planId}/graph-plan`); }
+  catch (error: any) { return { success: false, error: error?.message || 'Failed to load synthesized plan' }; }
 
   if (!synth.success || !synth.data?.plan) {
     return { success: false, error: synth.error || 'Failed to load synthesized plan' };

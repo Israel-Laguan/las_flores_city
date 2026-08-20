@@ -83,6 +83,11 @@ async function probeRows(
             : `blob is missing a non-empty nodes record (${Object.keys(parsed as object).join(',') || 'empty'})`,
         );
       }
+      if (isChunk) {
+        const leaves = (parsed as { leaves?: unknown })?.leaves;
+        const validLeaves = leaves && typeof leaves === 'object' && !Array.isArray(leaves) && Object.values(leaves as Record<string, unknown>).every((leaf) => typeof leaf === 'object' && leaf !== null && !Array.isArray(leaf));
+        if (!validLeaves) throw new Error(`blob is missing a valid leaves record (${Object.keys(parsed as object).join(',') || 'empty'})`);
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       gaps.push({

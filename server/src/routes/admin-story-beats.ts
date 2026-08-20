@@ -1,6 +1,6 @@
 import express from 'express';
 import { authAndAdminMiddleware } from '../middleware/adminAuth.js';
-import { queryOLTP } from '@las-flores/infra';
+import { queryOLTP, queryContent } from '@las-flores/infra';
 import { deleteCache, setCache } from '@las-flores/infra';
 import { StoryBeatSchema } from '@las-flores/shared';
 import { fetchNodesFromContentUrl } from '../services/contentFetch.js';
@@ -42,7 +42,7 @@ async function loadAllDialogueTreeNodes(): Promise<{
   trees: Array<{ id: string; name: string; nodes: Record<string, any> }>;
   failed: number;
 }> {
-  const result = await queryOLTP<{ id: string; name: string; content_url: string | null }>(
+  const result = await queryContent<{ id: string; name: string; content_url: string | null }>(
     `SELECT id, name, content_url FROM dialogue_trees`
   );
   const out: Array<{ id: string; name: string; nodes: Record<string, any> }> = [];
@@ -104,7 +104,7 @@ async function loadStoryArcData() {
 
   // M32/M23: build beat→dialogue linkage from CDN-loaded node maps
   // (was `jsonb_each(dt.nodes)` SQL join on the dropped `nodes` column).
-  const { trees } = await loadAllDialogueTreeNodes();
+  const { trees, failed: treesUnavailable } = await loadAllDialogueTreeNodes();
   const beatToDialogues = new Map<string, Array<{ id: string; name: string; nodeId: string }>>();
   for (const tree of trees) {
     for (const [nodeId, node] of Object.entries(tree.nodes)) {
@@ -145,6 +145,7 @@ async function loadStoryArcData() {
       serverSideBeats: beats.filter(b => b.isServerSide).length,
       dialoguesSettingBeat: beatToDialogues.size,
       scenesRequiringBeat: beatToScenes.size,
+      treesUnavailable,
     },
   };
 }

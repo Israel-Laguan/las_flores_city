@@ -140,6 +140,11 @@ adminStoryBuilderGraphIntakeRouter.get('/plans/:id/graph-plan', async (req: Auth
       return;
     }
 
+    if (!isNeo4jEnabled()) {
+      res.status(409).json({ success: false, error: 'Neo4j authoring graph is disabled — cannot synthesize a plan from graph deltas. Enable NEO4J_ENABLED first.', timestamp: new Date().toISOString() });
+      return;
+    }
+
     const plan = await graphIntakeService.synthesizeLegacyPlan(id);
 
     if (!plan) {
@@ -157,6 +162,10 @@ adminStoryBuilderGraphIntakeRouter.get('/plans/:id/graph-plan', async (req: Auth
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
+    if (error instanceof GraphIntakeValidationError) {
+      res.status(400).json({ success: false, error: error.message, timestamp: new Date().toISOString() });
+      return;
+    }
     console.error('[story-builder] GET /plans/:id/graph-plan error:', error);
     res.status(500).json({
       success: false,

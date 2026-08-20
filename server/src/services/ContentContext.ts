@@ -45,7 +45,7 @@ export async function gatherExistingContentContext(): Promise<ExistingContentCon
  * — there is no `locations` DB table — so we read them directly from disk
  * (mirrors ContentPlanService.gatherLocationContext).
  */
-async function gatherLocationContext(): Promise<ExistingLocation[]> {
+export async function gatherLocationContext(): Promise<ExistingLocation[]> {
   const contentDir = resolveContentDir();
   try {
     const files = await glob(`${contentDir}/districts/*/locations/*/*.yaml`, { absolute: true });
@@ -68,7 +68,8 @@ async function gatherLocationContext(): Promise<ExistingLocation[]> {
       }
     }
     return out;
-  } catch {
+  } catch (error) {
+    console.warn('[content-context] Failed to load location context:', error);
     return [];
   }
 }

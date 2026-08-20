@@ -194,6 +194,12 @@ async function clearBenchmarkRedis(): Promise<void> {
       cursor = next;
       toDelete.push(...keys);
     } while (cursor !== '0');
+    cursor = '0';
+    do {
+      const [next, keys] = await redis.scan(cursor, 'MATCH', `dialogue:resolved:${BENCH_TREE_ID}*`, 'COUNT', 200);
+      cursor = next;
+      toDelete.push(...keys);
+    } while (cursor !== '0');
     // Include the S6 memory-probe key explicitly (it is bench-scoped but may
     // not match the `:bench:` pattern if the prefix differs).
     toDelete.push('dialogue:resolved:bench:s6');

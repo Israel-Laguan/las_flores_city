@@ -59,6 +59,7 @@ const NSFW_VALUES: ReadonlyArray<boolean> = [false, true] as const;
  * Format: `__snapshot__{setHash}_{nsfw}_{alignment}`
  */
 const SNAPSHOT_CHUNK_PREFIX = '__snapshot_';
+const MAX_SNAPSHOT_STATES_PER_TREE = 1024;
 
 // ---- pure helpers ----
 
@@ -502,6 +503,10 @@ export async function buildSnapshotsForTree(treeId: string): Promise<SnapshotBui
   for (const mysterySet of reachableSets) {
     for (const nsfw of NSFW_VALUES) {
       for (const alignment of ALIGNMENTS) {
+        if (result.statesGenerated.length >= MAX_SNAPSHOT_STATES_PER_TREE) {
+          result.errors.push(`Snapshot state cap (${MAX_SNAPSHOT_STATES_PER_TREE}) reached for tree ${treeId}; remaining states deferred to live resolver`);
+          break;
+        }
         const setHash = buildSetHash(mysterySet);
 
         const buildResult = await buildSingleSnapshot(

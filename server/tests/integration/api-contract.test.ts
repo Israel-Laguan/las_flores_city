@@ -36,7 +36,7 @@ const mockHandlerNodes: Record<string, any> = {
   },
 };
 jest.mock('../../src/services/contentFetch.js', () => ({
-  fetchNodesFromContentUrl: jest.fn(async () => mockHandlerNodes),
+  fetchNodesFromContentUrl: jest.fn(async (url: string) => url === 'http://test.local/handler-tree.json' ? mockHandlerNodes : null),
 }));
 
 const HANDLER_TREE_ID = 'f1000000-e29b-41d4-a716-446655440004';

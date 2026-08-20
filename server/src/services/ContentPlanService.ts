@@ -1,14 +1,11 @@
-import fs from 'node:fs/promises';
-import * as yaml from 'js-yaml';
-import { glob } from 'glob';
 import { ContentPlanSchema, type ContentPlan, type ContentPlanItem, uuidv4 } from '@las-flores/shared';
 import { queryOLTP } from '@las-flores/infra';
 import { finiteInt } from '../utils/env.js';
 import { createLLMProvider } from './LLMService.js';
-import type { LLMProvider, ExistingContentContext, LLMUsage, ExistingLocation } from './types/LLMTypes.js';
+import type { LLMProvider, ExistingContentContext, LLMUsage } from './types/LLMTypes.js';
 import type { IntakeConflictPreview } from '@las-flores/shared';
 import { injectAssetNeeds } from './AssetNeedsService.js';
-import { resolveContentDir } from './StoryBuilderLore.js';
+import { gatherLocationContext } from './ContentContext.js';
 import { identityResolver } from './IdentityResolver.js';
 
 export interface PlanWithUsage {
@@ -76,39 +73,6 @@ export class ContentPlanService {
     }
   }
 
-  /**
-   * Load existing location context from the file-based content store.
-   * Locations are a YAML content type under content/districts/<district>/locations/ — there is no
-   * `locations` DB table — so we read them directly from disk.
-   */
-  async gatherLocationContext(): Promise<ExistingLocation[]> {
-    const contentDir = resolveContentDir();
-    try {
-      const files = await glob(`${contentDir}/districts/*/locations/*/*.yaml`, { absolute: true });
-      const out: ExistingLocation[] = [];
-      for (const file of files) {
-        try {
-          const raw = await fs.readFile(file, 'utf-8');
-          const data: any = yaml.load(raw);
-          if (!data || typeof data !== 'object' || !data.id) continue;
-          out.push({
-            id: String(data.id),
-            name: String(data.name ?? ''),
-            district: data.district ? String(data.district) : '',
-            daytime: data.daytime ? String(data.daytime) : undefined,
-            nightlife: data.nightlife ? String(data.nightlife) : undefined,
-            history: data.history ? String(data.history) : undefined,
-          });
-        } catch {
-          // skip files that fail to parse
-        }
-      }
-      return out;
-    } catch {
-      return [];
-    }
-  }
-
   async gatherContext(): Promise<ExistingContentContext> {
     const [characters, scenes, dialogues, missions, overlays, locations] = await Promise.all([
       queryOLTP<{ id: string; name: string; role?: string; faction?: string; personality?: string; description?: string }>('SELECT id, name, metadata->>\'role\' as role, metadata->>\'faction\' as faction, metadata->>\'personality\' as personality, description FROM characters ORDER BY name ASC'),
@@ -120,7 +84,7 @@ export class ContentPlanService {
       queryOLTP<{ id: string; name: string }>('SELECT id, name FROM dialogue_trees ORDER BY name ASC'),
       queryOLTP<{ id: string; title: string; description?: string }>('SELECT id, title, description FROM mysteries ORDER BY title ASC'),
       queryOLTP<{ id: string; name: string }>('SELECT id, name FROM dialogue_overlays ORDER BY name ASC'),
-      this.gatherLocationContext(),
+      gatherLocationContext(),
     ]);
 
     return {

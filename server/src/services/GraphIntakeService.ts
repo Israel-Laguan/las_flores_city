@@ -25,13 +25,12 @@ import {
   type GraphDelta,
   type GraphDeltaEdge,
   findEdgeMapping,
-  NODE_TYPE_TO_CONTENT_TYPE,
 } from '@las-flores/shared';
 import { queryOLTP } from '@las-flores/infra';
 import { uuidv4 } from '@las-flores/shared';
 import { chatService } from './ChatService.js';
 import { contentPlanService } from './ContentPlanService.js';
-import { applyDelta, applyDeltaEdge, getDeltasForPlan, getDeltaEdgesForPlan, clearDeltasForPlan, preflightDeltas, preflightDeltaEdges } from './GraphDeltaService.js';
+import { applyDelta, applyDeltaEdge, getDeltasForPlan, getDeltaEdgesForPlan, clearDeltasForPlan, preflightDeltas, preflightDeltaEdges, normalizeKeyComponent } from './GraphDeltaService.js';
 import { isNeo4jEnabled, runNeo4jTransaction } from './Neo4jClient.js';
 import type { ExistingContentContext, LLMUsage } from './types/LLMTypes.js';
 
@@ -159,12 +158,6 @@ function deltaEdgeToPlanLink(
   };
 }
 
-// Normalize a key component to lowercase UUID for index lookups.
-function normalizeKeyComponent(value: string): string {
-  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  return UUID_RE.test(value) ? value.toLowerCase() : value;
-}
-
 /** Synthesize a ContentPlan from deltas+edges for compatibility with the legacy pipeline. */
 function synthesizePlanFromDeltas(
   planId: string,
@@ -183,10 +176,8 @@ function synthesizePlanFromDeltas(
   for (let i = 0; i < deltas.length; i++) {
     const delta = deltas[i];
     const item = items[i];
-    const nodeTypeForItem =
-      Object.entries(NODE_TYPE_TO_CONTENT_TYPE).find(([, v]) => v === item.type)?.[0] ?? item.type;
     itemIndex.set(
-      `${nodeTypeForItem}:${normalizeKeyComponent(delta.nodeId)}`,
+      `${delta.nodeType}:${normalizeKeyComponent(delta.nodeId)}`,
       item.id,
     );
   }
@@ -257,6 +248,10 @@ export class GraphIntakeService {
     // Step 4: Validate we got deltas back
     if (!deltas || deltas.length === 0) {
       throw new GraphIntakeValidationError('chatPropose returned no deltas for the description');
+    }
+    const deleteDelta = deltas.find((delta) => delta.op === 'DELETE');
+    if (deleteDelta) {
+      throw new GraphIntakeValidationError(`Cannot synthesize a plan item from a DELETE delta for [${deleteDelta.nodeType}:${deleteDelta.nodeId}] — delete materialization is not supported by the legacy plan contract. Remove the tombstone before approving.`);
     }
 
     // Step 5: Create the plan row in OLTP (minimal metadata; no plan_json)

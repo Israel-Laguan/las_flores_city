@@ -174,16 +174,6 @@ export function compileTree(
 /**
  * Best-effort content publish: returns the `s3://` content URL on
  * success, or `null` when MinIO is unavailable/unreachable. Publishing
- * is never fatal to a migration — the resolver falls back to the
- * in-DB JSONB when `content_url` is NULL.
- */
-async function safePublish(publish: () => Promise<string>): Promise<string | null> {
-  try {
-    return await publish();
-  } catch (error: any) {
-    console.warn(`[compiler] Content publish skipped (MinIO unavailable?): ${error?.message}`);
-    return null;
-  }
 }
 
 /**
@@ -235,19 +225,21 @@ export async function compileDialogueTree(treeId: string): Promise<CompiledChunk
   // After M32 drops the in-DB JSONB fallback, a NULL content_url means the
   // tree/chunk is unloadable at runtime. Abort the entire write unless EVERY
   // publish produced a reachable URL.
-  const treeContentUrl = await safePublish(() => publishDialogueTree(treeId, JSON.stringify({ nodes })));
-  if (treeContentUrl === null) {
-    throw new Error(`Dialogue tree ${treeId}: MinIO publish failed — aborting chunk compilation (no NULL content_url fallback after M32)`);
+  let treeContentUrl: string;
+  try {
+    treeContentUrl = await publishDialogueTree(treeId, JSON.stringify({ nodes }));
+  } catch (error: any) {
+    throw new Error(`Dialogue tree ${treeId}: MinIO publish failed (${error?.message}) — aborting chunk compilation`);
   }
 
   const chunkContentUrls = new Map<string, string>();
   for (const chunk of chunks) {
     const payload = JSON.stringify({ nodes: chunk.nodes, leaves: chunk.leaves });
-    const url = await safePublish(() => publishDialogueChunk(treeId, chunk.chunk_key, payload));
-    if (url === null) {
-      throw new Error(`Chunk ${chunk.chunk_key} for tree ${treeId}: MinIO publish failed — aborting (no NULL content_url fallback after M32)`);
+    try {
+      chunkContentUrls.set(chunk.chunk_key, await publishDialogueChunk(treeId, chunk.chunk_key, payload));
+    } catch (error: any) {
+      throw new Error(`Chunk ${chunk.chunk_key} for tree ${treeId}: MinIO publish failed (${error?.message}) — aborting`);
     }
-    chunkContentUrls.set(chunk.chunk_key, url);
   }
 
   // DB write: delete stale + insert fresh, in one transaction.

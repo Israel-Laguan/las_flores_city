@@ -248,6 +248,14 @@ function createModifyDelta(
   nodeId: string,
   changedFields: Record<string, any>,
 ): GraphDelta | null {
+  const mergedFields: Record<string, any> = { ...(item.fields || {}) };
+  for (const [key, value] of Object.entries(changedFields)) {
+    if (!key.includes('.')) { mergedFields[key] = value; continue; }
+    const parts = key.split('.');
+    let target = mergedFields;
+    for (const part of parts.slice(0, -1)) target = (target[part] && typeof target[part] === 'object') ? target[part] : (target[part] = {});
+    target[parts[parts.length - 1]] = value;
+  }
   // Only content types that map to a graph node type can be modified in the
   // graph. ContentTypeSchema includes types (gig, vault, story, shop_item,
   // map_tile, story_beat) with no corresponding GraphNodeType; emitting a
@@ -268,7 +276,7 @@ function createModifyDelta(
     op: 'MODIFY',
     // Merge changed fields onto the item's complete field set so unchanged
     // fields (name, description, etc.) are preserved in the shadow node.
-    fields: { ...(item.fields || {}), ...changedFields },
+    fields: mergedFields,
     createdAt: new Date().toISOString(),
   };
 }
@@ -310,7 +318,7 @@ async function emitFillDeltas(
       await applyDelta(delta, tx);
     });
   } catch (err: any) {
-    console.warn(`[story-builder] Failed to emit MODIFY delta for filled fields on ${item.name} (${item.type}:${nodeId}): ${err.message}`);
+    throw new Error(`Failed to emit MODIFY delta for filled fields on ${item.name} (${item.type}:${nodeId}): ${err.message}`, { cause: err });
   }
 }
 
@@ -343,7 +351,7 @@ export async function emitLoreDelta(
       await applyDelta(delta, tx);
     });
   } catch (err: any) {
-    console.warn(`[story-builder] Failed to emit MODIFY delta for lore on ${item.name} (${item.type}:${nodeId}): ${err.message}`);
+    throw new Error(`Failed to emit MODIFY delta for lore on ${item.name} (${item.type}:${nodeId}): ${err.message}`, { cause: err });
   }
 }
 
