@@ -625,10 +625,17 @@ describe('Property 7: Usages query completeness', () => {
             name: row.dialogue_name,
             content_url: `s3://content/trees/${i}.json`,
           }));
+          // Each tree carries its expected matching node PLUS an extra node
+          // with a different story_beat. The route must filter on
+          // `effects.story_beat === slug` and exclude the non-matching node,
+          // so dialogueUsages stays at one entry per tree.
           const nodesByUrl = new Map(
             treeRows.map((tree, i) => [
               tree.content_url,
-              { [dialogueRows[i].node_id]: { effects: { story_beat: slug } } },
+              {
+                [dialogueRows[i].node_id]: { effects: { story_beat: slug } },
+                [`other_${i}`]: { effects: { story_beat: `other-beat-${i}` } },
+              },
             ]),
           );
           mockFetchNodes.mockImplementation(async (url) => nodesByUrl.get(url as string) ?? {});
@@ -657,6 +664,12 @@ describe('Property 7: Usages query completeness', () => {
             expect(found).toBeDefined();
             expect(found!.dialogueName).toBe(row.dialogue_name);
             expect(found!.nodeId).toBe(row.node_id);
+          }
+
+          // The non-matching `other_<i>` nodes must be filtered out, proving
+          // the route's `effects.story_beat === slug` filter is exercised.
+          for (let i = 0; i < dialogueRows.length; i++) {
+            expect(dialogueUsages.find(u => u.nodeId === `other_${i}`)).toBeUndefined();
           }
 
           // Every scene row from DB must appear in response

@@ -115,7 +115,6 @@ const rootNode = {
 // rather than read from the dropped `dialogue_trees.nodes` column.
 jest.mock('../../src/services/contentFetch.js', () => ({
   fetchNodesFromContentUrl: jest.fn(async () => ({ root: rootNode })),
-  fetchChunkFromContentUrl: jest.fn(async () => ({ nodes: { root: rootNode }, leaves: {} })),
 }));
 
 jest.mock('../../src/services/DialogueResolver.js', () => ({

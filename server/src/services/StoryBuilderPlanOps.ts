@@ -247,11 +247,23 @@ function createModifyDelta(
   item: ContentPlanItem,
   nodeId: string,
   changedFields: Record<string, any>,
-): GraphDelta {
+): GraphDelta | null {
+  // Only content types that map to a graph node type can be modified in the
+  // graph. ContentTypeSchema includes types (gig, vault, story, shop_item,
+  // map_tile, story_beat) with no corresponding GraphNodeType; emitting a
+  // MODIFY delta for those would fail GraphDeltaSchema.parse downstream.
+  // Guard here and return null so the caller can skip silently-but-explicitly.
+  const nodeType = CONTENT_TYPE_TO_NODE_TYPE[item.type];
+  if (!nodeType) {
+    console.warn(
+      `[story-builder] Skipping MODIFY delta for ${item.name}: no graph node type mapped for content type '${item.type}'`,
+    );
+    return null;
+  }
   return {
     id: uuidv4(),
     planId,
-    nodeType: (CONTENT_TYPE_TO_NODE_TYPE[item.type] ?? item.type) as GraphDelta['nodeType'],
+    nodeType: nodeType as GraphDelta['nodeType'],
     nodeId,
     op: 'MODIFY',
     // Merge changed fields onto the item's complete field set so unchanged
@@ -290,6 +302,7 @@ async function emitFillDeltas(
   if (!nodeId) return;
 
   const delta = createModifyDelta(planId, item, nodeId, filledFields);
+  if (!delta) return;
 
   try {
     await runNeo4jTransaction(async (tx) => {
@@ -322,6 +335,7 @@ export async function emitLoreDelta(
   if (!nodeId) return;
 
   const delta = createModifyDelta(planId, item, nodeId, { [fieldName]: loreContent });
+  if (!delta) return;
 
   try {
     await runNeo4jTransaction(async (tx) => {

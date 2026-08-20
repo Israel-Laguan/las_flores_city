@@ -3,7 +3,7 @@
 > **Status:** Implemented · **Branch:** `milestone/24-patch-versioning-claims` · **PR size target:** ~25 files
 > **Phase:** 5 · **Source:** `ARCHITECTURE_SEPARATION_ANALYSIS.md` §15.2, §15.4
 >
-> **Proof:** lint/build clean; `tests/unit/claimsService.unit.test.ts` + `tests/unit/revisionService.unit.test.ts` pass; `tests/integration/claims-lifecycle.test.ts` + `tests/integration/revision-rollback.test.ts` pass (5 tests). Admin audit UI at `admin/src/app/(admin)/audit/page.tsx` references `claim`/`revision`.
+> **Proof:** lint/build clean; `server/tests/unit/claimsService.unit.test.ts` + `server/tests/unit/revisionService.unit.test.ts` pass; `server/tests/integration/claims-lifecycle.test.ts` + `server/tests/integration/revision-rollback.test.ts` pass (5 tests). Admin audit UI at `admin/src/app/(admin)/audit/page.tsx` references `claim`/`revision`.
 
 ## Goal
 
@@ -52,6 +52,6 @@ corrupting canon.
 - **Migrations:** `server/src/database/migrations/064_patch_versioning.sql`, `066_claims.sql`
   (plus `070_critique_annotations.sql` for the adjoining annotation store).
 - **Services:** `server/src/services/ClaimsService.ts`, `RevisionService.ts`.
-- **Tests:** `tests/unit/claimsService.unit.test.ts`, `tests/unit/revisionService.unit.test.ts`,
-  `tests/integration/claims-lifecycle.test.ts`, `tests/integration/revision-rollback.test.ts`.
+- **Tests:** `server/tests/unit/claimsService.unit.test.ts`, `server/tests/unit/revisionService.unit.test.ts`,
+  `server/tests/integration/claims-lifecycle.test.ts`, `server/tests/integration/revision-rollback.test.ts`.
 - **Admin audit UI:** `admin/src/app/(admin)/audit/page.tsx` (surfaces `claim`/`revision` history).

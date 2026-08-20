@@ -85,16 +85,18 @@ const MOCK_TREE_ID = 'c0000000-0000-4000-8000-000000000001';
 const MOCK_USER_ID = 'u0000000-0000-4000-8000-000000000001';
 const MOCK_TREE_CONTENT_URL = 's3://bucket/trees/base.json';
 
+const MOCK_BASE_TREE_NODES = {
+  node_001: { id: 'node_001', text: 'Hello', choices: [] },
+  node_002: { id: 'node_002', text: 'World', choices: [] },
+};
+
+// M32: the tree row carries only a CDN pointer (the `nodes` JSONB column is
+// dropped). `MOCK_BASE_TREE_NODES` above is the payload served from that
+// pointer — it is returned by `fetchNodesFromContentUrl`, NOT by the DB row.
 const MOCK_BASE_TREE = {
   id: MOCK_TREE_ID,
   start_node_id: 'node_001',
-  nodes: {
-    node_001: { id: 'node_001', text: 'Hello', choices: [] },
-    node_002: { id: 'node_002', text: 'World', choices: [] },
-  },
   updated_at: new Date('2024-01-01'),
-  // M32: the tree row carries only a CDN pointer; `nodes` above is the
-  // payload served from that pointer, not a DB column.
   content_url: MOCK_TREE_CONTENT_URL,
 };
 
@@ -125,7 +127,7 @@ describe('DialogueResolver - Snapshot Fast Path (M30 Phase A)', () => {
     // (it feeds the versioned cache key), and the node map now comes from the
     // CDN. Default it here so each test is self-contained rather than relying
     // on a previous test's leftover mockImplementation.
-    (fetchNodesFromContentUrl as jest.Mock).mockResolvedValue(MOCK_BASE_TREE.nodes);
+    (fetchNodesFromContentUrl as jest.Mock).mockResolvedValue(MOCK_BASE_TREE_NODES);
     (queryContent as jest.Mock).mockImplementation(async (sql: string) => {
       if (sql.includes('dialogue_trees')) return { rows: [MOCK_BASE_TREE] };
       if (sql.includes('dialogue_overlays')) return { rows: [MOCK_OVERLAY] };
@@ -377,7 +379,7 @@ describe('DialogueResolver - Snapshot Fast Path (M30 Phase A)', () => {
 
       // Mock MinIO fetch to return base tree nodes
       (fetchContentJson as jest.Mock).mockResolvedValue({
-        nodes: MOCK_BASE_TREE.nodes,
+        nodes: MOCK_BASE_TREE_NODES,
         _meta: { startNodeId: MOCK_BASE_TREE.start_node_id },
       });
 

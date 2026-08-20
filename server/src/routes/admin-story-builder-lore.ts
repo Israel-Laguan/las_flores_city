@@ -5,6 +5,9 @@ import type { AuthRequest } from '../middleware/auth.js';
 import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
 import { queryOLTP } from '@las-flores/infra';
 import { contentPlanService } from '../services/ContentPlanService.js';
+import { graphIntakeService } from '../services/GraphIntakeService.js';
+import { getDeltasForPlan } from '../services/GraphDeltaService.js';
+import { isNeo4jEnabled } from '../services/Neo4jClient.js';
 import { emitLoreDelta } from '../services/StoryBuilderPlanOps.js';
 
 export const adminStoryBuilderLoreRouter = express.Router();
@@ -28,11 +31,42 @@ adminStoryBuilderLoreRouter.post('/plans/:id/items/:itemId/lore', async (req: Au
     }
 
     let plan: ContentPlan;
-    try {
-      plan = ContentPlanSchema.parse(result.rows[0].plan_json);
-    } catch {
-      res.status(400).json({ success: false, error: 'Stored plan failed schema validation', timestamp: new Date().toISOString() });
-      return;
+
+    // Graph-authored plans store their proposed changes as Neo4j deltas and do
+    // not carry a usable plan_json (the legacy authoring surface is retired
+    // under M32). Detect that case and synthesize a legacy ContentPlan from the
+    // graph deltas so lore regeneration works through the same pipeline.
+    if (isNeo4jEnabled()) {
+      let deltas;
+      try {
+        deltas = await getDeltasForPlan(planId);
+      } catch (err) {
+        console.warn('[story-builder] delta lookup failed for plan', planId, (err as Error).message);
+        res.status(503).json({ success: false, error: 'graph authoring service unavailable', timestamp: new Date().toISOString() });
+        return;
+      }
+      if (deltas.length > 0) {
+        const synthesized = await graphIntakeService.synthesizeLegacyPlan(planId);
+        if (!synthesized) {
+          res.status(400).json({ success: false, error: 'Stored plan failed schema validation', timestamp: new Date().toISOString() });
+          return;
+        }
+        plan = synthesized;
+      } else {
+        try {
+          plan = ContentPlanSchema.parse(result.rows[0].plan_json);
+        } catch {
+          res.status(400).json({ success: false, error: 'Stored plan failed schema validation', timestamp: new Date().toISOString() });
+          return;
+        }
+      }
+    } else {
+      try {
+        plan = ContentPlanSchema.parse(result.rows[0].plan_json);
+      } catch {
+        res.status(400).json({ success: false, error: 'Stored plan failed schema validation', timestamp: new Date().toISOString() });
+        return;
+      }
     }
 
     // Find the specific item

@@ -103,5 +103,6 @@ Verified on the local Podman stack (OLTP + Redis + MinIO):
   yields a different hash/key (content-addressing confirmed). Real bucket already holds
   ~50 content-addressed dialogue blobs from actual migration runs.
 - **Tests:** `dialogue-cdn.integration.test.ts` + `dialogue-resolver.test.ts` pass;
-  full integration suite + unit/smoke suite green via `npx --no-install jest tests/unit tests/smoke --no-cache --forceExit`.
+  unit/smoke suite green via `npx --no-install jest tests/unit tests/smoke --no-cache --forceExit`
+  (full integration suite runs separately via `npm run test:integration`).
 - **Lint/build:** server lint 0 errors; `tsc` build clean.
