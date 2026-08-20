@@ -191,7 +191,9 @@ describe('GraphIntakeService — unit tests (Neo4j mocked)', () => {
       );
       expect(insertCall).toBeDefined();
       const [, params] = insertCall!;
-      expect(params).toEqual([TEST_PLAN_ID, 'Test description', expect.any(String)]);
+      // plan_json is now synthesized from the deltas/edges (no longer an empty
+      // object), so the INSERT carries [id, description, plan_json, timestamp].
+      expect(params).toEqual([TEST_PLAN_ID, 'Test description', expect.any(Object), expect.any(String)]);
     });
 
     test('writes deltas and edges to Neo4j via transaction', async () => {

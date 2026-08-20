@@ -48,13 +48,18 @@ async function loadAllDialogueTreeNodes(): Promise<{
   const out: Array<{ id: string; name: string; nodes: Record<string, any> }> = [];
   let failed = 0;
   for (const row of result.rows) {
+    // Only a tree with NO `content_url` is truly unavailable (its blob pointer
+    // was never published). A present `content_url` yields a node map that may
+    // legitimately be empty (e.g. a freshly scaffolded tree), so we tolerate an
+    // empty map rather than treating it as a load failure — otherwise a single
+    // empty tree would block deleting/querying an unrelated story beat.
     if (!row.content_url) { failed++; continue; }
     const nodes = await fetchNodesFromContentUrl(row.content_url, {});
-    if (!nodes || Array.isArray(nodes) || typeof nodes !== 'object' || Object.keys(nodes).length === 0) {
-      failed++;
-      continue;
-    }
-    out.push({ id: row.id, name: row.name, nodes });
+    out.push({
+      id: row.id,
+      name: row.name,
+      nodes: nodes && typeof nodes === 'object' && !Array.isArray(nodes) ? nodes : {},
+    });
   }
   return { trees: out, failed };
 }

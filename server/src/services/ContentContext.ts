@@ -56,16 +56,34 @@ export async function gatherLocationContext(): Promise<ExistingLocation[]> {
   const contentDir = resolveContentDir();
   try {
     const files = await glob(`${contentDir}/districts/*/locations/*/*.yaml`, { absolute: true });
+
+    // District display names (e.g. "South") live in the `districts` table and
+    // are what the scenes query returns (d.name). When a location YAML omits a
+    // `district` field we infer it from the directory slug; resolve that slug
+    // to its display name so locations and scenes share one district
+    // representation for any consumer that matches them by district.
+    const districtRows = await queryContent<{ slug: string; name: string }>(
+      `SELECT slug, name FROM districts`
+    );
+    const districtNameBySlug = new Map<string, string>();
+    for (const row of districtRows.rows) {
+      districtNameBySlug.set(row.slug, row.name);
+    }
+
     const out: ExistingLocation[] = [];
     for (const file of files) {
       try {
         const raw = await fs.readFile(file, 'utf-8');
         const data: any = yaml.load(raw);
         if (!data || typeof data !== 'object' || !data.id) continue;
+        const inferredSlug = pathDistrict(file);
+        const district = data.district
+          ? String(data.district)
+          : (districtNameBySlug.get(inferredSlug) ?? inferredSlug);
         out.push({
           id: String(data.id),
           name: String(data.name ?? ''),
-          district: data.district ? String(data.district) : pathDistrict(file),
+          district,
           daytime: data.daytime ? String(data.daytime) : undefined,
           nightlife: data.nightlife ? String(data.nightlife) : undefined,
           history: data.history ? String(data.history) : undefined,

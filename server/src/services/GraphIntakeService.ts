@@ -153,37 +153,58 @@ function findBaseEntity(context: ExistingContentContext, nodeType: string, nodeI
   return entities.find(e => e.id === nodeId) ?? null;
 }
 
-/** Transforms GraphDeltaEdge edges into ContentLink shape for the legacy pipeline.
+/** Resolve graph delta edges into the legacy plan shape.
  *
- * Resolves both `fromItem` and `toItem` through the plan-item index (mapping
- * `(nodeType, nodeId)` → `item.id`), because graph node IDs are NOT the
- * generated plan-item IDs. The `field` is resolved via `findEdgeMapping` from
- * the shared schema. Unsupported edges are rejected rather than materialized
- * with a fabricated legacy field. */
-function deltaEdgeToPlanLink(
-  edge: GraphDeltaEdge,
+ * Mirrors `GraphExporter.resolveEdgeLinks`: when BOTH endpoints are
+ * synthesized plan items, emit a `ContentLink` (resolved on materialize); when
+ * the target is a canonical/existing node (no synthesized item ID), write the
+ * mapped field directly into the source item's `fields` using the target's
+ * stable node ID, so the relationship is preserved rather than lost to a
+ * transient synthesized item id.
+ *
+ * Edges that are unsupported for materialization (e.g. join-table-only types
+ * like `APPEARS_IN`) or whose source item is missing are skipped here rather
+ * than throwing — the plan_json snapshot stays valid and the authoritative
+ * `GraphExporter` still rejects them at materialize time. This keeps plan
+ * creation tolerant of edges that only the exporter can fully validate. */
+function synthesizeEdges(
+  edges: GraphDeltaEdge[],
+  items: ContentPlanItem[],
   itemIndex: Map<string, string>,
-): ContentLink {
-  const { sourceNodeType, sourceNodeId, targetNodeType, targetNodeId, type } = edge;
+): ContentLink[] {
+  const links: ContentLink[] = [];
+  for (const edge of edges) {
+    const { sourceNodeType, sourceNodeId, targetNodeType, targetNodeId, type } = edge;
 
-  const sourceKey = `${sourceNodeType}:${normalizeKeyComponent(sourceNodeId)}`;
-  const targetKey = `${targetNodeType}:${normalizeKeyComponent(targetNodeId)}`;
+    const mapping = findEdgeMapping(type, sourceNodeType, targetNodeType);
+    if (!mapping) continue;
 
-  const mapping = findEdgeMapping(type, sourceNodeType, targetNodeType);
-  const fromItem = itemIndex.get(sourceKey);
-  const toItem = itemIndex.get(targetKey);
-  if (!mapping || !fromItem || !toItem) {
-    throw new GraphIntakeValidationError(
-      `Unsupported graph edge ${type}: both endpoints must be present in the synthesized plan`,
-    );
+    const sourceKey = `${sourceNodeType}:${normalizeKeyComponent(sourceNodeId)}`;
+    const sourceItemId = itemIndex.get(sourceKey);
+    if (!sourceItemId) continue;
+    const sourceItem = items.find((i) => i.id === sourceItemId);
+    if (!sourceItem) continue;
+
+    const targetKey = `${targetNodeType}:${normalizeKeyComponent(targetNodeId)}`;
+    const targetItemId = itemIndex.get(targetKey);
+    if (targetItemId) {
+      // delta→delta (both newly-authored entities): emit a ContentLink.
+      links.push({
+        fromItem: sourceItemId,
+        toItem: targetItemId,
+        field: mapping.field,
+        action: 'set',
+      });
+    } else {
+      // delta→canonical: write the mapped field directly using the target's
+      // stable node ID, so the relationship is preserved on the existing entity.
+      sourceItem.fields = {
+        ...sourceItem.fields,
+        [mapping.field]: edge.targetNodeId,
+      };
+    }
   }
-
-  return {
-    fromItem,
-    toItem,
-    field: mapping?.field ?? type.toLowerCase(),
-    action: 'set',
-  };
+  return links;
 }
 
 /** Synthesize a ContentPlan from deltas+edges for compatibility with the legacy pipeline. */
@@ -210,7 +231,7 @@ function synthesizePlanFromDeltas(
     );
   }
 
-  const links = edges.map(e => deltaEdgeToPlanLink(e, itemIndex));
+  const links = synthesizeEdges(edges, items, itemIndex);
 
   return {
     id: planId,
@@ -282,13 +303,16 @@ export class GraphIntakeService {
       throw new GraphIntakeValidationError(`Cannot synthesize a plan item from a DELETE delta for [${deleteDelta.nodeType}:${deleteDelta.nodeId}] — delete materialization is not supported by the legacy plan contract. Remove the tombstone before approving.`);
     }
 
-    // Step 5: Create the plan row in OLTP (minimal metadata). plan_json is the
-    // exporter transport and is synthesized on demand by synthesizeLegacyPlan,
-    // so it starts as an empty object until a preview/approval populates it.
+    // Step 5: Create the plan row in OLTP. plan_json is synthesized from the
+    // deltas/edges so every legacy/preview consumer (which parses plan_json
+    // directly, e.g. StoryBuilderOrchestrator.stagePlan, StoryBuilderSolidify,
+    // StoryBuilderMigration, AssetPublishService) receives a valid ContentPlan
+    // instead of an empty object that fails ContentPlanSchema.parse.
+    const synthesizedPlan = synthesizePlanFromDeltas(planId, description, deltas, deltaEdges, context);
     await queryOLTP(
       `INSERT INTO content_plans (id, description, status, plan_json, created_at, updated_at)
-       VALUES ($1, $2, 'draft', '{}'::jsonb, $3, $3)`,
-      [planId, description, timestamp],
+       VALUES ($1, $2, 'draft', $3::jsonb, $4, $4)`,
+      [planId, description, synthesizedPlan, timestamp],
     );
 
     // Step 6: Write all deltas and edges to Neo4j in a single transaction

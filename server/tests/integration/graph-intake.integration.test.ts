@@ -30,7 +30,6 @@ jest.mock('../../src/middleware/adminAuth.js', () => ({
 //     → GraphDeltaService.applyDelta/applyDeltaEdge
 //
 // Dedicated synthetic UUIDs (never collide with content entities or sibling tests).
-const PLAN_ID = '63200000-e29b-41d4-a716-446655440001';
 const CHAR_ID = '63200001-e29b-41d4-a716-446655440002';
 const SCENE_ID = '63200002-e29b-41d4-a716-446655440003';
 
@@ -42,34 +41,50 @@ const DELTA_SCENE2_ADD = 'd3200004-0000-4000-8000-000000000004';
 
 let neo4jLive = false;
 
-async function cleanupNeo4j(): Promise<void> {
-  await clearDeltasForPlan(PLAN_ID);
+// Plans are created with a server-generated UUID (createPlanFromDescription
+// generates a fresh planId), so we track the actual ids this suite creates and
+// clean up their deltas + rows after each test, regardless of pass/fail.
+const createdPlanIds: string[] = [];
+
+async function cleanupPlan(planId: string): Promise<void> {
+  try {
+    await clearDeltasForPlan(planId);
+  } catch {
+    /* ignore */
+  }
+  try {
+    await queryOLTP('DELETE FROM content_plans WHERE id = $1', [planId]);
+  } catch {
+    /* ignore */
+  }
 }
 
 beforeAll(async () => {
   neo4jLive = isNeo4jEnabled() && (await verifyNeo4j());
   if (!neo4jLive) return;
   await ensureGraphConstraints();
-  await cleanupNeo4j();
 });
 
 afterAll(async () => {
   try {
     if (neo4jLive) {
-      await cleanupNeo4j();
+      for (const id of createdPlanIds) {
+        await cleanupPlan(id);
+      }
     }
   } finally {
     await closeNeo4j();
   }
 });
 
-// Reset plan deltas between tests
-beforeEach(async () => {
-  if (neo4jLive) {
-    await clearDeltasForPlan(PLAN_ID);
-    // Clean up any test plan rows
-    await queryOLTP('DELETE FROM content_plans WHERE id = $1', [PLAN_ID]);
+// Reset plan deltas between tests so a failure mid-test cannot leak graph state
+// into later runs.
+afterEach(async () => {
+  if (!neo4jLive) return;
+  for (const id of createdPlanIds) {
+    await cleanupPlan(id);
   }
+  createdPlanIds.length = 0;
 });
 
 describe('GraphIntakeService — integration tests (Neo4j-gated)', () => {
@@ -144,6 +159,7 @@ describe('GraphIntakeService — integration tests (Neo4j-gated)', () => {
 
         const service = new GraphIntakeService();
         const result = await service.createPlanFromDescription('Create a test character');
+        createdPlanIds.push(result.planId);
 
         expect(result.planId).toBeDefined();
         expect(result.deltaCount).toBe(2);
@@ -199,6 +215,7 @@ describe('GraphIntakeService — integration tests (Neo4j-gated)', () => {
 
         const service = new GraphIntakeService();
         const result = await service.createPlanFromDescription('Create test character 2');
+        createdPlanIds.push(result.planId);
 
         // Now test the GET endpoint
         const response = await request(app)
@@ -240,6 +257,7 @@ describe('GraphIntakeService — integration tests (Neo4j-gated)', () => {
 
         const service = new GraphIntakeService();
         const result = await service.createPlanFromDescription('Create test scene');
+        createdPlanIds.push(result.planId);
 
         // Verify deltas exist
         let deltas = await getDeltasForPlan(result.planId);

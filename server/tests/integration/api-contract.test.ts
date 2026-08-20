@@ -36,12 +36,12 @@ const mockHandlerNodes: Record<string, any> = {
   },
 };
 // M32: dialogue node maps are externalized to the CDN via `content_url`.
-// The comms contract tests seed a *synthetic* handler tree whose
-// `content_url` (`http://test.local/handler-tree.json`) is not a real
-// CDN pointer, so we stub it with the in-test node map. Every other
-// (real, migrated) tree — e.g. Vance's "The Awakening" used by the
-// /dialogue/start contract — must resolve through the real CDN fetch,
-// so we delegate to the actual implementation for any other URL.
+// The comms contract tests (and the dialogue contract tests below) seed a
+// *synthetic* handler tree whose `content_url` (`http://test.local/handler-tree.json`)
+// is not a real CDN pointer, so we stub it with the in-test node map. The
+// dialogue contract tests exercise the Handler tree (stubbed here), keeping
+// the suite self-contained rather than depending on a reachable MinIO/CDN for
+// a migrated tree. Any other URL delegates to the real implementation.
 jest.mock('../../src/services/contentFetch.js', () => {
   const actual = jest.requireActual('../../src/services/contentFetch.js');
   return {
@@ -78,7 +78,6 @@ async function applyMigration(filename: string): Promise<void> {
 const TEST_USER_ID = '00000000-0000-0000-0000-000000000001';
 const WELCOME_SCENE_ID = '550e8400-e29b-41d4-a716-446655440002';
 const APARTMENT_SCENE_ID = '55555555-6666-4777-8888-999999990001';
-const TEST_CHARACTER_ID = '3b2b8000-e29b-41d4-a716-446655440001'; // Vance — speaker in The Awakening
 const HANDLER_CHARACTER_ID = '550e8400-e29b-41d4-a716-446655440004'; // The Handler — has dialogue at Welcome Center
 const DISTRICT_ID = 'd2000000-0000-0000-0000-000000000004';
 
@@ -313,7 +312,7 @@ describe('API Contract Tests', () => {
       const res = await fetch(`http://localhost:${port}/dialogue/start`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeaders() },
-        body: JSON.stringify({ characterId: TEST_CHARACTER_ID, sceneId: APARTMENT_SCENE_ID }),
+        body: JSON.stringify({ characterId: HANDLER_CHARACTER_ID, sceneId: APARTMENT_SCENE_ID }),
       });
       const data = await jsonResponse(res);
 
@@ -384,7 +383,7 @@ describe('API Contract Tests', () => {
       const start = await fetch(`http://localhost:${port}/dialogue/start`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeaders() },
-        body: JSON.stringify({ characterId: TEST_CHARACTER_ID, sceneId: APARTMENT_SCENE_ID }),
+        body: JSON.stringify({ characterId: HANDLER_CHARACTER_ID, sceneId: APARTMENT_SCENE_ID }),
       });
       const startData = await jsonResponse(start);
       expect(start.status).toBe(201);

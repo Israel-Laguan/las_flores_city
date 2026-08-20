@@ -204,8 +204,8 @@ export async function resolveDialogueTree(
   // whose speaker is encoded in CDN node maps, not the FK). Migration 057
   // left character_id nullable without backfilling, so a speaker-based
   // fallback is required to find these trees.
-  const fallbackResult = await queryOLTP<{ id: string }>(
-    `SELECT id FROM dialogue_trees
+  const fallbackResult = await queryOLTP<{ id: string; scene_id: string | null; character_id: string | null }>(
+    `SELECT id, scene_id, character_id FROM dialogue_trees
       WHERE character_id = $1
          OR (character_id IS NULL AND (scene_id = $2
              OR (scene_id IS NULL AND dialogue_scope IN ('onboarding', 'system'))))
@@ -214,11 +214,18 @@ export async function resolveDialogueTree(
     [characterId, sceneId]
   );
 
-  for (const { id } of fallbackResult.rows) {
+  for (const { id, scene_id, character_id } of fallbackResult.rows) {
     const tree = await loadTreeWithNodes(id);
     if (!tree) continue;
+    // A scene-scoped (nullable character_id) tree may be narrator-rooted, so
+    // accept any node carrying the speaker — mirroring the scene-mapped path
+    // above. Character-owned trees keep the stricter start-node speaker check.
+    const hasSpeaker = Object.values(tree.nodes).some(
+      (n: any) => n && n.speaker_id === characterId
+    );
     const startNode = tree.nodes[tree.start_node_id];
-    if (!(startNode && startNode.speaker_id === characterId)) continue;
+    const startMatch = startNode && startNode.speaker_id === characterId;
+    if (!(startMatch || (character_id == null && scene_id === sceneId && hasSpeaker))) continue;
     if (
       !isStoryBeatAllowed(tree.metadata?.required_story_beat, storyBeat) ||
       !metadataConditionsPass(tree.metadata, playerCondition)

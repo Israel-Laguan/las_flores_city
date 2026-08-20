@@ -502,12 +502,13 @@ export async function buildSnapshotsForTree(treeId: string): Promise<SnapshotBui
   }
 
   // Build snapshots for each combination
+  buildLoop:
   for (const mysterySet of reachableSets) {
     for (const nsfw of NSFW_VALUES) {
       for (const alignment of ALIGNMENTS) {
         if (result.statesGenerated.length >= MAX_SNAPSHOT_STATES_PER_TREE) {
           result.errors.push(`Snapshot state cap (${MAX_SNAPSHOT_STATES_PER_TREE}) reached for tree ${treeId}; remaining states deferred to live resolver`);
-          break;
+          break buildLoop;
         }
         const setHash = buildSetHash(mysterySet);
 
