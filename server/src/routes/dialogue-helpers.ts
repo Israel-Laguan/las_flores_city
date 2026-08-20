@@ -206,10 +206,12 @@ export async function resolveDialogueTree(
   // fallback is required to find these trees.
   const fallbackResult = await queryOLTP<{ id: string }>(
     `SELECT id FROM dialogue_trees
-      WHERE character_id = $1 OR character_id IS NULL
+      WHERE character_id = $1
+         OR (character_id IS NULL AND (scene_id = $2
+             OR (scene_id IS NULL AND dialogue_scope IN ('onboarding', 'system'))))
       ORDER BY created_at ASC, id ASC
       LIMIT 10`,
-    [characterId]
+    [characterId, sceneId]
   );
 
   for (const { id } of fallbackResult.rows) {

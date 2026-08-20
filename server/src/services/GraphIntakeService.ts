@@ -134,8 +134,8 @@ function findBaseEntity(context: ExistingContentContext, nodeType: string, nodeI
  * Resolves both `fromItem` and `toItem` through the plan-item index (mapping
  * `(nodeType, nodeId)` → `item.id`), because graph node IDs are NOT the
  * generated plan-item IDs. The `field` is resolved via `findEdgeMapping` from
- * the shared schema — falling back to the edge type so applyLink can still
- * route unsupported edges. */
+ * the shared schema. Unsupported edges are rejected rather than materialized
+ * with a fabricated legacy field. */
 function deltaEdgeToPlanLink(
   edge: GraphDeltaEdge,
   itemIndex: Map<string, string>,
@@ -145,16 +145,20 @@ function deltaEdgeToPlanLink(
   const sourceKey = `${sourceNodeType}:${normalizeKeyComponent(sourceNodeId)}`;
   const targetKey = `${targetNodeType}:${normalizeKeyComponent(targetNodeId)}`;
 
-  const fromItem = itemIndex.get(sourceKey) ?? sourceNodeId;
-  const toItem = itemIndex.get(targetKey) ?? targetNodeId;
-
   const mapping = findEdgeMapping(type, sourceNodeType, targetNodeType);
+  const fromItem = itemIndex.get(sourceKey);
+  const toItem = itemIndex.get(targetKey);
+  if (!mapping || !fromItem || !toItem) {
+    throw new GraphIntakeValidationError(
+      `Unsupported graph edge ${type}: both endpoints must be present in the synthesized plan`,
+    );
+  }
 
   return {
     fromItem,
     toItem,
     field: mapping?.field ?? type.toLowerCase(),
-    action: 'add',
+    action: 'set',
   };
 }
 
@@ -254,10 +258,12 @@ export class GraphIntakeService {
       throw new GraphIntakeValidationError(`Cannot synthesize a plan item from a DELETE delta for [${deleteDelta.nodeType}:${deleteDelta.nodeId}] — delete materialization is not supported by the legacy plan contract. Remove the tombstone before approving.`);
     }
 
-    // Step 5: Create the plan row in OLTP (minimal metadata; no plan_json)
+    // Step 5: Create the plan row in OLTP (minimal metadata). plan_json is the
+    // exporter transport and is synthesized on demand by synthesizeLegacyPlan,
+    // so it starts as an empty object until a preview/approval populates it.
     await queryOLTP(
-      `INSERT INTO content_plans (id, description, status, created_at, updated_at)
-       VALUES ($1, $2, 'draft', $3, $3)`,
+      `INSERT INTO content_plans (id, description, status, plan_json, created_at, updated_at)
+       VALUES ($1, $2, 'draft', '{}'::jsonb, $3, $3)`,
       [planId, description, timestamp],
     );
 

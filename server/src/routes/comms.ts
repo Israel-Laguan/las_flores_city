@@ -183,9 +183,9 @@ export async function findDialogueTreeForCharacter(characterId: string) {
   }>(
     `SELECT id, name, start_node_id, content_url
      FROM dialogue_trees dt
-     WHERE dt.character_id = $1 OR dt.character_id IS NULL
-     ORDER BY dt.created_at ASC, dt.id ASC
-     LIMIT 50`,
+     WHERE dt.character_id = $1
+        OR (dt.character_id IS NULL AND dt.dialogue_scope IN ('onboarding', 'system'))
+     ORDER BY (dt.character_id = $1) DESC, dt.created_at ASC, dt.id ASC`,
     [characterId]
   );
 

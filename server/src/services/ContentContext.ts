@@ -1,9 +1,16 @@
 import fs from 'node:fs/promises';
+import path from 'node:path';
 import * as yaml from 'js-yaml';
 import { glob } from 'glob';
 import { queryContent } from '@las-flores/infra';
 import { resolveContentDir } from './StoryBuilderLore.js';
 import type { ExistingContentContext, ExistingLocation } from './types/LLMTypes.js';
+
+function pathDistrict(file: string): string {
+  const parts = file.split(path.sep);
+  const index = parts.lastIndexOf('districts');
+  return index >= 0 ? parts[index + 1] ?? '' : '';
+}
 
 /**
  * Build the existing-content grounding context used by LLM authoring passes.
@@ -58,7 +65,7 @@ export async function gatherLocationContext(): Promise<ExistingLocation[]> {
         out.push({
           id: String(data.id),
           name: String(data.name ?? ''),
-          district: data.district ? String(data.district) : '',
+          district: data.district ? String(data.district) : pathDistrict(file),
           daytime: data.daytime ? String(data.daytime) : undefined,
           nightlife: data.nightlife ? String(data.nightlife) : undefined,
           history: data.history ? String(data.history) : undefined,

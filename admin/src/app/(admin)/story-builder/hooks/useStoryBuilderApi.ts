@@ -12,7 +12,11 @@ async function postJSON<T>(url: string, payload: unknown): Promise<T> {
   });
 }
 
-export async function loadPlanFromDb(id: string) {
+export async function loadPlanFromDb(id: string): Promise<{
+  success: boolean;
+  data?: { plan_json: ContentPlan; description: string };
+  error?: string;
+}> {
   const res = await adminFetch<{ success: boolean; data?: { plan_json: ContentPlan; description: string }; error?: string }>(
     `/admin/story-builder/plans/${id}`,
   );
@@ -23,11 +27,11 @@ export async function loadPlanFromDb(id: string) {
   if (res.success && !res.data?.plan_json) {
     let synth;
     try { synth = await adminFetch<{ success: boolean; data?: { plan: ContentPlan }; error?: string }>(`/admin/story-builder/plans/${id}/graph-plan`); }
-    catch (error: any) { return { success: false, error: error?.message || 'Failed to synthesize plan from graph deltas' }; }
+    catch (error: any) { return { success: false, data: undefined, error: error?.message || 'Failed to synthesize plan from graph deltas' }; }
     if (synth.success && synth.data?.plan) {
       return { success: true, data: { plan_json: synth.data.plan, description: res.data?.description ?? '' } };
     }
-    return { success: false, error: synth.error || 'Plan has no plan_json and could not be synthesized from graph deltas' };
+    return { success: false, data: undefined, error: synth.error || 'Plan has no plan_json and could not be synthesized from graph deltas' };
   }
 
   return res;

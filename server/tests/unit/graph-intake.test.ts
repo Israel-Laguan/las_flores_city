@@ -41,6 +41,13 @@ jest.mock('../../src/services/ChatService.js', () => ({
   },
 }));
 
+// Mock gatherLocationContext so the test does not read content YAML from disk.
+const mockGatherLocationContext = jest.fn(async () => []);
+jest.mock('../../src/services/ContentContext.js', () => ({
+  gatherLocationContext: mockGatherLocationContext,
+  gatherExistingContentContext: jest.fn(),
+}));
+
 jest.mock('../../src/services/LLMService.js', () => ({
   createLLMProvider: jest.fn(() => ({
     gatherContext: mockGatherContext,
@@ -57,6 +64,7 @@ const mockGetDeltaEdgesForPlan = jest.fn(async () => []);
 const mockClearDeltasForPlan = jest.fn(async () => {});
 
 jest.mock('../../src/services/GraphDeltaService.js', () => ({
+  ...jest.requireActual('../../src/services/GraphDeltaService.js'),
   applyDelta: mockApplyDelta,
   applyDeltaEdge: mockApplyDeltaEdge,
   preflightDeltas: mockPreflightDeltas,
@@ -154,10 +162,11 @@ describe('GraphIntakeService — unit tests (Neo4j mocked)', () => {
       const service = new GraphIntakeService();
       await service.createPlanFromDescription('Create a new character named Alice');
 
-      expect(mockGatherContextFn).toHaveBeenCalledTimes(1);
+      // Context is gathered internally via contentPlanService.gatherContext()
+      // (read-only OLTP queries) and passed straight through to chatService.propose.
       expect(mockChatProposeFn).toHaveBeenCalledTimes(1);
       const [planIdArg, messagesArg, contextArg] = mockChatProposeFn.mock.calls[0];
-      expect(planIdArg).toBe(''); // New plan has no ID yet
+      expect(planIdArg).toBe(TEST_PLAN_ID); // planId is generated up-front and passed to chatPropose
       expect(messagesArg).toEqual([{ role: 'user', content: 'Create a new character named Alice' }]);
       expect(contextArg).toEqual({ characters: [], scenes: [], dialogues: [], missions: [], overlays: [], locations: [] });
     });
@@ -166,9 +175,13 @@ describe('GraphIntakeService — unit tests (Neo4j mocked)', () => {
       const service = new GraphIntakeService();
       await service.createPlanFromDescription('Test description');
 
-      expect(mockQueryOLTP).toHaveBeenCalledTimes(1);
-      const [sql, params] = mockQueryOLTP.mock.calls[0];
-      expect(sql).toContain('INSERT INTO content_plans');
+      // gatherContext() issues several read-only OLTP queries (one per entity
+      // type) plus the single plan INSERT; assert the INSERT is among them.
+      const insertCall = mockQueryOLTP.mock.calls.find(([sql]) =>
+        typeof sql === 'string' && sql.includes('INSERT INTO content_plans'),
+      );
+      expect(insertCall).toBeDefined();
+      const [, params] = insertCall!;
       expect(params).toEqual([TEST_PLAN_ID, 'Test description', expect.any(String)]);
     });
 

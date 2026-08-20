@@ -10,8 +10,16 @@ import {
   closeNeo4j,
 } from '../../src/services/Neo4jClient.js';
 import { clearDeltasForPlan, getDeltasForPlan, getDeltaEdgesForPlan } from '../../src/services/GraphDeltaService.js';
-import { ensureGraphConstraints, cleanupNeo4j } from '../../src/services/GraphBaseService.js';
+import { ensureGraphConstraints } from '../../src/services/GraphBaseService.js';
 import { adminStoryBuilderRouter } from '../../src/routes/admin-story-builder.js';
+
+// The parent router applies authAndAdminMiddleware to every sub-route (including
+// the graph-intake routes), so HTTP tests must bypass it. Other graph
+// integration suites call services directly and don't mount the router; this
+// suite exercises the routes over HTTP, so pass auth through in tests.
+jest.mock('../../src/middleware/adminAuth.js', () => ({
+  authAndAdminMiddleware: (_req: any, _res: any, next: any) => next(),
+}));
 
 // M32 — Neo4j-gated integration test for graph intake.
 //
@@ -22,11 +30,15 @@ import { adminStoryBuilderRouter } from '../../src/routes/admin-story-builder.js
 //     → GraphDeltaService.applyDelta/applyDeltaEdge
 //
 // Dedicated synthetic UUIDs (never collide with content entities or sibling tests).
-const PLAN_ID = 'g3200000-e29b-41d4-a716-446655440001';
-const CHAR_ID = 'g3200000-e29b-41d4-a716-446655440002';
-const SCENE_ID = 'g3200000-e29b-41d4-a716-446655440003';
+const PLAN_ID = '63200000-e29b-41d4-a716-446655440001';
+const CHAR_ID = '63200001-e29b-41d4-a716-446655440002';
+const SCENE_ID = '63200002-e29b-41d4-a716-446655440003';
 
 let neo4jLive = false;
+
+async function cleanupNeo4j(): Promise<void> {
+  await clearDeltasForPlan(PLAN_ID);
+}
 
 beforeAll(async () => {
   neo4jLive = isNeo4jEnabled() && (await verifyNeo4j());
@@ -69,16 +81,26 @@ describe('GraphIntakeService — integration tests (Neo4j-gated)', () => {
     
     app.use('/admin/story-builder', adminStoryBuilderRouter);
 
-    test.skipIf(!neo4jLive)('creates a plan and writes deltas to Neo4j', async () => {
+    test('creates a plan and writes deltas to Neo4j', async () => {
+      if (!neo4jLive) return;
       // Mock chatPropose to return known deltas
       const mockDeltas = [
         {
-          id: 'delta-001',
+          id: 'd3200001-0000-4000-8000-000000000001',
           planId: '',
           nodeType: 'Character',
           nodeId: CHAR_ID,
           op: 'ADD',
           fields: { name: 'Test Character', description: 'A test character for M32' },
+          createdAt: new Date().toISOString(),
+        },
+        {
+          id: 'd3200002-0000-4000-8000-000000000002',
+          planId: '',
+          nodeType: 'Scene',
+          nodeId: SCENE_ID,
+          op: 'ADD',
+          fields: { name: 'Test Scene', description: 'A test scene for M32' },
           createdAt: new Date().toISOString(),
         },
       ];
@@ -118,15 +140,20 @@ describe('GraphIntakeService — integration tests (Neo4j-gated)', () => {
         const result = await service.createPlanFromDescription('Create a test character');
 
         expect(result.planId).toBeDefined();
-        expect(result.deltaCount).toBe(1);
+        expect(result.deltaCount).toBe(2);
         expect(result.edgeCount).toBe(1);
 
         // Verify deltas were written to Neo4j
         const deltas = await getDeltasForPlan(result.planId);
-        expect(deltas).toHaveLength(1);
-        expect(deltas[0].nodeType).toBe('Character');
-        expect(deltas[0].nodeId).toBe(CHAR_ID);
-        expect(deltas[0].op).toBe('ADD');
+        expect(deltas).toHaveLength(2);
+        const charDelta = deltas.find((d) => d.nodeId === CHAR_ID);
+        const sceneDelta = deltas.find((d) => d.nodeId === SCENE_ID);
+        expect(charDelta).toBeDefined();
+        expect(charDelta!.nodeType).toBe('Character');
+        expect(charDelta!.op).toBe('ADD');
+        expect(sceneDelta).toBeDefined();
+        expect(sceneDelta!.nodeType).toBe('Scene');
+        expect(sceneDelta!.op).toBe('ADD');
 
         // Verify edges were written
         const edges = await getDeltaEdgesForPlan(result.planId);
@@ -141,7 +168,8 @@ describe('GraphIntakeService — integration tests (Neo4j-gated)', () => {
       }
     }, 10000);
 
-    test.skipIf(!neo4jLive)('GET /admin/story-builder/plans/:id/graph-deltas returns deltas for a plan', async () => {
+    test('GET /admin/story-builder/plans/:id/graph-deltas returns deltas for a plan', async () => {
+      if (!neo4jLive) return;
       // First, create a plan with deltas using the service directly
       const { GraphIntakeService } = await import('../../src/services/GraphIntakeService.js');
       const chatService = await import('../../src/services/ChatService.js');
@@ -151,7 +179,7 @@ describe('GraphIntakeService — integration tests (Neo4j-gated)', () => {
         chatService.chatService.propose = jest.fn(async () => ({
           reply: 'Proposal generated',
           deltas: [{
-            id: 'delta-002',
+            id: 'd3200002-0000-4000-8000-000000000002',
             planId: '',
             nodeType: 'Character',
             nodeId: CHAR_ID,
@@ -182,7 +210,8 @@ describe('GraphIntakeService — integration tests (Neo4j-gated)', () => {
       }
     }, 10000);
 
-    test.skipIf(!neo4jLive)('DELETE /admin/story-builder/plans/:id/graph-intake removes deltas and plan', async () => {
+    test('DELETE /admin/story-builder/plans/:id/graph-intake removes deltas and plan', async () => {
+      if (!neo4jLive) return;
       const { GraphIntakeService } = await import('../../src/services/GraphIntakeService.js');
       const chatService = await import('../../src/services/ChatService.js');
       const originalPropose = chatService.chatService.propose;
@@ -191,7 +220,7 @@ describe('GraphIntakeService — integration tests (Neo4j-gated)', () => {
         chatService.chatService.propose = jest.fn(async () => ({
           reply: 'Proposal generated',
           deltas: [{
-            id: 'delta-003',
+            id: 'd3200003-0000-4000-8000-000000000003',
             planId: '',
             nodeType: 'Scene',
             nodeId: SCENE_ID,

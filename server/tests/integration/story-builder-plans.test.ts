@@ -66,6 +66,16 @@ jest.mock('../../src/services/AdminEventEmitter.js', () => ({
   emitAdminEvent: jest.fn(),
 }));
 
+// This suite exercises plan CRUD against a fully mocked OLTP layer and does
+// not stand up a real Neo4j. The plans router gates its graph-delta lookups
+// on `isNeo4jEnabled()`; pin it off so the suite is deterministic regardless
+// of the ambient NEO4J_ENABLED env (the graph-authoritative path is covered
+// by graph-intake.integration.test.ts).
+jest.mock('../../src/services/Neo4jClient.js', () => ({
+  ...jest.requireActual('../../src/services/Neo4jClient.js'),
+  isNeo4jEnabled: () => false,
+}));
+
 afterAll(() => {
   jest.clearAllMocks();
 });

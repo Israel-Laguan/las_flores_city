@@ -348,7 +348,9 @@ async function buildSingleSnapshot(
 
   for (const [mysteryId, overlays] of allOverlays) {
     if (setMysteryIds.has(mysteryId)) {
-      relevantOverlays.push(...overlays);
+      relevantOverlays.push(...overlays.slice().sort((a, b) =>
+        String(a.id).localeCompare(String(b.id)),
+      ));
     }
   }
 
@@ -439,7 +441,7 @@ async function deleteStaleSnapshots(treeId: string): Promise<number> {
   const result = await queryOLTP<{ count: number }>(
     `DELETE FROM dialogue_chunks 
      WHERE tree_id = $1
-       AND chunk_key LIKE '\\\\_\\\\_snapshot\\\\_%' ESCAPE '\\\\'
+       AND chunk_key LIKE '\\_\\_snapshot\\_%'
      RETURNING 1`,
     [treeId]
   );

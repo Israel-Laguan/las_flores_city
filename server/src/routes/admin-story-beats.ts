@@ -50,7 +50,10 @@ async function loadAllDialogueTreeNodes(): Promise<{
   for (const row of result.rows) {
     if (!row.content_url) { failed++; continue; }
     const nodes = await fetchNodesFromContentUrl(row.content_url, {});
-    if (!nodes) { failed++; continue; }
+    if (!nodes || Array.isArray(nodes) || typeof nodes !== 'object' || Object.keys(nodes).length === 0) {
+      failed++;
+      continue;
+    }
     out.push({ id: row.id, name: row.name, nodes });
   }
   return { trees: out, failed };

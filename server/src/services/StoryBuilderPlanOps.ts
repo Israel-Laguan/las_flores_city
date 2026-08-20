@@ -302,8 +302,6 @@ async function emitFillDeltas(
   // New items have no entity_id yet — skip delta emission. The filled fields
   // are applied to the item's own fields by the caller (fillPlanItemsWithLLM),
   // so they will be included in the eventual ADD delta at stage time.
-  if (!item.entity_id) return;
-
   // Resolve the stable canonical node identity from entity_id, falling back
   // to fields.id (a persisted entity UUID) before the transient item.id.
   const nodeId = item.entity_id ?? (item.fields as any).id;

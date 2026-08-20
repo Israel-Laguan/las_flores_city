@@ -218,7 +218,7 @@ export class RelationshipDecayWorker {
                 AND ps.state != '{}'::jsonb
                 AND EXISTS (
                   SELECT 1 FROM jsonb_object_keys(ps.state) AS k(key)
-                  WHERE key LIKE 'last_\\_%\\_encounter\\_at' ESCAPE '\\'
+                  WHERE key LIKE 'last_\\_%\\_encounter\\_at'
                 )
                 ${cursor ? 'AND ps.user_id > $1' : ''}
               ORDER BY ps.user_id

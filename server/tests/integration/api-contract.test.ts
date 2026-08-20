@@ -35,9 +35,27 @@ const mockHandlerNodes: Record<string, any> = {
     choices: [],
   },
 };
-jest.mock('../../src/services/contentFetch.js', () => ({
-  fetchNodesFromContentUrl: jest.fn(async (url: string) => url === 'http://test.local/handler-tree.json' ? mockHandlerNodes : null),
-}));
+// M32: dialogue node maps are externalized to the CDN via `content_url`.
+// The comms contract tests seed a *synthetic* handler tree whose
+// `content_url` (`http://test.local/handler-tree.json`) is not a real
+// CDN pointer, so we stub it with the in-test node map. Every other
+// (real, migrated) tree — e.g. Vance's "The Awakening" used by the
+// /dialogue/start contract — must resolve through the real CDN fetch,
+// so we delegate to the actual implementation for any other URL.
+jest.mock('../../src/services/contentFetch.js', () => {
+  const actual = jest.requireActual('../../src/services/contentFetch.js');
+  return {
+    ...actual,
+    fetchNodesFromContentUrl: jest.fn(async (url: string, fallback: any) =>
+      url === 'http://test.local/handler-tree.json'
+        ? mockHandlerNodes
+        : actual.fetchNodesFromContentUrl(url, fallback)),
+    fetchChunkFromContentUrl: jest.fn(async (url: string, fallback: any) =>
+      url === 'http://test.local/handler-tree.json'
+        ? { nodes: mockHandlerNodes, leaves: {} }
+        : actual.fetchChunkFromContentUrl(url, fallback)),
+  };
+});
 
 const HANDLER_TREE_ID = 'f1000000-e29b-41d4-a716-446655440004';
 
