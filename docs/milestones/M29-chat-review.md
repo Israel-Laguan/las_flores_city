@@ -1,6 +1,6 @@
 # M29 — Conversational Chat Assistant + `needs_review` Queue
 
-> **Status:** Implemented (act-mode build; working tree carries M28 changes — not committed) · **Branch:** `milestone/29-chat-review` · **PR size target:** ~25 files (landed ~30)
+> **Status:** Implemented (act-mode build; M28 changes landed — see `git log`, e.g. `62976feb`, `2d2d9292`, `0b89f340`, `1da40fcf`, `b07ccff9`, `dd6df129`, `5443b007`, `64348a1d`) · **Branch:** `milestone/29-chat-review` · **PR size target:** ~25 files (landed ~30)
 > **Phase:** 8 · **Source:** `ARCHITECTURE_SEPARATION_ANALYSIS.md` §12 Moment 4, §13, §15.8
 
 ## Goal

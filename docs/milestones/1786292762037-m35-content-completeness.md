@@ -93,6 +93,21 @@ retained by design.
 - [ ] `buildFillFieldsPrompt` has a `character:` instruction with faction vocab.
 - [ ] Two lore nits fixed.
 
+## Deferred follow-ups
+
+### M19 Domains reorg (never started)
+- Reorganize `server/src/` into `domains/{game,intake,ai}/` + `infra/`, with ESLint
+  `no-restricted-imports` boundary enforcement so `game/` cannot import `ai/`/`intake/`
+  and `ai/` cannot import `game/`.
+- **Current state:** there is **no** `server/src/domains/` folder. The module boundary is
+  enforced today only by the **physical process split** — the game-server (`:3000`,
+  `server/src/index.ts`) and the intake-worker (`:3001`, `server/src/intake.ts`) are
+  separate processes sharing `createApp(registerRoutes)` from `server/src/app.ts`, but
+  nothing statically prevents a `game/` import of an `ai/`/`intake/` module.
+- Moved here from `M19-foundation.md` (the foundations PR shipped the content-read pool,
+  infra extraction, and AGE-vs-Neo4j decision; the domains reorg was deferred and never
+  started).
+
 ## Verification
 
 ```bash

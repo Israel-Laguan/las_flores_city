@@ -1,7 +1,9 @@
 # M21 — Process Split: Extract the Intake-Worker (B1)
 
-> **Status:** Planned · **Branch:** `milestone/21-process-split` · **PR size target:** ~25 files
+> **Status:** Shipped · **Branch:** `milestone/21-process-split` · **PR size target:** ~25 files
 > **Phase:** 2 · **Source:** `ARCHITECTURE_SEPARATION_ANALYSIS.md` §4 Option 2, §5 (B1)
+>
+> **Note:** The `intake-worker` (port 3001, `server/src/intake.ts`) is the live `runAllMigrations()` owner — it is the only process that mutates schema/content; the game-server (port 3000, `server/src/index.ts`) never migrates and reads content tables only.
 
 ## Goal
 
