@@ -165,20 +165,9 @@ async function teardown() {
     for (const mid of BENCH_MYSTERY_IDS) {
       await c.query(`DELETE FROM dialogue_overlays WHERE target_tree_id = $1 AND mystery_id = $2`, [BENCH_TREE_ID, mid]);
     }
-    await c.query(`DELETE FROM dialogue_trees WHERE id = $1`, [BENCH_TREE_ID]);
-    // Remove ALL benchmark-owned player_mysteries (covers per-user investigating mystery rows).
-    await c.query(`DELETE FROM player_mysteries WHERE user_id = ANY(SELECT id FROM users WHERE id::text LIKE 'd0d00000%')`);
-    await c.query(`DELETE FROM user_entitlements WHERE user_id = ANY(SELECT id FROM users WHERE id::text LIKE 'd0d00000%')`);
-    await c.query(`DELETE FROM player_states WHERE user_id = ANY(SELECT id FROM users WHERE id::text LIKE 'd0d00000%')`);
-    await c.query(`DELETE FROM users WHERE id::text LIKE 'd0d00000%'`);
-    // Delete ALL benchmark-owned mysteries (the 3 ACTIVE + investigating-target + per-user investigating).
-    await c.query(`DELETE FROM dialogue_overlays WHERE target_tree_id = $1`, [BENCH_TREE_ID]);
-    await c.query(`DELETE FROM mysteries WHERE id::text LIKE 'd0d00000%'`);
-    // Delete the MinIO/CDN objects this run published (base tree blob + any
-    // snapshot blobs) so repeated benchmarks do not leak immutable objects.
-    // Snapshot content_urls live on the dialogue_chunks rows keyed by the bench
-    // tree; the base blob URL was captured at seed time. Best-effort: a missing
-    // object (already deleted, or graph-less dev run) is logged, not fatal.
+    // Collect the MinIO/CDN object URLs this run published BEFORE deleting the
+    // tree — deleting the tree cascades away the dialogue_chunks rows that hold
+    // the snapshot content_urls, so a post-delete lookup would return nothing.
     const objectUrls: string[] = [];
     if (baseTreeContentUrl) objectUrls.push(baseTreeContentUrl);
     try {
@@ -192,6 +181,20 @@ async function teardown() {
     } catch (err: any) {
       console.warn('  [bench] snapshot URL lookup failed:', err?.message);
     }
+    await c.query(`DELETE FROM dialogue_trees WHERE id = $1`, [BENCH_TREE_ID]);
+    // Remove ALL benchmark-owned player_mysteries (covers per-user investigating mystery rows).
+    await c.query(`DELETE FROM player_mysteries WHERE user_id = ANY(SELECT id FROM users WHERE id::text LIKE 'd0d00000%')`);
+    await c.query(`DELETE FROM user_entitlements WHERE user_id = ANY(SELECT id FROM users WHERE id::text LIKE 'd0d00000%')`);
+    await c.query(`DELETE FROM player_states WHERE user_id = ANY(SELECT id FROM users WHERE id::text LIKE 'd0d00000%')`);
+    await c.query(`DELETE FROM users WHERE id::text LIKE 'd0d00000%'`);
+    // Delete ALL benchmark-owned mysteries (the 3 ACTIVE + investigating-target + per-user investigating).
+    await c.query(`DELETE FROM dialogue_overlays WHERE target_tree_id = $1`, [BENCH_TREE_ID]);
+    await c.query(`DELETE FROM mysteries WHERE id::text LIKE 'd0d00000%'`);
+    // Delete the MinIO/CDN objects this run published (base tree blob + any
+    // snapshot blobs) so repeated benchmarks do not leak immutable objects.
+    // URLs were collected above BEFORE the tree/chunks rows were deleted (the
+    // FK cascade would otherwise wipe the snapshot content_urls). Best-effort:
+    // a missing object (already deleted, or graph-less dev run) is logged, not fatal.
     for (const url of objectUrls) {
       try {
         await deleteFromMinio(url);

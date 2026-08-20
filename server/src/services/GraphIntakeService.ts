@@ -298,8 +298,12 @@ async function resolveLocationSlugsForDeltas(locationIds: string[]): Promise<Map
   try {
     files = await glob(`${contentDir}/districts/*/locations/*/*.yaml`, { absolute: true });
   } catch (err) {
-    console.warn(`[graph-intake] location YAML glob failed:`, (err as Error)?.message);
-    return result;
+    // Fail closed: a glob failure means we cannot trust a name-derived slug for
+    // any Location MODIFY, so surface it rather than letting synthesis stage a
+    // wrong (name-derived) path.
+    throw new GraphIntakeValidationError(
+      `Canonical location slug lookup failed during plan synthesis: ${(err as Error)?.message}`,
+    );
   }
 
   const idSet = new Set(locationIds.map((id) => id.toLowerCase()));
@@ -315,6 +319,20 @@ async function resolveLocationSlugsForDeltas(locationIds: string[]): Promise<Map
       }
     } catch (err) {
       console.warn(`[graph-intake] failed to read location YAML ${file}:`, (err as Error)?.message);
+    }
+  }
+
+  // Fail closed: if any Location MODIFY id is not resolvable to an on-disk YAML,
+  // reject instead of returning a partial map — otherwise synthesis derives a
+  // slugified name (wrong path for accented/manually-named locations).
+  const expectedKeys = new Set(
+    locationIds.map((id) => `Location:${normalizeKeyComponent(id)}`),
+  );
+  for (const key of expectedKeys) {
+    if (!result.has(key)) {
+      throw new GraphIntakeValidationError(
+        `Canonical location slug lookup failed: ${key} was not found on disk`,
+      );
     }
   }
   return result;

@@ -324,6 +324,24 @@ export async function uploadToMinio(buffer: Buffer, key: string, contentType: st
   return `s3://${MINIO_BUCKET}/${key}`;
 }
 
+/**
+ * Return whether the MinIO object referenced by `mediaUrl` already exists.
+ * Used by callers that publish deterministic (content-addressed) objects to
+ * decide whether cleanup may delete a pre-existing object it does not own.
+ */
+export async function objectExists(mediaUrl: string): Promise<boolean> {
+  const location = parseS3Location(mediaUrl);
+  if (!location) return false;
+  const { HeadObjectCommand } = await import('@aws-sdk/client-s3');
+  try {
+    await getS3Client().send(new HeadObjectCommand({ Bucket: location.bucket, Key: location.key }));
+    return true;
+  } catch (err: any) {
+    if (err.name === 'NotFound' || err.name === 'NoSuchKey') return false;
+    throw err;
+  }
+}
+
 export async function deleteFromMinio(mediaUrl: string): Promise<void> {
   const { DeleteObjectCommand } = await import('@aws-sdk/client-s3');
   const location = parseS3Location(mediaUrl);

@@ -2,6 +2,7 @@ import { queryOLTP, invalidatePattern } from '@las-flores/infra';
 import { buildSnapshotsForTree, getSnapshotContentUrl, buildSetHash } from './src/services/SnapshotService.js';
 import { DialogueResolver } from './src/services/DialogueResolver.js';
 import { publishDialogueTree, deleteFromMinio } from './src/services/ContentPublishService.js';
+import { objectExists } from './src/services/StorageService.js';
 
 const TREE='d0d00000-0000-4000-8000-000000000001';
 const PLAYER='d0d00000-0000-4000-8000-000000000f01';
@@ -39,10 +40,13 @@ try {
   }
   // M32: publish the base node map to MinIO/CDN and store content_url (the
   // in-DB `nodes` column is dropped; buildSnapshotsForTree requires a non-null
-  // content_url).
+  // content_url). The object key is deterministic (content-addressed), so a
+  // prior run may already own it. Only delete the object on cleanup if this
+  // run created it — otherwise we would delete a pre-existing shared object.
   const baseNodes = mk(150,'base');
   const contentUrl = await publishDialogueTree(TREE, JSON.stringify({ nodes: baseNodes }));
-  baseContentUrl = contentUrl;
+  const baseExistedBefore = await objectExists(contentUrl);
+  if (!baseExistedBefore) baseContentUrl = contentUrl;
   await queryOLTP(`INSERT INTO dialogue_trees (id,name,start_node_id,content_url,updated_at,dialogue_scope) VALUES ($1,$2,$3,$4,NOW(),'system') ON CONFLICT (id) DO UPDATE SET content_url=EXCLUDED.content_url,updated_at=NOW()`,[TREE,'t','base_0000',contentUrl]);
   for(const mid of ACTIVE){await queryOLTP(`INSERT INTO dialogue_overlays (id,name,target_tree_id,mystery_id,nodes,is_nsfw,unlock_condition,updated_at) VALUES ($1,$2,$3,$4,$5::jsonb,false,'none',NOW()) ON CONFLICT (id) DO NOTHING`,[`d0d00000-0000-4000-8000-0000000003${mid.slice(34)}`,`o_${mid.slice(30)}`,TREE,mid,JSON.stringify(mk(60,'ov'))]);}
   const sr=await buildSnapshotsForTree(TREE);
