@@ -12,6 +12,8 @@ import { markDrafted, markChosen } from '../services/AssetNeedsService.js';
 import { createLLMProvider } from '../services/LLMService.js';
 import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
 import { resolveContentDir } from '../services/StoryBuilderLore.js';
+import { graphIntakeService } from '../services/GraphIntakeService.js';
+import { isNeo4jEnabled } from '../services/Neo4jClient.js';
 
 export interface StagingOutcome {
   plan: ContentPlan;
@@ -54,6 +56,16 @@ export async function loadPlanForStaging(
   try {
     return { plan: ContentPlanSchema.parse(result.rows[0].plan_json) };
   } catch {
+    // Graph-authored plans persist an empty plan_json until export; synthesize
+    // a legacy ContentPlan from the graph deltas so staging can proceed.
+    if (isNeo4jEnabled()) {
+      try {
+        const synthesized = await graphIntakeService.synthesizeLegacyPlan(id);
+        if (synthesized) return { plan: synthesized };
+      } catch {
+        /* fall through to the validation error below */
+      }
+    }
     return { plan: null as any, error: { status: 400, message: 'Stored plan failed schema validation' } };
   }
 }

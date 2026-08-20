@@ -42,14 +42,26 @@ export async function generatePlan(description: string) {
   // favor of graph-based authoring. Create the plan (and its graph deltas)
   // synchronously via graph-intake, then synthesize a ContentPlan so the
   // existing review/approve/stage steps continue to work.
-  const created = await postJSON<{
+  let created: {
     success: boolean;
     data?: { planId: string; description: string; deltaCount: number; edgeCount: number };
     error?: string;
-  }>(
-    '/admin/story-builder/plans/graph-intake',
-    { description },
-  );
+  };
+  try {
+    created = await postJSON<{
+      success: boolean;
+      data?: { planId: string; description: string; deltaCount: number; edgeCount: number };
+      error?: string;
+    }>(
+      '/admin/story-builder/plans/graph-intake',
+      { description },
+    );
+  } catch (error: any) {
+    // postJSON throws for non-2xx (e.g. HTTP 409 when the graph is disabled),
+    // so the success check below is unreachable on failure. Return the
+    // documented structured failure instead of rejecting.
+    return { success: false, error: error?.message || 'Failed to create graph-based plan' };
+  }
 
   if (!created.success || !created.data?.planId) {
     return { success: created.success ?? false, error: created.error || 'Failed to create graph-based plan' };

@@ -34,6 +34,12 @@ const PLAN_ID = '63200000-e29b-41d4-a716-446655440001';
 const CHAR_ID = '63200001-e29b-41d4-a716-446655440002';
 const SCENE_ID = '63200002-e29b-41d4-a716-446655440003';
 
+// Dedicated synthetic delta UUIDs — one per test fixture, never reused.
+const DELTA_CHAR_ADD = 'd3200001-0000-4000-8000-000000000001';
+const DELTA_SCENE_ADD = 'd3200002-0000-4000-8000-000000000002';
+const DELTA_CHAR2_ADD = 'd3200003-0000-4000-8000-000000000003';
+const DELTA_SCENE2_ADD = 'd3200004-0000-4000-8000-000000000004';
+
 let neo4jLive = false;
 
 async function cleanupNeo4j(): Promise<void> {
@@ -86,7 +92,7 @@ describe('GraphIntakeService — integration tests (Neo4j-gated)', () => {
       // Mock chatPropose to return known deltas
       const mockDeltas = [
         {
-          id: 'd3200001-0000-4000-8000-000000000001',
+          id: DELTA_CHAR_ADD,
           planId: '',
           nodeType: 'Character',
           nodeId: CHAR_ID,
@@ -95,7 +101,7 @@ describe('GraphIntakeService — integration tests (Neo4j-gated)', () => {
           createdAt: new Date().toISOString(),
         },
         {
-          id: 'd3200002-0000-4000-8000-000000000002',
+          id: DELTA_SCENE_ADD,
           planId: '',
           nodeType: 'Scene',
           nodeId: SCENE_ID,
@@ -179,7 +185,7 @@ describe('GraphIntakeService — integration tests (Neo4j-gated)', () => {
         chatService.chatService.propose = jest.fn(async () => ({
           reply: 'Proposal generated',
           deltas: [{
-            id: 'd3200002-0000-4000-8000-000000000002',
+            id: DELTA_CHAR2_ADD,
             planId: '',
             nodeType: 'Character',
             nodeId: CHAR_ID,
@@ -220,7 +226,7 @@ describe('GraphIntakeService — integration tests (Neo4j-gated)', () => {
         chatService.chatService.propose = jest.fn(async () => ({
           reply: 'Proposal generated',
           deltas: [{
-            id: 'd3200003-0000-4000-8000-000000000003',
+            id: DELTA_SCENE2_ADD,
             planId: '',
             nodeType: 'Scene',
             nodeId: SCENE_ID,

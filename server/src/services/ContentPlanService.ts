@@ -4,7 +4,6 @@ import { finiteInt } from '../utils/env.js';
 import { createLLMProvider } from './LLMService.js';
 import type { LLMProvider, ExistingContentContext, LLMUsage } from './types/LLMTypes.js';
 import type { IntakeConflictPreview } from '@las-flores/shared';
-import { injectAssetNeeds } from './AssetNeedsService.js';
 import { gatherLocationContext } from './ContentContext.js';
 import { identityResolver } from './IdentityResolver.js';
 

@@ -18,6 +18,7 @@
 // ============================================================
 
 import {
+  ContentPlanSchema,
   type ContentPlan,
   type ContentPlanItem,
   type ContentLink,
@@ -89,9 +90,12 @@ function deltaToPlanItem(delta: GraphDelta, baseContext: ExistingContentContext)
   // from the base context to preserve unchanged values.
   const baseEntity = op === 'MODIFY' ? findBaseEntity(baseContext, nodeType, nodeId) : null;
 
-  // Merge delta fields onto base entity fields (MODIFY) or use delta fields directly (ADD)
+  // Merge delta fields onto base entity fields (MODIFY) or use delta fields directly (ADD).
+  // Object-valued fields are deep-merged so a partial MODIFY delta (e.g. only
+  // metadata.personality) preserves the remaining nested fields of the existing
+  // entity. Arrays and scalars always replace the existing value.
   const mergedFields = baseEntity
-    ? { ...baseEntity, ...fields }
+    ? deepMergeObjects(baseEntity, fields)
     : { ...fields };
 
   return {
@@ -104,6 +108,26 @@ function deltaToPlanItem(delta: GraphDelta, baseContext: ExistingContentContext)
     dependsOn: [],
     assetNeeds: [],
   };
+}
+
+/** Deep-merge object-valued fields; arrays and scalars replace the existing value. */
+function deepMergeObjects(
+  base: Record<string, any>,
+  override: Record<string, any>,
+): Record<string, any> {
+  const result: Record<string, any> = { ...base };
+  for (const [key, value] of Object.entries(override)) {
+    const existing = result[key];
+    if (
+      value && typeof value === 'object' && !Array.isArray(value) &&
+      existing && typeof existing === 'object' && !Array.isArray(existing)
+    ) {
+      result[key] = deepMergeObjects(existing, value);
+    } else {
+      result[key] = value;
+    }
+  }
+  return result;
 }
 
 /** Find a base entity in the context by nodeType and nodeId. */
@@ -362,6 +386,45 @@ export class GraphIntakeService {
     const context = await this.gatherContext();
 
     return synthesizePlanFromDeltas(planId, description, deltas, edges, context);
+  }
+
+  /**
+   * Load a ContentPlan for any legacy (plan_json-based) consumer (e.g. preview,
+   * stage). Graph-authored plans persist an empty `plan_json` until they are
+   * exported, so synthesize a plan from the graph deltas when `plan_json` is
+   * empty. This keeps the persisted graph plan independent of any UI-only
+   * synthesized copy and prevents legacy actions from 400-ing on an empty plan.
+   */
+  async loadPlanForLegacyActions(
+    planId: string,
+  ): Promise<{ notFound?: boolean; error?: string; plan?: ContentPlan }> {
+    const result = await queryOLTP<{ plan_json: any }>(
+      'SELECT plan_json FROM content_plans WHERE id = $1',
+      [planId],
+    );
+    if (result.rows.length === 0) {
+      return { notFound: true };
+    }
+
+    const planJson = result.rows[0].plan_json;
+    const isEmpty =
+      !planJson ||
+      (typeof planJson === 'object' && !Array.isArray(planJson) && Object.keys(planJson).length === 0);
+
+    if (isEmpty && isNeo4jEnabled()) {
+      try {
+        const synthesized = await this.synthesizeLegacyPlan(planId);
+        if (synthesized) return { plan: synthesized };
+      } catch (err) {
+        console.warn(`[graph-intake] failed to synthesize plan ${planId}:`, (err as Error)?.message);
+      }
+    }
+
+    try {
+      return { plan: ContentPlanSchema.parse(planJson) };
+    } catch {
+      return { error: 'Stored plan failed schema validation' };
+    }
   }
 
   /** Gather existing content context (shared with ContentPlanService). */

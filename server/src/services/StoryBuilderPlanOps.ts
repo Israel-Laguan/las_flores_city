@@ -510,6 +510,7 @@ async function fillPlanItemsWithLLM(
   }
 
   for (const item of sortedItems) {
+    let emittedFields: Record<string, string> | null = null;
     try {
       const targets = FILL_TARGETS[item.type];
       if (!targets || targets.length === 0) continue;
@@ -547,11 +548,7 @@ async function fillPlanItemsWithLLM(
           }
         }
         item.filled_fields = Array.from(filledPaths);
-
-        // Emit MODIFY delta for filled fields
-        if (planId) {
-          await emitFillDeltas(planId, item, filteredFields);
-        }
+        emittedFields = filteredFields;
       }
       if (response?.lore_refs && response.lore_refs.length > 0) {
         const existing = item.lore_refs ?? [];
@@ -559,6 +556,14 @@ async function fillPlanItemsWithLLM(
       }
     } catch (err: any) {
       console.warn(`[story-builder] LLM fill failed for ${item.name}: ${err.message}`);
+    }
+
+    // Emit the MODIFY delta OUTSIDE the LLM-error catch so graph delta emission
+    // failures propagate and abort staging instead of being downgraded to a
+    // warning (which would let staging write content files without the required
+    // graph delta). emitFillDeltas no-ops for new items without a canonical node.
+    if (planId && emittedFields) {
+      await emitFillDeltas(planId, item, emittedFields);
     }
   }
 }

@@ -1,6 +1,5 @@
 import express from 'express';
 import type { AuthRequest } from '../middleware/auth.js';
-import { ContentPlanSchema } from '@las-flores/shared';
 import { queryOLTP } from '@las-flores/infra';
 import {
   previewPlan,
@@ -13,6 +12,7 @@ import { isPlanNotFoundError, isPlanStatusError, GraphDisabledError } from '../s
 import { handleGetVerificationReport } from './admin-story-builder-verification.js';
 import { emitAdminEvent } from '../services/AdminEventEmitter.js';
 import { loadPlanForStaging, runStagingPipeline } from './admin-story-builder-staging.js';
+import { graphIntakeService } from '../services/GraphIntakeService.js';
 import { adminStoryBuilderCritiqueRouter } from './admin-story-builder-critique.js';
 import { adminStoryBuilderChatRouter } from './admin-story-builder-chat.js';
 
@@ -28,21 +28,13 @@ adminStoryBuilderActionsRouter.post('/plans/:id/preview', async (req, res) => {
   try {
     const { id } = req.params as Record<string, string>;
 
-    const result = await queryOLTP<{ plan_json: any }>(
-      'SELECT plan_json FROM content_plans WHERE id = $1',
-      [id]
-    );
-
-    if (result.rows.length === 0) {
+    const { notFound, error, plan } = await graphIntakeService.loadPlanForLegacyActions(id);
+    if (notFound) {
       res.status(404).json({ success: false, error: 'Plan not found', timestamp: new Date().toISOString() });
       return;
     }
-
-    let plan;
-    try {
-      plan = ContentPlanSchema.parse(result.rows[0].plan_json);
-    } catch {
-      res.status(400).json({ success: false, error: 'Stored plan failed schema validation', timestamp: new Date().toISOString() });
+    if (error || !plan) {
+      res.status(400).json({ success: false, error, timestamp: new Date().toISOString() });
       return;
     }
 

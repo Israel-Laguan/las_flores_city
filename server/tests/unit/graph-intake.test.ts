@@ -74,6 +74,15 @@ jest.mock('../../src/services/GraphDeltaService.js', () => ({
   clearDeltasForPlan: mockClearDeltasForPlan,
 }));
 
+// Mock ContentPlanService so synthesizeLegacyPlan can resolve a base entity for
+// MODIFY deltas (the real gatherContext reads from Postgres via queryOLTP).
+const mockContentGatherContext = jest.fn(async () => ({
+  characters: [], scenes: [], dialogues: [], missions: [], overlays: [], locations: [],
+}));
+jest.mock('../../src/services/ContentPlanService.js', () => ({
+  contentPlanService: { gatherContext: mockContentGatherContext },
+}));
+
 import { isNeo4jEnabled, runNeo4jQuery, runNeo4jTransaction } from '../../src/services/Neo4jClient.js';
 import { queryOLTP } from '@las-flores/infra';
 import { chatService } from '../../src/services/ChatService.js';
@@ -320,6 +329,37 @@ describe('GraphIntakeService — unit tests (Neo4j mocked)', () => {
       expect(result?.items).toHaveLength(1);
       expect(result?.items[0].type).toBe('character');
       expect(result?.items[0].action).toBe('create');
+    });
+
+    test('deep-merges nested object fields for MODIFY deltas, preserving unchanged nested fields', async () => {
+      mockQueryOLTP.mockResolvedValueOnce({ rows: [{ description: 'Test description' }] });
+      mockNeo4jEnabled.mockReturnValue(true);
+      mockGetDeltasForPlan.mockResolvedValueOnce([
+        {
+          id: 'd1',
+          planId: TEST_PLAN_ID,
+          nodeType: 'Character',
+          nodeId: TEST_CHAR_ID,
+          op: 'MODIFY',
+          fields: { metadata: { personality: 'Grumpy' } },
+          createdAt: new Date().toISOString(),
+        },
+      ]);
+      mockGetDeltaEdgesForPlan.mockResolvedValueOnce([]);
+      mockContentGatherContext.mockResolvedValueOnce({
+        characters: [{ id: TEST_CHAR_ID, name: 'Existing', metadata: { personality: 'Cheerful', backstory: 'Old lore' } }],
+        scenes: [], dialogues: [], missions: [], overlays: [], locations: [],
+      });
+
+      const service = new GraphIntakeService();
+      const result = await service.synthesizeLegacyPlan(TEST_PLAN_ID);
+
+      expect(result).not.toBeNull();
+      expect(result?.items).toHaveLength(1);
+      expect(result?.items[0].action).toBe('update');
+      // The MODIFY delta only set metadata.personality; the unchanged
+      // metadata.backstory must survive the merge (deep merge, not replace).
+      expect(result?.items[0].fields.metadata).toEqual({ personality: 'Grumpy', backstory: 'Old lore' });
     });
   });
 
