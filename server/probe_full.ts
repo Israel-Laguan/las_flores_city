@@ -44,9 +44,19 @@ try {
   // prior run may already own it. Only delete the object on cleanup if this
   // run created it — otherwise we would delete a pre-existing shared object.
   const baseNodes = mk(150,'base');
-  const contentUrl = await publishDialogueTree(TREE, JSON.stringify({ nodes: baseNodes }));
-  const baseExistedBefore = await objectExists(contentUrl);
-  if (!baseExistedBefore) baseContentUrl = contentUrl;
+  const basePayload = JSON.stringify({ nodes: baseNodes });
+  const { createHash } = await import('node:crypto');
+  const baseHash = createHash('sha256').update(basePayload).digest('hex');
+  const MINIO_BUCKET = process.env.MINIO_BUCKET || 'las-flores';
+  const baseContentUrlPre = `s3://${MINIO_BUCKET}/dialogues/${TREE}__${baseHash}.json`;
+  const baseExistedBefore = await objectExists(baseContentUrlPre);
+  let contentUrl: string;
+  if (baseExistedBefore) {
+    contentUrl = baseContentUrlPre;
+  } else {
+    contentUrl = await publishDialogueTree(TREE, basePayload);
+    baseContentUrl = contentUrl;
+  }
   await queryOLTP(`INSERT INTO dialogue_trees (id,name,start_node_id,content_url,updated_at,dialogue_scope) VALUES ($1,$2,$3,$4,NOW(),'system') ON CONFLICT (id) DO UPDATE SET content_url=EXCLUDED.content_url,updated_at=NOW()`,[TREE,'t','base_0000',contentUrl]);
   for(const mid of ACTIVE){await queryOLTP(`INSERT INTO dialogue_overlays (id,name,target_tree_id,mystery_id,nodes,is_nsfw,unlock_condition,updated_at) VALUES ($1,$2,$3,$4,$5::jsonb,false,'none',NOW()) ON CONFLICT (id) DO NOTHING`,[`d0d00000-0000-4000-8000-0000000003${mid.slice(34)}`,`o_${mid.slice(30)}`,TREE,mid,JSON.stringify(mk(60,'ov'))]);}
   const sr=await buildSnapshotsForTree(TREE);

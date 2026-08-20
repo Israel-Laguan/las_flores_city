@@ -337,7 +337,7 @@ export async function objectExists(mediaUrl: string): Promise<boolean> {
     await getS3Client().send(new HeadObjectCommand({ Bucket: location.bucket, Key: location.key }));
     return true;
   } catch (err: any) {
-    if (err.name === 'NotFound' || err.name === 'NoSuchKey') return false;
+    if (err.name === 'NotFound' || err.name === 'NoSuchKey' || err.name === 'NoSuchBucket') return false;
     throw err;
   }
 }
