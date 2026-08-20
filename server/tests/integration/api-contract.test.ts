@@ -58,6 +58,7 @@ jest.mock('../../src/services/contentFetch.js', () => {
 });
 
 const HANDLER_TREE_ID = 'f1000000-e29b-41d4-a716-446655440004';
+const HANDLER_CHUNK_ID = 'f1000001-e29b-41d4-a716-446655440004';
 
 const { Pool } = pg;
 
@@ -114,6 +115,8 @@ beforeAll(async () => {
   await applyMigration('028_metaplot_oltp.sql');
   await applyMigration('018_vault_system.sql');
   await applyMigration('026_vault_signed_urls.sql');
+  await applyMigration('030_dialogue_chunks.sql');
+  await applyMigration('063_content_url.sql');
 
   // Ensure districts exist for scenes
   await pool.query(
@@ -172,6 +175,15 @@ beforeAll(async () => {
      ON CONFLICT (id) DO NOTHING`,
     [HANDLER_TREE_ID, HANDLER_CHARACTER_ID]
   );
+  await pool.query(
+    `INSERT INTO dialogue_chunks (id, tree_id, chunk_key, content_url)
+     VALUES ($1, $2, 'n_start', 'http://test.local/handler-tree.json')
+     ON CONFLICT (id) DO UPDATE SET
+       tree_id = EXCLUDED.tree_id,
+       chunk_key = EXCLUDED.chunk_key,
+       content_url = EXCLUDED.content_url`,
+    [HANDLER_CHUNK_ID, HANDLER_TREE_ID]
+  );
 
   await deleteCache(`user:state:${TEST_USER_ID}`);
   await pool.query(
@@ -198,6 +210,7 @@ afterAll(async () => {
   await pool.query('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);
   await pool.query('DELETE FROM player_sms_threads WHERE user_id = $1', [TEST_USER_ID]);
   await pool.query('DELETE FROM user_relationships WHERE user_id = $1', [TEST_USER_ID]);
+  await pool.query('DELETE FROM dialogue_chunks WHERE id = $1', [HANDLER_CHUNK_ID]);
   await pool.query('DELETE FROM dialogue_trees WHERE id = $1', [HANDLER_TREE_ID]);
   // Note: We don't delete scenes/districts here as they may be shared with other tests
   // and have FK constraints. The test data will be cleaned up by other test suites.

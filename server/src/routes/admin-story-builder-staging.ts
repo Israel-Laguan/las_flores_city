@@ -61,7 +61,12 @@ export async function loadPlanForStaging(
     if (isNeo4jEnabled()) {
       try {
         const synthesized = await graphIntakeService.synthesizeLegacyPlan(id);
-        if (synthesized) return { plan: synthesized };
+        // Only graph-authored plans carry real deltas, so gate on items.length > 0.
+        // synthesizeLegacyPlan returns a non-null plan even with no deltas, and an
+        // empty-items plan would silently proceed to staging instead of surfacing
+        // the genuine 'Stored plan failed schema validation' error for a corrupt
+        // legacy plan_json.
+        if (synthesized && synthesized.items.length > 0) return { plan: synthesized };
       } catch {
         /* fall through to the validation error below */
       }

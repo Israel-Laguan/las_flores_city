@@ -180,7 +180,8 @@ async function loadAllOverlaysForTree(treeId: string): Promise<Map<string, Overl
      FROM dialogue_overlays
      WHERE target_tree_id = $1
        AND nodes IS NOT NULL
-       AND nodes != '{}'::jsonb`,
+       AND nodes != '{}'::jsonb
+     ORDER BY mystery_id, id`,
     [treeId]
   );
 

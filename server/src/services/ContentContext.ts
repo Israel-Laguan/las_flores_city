@@ -62,12 +62,23 @@ export async function gatherLocationContext(): Promise<ExistingLocation[]> {
     // `district` field we infer it from the directory slug; resolve that slug
     // to its display name so locations and scenes share one district
     // representation for any consumer that matches them by district.
-    const districtRows = await queryContent<{ slug: string; name: string }>(
-      `SELECT slug, name FROM districts`
-    );
-    const districtNameBySlug = new Map<string, string>();
-    for (const row of districtRows.rows) {
-      districtNameBySlug.set(row.slug, row.name);
+    // District-name enrichment is best-effort: if the lookup fails, keep the
+    // slug fallbacks below rather than discarding every readable location.
+    let districtNameBySlug = new Map<string, string>();
+    try {
+      const districtRows = await queryContent<{ slug: string; name: string }>(
+        `SELECT slug, name FROM districts`
+      );
+      districtNameBySlug = new Map<string, string>();
+      for (const row of districtRows.rows) {
+        districtNameBySlug.set(row.slug, row.name);
+        // Multiword district folders use underscores (e.g. `los_andes`) while
+        // database slugs use hyphens (e.g. `los-andes`); index both forms so
+        // the directory fallback resolves regardless of separator convention.
+        districtNameBySlug.set(row.slug.replace(/-/g, '_'), row.name);
+      }
+    } catch (err) {
+      console.warn('[content-context] District name lookup failed; using slug fallbacks:', err);
     }
 
     const out: ExistingLocation[] = [];
@@ -79,7 +90,9 @@ export async function gatherLocationContext(): Promise<ExistingLocation[]> {
         const inferredSlug = pathDistrict(file);
         const district = data.district
           ? String(data.district)
-          : (districtNameBySlug.get(inferredSlug) ?? inferredSlug);
+          : (districtNameBySlug.get(inferredSlug) ??
+            districtNameBySlug.get(inferredSlug.replace(/_/g, '-')) ??
+            inferredSlug);
         out.push({
           id: String(data.id),
           name: String(data.name ?? ''),

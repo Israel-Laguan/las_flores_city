@@ -14,7 +14,7 @@ import {
 import { buildValidationErrors } from './StoryBuilderValidation.js';
 import { resolveContentDir, generateLoreStubs } from './StoryBuilderLore.js';
 import { generatePromptFiles } from './PromptFileGenerator.js';
-import { applyDelta, applyDeltaEdge, preflightDeltas, preflightDeltaEdges } from './GraphDeltaService.js';
+import { applyDelta, applyDeltaEdge, preflightDeltas, preflightDeltaEdges, clearDeltasForPlan } from './GraphDeltaService.js';
 import { isNeo4jEnabled, runNeo4jTransaction } from './Neo4jClient.js';
 import { uuidv4, CONTENT_TYPE_TO_NODE_TYPE } from '@las-flores/shared';
 import type { LLMProvider, ExistingContentContext } from './types/LLMTypes.js';
@@ -291,32 +291,50 @@ function createModifyDelta(
  * would be rejected by the canonical-node preflight. Instead, the filled
  * fields are merged into the item in-memory (done by the caller) so they
  * flow to the graph as part of the ADD delta when the plan is staged.
+ *
+ * All deltas for a single staging pass are emitted in ONE Neo4j transaction.
+ * If any delta fails preflight/apply the whole batch is rolled back, and the
+ * plan's existing fill deltas are cleared so a partial graph state can never
+ * be left behind when staging aborts.
  */
 async function emitFillDeltas(
   planId: string,
-  item: ContentPlanItem,
-  filledFields: Record<string, string>,
+  items: Array<{ item: ContentPlanItem; filledFields: Record<string, string> }>,
 ): Promise<void> {
-  if (!isNeo4jEnabled() || !planId) return;
+  if (!isNeo4jEnabled() || !planId || items.length === 0) return;
 
-  // New items have no entity_id yet — skip delta emission. The filled fields
-  // are applied to the item's own fields by the caller (fillPlanItemsWithLLM),
-  // so they will be included in the eventual ADD delta at stage time.
-  // Resolve the stable canonical node identity from entity_id, falling back
-  // to fields.id (a persisted entity UUID) before the transient item.id.
-  const nodeId = item.entity_id ?? (item.fields as any).id;
-  if (!nodeId) return;
+  // Build a MODIFY delta for each filled item. New (ADD) items have no
+  // entity_id yet — skip delta emission for them (the filled fields are merged
+  // into the item in-memory by the caller and flow to the graph as part of the
+  // ADD delta at stage time). Resolve the stable canonical node identity from
+  // entity_id, falling back to fields.id (a persisted entity UUID).
+  const deltas: GraphDelta[] = [];
+  for (const { item, filledFields } of items) {
+    const nodeId = item.entity_id ?? (item.fields as any)?.id;
+    if (!nodeId) continue;
+    const delta = createModifyDelta(planId, item, nodeId, filledFields);
+    if (!delta) continue;
+    deltas.push(delta);
+  }
 
-  const delta = createModifyDelta(planId, item, nodeId, filledFields);
-  if (!delta) return;
+  if (deltas.length === 0) return;
 
   try {
     await runNeo4jTransaction(async (tx) => {
-      await preflightDeltas([delta], tx);
-      await applyDelta(delta, tx);
+      await preflightDeltas(deltas, tx);
+      for (const delta of deltas) {
+        await applyDelta(delta, tx);
+      }
     });
   } catch (err: any) {
-    throw new Error(`Failed to emit MODIFY delta for filled fields on ${item.name} (${item.type}:${nodeId}): ${err.message}`, { cause: err });
+    // Roll back any fill deltas already on the plan so no partial graph state
+    // survives a failed staging pass.
+    try {
+      await clearDeltasForPlan(planId);
+    } catch (cleanupErr: any) {
+      console.error(`[story-builder] Failed to clear fill deltas for plan ${planId} after emission failure:`, cleanupErr?.message);
+    }
+    throw new Error(`Failed to emit MODIFY deltas for filled fields on plan ${planId}: ${err.message}`, { cause: err });
   }
 }
 
@@ -337,7 +355,7 @@ export async function emitLoreDelta(
 
   // Resolve the stable canonical node identity from entity_id, falling back
   // to fields.id (a persisted entity UUID) before the transient item.id.
-  const nodeId = item.entity_id ?? (item.fields as any).id;
+  const nodeId = item.entity_id ?? (item.fields as any)?.id;
   if (!nodeId) return;
 
   const delta = createModifyDelta(planId, item, nodeId, { [fieldName]: loreContent });
@@ -468,6 +486,12 @@ async function fillPlanItemsWithLLM(
 
   const planId = options.planId;
 
+  // Collect (item, filledFields) pairs so all MODIFY fill deltas are emitted in
+  // a single Neo4j transaction after the loop. Emitting per-item would commit
+  // deltas incrementally; a later item's failure would then leave partial graph
+  // state while staging aborts.
+  const fillDeltaPairs: Array<{ item: ContentPlanItem; filledFields: Record<string, string> }> = [];
+
   // Inlined fill logic (formerly in ContentFillService.fillFields)
   const FILL_TARGETS: Record<string, string[]> = {
     character: [
@@ -558,12 +582,20 @@ async function fillPlanItemsWithLLM(
       console.warn(`[story-builder] LLM fill failed for ${item.name}: ${err.message}`);
     }
 
-    // Emit the MODIFY delta OUTSIDE the LLM-error catch so graph delta emission
-    // failures propagate and abort staging instead of being downgraded to a
-    // warning (which would let staging write content files without the required
-    // graph delta). emitFillDeltas no-ops for new items without a canonical node.
+    // Collect the (item, filledFields) pair for batched delta emission below.
+    // emitFillDeltas no-ops for new items without a canonical node.
     if (planId && emittedFields) {
-      await emitFillDeltas(planId, item, emittedFields);
+      fillDeltaPairs.push({ item, filledFields: emittedFields });
     }
+  }
+
+  // Emit all fill deltas in ONE Neo4j transaction OUTSIDE the per-item LLM-error
+  // catch so a graph delta emission failure propagates and aborts staging
+  // instead of being downgraded to a warning (which would let staging write
+  // content files without the required graph deltas). On failure the whole
+  // batch is rolled back and the plan's existing fill deltas are cleared, so no
+  // partial graph state is left behind.
+  if (planId && fillDeltaPairs.length > 0) {
+    await emitFillDeltas(planId, fillDeltaPairs);
   }
 }

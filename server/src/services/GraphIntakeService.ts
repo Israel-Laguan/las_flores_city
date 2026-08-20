@@ -31,7 +31,7 @@ import { queryOLTP } from '@las-flores/infra';
 import { uuidv4 } from '@las-flores/shared';
 import { chatService } from './ChatService.js';
 import { contentPlanService } from './ContentPlanService.js';
-import { applyDelta, applyDeltaEdge, getDeltasForPlan, getDeltaEdgesForPlan, clearDeltasForPlan, preflightDeltas, preflightDeltaEdges, normalizeKeyComponent } from './GraphDeltaService.js';
+import { applyDelta, applyDeltaEdge, getDeltasForPlan, getDeltaEdgesForPlan, clearDeltasForPlan, preflightDeltas, preflightDeltaEdges, normalizeKeyComponent, resolveEdgeTargetNameValue } from './GraphDeltaService.js';
 import { isNeo4jEnabled, runNeo4jTransaction } from './Neo4jClient.js';
 import type { ExistingContentContext, LLMUsage } from './types/LLMTypes.js';
 
@@ -98,16 +98,48 @@ function deltaToPlanItem(delta: GraphDelta, baseContext: ExistingContentContext)
     ? deepMergeObjects(baseEntity, fields)
     : { ...fields };
 
+  // The slug MUST be schema-compliant (`^[a-z0-9_]+$`). A delta that omits
+  // `fields.slug` and whose nodeId is a UUID (hyphens + possible uppercase) is
+  // schema-INVALID; falling back to the UUID here would persist a plan_json that
+  // fails ContentPlanSchema.parse at preview/stage/approve. Generate a compliant
+  // slug from the name when available, otherwise from the nodeId.
+  const SLUG_RE = /^[a-z0-9_]+$/;
+  let slug = typeof mergedFields.slug === 'string' && SLUG_RE.test(mergedFields.slug)
+    ? mergedFields.slug
+    : null;
+  if (!slug) {
+    const base = typeof mergedFields.name === 'string' && mergedFields.name.length > 0
+      ? mergedFields.name
+      : nodeId;
+    slug = slugify(base);
+  }
+
+  // The plan-item `id` is a transient in-plan handle (used only for edge
+  // links); the graph identity is preserved via `nodeId`/`entity_id`, so it
+  // must be a valid UUID per ContentPlanItemSchema. Use a fresh UUID rather
+  // than the raw delta id (which may be a non-UUID string like `delta-char-1`).
   return {
-    id: delta.id,
+    id: uuidv4(),
     name: mergedFields.name ?? nodeId,
     type,
-    slug: mergedFields.slug ?? nodeId,
+    slug,
     action: op === 'ADD' ? 'create' : 'update',
     fields: mergedFields,
     dependsOn: [],
     assetNeeds: [],
+    // MODIFY deltas reference an existing canonical entity; record its stable
+    // nodeId as entity_id so edge resolution can write the canonical identity
+    // (not the transient plan-item id) when this item is a MODIFY edge target.
+    ...(op === 'MODIFY' ? { entity_id: nodeId } : {}),
   };
+}
+
+/** Slugify following the ContentPlan slug contract (`^[a-z0-9_]+$`). */
+function slugify(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9_]+/g, '_')
+    .replace(/^_+|_+$/g, '');
 }
 
 /** Deep-merge object-valued fields; arrays and scalars replace the existing value. */
@@ -171,6 +203,7 @@ function synthesizeEdges(
   edges: GraphDeltaEdge[],
   items: ContentPlanItem[],
   itemIndex: Map<string, string>,
+  nameLookup: Map<string, string>,
 ): ContentLink[] {
   const links: ContentLink[] = [];
   for (const edge of edges) {
@@ -188,19 +221,40 @@ function synthesizeEdges(
     const targetKey = `${targetNodeType}:${normalizeKeyComponent(targetNodeId)}`;
     const targetItemId = itemIndex.get(targetKey);
     if (targetItemId) {
-      // delta→delta (both newly-authored entities): emit a ContentLink.
-      links.push({
-        fromItem: sourceItemId,
-        toItem: targetItemId,
-        field: mapping.field,
-        action: 'set',
-      });
+      const targetItem = items.find((i) => i.id === targetItemId);
+      if (targetItem && targetItem.action === 'update') {
+        // MODIFY target is an existing canonical entity (delta→canonical via a
+        // synthesized item). Materialize the link as a direct field write using
+        // its stable identity (entity_id), NOT the transient delta item id —
+        // otherwise the random item id is written as the foreign key and the
+        // relationship points at the delta instead of the canonical entity.
+        const identity = targetItem.entity_id || edge.targetNodeId;
+        sourceItem.fields = {
+          ...sourceItem.fields,
+          [mapping.field]: identity,
+        };
+      } else {
+        // delta→delta (both newly-authored ADD entities): emit a ContentLink;
+        // resolveItem writes the field on materialize.
+        links.push({
+          fromItem: sourceItemId,
+          toItem: targetItemId,
+          field: mapping.field,
+          action: 'set',
+        });
+      }
     } else {
-      // delta→canonical: write the mapped field directly using the target's
-      // stable node ID, so the relationship is preserved on the existing entity.
+      // delta→canonical: write the mapped field directly. For name-valued
+      // mappings (e.g. IN_DISTRICT → District) resolve the target's canonical
+      // name so scene migration matches the District by name; otherwise write
+      // the stable target node ID. ALWAYS resolve the value here — never the
+      // transient delta item id.
+      const value = mapping.value === 'name'
+        ? resolveEdgeTargetNameValue(edge, nameLookup)
+        : edge.targetNodeId;
       sourceItem.fields = {
         ...sourceItem.fields,
-        [mapping.field]: edge.targetNodeId,
+        [mapping.field]: value,
       };
     }
   }
@@ -231,7 +285,22 @@ function synthesizePlanFromDeltas(
     );
   }
 
-  const links = synthesizeEdges(edges, items, itemIndex);
+  // Name lookup for name-valued edges (today only IN_DISTRICT → District).
+  // Mirrors GraphExporter: resolve the canonical name a name-valued edge writes
+  // into the source item's fields. Build it from the deltas themselves (a
+  // District ADD/MODIFY delta carries its own name in fields.name, exactly as
+  // the merged revision the exporter reads would), so a newly-authored District
+  // resolves to its name; existing Districts absent from the deltas fall back to
+  // the target nodeId via resolveEdgeTargetNameValue.
+  const nameLookup = new Map<string, string>();
+  for (const delta of deltas) {
+    const name = (delta.fields as Record<string, any> | undefined)?.name;
+    if (typeof name === 'string' && name.length > 0) {
+      nameLookup.set(`${delta.nodeType}:${normalizeKeyComponent(delta.nodeId)}`, name);
+    }
+  }
+
+  const links = synthesizeEdges(edges, items, itemIndex, nameLookup);
 
   return {
     id: planId,
@@ -309,10 +378,21 @@ export class GraphIntakeService {
     // StoryBuilderMigration, AssetPublishService) receives a valid ContentPlan
     // instead of an empty object that fails ContentPlanSchema.parse.
     const synthesizedPlan = synthesizePlanFromDeltas(planId, description, deltas, deltaEdges, context);
+    // Reject a schema-invalid plan before it is persisted. The synthesized
+    // snapshot is what every legacy/preview consumer parses; persisting an
+    // invalid one would make preview/stage/approve fail opaquely later.
+    const parsedPlan = ContentPlanSchema.safeParse(synthesizedPlan);
+    if (!parsedPlan.success) {
+      throw new GraphIntakeValidationError(
+        `Synthesized plan for [${planId}] failed schema validation: ${parsedPlan.error.issues
+          .map((i) => `${i.path.join('.')}: ${i.message}`)
+          .join('; ')}`,
+      );
+    }
     await queryOLTP(
       `INSERT INTO content_plans (id, description, status, plan_json, created_at, updated_at)
        VALUES ($1, $2, 'draft', $3::jsonb, $4, $4)`,
-      [planId, description, synthesizedPlan, timestamp],
+      [planId, description, parsedPlan.data, timestamp],
     );
 
     // Step 6: Write all deltas and edges to Neo4j in a single transaction
@@ -409,7 +489,11 @@ export class GraphIntakeService {
     const { deltas, edges } = await this.getPlanDeltas(planId);
     const context = await this.gatherContext();
 
-    return synthesizePlanFromDeltas(planId, description, deltas, edges, context);
+    const synthesized = synthesizePlanFromDeltas(planId, description, deltas, edges, context);
+    // Validate so consumers (e.g. staging) never receive a schema-invalid plan
+    // that would later fail ContentPlanSchema.parse opaquely.
+    const parsed = ContentPlanSchema.safeParse(synthesized);
+    return parsed.success ? parsed.data : null;
   }
 
   /**

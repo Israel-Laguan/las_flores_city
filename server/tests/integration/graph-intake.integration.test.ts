@@ -63,6 +63,26 @@ beforeAll(async () => {
   neo4jLive = isNeo4jEnabled() && (await verifyNeo4j());
   if (!neo4jLive) return;
   await ensureGraphConstraints();
+
+  // Start-of-run sweep: a previous run hard-killed mid-test leaves a
+  // content_plans row + Neo4j delta nodes keyed by a server-generated UUID no
+  // later run tracks. These descriptions are unique to this suite, so delete
+  // any stale rows (and their deltas) to prevent orphaned graph state from
+  // accumulating across crashed/interrupted runs.
+  const staleDescriptions = [
+    'Create a test character',
+    'Create test character 2',
+    'Create test scene',
+  ];
+  for (const desc of staleDescriptions) {
+    const rows = await queryOLTP<{ id: string }>(
+      'SELECT id FROM content_plans WHERE description = $1',
+      [desc],
+    );
+    for (const row of rows.rows) {
+      await cleanupPlan(row.id);
+    }
+  }
 });
 
 afterAll(async () => {
