@@ -14,7 +14,7 @@ import {
 import { buildValidationErrors } from './StoryBuilderValidation.js';
 import { resolveContentDir, generateLoreStubs } from './StoryBuilderLore.js';
 import { generatePromptFiles } from './PromptFileGenerator.js';
-import { applyDelta, applyDeltaEdge, preflightDeltas, preflightDeltaEdges, clearDeltasForPlan } from './GraphDeltaService.js';
+import { applyDelta, applyDeltaEdge, preflightDeltas, preflightDeltaEdges } from './GraphDeltaService.js';
 import { isNeo4jEnabled, runNeo4jTransaction } from './Neo4jClient.js';
 import { uuidv4, CONTENT_TYPE_TO_NODE_TYPE } from '@las-flores/shared';
 import type { LLMProvider, ExistingContentContext } from './types/LLMTypes.js';
@@ -327,13 +327,11 @@ async function emitFillDeltas(
       }
     });
   } catch (err: any) {
-    // Roll back any fill deltas already on the plan so no partial graph state
-    // survives a failed staging pass.
-    try {
-      await clearDeltasForPlan(planId);
-    } catch (cleanupErr: any) {
-      console.error(`[story-builder] Failed to clear fill deltas for plan ${planId} after emission failure:`, cleanupErr?.message);
-    }
+    // The managed Neo4j transaction already rolls back every write from this
+    // batch, so there is no partial graph state to clean up. Do NOT call
+    // clearDeltasForPlan here: that would delete the plan's pre-existing deltas
+    // (from earlier successful staging passes), losing the original plan on a
+    // retry or approval after a transient fill-delta failure.
     throw new Error(`Failed to emit MODIFY deltas for filled fields on plan ${planId}: ${err.message}`, { cause: err });
   }
 }

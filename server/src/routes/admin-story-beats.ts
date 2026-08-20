@@ -48,18 +48,16 @@ async function loadAllDialogueTreeNodes(): Promise<{
   const out: Array<{ id: string; name: string; nodes: Record<string, any> }> = [];
   let failed = 0;
   for (const row of result.rows) {
-    // Only a tree with NO `content_url` is truly unavailable (its blob pointer
-    // was never published). A present `content_url` yields a node map that may
-    // legitimately be empty (e.g. a freshly scaffolded tree), so we tolerate an
-    // empty map rather than treating it as a load failure — otherwise a single
-    // empty tree would block deleting/querying an unrelated story beat.
+    // A tree is available only when its `content_url` resolves to a valid node
+    // map (including a legitimately empty `{}` for a freshly scaffolded tree).
+    // `fetchNodesFromContentUrl` returns `null` for a tree that is genuinely
+    // UNAVAILABLE — no `content_url`, a CDN fetch failure, or a malformed/missing
+    // `nodes` section — so a single unreadable tree blocks deleting an unrelated
+    // story beat (which would otherwise miss a real dialogue reference and delete
+    // a beat that an unavailable tree still references) rather than being
+    // silently coerced to an empty map.
     if (!row.content_url) { failed++; continue; }
     const nodes = await fetchNodesFromContentUrl(row.content_url, {});
-    // A null return (CDN fetch failure) or non-object/invalid content cannot be
-    // verified as an empty tree, so it counts as unavailable rather than being
-    // silently coerced to {} — otherwise a DELETE route could miss a real
-    // dialogue reference and delete a story beat that an unavailable tree still
-    // references.
     const validNodes = nodes && typeof nodes === 'object' && !Array.isArray(nodes) ? nodes : null;
     if (!validNodes) { failed++; continue; }
     out.push({

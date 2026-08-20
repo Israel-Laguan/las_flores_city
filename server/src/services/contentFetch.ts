@@ -29,6 +29,16 @@ function isLeafMap(v: Record<string, Leaf>): boolean {
  * JSON parse error) this returns `null` so the caller can fall back to
  * the in-DB JSONB — the key to keeping the resolver resilient and the
  * existing tests green.
+ *
+ * AVAILABLE vs UNAVAILABLE: a present, valid `nodes` object — even an
+ * empty `{}` (a freshly published but node-less tree) — is returned as-is,
+ * and callers tolerate an empty map. A *malformed* `nodes` section
+ * (missing key, array, non-record, or a non-empty map whose values are not
+ * records) is treated as UNAVAILABLE and returns `null` rather than being
+ * silently coerced to the empty fallback. This separation matters for
+ * availability checks such as admin-story-beats DELETE, which must refuse to
+ * act when a tree cannot be verified instead of treating an unreadable tree
+ * as an empty one and missing a real dialogue reference.
  */
 export async function fetchNodesFromContentUrl(
   contentUrl: string | null | undefined,
@@ -41,13 +51,13 @@ export async function fetchNodesFromContentUrl(
       | null
       | undefined;
     const candidates = parsed?.nodes;
-    // Accept a CDN node map only when it is a non-empty record of records; a
-    // missing/empty/malformed (e.g. array) section falls back to the DB JSONB.
-    const nodes =
-      candidates && isNodeMap(candidates) && Object.keys(candidates).length > 0
-        ? candidates
-        : null;
-    return nodes ?? fallback;
+    if (candidates === undefined || candidates === null) return null;
+    if (Array.isArray(candidates)) return null;
+    if (typeof candidates !== 'object') return null;
+    // An empty map is a valid, available (node-less) tree.
+    if (Object.keys(candidates).length === 0) return fallback;
+    // A non-empty section must be a real node map; otherwise it is malformed.
+    return isNodeMap(candidates) ? candidates : null;
   } catch (error: any) {
     console.warn(`[DialogueResolver] CDN content fetch failed for ${contentUrl}: ${error?.message}`);
     return null;

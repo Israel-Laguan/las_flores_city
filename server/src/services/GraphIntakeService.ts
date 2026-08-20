@@ -27,7 +27,7 @@ import {
   type GraphDeltaEdge,
   findEdgeMapping,
 } from '@las-flores/shared';
-import { queryOLTP } from '@las-flores/infra';
+import { queryOLTP, queryContent } from '@las-flores/infra';
 import { uuidv4 } from '@las-flores/shared';
 import { chatService } from './ChatService.js';
 import { contentPlanService } from './ContentPlanService.js';
@@ -64,7 +64,11 @@ export interface CreatePlanFromDescriptionResult {
 /** Reject DELETE deltas before synthesis — the legacy ContentPlanItem contract
  * has no tombstone representation. Callers must surface DELETEs as an error
  * rather than silently dropping them so references cannot be bypassed. */
-function deltaToPlanItem(delta: GraphDelta, baseContext: ExistingContentContext): ContentPlanItem {
+function deltaToPlanItem(
+  delta: GraphDelta,
+  baseContext: ExistingContentContext,
+  canonicalSlugByKey?: Map<string, string>,
+): ContentPlanItem {
   const { nodeType, nodeId, op, fields } = delta;
 
   if (op === 'DELETE') {
@@ -103,10 +107,24 @@ function deltaToPlanItem(delta: GraphDelta, baseContext: ExistingContentContext)
   // schema-INVALID; falling back to the UUID here would persist a plan_json that
   // fails ContentPlanSchema.parse at preview/stage/approve. Generate a compliant
   // slug from the name when available, otherwise from the nodeId.
+  // For MODIFY items the canonical on-disk slug MUST win: a renamed `name` (or a
+  // deliberately different `fields.slug`) would otherwise retarget a new file
+  // path and orphan the existing file at stage time. The canonical slug is
+  // resolved from the content store (synthesizePlanFromDeltas →
+  // resolveCanonicalSlugsForDeltas) and keyed by `nodeType:nodeId`.
   const SLUG_RE = /^[a-z0-9_]+$/;
-  let slug = typeof mergedFields.slug === 'string' && SLUG_RE.test(mergedFields.slug)
-    ? mergedFields.slug
-    : null;
+  let slug: string | null = null;
+  if (op === 'MODIFY') {
+    const canonicalSlug = canonicalSlugByKey?.get(`${nodeType}:${normalizeKeyComponent(nodeId)}`);
+    if (typeof canonicalSlug === 'string' && SLUG_RE.test(canonicalSlug)) {
+      slug = canonicalSlug;
+    }
+  }
+  if (!slug) {
+    slug = typeof mergedFields.slug === 'string' && SLUG_RE.test(mergedFields.slug)
+      ? mergedFields.slug
+      : null;
+  }
   if (!slug) {
     const base = typeof mergedFields.name === 'string' && mergedFields.name.length > 0
       ? mergedFields.name
@@ -261,15 +279,74 @@ function synthesizeEdges(
   return links;
 }
 
+/** Resolve canonical on-disk slugs for MODIFY deltas, keyed `nodeType:nodeId`.
+ *
+ * A UUID-backed MODIFY references an existing canonical entity whose on-disk
+ * slug (file directory) is derived from its canonical `name`/`title` (or the
+ * `slug` column for Districts) — NOT from the possibly-renamed delta `name`.
+ * Querying the content store in bulk (one `WHERE id IN (...)` per table) keeps
+ * this cheap and mirrors GraphExporter.resolveCanonicalSlugsBulk. A content-store
+ * failure must never abort synthesizing the plan (graph-less dev, transient
+ * blip): on error we log a warning and return an empty map, which makes the
+ * MODIFY slug fall back to the name-derived value (acceptable for ADD /
+ * non-renamed MODIFY). Locations have no DB table and are not resolved here.
+ */
+async function resolveCanonicalSlugsForDeltas(deltas: GraphDelta[]): Promise<Map<string, string>> {
+  const CANONICAL_SLUG_QUERY: Partial<Record<string, { table: string; column: string }>> = {
+    Character: { table: 'characters', column: 'name' },
+    Scene: { table: 'scenes', column: 'name' },
+    Dialogue: { table: 'dialogue_trees', column: 'name' },
+    Overlay: { table: 'dialogue_overlays', column: 'name' },
+    Mission: { table: 'mysteries', column: 'title' },
+    District: { table: 'districts', column: 'slug' },
+  };
+
+  const byType = new Map<string, string[]>();
+  for (const d of deltas) {
+    if (d.op !== 'MODIFY') continue;
+    const list = byType.get(d.nodeType) ?? [];
+    list.push(d.nodeId);
+    byType.set(d.nodeType, list);
+  }
+
+  const result = new Map<string, string>();
+  for (const [nodeType, ids] of byType) {
+    const meta = CANONICAL_SLUG_QUERY[nodeType];
+    if (!meta || ids.length === 0) continue;
+    const placeholders = ids.map((_, i) => `$${i + 1}`).join(', ');
+    try {
+      const rows = await queryContent<{ id: string; name: string }>(
+        `SELECT id, ${meta.column} AS name FROM ${meta.table} WHERE id IN (${placeholders})`,
+        ids,
+      );
+      for (const row of rows.rows) {
+        const slug = slugify(row.name);
+        if (slug.length > 0) {
+          result.set(`${nodeType}:${normalizeKeyComponent(row.id)}`, slug);
+        }
+      }
+    } catch (err) {
+      console.warn(`[graph-intake] canonical slug lookup failed for ${nodeType}:`, (err as Error)?.message);
+    }
+  }
+  return result;
+}
+
 /** Synthesize a ContentPlan from deltas+edges for compatibility with the legacy pipeline. */
-function synthesizePlanFromDeltas(
+async function synthesizePlanFromDeltas(
   planId: string,
   description: string,
   deltas: GraphDelta[],
   edges: GraphDeltaEdge[],
   context: ExistingContentContext,
-): ContentPlan {
-  const items = deltas.map(d => deltaToPlanItem(d, context));
+): Promise<ContentPlan> {
+  // Resolve canonical on-disk slugs for MODIFY deltas so a renamed entity keeps
+  // its existing file path (see deltaToPlanItem). Best-effort: a content-store
+  // failure logs a warning and leaves the map empty, in which case we fall back
+  // to the name-derived slug (acceptable for ADD / non-renamed MODIFY).
+  const canonicalSlugByKey = await resolveCanonicalSlugsForDeltas(deltas);
+
+  const items = deltas.map(d => deltaToPlanItem(d, context, canonicalSlugByKey));
 
   // Build an index mapping (nodeType:graphNodeId) → plan-item id so edge links
   // resolve to generated item IDs, not raw graph node IDs. Edges reference the
@@ -287,17 +364,31 @@ function synthesizePlanFromDeltas(
 
   // Name lookup for name-valued edges (today only IN_DISTRICT → District).
   // Mirrors GraphExporter: resolve the canonical name a name-valued edge writes
-  // into the source item's fields. Build it from the deltas themselves (a
+  // into the source item's fields. Seed it from the deltas themselves (a
   // District ADD/MODIFY delta carries its own name in fields.name, exactly as
   // the merged revision the exporter reads would), so a newly-authored District
-  // resolves to its name; existing Districts absent from the deltas fall back to
-  // the target nodeId via resolveEdgeTargetNameValue.
+  // resolves to its name. Then seed canonical District names from the content
+  // store so an IN_DISTRICT edge to an EXISTING District (absent from this
+  // plan's deltas) resolves to the District NAME, not its UUID — otherwise
+  // materialization could not match the District by name. Delta names win over
+  // canonical names (a District MODIFY in this plan keeps its new name).
   const nameLookup = new Map<string, string>();
   for (const delta of deltas) {
     const name = (delta.fields as Record<string, any> | undefined)?.name;
     if (typeof name === 'string' && name.length > 0) {
       nameLookup.set(`${delta.nodeType}:${normalizeKeyComponent(delta.nodeId)}`, name);
     }
+  }
+  try {
+    const districtRows = await queryContent<{ id: string; name: string }>(
+      `SELECT id, name FROM districts`,
+    );
+    for (const row of districtRows.rows) {
+      const key = `District:${normalizeKeyComponent(row.id)}`;
+      if (!nameLookup.has(key)) nameLookup.set(key, row.name);
+    }
+  } catch (err) {
+    console.warn('[graph-intake] District name lookup failed; IN_DISTRICT edges may resolve to a UUID:', (err as Error)?.message);
   }
 
   const links = synthesizeEdges(edges, items, itemIndex, nameLookup);
@@ -377,7 +468,7 @@ export class GraphIntakeService {
     // directly, e.g. StoryBuilderOrchestrator.stagePlan, StoryBuilderSolidify,
     // StoryBuilderMigration, AssetPublishService) receives a valid ContentPlan
     // instead of an empty object that fails ContentPlanSchema.parse.
-    const synthesizedPlan = synthesizePlanFromDeltas(planId, description, deltas, deltaEdges, context);
+    const synthesizedPlan = await synthesizePlanFromDeltas(planId, description, deltas, deltaEdges, context);
     // Reject a schema-invalid plan before it is persisted. The synthesized
     // snapshot is what every legacy/preview consumer parses; persisting an
     // invalid one would make preview/stage/approve fail opaquely later.
@@ -489,7 +580,7 @@ export class GraphIntakeService {
     const { deltas, edges } = await this.getPlanDeltas(planId);
     const context = await this.gatherContext();
 
-    const synthesized = synthesizePlanFromDeltas(planId, description, deltas, edges, context);
+    const synthesized = await synthesizePlanFromDeltas(planId, description, deltas, edges, context);
     // Validate so consumers (e.g. staging) never receive a schema-invalid plan
     // that would later fail ContentPlanSchema.parse opaquely.
     const parsed = ContentPlanSchema.safeParse(synthesized);

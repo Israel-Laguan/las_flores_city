@@ -75,7 +75,14 @@ export async function gatherLocationContext(): Promise<ExistingLocation[]> {
         // Multiword district folders use underscores (e.g. `los_andes`) while
         // database slugs use hyphens (e.g. `los-andes`); index both forms so
         // the directory fallback resolves regardless of separator convention.
-        districtNameBySlug.set(row.slug.replace(/-/g, '_'), row.name);
+        // Only add the underscore alias when the exact slug is not already
+        // mapped, so an existing `foo_bar` district is never overwritten by the
+        // alias of an unrelated `foo-bar` district (which would give locations
+        // the wrong district name).
+        const underscoreSlug = row.slug.replace(/-/g, '_');
+        if (!districtNameBySlug.has(underscoreSlug)) {
+          districtNameBySlug.set(underscoreSlug, row.name);
+        }
       }
     } catch (err) {
       console.warn('[content-context] District name lookup failed; using slug fallbacks:', err);

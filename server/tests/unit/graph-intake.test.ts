@@ -26,9 +26,10 @@ jest.mock('../../src/services/Neo4jClient.js', () => ({
   runNeo4jTransaction: jest.fn(async (fn: any) => fn(mockTx)),
 }));
 
-// Mock queryOLTP (AGENTS.md: unit tests must never touch DB)
+// Mock queryOLTP/queryContent (AGENTS.md: unit tests must never touch DB)
 jest.mock('@las-flores/infra', () => ({
   queryOLTP: jest.fn(async () => ({ rows: [] })),
+  queryContent: jest.fn(async () => ({ rows: [] })),
 }));
 
 // Mock the chat provider chain
