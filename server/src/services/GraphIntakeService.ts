@@ -29,8 +29,13 @@ import {
 } from '@las-flores/shared';
 import { queryOLTP, queryContent } from '@las-flores/infra';
 import { uuidv4 } from '@las-flores/shared';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import * as yaml from 'js-yaml';
+import { glob } from 'glob';
 import { chatService } from './ChatService.js';
 import { contentPlanService } from './ContentPlanService.js';
+import { resolveContentDir } from './StoryBuilderLore.js';
 import { applyDelta, applyDeltaEdge, getDeltasForPlan, getDeltaEdgesForPlan, clearDeltasForPlan, preflightDeltas, preflightDeltaEdges, normalizeKeyComponent, resolveEdgeTargetNameValue } from './GraphDeltaService.js';
 import { isNeo4jEnabled, runNeo4jTransaction } from './Neo4jClient.js';
 import type { ExistingContentContext, LLMUsage } from './types/LLMTypes.js';
@@ -279,18 +284,58 @@ function synthesizeEdges(
   return links;
 }
 
+/** Resolve canonical on-disk slugs for Location MODIFY deltas from their YAML
+ * files on disk. Locations are file-only content with no DB table, so their
+ * slug is the location directory name (NOT a slugified name, which would
+ * diverge for accented/manually-named locations). Mirrors
+ * GraphExporter.resolveLocationSlugs. */
+async function resolveLocationSlugsForDeltas(locationIds: string[]): Promise<Map<string, string>> {
+  const result = new Map<string, string>();
+  if (locationIds.length === 0) return result;
+
+  const contentDir = resolveContentDir();
+  let files: string[];
+  try {
+    files = await glob(`${contentDir}/districts/*/locations/*/*.yaml`, { absolute: true });
+  } catch (err) {
+    console.warn(`[graph-intake] location YAML glob failed:`, (err as Error)?.message);
+    return result;
+  }
+
+  const idSet = new Set(locationIds.map((id) => id.toLowerCase()));
+  for (const file of files) {
+    try {
+      const raw = await fs.readFile(file, 'utf-8');
+      const data: any = yaml.load(raw);
+      if (!data || typeof data !== 'object' || !data.id || !data.name) continue;
+      if (!idSet.has(String(data.id).toLowerCase())) continue;
+      const slug = path.basename(path.dirname(file));
+      if (slug.length > 0) {
+        result.set(`Location:${normalizeKeyComponent(String(data.id))}`, slug);
+      }
+    } catch (err) {
+      console.warn(`[graph-intake] failed to read location YAML ${file}:`, (err as Error)?.message);
+    }
+  }
+  return result;
+}
+
 /** Resolve canonical on-disk slugs for MODIFY deltas, keyed `nodeType:nodeId`.
  *
  * A UUID-backed MODIFY references an existing canonical entity whose on-disk
  * slug (file directory) is derived from its canonical `name`/`title` (or the
- * `slug` column for Districts) — NOT from the possibly-renamed delta `name`.
- * Querying the content store in bulk (one `WHERE id IN (...)` per table) keeps
- * this cheap and mirrors GraphExporter.resolveCanonicalSlugsBulk. A content-store
- * failure must never abort synthesizing the plan (graph-less dev, transient
- * blip): on error we log a warning and return an empty map, which makes the
- * MODIFY slug fall back to the name-derived value (acceptable for ADD /
- * non-renamed MODIFY). Locations have no DB table and are not resolved here.
- */
+ * `slug` column for Districts, or the directory name for Locations) — NOT from
+ * the possibly-renamed delta `name`. Querying the content store in bulk (one
+ * `WHERE id IN (...)` per table) keeps this cheap and mirrors
+ * GraphExporter.resolveCanonicalSlugsBulk. Locations have no DB table, so their
+ * slugs are resolved separately from YAML.
+ *
+ * Fail-closed: if the content-store lookup for a given type throws, we cannot
+ * trust a name-derived slug for any unresolved MODIFY of that type — rethrow so
+ * the synthesized plan fails validation instead of later targeting a
+ * non-existent path. (A transient blip still aborts the plan, which is safer
+ * than silently writing to the wrong file.) An empty result for a type that
+ * simply has no MODIFY deltas is fine and not an error. */
 async function resolveCanonicalSlugsForDeltas(deltas: GraphDelta[]): Promise<Map<string, string>> {
   const CANONICAL_SLUG_QUERY: Partial<Record<string, { table: string; column: string }>> = {
     Character: { table: 'characters', column: 'name' },
@@ -311,8 +356,9 @@ async function resolveCanonicalSlugsForDeltas(deltas: GraphDelta[]): Promise<Map
 
   const result = new Map<string, string>();
   for (const [nodeType, ids] of byType) {
+    if (nodeType === 'Location' || ids.length === 0) continue;
     const meta = CANONICAL_SLUG_QUERY[nodeType];
-    if (!meta || ids.length === 0) continue;
+    if (!meta) continue;
     const placeholders = ids.map((_, i) => `$${i + 1}`).join(', ');
     try {
       const rows = await queryContent<{ id: string; name: string }>(
@@ -326,9 +372,24 @@ async function resolveCanonicalSlugsForDeltas(deltas: GraphDelta[]): Promise<Map
         }
       }
     } catch (err) {
-      console.warn(`[graph-intake] canonical slug lookup failed for ${nodeType}:`, (err as Error)?.message);
+      // Fail closed: a content-store failure means we cannot guarantee the
+      // canonical slug for these MODIFY deltas, so surface it rather than
+      // letting a name-derived slug target a possibly non-existent path.
+      throw new GraphIntakeValidationError(
+        `Canonical slug lookup failed for ${nodeType} during plan synthesis: ${(err as Error)?.message}`,
+      );
     }
   }
+
+  // Locations: resolve from YAML (no DB table).
+  const locationIds = byType.get('Location') ?? [];
+  if (locationIds.length > 0) {
+    const locationSlugs = await resolveLocationSlugsForDeltas(locationIds);
+    for (const [key, slug] of locationSlugs) {
+      result.set(key, slug);
+    }
+  }
+
   return result;
 }
 

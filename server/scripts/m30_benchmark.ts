@@ -26,7 +26,7 @@ import dotenv from 'dotenv';
 import { oltpPool, closeConnections, getRedis, invalidatePattern, setCache } from '@las-flores/infra';
 import { DialogueResolver } from '../src/services/DialogueResolver.js';
 import { buildSnapshotsForTree } from '../src/services/SnapshotService.js';
-import { publishDialogueTree } from '../src/services/ContentPublishService.js';
+import { publishDialogueTree, deleteFromMinio } from '../src/services/ContentPublishService.js';
 import { buildOverlayFingerprint, contentVersionFromUrl, deepMergeNodes } from '../src/services/dialogueResolverUtils.js';
 
 dotenv.config();
@@ -44,6 +44,9 @@ const BENCH_MYSTERY_IDS = [
 // A NON-benchmark synthetic mystery used as the investigating-mystery set
 // so we exercise the investigating-id path alongside the active-id path.
 const BENCH_INVESTIGATING_MYSTERY = 'd0d00000-0000-4000-8000-000000000201';
+// Captured at seed time so teardown can delete the benchmark-owned MinIO/CDN
+// objects (base tree blob + per-state snapshot blobs) this run published.
+let baseTreeContentUrl: string | null = null;
 
 const NODES_BASE = 150;
 const NODES_OVERLAY = 60;
@@ -128,6 +131,7 @@ async function seed() {
       BENCH_TREE_ID,
       JSON.stringify({ nodes: baseNodes }),
     );
+    baseTreeContentUrl = baseContentUrl;
     await c.query(
       `INSERT INTO dialogue_trees (id, name, start_node_id, content_url, updated_at, dialogue_scope)
        VALUES ($1, $2, $3, $4, NOW(), 'system')
@@ -170,6 +174,31 @@ async function teardown() {
     // Delete ALL benchmark-owned mysteries (the 3 ACTIVE + investigating-target + per-user investigating).
     await c.query(`DELETE FROM dialogue_overlays WHERE target_tree_id = $1`, [BENCH_TREE_ID]);
     await c.query(`DELETE FROM mysteries WHERE id::text LIKE 'd0d00000%'`);
+    // Delete the MinIO/CDN objects this run published (base tree blob + any
+    // snapshot blobs) so repeated benchmarks do not leak immutable objects.
+    // Snapshot content_urls live on the dialogue_chunks rows keyed by the bench
+    // tree; the base blob URL was captured at seed time. Best-effort: a missing
+    // object (already deleted, or graph-less dev run) is logged, not fatal.
+    const objectUrls: string[] = [];
+    if (baseTreeContentUrl) objectUrls.push(baseTreeContentUrl);
+    try {
+      const chunkRows = await c.query(
+        `SELECT content_url FROM dialogue_chunks WHERE tree_id = $1 AND chunk_key LIKE '__snapshot_%'`,
+        [BENCH_TREE_ID],
+      );
+      for (const row of chunkRows.rows) {
+        if (row.content_url) objectUrls.push(row.content_url);
+      }
+    } catch (err: any) {
+      console.warn('  [bench] snapshot URL lookup failed:', err?.message);
+    }
+    for (const url of objectUrls) {
+      try {
+        await deleteFromMinio(url);
+      } catch (err: any) {
+        console.warn(`  [bench] failed to delete object ${url}:`, err?.message);
+      }
+    }
   });
   // Remove ONLY benchmark-prefixed cache keys (S5 seeded keys, S6 s6 key, and
   // any dialogue:resolved keys this run created). NEVER flush the shared Redis

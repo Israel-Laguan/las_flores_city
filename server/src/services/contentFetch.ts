@@ -54,8 +54,10 @@ export async function fetchNodesFromContentUrl(
     if (candidates === undefined || candidates === null) return null;
     if (Array.isArray(candidates)) return null;
     if (typeof candidates !== 'object') return null;
-    // An empty map is a valid, available (node-less) tree.
-    if (Object.keys(candidates).length === 0) return fallback;
+    // An empty map is a valid, available (node-less) tree. Honor the CDN
+    // snapshot rather than the fallback — a non-empty fallback (e.g. a stale
+    // in-DB map) would resurrect nodes the publisher explicitly cleared.
+    if (Object.keys(candidates).length === 0) return candidates;
     // A non-empty section must be a real node map; otherwise it is malformed.
     return isNodeMap(candidates) ? candidates : null;
   } catch (error: any) {

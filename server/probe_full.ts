@@ -1,14 +1,21 @@
 import { queryOLTP, invalidatePattern } from '@las-flores/infra';
 import { buildSnapshotsForTree, getSnapshotContentUrl, buildSetHash } from './src/services/SnapshotService.js';
 import { DialogueResolver } from './src/services/DialogueResolver.js';
-import { publishDialogueTree } from './src/services/ContentPublishService.js';
+import { publishDialogueTree, deleteFromMinio } from './src/services/ContentPublishService.js';
 
 const TREE='d0d00000-0000-4000-8000-000000000001';
-const ACTIVE=['d0d00000-0000-4000-8000-000000000101','d0d00000-0000-4000-8000-000000000102','d0d00000-0000-4000-8000-000000000103'];
 const PLAYER='d0d00000-0000-4000-8000-000000000f01';
 const mk=(n:number,p:string)=>{const m:any={};for(let i=0;i<n;i++){const id=`${p}_${String(i).padStart(4,'0')}`;m[id]={id,text:p,choices:[]}}return m;};
 
+// Track only the rows this run actually creates so cleanup never deletes a
+// mystery/object that predated the probe.
+const createdMysteries: string[] = [];
+let baseContentUrl: string | null = null;
+
 async function cleanup(): Promise<void> {
+  if (baseContentUrl) {
+    try { await deleteFromMinio(baseContentUrl); } catch (e: any) { console.warn('PROBE cleanup: failed to delete base object:', e?.message); }
+  }
   await queryOLTP(`DELETE FROM dialogue_chunks WHERE tree_id=$1 AND chunk_key LIKE '__snapshot_%'`,[TREE]);
   await queryOLTP(`DELETE FROM dialogue_overlays WHERE target_tree_id=$1`,[TREE]);
   await queryOLTP(`DELETE FROM dialogue_trees WHERE id=$1`,[TREE]);
@@ -16,23 +23,26 @@ async function cleanup(): Promise<void> {
   await queryOLTP(`DELETE FROM player_states WHERE user_id=$1`,[PLAYER]);
   await queryOLTP(`DELETE FROM player_mysteries WHERE user_id=$1`,[PLAYER]);
   await queryOLTP(`DELETE FROM users WHERE id=$1`,[PLAYER]);
-  // The synthetic mysteries are globally ACTIVE; remove them with the fixture
-  // rows so later resolver/snapshot runs never observe probe data.
-  await queryOLTP(`DELETE FROM mysteries WHERE id = ANY($1::uuid[])`, [ACTIVE]);
+  if (createdMysteries.length > 0) {
+    await queryOLTP(`DELETE FROM mysteries WHERE id = ANY($1::uuid[])`, [createdMysteries]);
+  }
 }
 
 let failed = false;
 try {
   // Insert EVERY ACTIVE mystery before creating overlays — the overlay rows
-  // reference these ids via a foreign key, so all must exist first.
+  // reference these ids via a foreign key, so all must exist first. Track the
+  // ids we actually insert so cleanup only removes probe-owned rows.
   for (const mid of ACTIVE) {
     await queryOLTP(`INSERT INTO mysteries (id,title,description,status) VALUES ($1,$2,$3,'ACTIVE') ON CONFLICT (id) DO NOTHING`,[mid,'a','a']);
+    createdMysteries.push(mid);
   }
   // M32: publish the base node map to MinIO/CDN and store content_url (the
   // in-DB `nodes` column is dropped; buildSnapshotsForTree requires a non-null
   // content_url).
   const baseNodes = mk(150,'base');
   const contentUrl = await publishDialogueTree(TREE, JSON.stringify({ nodes: baseNodes }));
+  baseContentUrl = contentUrl;
   await queryOLTP(`INSERT INTO dialogue_trees (id,name,start_node_id,content_url,updated_at,dialogue_scope) VALUES ($1,$2,$3,$4,NOW(),'system') ON CONFLICT (id) DO UPDATE SET content_url=EXCLUDED.content_url,updated_at=NOW()`,[TREE,'t','base_0000',contentUrl]);
   for(const mid of ACTIVE){await queryOLTP(`INSERT INTO dialogue_overlays (id,name,target_tree_id,mystery_id,nodes,is_nsfw,unlock_condition,updated_at) VALUES ($1,$2,$3,$4,$5::jsonb,false,'none',NOW()) ON CONFLICT (id) DO NOTHING`,[`d0d00000-0000-4000-8000-0000000003${mid.slice(34)}`,`o_${mid.slice(30)}`,TREE,mid,JSON.stringify(mk(60,'ov'))]);}
   const sr=await buildSnapshotsForTree(TREE);

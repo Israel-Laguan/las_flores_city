@@ -166,7 +166,20 @@ async function loadStoryArcData() {
 adminStoryBeatsRouter.get('/story-arc', async (_req, res) => {
   try {
     const data = await loadStoryArcData();
-    res.json({ success: true, data, timestamp: new Date().toISOString() });
+    // When dialogue trees are unavailable (no content_url, CDN fetch failure,
+    // or malformed blob) the beat→dialogue linkage is computed against a
+    // partial node set. Surface that to the caller rather than presenting the
+    // linkage as authoritative full coverage.
+    const partial = (data.coverage?.treesUnavailable ?? 0) > 0;
+    res.json({
+      success: true,
+      data,
+      partial,
+      message: partial
+        ? `Story arc linkage is incomplete: ${data.coverage.treesUnavailable} dialogue tree(s) could not be loaded from the content store.`
+        : undefined,
+      timestamp: new Date().toISOString(),
+    });
   } catch (error: any) {
     console.error('[admin-story-beats] GET /story-arc error:', error);
     res.status(500).json({
