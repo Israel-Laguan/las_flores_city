@@ -1,11 +1,17 @@
 # Scene Variant Generation Runbook — Manual Authoring Path
 
-> Status: **2026-08-05** — automated image-to-image (i2i) variant generation is
-> **hard-deadlocked**; variants must be authored **manually**. This runbook
-> exists so a human (or future agent) can execute the remaining scene variant
-> work without needing a working i2i provider.
+> Status: **2026-08-21** — the two-stage image-to-image (i2i) variant path
+> (`## Variants (image-to-image)` + `**Edit prompt:**` in scene `.prompt.md`
+> files, driven by `scripts/generate-variants.sh` / `parseVariants()`) is
+> **retired**. Scene variants are now authored through the canonical
+> `## Variations` + `## Expression Variants` shape described in
+> `docs/PROMPT_AUTHORING_SPEC.md` and `docs/ASSET_EXPRESSION_VOCABULARY.md`.
+> Variants must still be generated and saved **manually** (the i2i provider
+> path remains deadlocked), but the prompt contract is the canonical one below.
 >
-> Generated from the live scene ".prompt.md" files via `parseVariants()`.
+> The canonical per-scene variant prompts are maintained inline in each scene's
+> `## Expression Variants` section; this runbook keeps the consolidated
+> per-scene manifest for convenience.
 
 ## Why automated i2i is deadlocked (do not re-investigate)
 
@@ -45,23 +51,30 @@ standalone **text-to-image** drafts and saves locally — that is how every
 `__default.png` base in the repo was produced. Pollinations (free, no auth)
 is available as the final fallback.
 
-## Manual authoring contract
+## Manual authoring contract (canonical path)
 
-Each variant must be saved **locally** into the scene's flat assets folder:
+Each variant must be saved **locally** into the scene's flat assets folder, using
+the expression-tagged filename from `docs/ASSET_EXPRESSION_VOCABULARY.md`:
 
 ```text
-content/scenes/<slug>/assets/<slug>__<variant>.png
+content/scenes/<slug>/assets/<slug>__<variant>.png   # e.g. southeast__night.png
 ```
 
-Use the **edit prompt** verbatim (from the Variants section of the scene
-".prompt.md") as the i2i instruction against the scene's
-`<slug>__default.png` base. Keep `no people, no text, no logos` and the
-"same layout, same graphic novel style" constraints.
+The variant instructions are the full usable prompts in the scene's
+`## Expression Variants` section (canonical shape), e.g.
+`- **\`__night.png\`**: Use the base scene as reference. <lighting change…>`.
+Author each variant from that prompt against the scene's `<slug>__default.png`
+base, keeping `no people, no text, no logos` and the "same layout, same graphic
+novel style" constraints. Once generated, wire each file into `background_urls[]`
+with an `expression` tag (`night`, `sunset`, `day`, …) per
+`docs/ASSET_EXPRESSION_VOCABULARY.md`.
 
 ### akool i2i template (once a public base URL exists)
+Use the `## Expression Variants` prompt text as the `--prompt` value:
+
 ```bash
 akool-cli --json image generate \
-  --prompt "<EDIT_PROMPT>" \
+  --prompt "<EXPRESSION_VARIANT_PROMPT>" \
   --source-image "<PUBLIC_URL_TO_<slug>__default.png>" \
   --scale 5:3 \
   --wait

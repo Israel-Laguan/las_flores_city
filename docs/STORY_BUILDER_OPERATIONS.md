@@ -78,7 +78,7 @@ The scaffold step (synchronous, in `POST /plan`) and the fill step (asynchronous
 2. Scaffold step → unconditionally overwrites `.md` files with TODO placeholders
 3. Fill job → only writes YAML files, doesn't touch `.md` files
 
-**Key Finding**: `PlanGenerationJob.ts:121-135` **already** calls `generateForItem()` and `generatePromptForItem()` after `fillFields`, meaning the fill job DOES write `.md` files. The issue was that the scaffold step (`admin-story-builder-generate.ts:72-76`) overwrites them after the async fill starts but before it completes.
+**Historical Key Finding**: the former async fill job called `generateForItem()` and `generatePromptForItem()` after `fillFields`. That path was retired in M32 and fill behavior is now inlined in `StoryBuilderPlanOps.ts`.
 
 **Fix**: Remove lines 72-76 in `admin-story-builder-generate.ts` so the fill job is the sole writer of `.md`/`.prompt.md` files.
 
@@ -141,9 +141,9 @@ Standalone script to bulk-fill existing TODO placeholders in content files that 
 ### 4.2 TODO Placeholders: File vs YAML
 
 - **File-level TODO**: In `.md` or `.prompt.md` files → `fillExistingTodos.ts` handles these
-- **YAML field TODO**: In YAML `metadata.faction: 'TODO: Add faction'` → `ContentFillService.ts` handles these via `fillFields()`
+- **YAML field TODO**: In YAML `metadata.faction: 'TODO: Add faction'` → the inlined fill logic in `StoryBuilderPlanOps.ts` handles these fields.
 
-`FILL_TARGETS` in `ContentFillService.ts` defines which YAML fields get LLM-filled. Characters cover 20+ fields (description, title, physical_description, psychological_description, metadata.personality, metadata.faction, metadata.age, etc.). Scene, location, mission, overlay, vault, gig, shop_item, story, and story_beat types are also covered. See `ContentFillService.ts` for the full map.
+The inlined fill logic defines which YAML fields get LLM-filled. Characters cover 20+ fields (description, title, physical_description, psychological_description, metadata.personality, metadata.faction, metadata.age, etc.). Scene, location, mission, overlay, vault, gig, shop_item, story, and story_beat types are also covered. See `StoryBuilderPlanOps.ts` for the current implementation.
 
 ### 4.3 LLM Placeholder Behavior
 
