@@ -31,6 +31,15 @@ agree.
 npm run content:audit
 npm run validate:content
 node scripts/asset-pipeline/scripts/verify-assets.mjs
+
+# Content migration + database assertions (requires dev DB up):
+npm run test:integration --workspace=server -- tests/integration/migration.test.ts
+# Expected evidence:
+#   - migrateContent() reports success with no errors.
+#   - psql spot-checks match authored files, e.g.:
+#       SELECT slug, status FROM mysteries WHERE status = 'ACTIVE';
+#       SELECT COUNT(*) FROM characters;  -- row counts match content folders
+#   - portrait_urls / background_urls entries resolve (verify-assets covers URL existence).
 ```
 
 Run the relevant migration/integration tests against the development databases and record the

@@ -28,14 +28,22 @@ jest.mock('@las-flores/infra', () => ({
   closeRedis: jest.fn(),
 }));
 
+const mockUpdatePlanJson = jest.fn(async () => undefined);
+const mockRunCritique = jest.fn(async () => ({ annotations: [], cached: false }));
+const mockGetDeltasForPlan = jest.fn(async () => []);
+
 jest.mock('../../src/services/ContentPlanService.js', () => ({
-  ContentPlanService: { updatePlanJson: jest.fn(async () => undefined) },
+  ContentPlanService: { updatePlanJson: mockUpdatePlanJson },
 }));
 
 jest.mock('../../src/services/AICritiqueService.js', () => ({
   aiCritiqueService: {
-    runCritique: jest.fn(async () => ({ annotations: [], cached: false })),
+    runCritique: mockRunCritique,
   },
+}));
+
+jest.mock('../../src/services/GraphDeltaService.js', () => ({
+  getDeltasForPlan: mockGetDeltasForPlan,
 }));
 
 jest.mock('../../src/services/AdminEventEmitter.js', () => ({
@@ -59,6 +67,7 @@ describe('POST /plans/:id/analyze — request validation (GAP 6)', () => {
   let app: express.Express;
 
   beforeEach(() => {
+    jest.clearAllMocks();
     app = makeApp();
   });
 
@@ -68,6 +77,9 @@ describe('POST /plans/:id/analyze — request validation (GAP 6)', () => {
       .send({ scope: 'bogus' });
     expect(res.status).toBe(400);
     expect(res.body.success).toBe(false);
+    expect(mockGetDeltasForPlan).not.toHaveBeenCalled();
+    expect(mockUpdatePlanJson).not.toHaveBeenCalled();
+    expect(mockRunCritique).not.toHaveBeenCalled();
   });
 
   it('rejects a non-object plan_json with 400', async () => {
@@ -76,6 +88,8 @@ describe('POST /plans/:id/analyze — request validation (GAP 6)', () => {
       .send({ scope: 'entity', plan_json: { id: 'not-a-uuid' } });
     expect(res.status).toBe(400);
     expect(res.body.success).toBe(false);
+    expect(mockUpdatePlanJson).not.toHaveBeenCalled();
+    expect(mockRunCritique).not.toHaveBeenCalled();
   });
 
   it('rejects a malformed plan_json (missing required fields) with 400', async () => {
@@ -84,5 +98,7 @@ describe('POST /plans/:id/analyze — request validation (GAP 6)', () => {
       .send({ scope: 'entity', plan_json: { items: 'not-an-array' } });
     expect(res.status).toBe(400);
     expect(res.body.success).toBe(false);
+    expect(mockUpdatePlanJson).not.toHaveBeenCalled();
+    expect(mockRunCritique).not.toHaveBeenCalled();
   });
 });

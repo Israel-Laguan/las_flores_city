@@ -14,8 +14,10 @@
 > gate table: the initial 8–9/10 `contentPool` saturation observation did NOT
 > reproduce under the later controlled pool-size A/B, and the distinct-key p99
 > is below 1 s — so **no pre-Phase-A gate criterion is met as originally
-> evidenced**. The MET verdict rests on the Phase A post-implementation
-> benchmark below, which directly demonstrates the herd cost M30 eliminates.
+> evidenced**. The distinct-key scenario falls under the documented measurement
+> exception in `M30-snapshots.md` (no pre-built snapshot by design), not under
+> the < 250 ms snapshot target. The MET verdict rests on the Phase A
+> post-implementation benchmark below, which directly demonstrates the herd cost M30 eliminates.
 >
 > **Status (2026-08-18):** M30 Phase A is **implemented and verified**. The
 > post-build benchmark shows the snapshot fast path delivers **p99 = 141 ms**
@@ -296,6 +298,11 @@ a post-invalidation miss becomes a single MinIO GET + JSON.parse instead of a
 
 ## Recommendation
 
+> **Status note (2026-08-18):** both "Recommendation" sections below are HISTORICAL —
+> written before Phase A was implemented. M30 Phase A is now implemented and verified
+> (see the post-implementation benchmark above); the "proceed to M30 planning" items
+> are resolved, not future decisions.
+
 **Proceed to M30 planning — but sequence it correctly:**
 
 1. **Cheap, high-leverage fix first (not M30):** the saturation is in
@@ -400,7 +407,8 @@ headroom, but **should not be credited as the fix**.
 
 **Next decision point (per `M30-M31-deferred.md`):** with Recommendation #1
 disproven at the probe level, either (a) proceed to M30 planning, or (b) first
-isolate the S4 bottleneck (Node JSON CPU vs Redis vs shared-host noise) with a
+isolate the S4 bottleneck — **RESOLVED 2026-08-18: option (a) was taken; M30
+Phase A is implemented and verified.** Remaining historical context: (Node JSON CPU vs Redis vs shared-host noise) with a
 pair of quick experiments — e.g. re-run S4 with real-tree-sized fixtures
 (38 nodes ≈ 4× smaller) and measure whether p99 scales proportionally to tree
 size, which would confirm the JSON-parse-bound hypothesis and support M30.
@@ -409,9 +417,11 @@ size, which would confirm the JSON-parse-bound hypothesis and support M30.
 
 - Absolute latencies include a minor confound: the live `server` + `intake-worker`
   containers share the OLTP/Redis instances during the bench. The **saturation
-  finding** (contentPool maxing at 8–9/10) is robust to this because it is a
-  relative observation (connections consumed vs. pool max), not an absolute
-  latency claim.
+  finding** (contentPool maxing at 8–9/10) was initially treated as robust to this
+  because it is a relative observation (connections consumed vs. pool max), not an
+  absolute latency claim — however, the later controlled pool-size A/B did NOT
+  reproduce it, so it should not be credited as a robust finding (see the
+  post-implementation re-validation above).
 - Synthetic tree (150 nodes) is ~4× the largest real tree (38 nodes); S6's
   absolute memory numbers are scaled accordingly and the real-regime figure is
   given.

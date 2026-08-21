@@ -32,7 +32,9 @@ Operational guardrails for running the Las Flores 2077 stack with **Podman** ins
 
 ```bash
 podman network create las-flores-net
-podman volume create postgres-oltp-data postgres-olap-data redis-data minio-data neo4j-data
+for v in postgres-oltp-data postgres-olap-data redis-data minio-data neo4j-data; do
+  podman volume create "$v"
+done
 ```
 
 ### Phase 2: Start backing services
@@ -176,7 +178,7 @@ INTAKE_IP=$(podman inspect las-flores-intake-worker | jq -r '.[] | .NetworkSetti
 podman run -d --name las-flores-admin \
   --network las-flores-net \
   --add-host="las-flores-intake-worker:$INTAKE_IP" \
-  -p 3002:3000 \
+  -p 127.0.0.1:3002:3000 \
   -v ./admin/src:/app/admin/src \
   -v ./shared:/app/shared \
   -e NODE_ENV=development \
@@ -192,6 +194,10 @@ Verify the admin panel is up and can reach the intake-worker:
 ```bash
 podman logs las-flores-admin | grep "Ready in"
 podman exec las-flores-admin env | grep SERVER_URL
+# Exercise the admin → intake-worker path directly from inside the admin
+# container (node:20-alpine includes busybox wget):
+podman exec las-flores-admin wget -qO- http://las-flores-intake-worker:3001/health
+# expected: {"success":true,...}
 ```
 
 ### Phase 5: Apply Migrations (verify only)

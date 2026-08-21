@@ -37,12 +37,13 @@ Keep active milestone documentation aligned with the current repository while mo
 ### Commands
 
 ```bash
-rg -n 'open-backlog\.md|\.kilo/plans/' docs server shared scripts
+rg -n 'open-backlog\.md' docs server shared scripts
 rg -n '1786049707544-m6|1786049707544-m7|1786049707544-m29' docs server shared scripts
 rg -n 'G-M40-(2|3|4)|1786377431414-m40-prompt-expression-asset-carryforward' docs/milestones/README.md docs/milestones/M41-documentation-gap-cleanup.md docs/milestones/1786377431414-m40-prompt-expression-asset-carryforward.md
 ```
 
-The first two searches must return no stale live-document references **outside
-this document itself** — the command block above intentionally contains the
-search patterns as literals, so this M41 file will match; those self-references
-are non-live documentation and are excluded from the criterion. The ownership search must show the remaining M6/M7/M29 work only through M40's G-M40-2, G-M40-3, and G-M40-4 ownership record, with M41 documenting the verification rather than claiming the backlog. Review the resulting diff and confirm the deleted planning records have no inbound links. Run the repository documentation/content validation command available in the current workspace and record any unrelated failures. Historical references outside the audited live-document areas, including `.kilo/plans/`, are not live milestone imports and are outside this follow-up's scope.
+The first two searches cover live documents only (`docs`, `server`, `shared`,
+`scripts`) and must return no stale live-document references **outside this
+document itself** — historical references under `.kilo/plans/` are intentionally
+excluded from these searches; they are not live milestone imports and are outside
+this follow-up's scope. The ownership search must show the remaining M6/M7/M29 work only through M40's G-M40-2, G-M40-3, and G-M40-4 ownership record, with M41 documenting the verification rather than claiming the backlog. Review the resulting diff and confirm the deleted planning records have no inbound links. Run the repository documentation/content validation command available in the current workspace and record any unrelated failures. Historical references outside the audited live-document areas, including `.kilo/plans/`, are not live milestone imports and are outside this follow-up's scope.

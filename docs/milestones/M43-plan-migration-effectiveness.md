@@ -24,6 +24,10 @@ validated, migrated content, without reviving the retired direct-YAML wizard pat
 - [ ] The flow uses `StoryBuilderFileWriter`, `migrateContent`, and `PlanVerificationService`.
 - [ ] Re-running the same plan is safe and does not create ghost files or duplicate rows.
 - [ ] Invalid or partially generated plans fail verification without mutating canon.
+- [ ] No direct `StoryBuilderFileWriter` call site can commit canon without going
+      through `migrateContent`: a repository-wide check (e.g. a lint/grep guard or
+      code review checklist) covers every writer call site and each one either runs
+      inside the migration pipeline or is explicitly guarded.
 - [ ] Server and admin tests cover the successful and rejected paths.
 
 ## Verification

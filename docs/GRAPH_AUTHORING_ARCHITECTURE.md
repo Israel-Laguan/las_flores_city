@@ -55,7 +55,7 @@ plan deltas -> GraphMerger -> GraphExporter -> ContentPlan ->
 stagePlan -> applyLink -> migrateContent -> verifyPlan
 ```
 
-`GraphMerger` promotes plan deltas into the production graph and applies tombstones.
+`GraphMerger` promotes plan deltas into the merged authoring graph and applies tombstones.
 `GraphExporter` maps covered graph edge types back to `ContentLink` field names. The
 materialization pipeline remains unchanged.
 

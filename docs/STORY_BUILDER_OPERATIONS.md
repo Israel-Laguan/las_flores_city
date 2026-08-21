@@ -80,7 +80,11 @@ The scaffold step (synchronous, in `POST /plan`) and the fill step (asynchronous
 
 **Historical Key Finding**: the former async fill job called `generateForItem()` and `generatePromptForItem()` after `fillFields`. That path was retired in M32 and fill behavior is now inlined in `StoryBuilderPlanOps.ts`.
 
-**Fix**: Remove lines 72-76 in `admin-story-builder-generate.ts` so the fill job is the sole writer of `.md`/`.prompt.md` files.
+**Fix (historical, resolved)**: the former race was fixed by removing the scaffold
+overwrite in `admin-story-builder-generate.ts` so the fill path is the sole writer
+of `.md`/`.prompt.md` files. Fill behavior now lives inlined in `StoryBuilderPlanOps.ts`;
+verify by confirming `StoryBuilderPlanOps.ts` performs the `.md`/`.prompt.md` writes
+after `fillFields` in the current fill implementation.
 
 ---
 

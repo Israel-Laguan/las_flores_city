@@ -606,7 +606,7 @@ function variationsBlock(name, mode) {
      \`portrait_urls[]\` (characters) / \`background_urls[]\` (scenes) with an
      \`expression\` tag — see docs/ASSET_EXPRESSION_VOCABULARY.md. -->
 
-- **\`__default.png\`**: Use the base portrait as reference. Neutral resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop.
+- **\`__default.png\`**: Use the base portrait as reference. Premium contemporary graphic novel realism, refined editorial line art illustration. Neutral resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop.
 <!-- Add character-specific expression variants below as concrete prompts
      (e.g. __happy.png, __sad.png, __angry.png, __determined.png). Each bullet
      must name a real asset file — placeholder bullets are parsed as real

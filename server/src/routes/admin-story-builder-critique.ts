@@ -4,6 +4,7 @@ import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
 import { ContentPlanService } from '../services/ContentPlanService.js';
 import { emitAdminEvent } from '../services/AdminEventEmitter.js';
 import { aiCritiqueService } from '../services/AICritiqueService.js';
+import { getDeltasForPlan } from '../services/GraphDeltaService.js';
 
 export const adminStoryBuilderCritiqueRouter = express.Router();
 
@@ -35,6 +36,20 @@ adminStoryBuilderCritiqueRouter.post('/plans/:id/analyze', async (req: AuthReque
         return;
       }
       validatedPlan = parsed.data;
+      // Graph-mode guard (GRAPH_AUTHORING_ARCHITECTURE.md): once a plan has
+      // graph deltas, Neo4j is the authoring source of truth and plan_json is
+      // only exporter transport. Reject direct plan_json writes that would
+      // diverge from the merged authoring graph. (getDeltasForPlan returns []
+      // when Neo4j is disabled, so non-graph deployments are unaffected.)
+      const deltas = await getDeltasForPlan(id);
+      if (deltas.length > 0) {
+        res.status(409).json({
+          success: false,
+          error: 'Plan has graph deltas; direct plan_json edits are rejected. Re-approve through the graph pipeline.',
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
       // A persistence failure must propagate (not be swallowed) so the route
       // fails instead of analyzing the stale last-persisted snapshot.
       await ContentPlanService.updatePlanJson(id, validatedPlan);

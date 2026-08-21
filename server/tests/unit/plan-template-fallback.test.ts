@@ -77,8 +77,11 @@ describe('plan template builder (GAP 3 — graph-db equivalent)', () => {
   it('validateAndRepairOutlineImpl is idempotent on an already-valid plan', () => {
     const built = generateFallbackPlanImpl('a detective hunts the syndicate');
     const once = validateAndRepairOutlineImpl(built, 'desc');
+    // validateAndRepairOutlineImpl mutates its input, so snapshot the first
+    // pass before the second call and compare the complete result.
+    const firstPass = structuredClone(once);
     const twice = validateAndRepairOutlineImpl(once, 'desc');
-    expect(twice.items.length).toBe(once.items.length);
+    expect(twice).toEqual(firstPass);
     expect(twice._meta?.outline_repaired).toBe(false);
   });
 });

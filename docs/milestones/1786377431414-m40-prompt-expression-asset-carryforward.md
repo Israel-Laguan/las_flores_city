@@ -84,8 +84,10 @@ residual M6, M7, and M29 documents:
 - M29's only outstanding item is G-M40-2 plus the G-M40-4 verifier run.
 - M7's only outstanding item is G-M40-3 and its background verification.
 
-The residual M6/M7/M29 documents remain historical status records. They must not
-introduce separate work or acceptance criteria outside this document.
+The residual M6/M7/M29 planning documents were deleted after their residual work
+was absorbed here (verified in M41-documentation-gap-cleanup.md); M40 is the sole
+owner of this work. The deleted records must not be resurrected as separate work
+or acceptance criteria outside this document.
 
 ---
 

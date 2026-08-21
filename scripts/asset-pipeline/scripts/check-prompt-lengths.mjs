@@ -146,6 +146,24 @@ function parsePromptFile(filePath) {
   // entries, but they must NOT suppress the primary prompt fallbacks.
   const hasNamedVariants = results.some((r) => r.section === 'named');
 
+  // Expression-variant bullets under `## Expression Variants` (canonical
+  // format per docs/PROMPT_AUTHORING_SPEC.md):
+  //   - **`__night.png`**: Use the base scene as reference. ...
+  // These prompts are NIM-bound like the named variants, so they must be
+  // length-checked too. They must NOT suppress the primary fallbacks below.
+  const exprSectionMatch = content.match(/^## Expression Variants\n([\s\S]*?)(?=^## |$)/m);
+  if (exprSectionMatch) {
+    const bulletRegex = /^- \*\*`([^`\n]+)`\*\*: ?([\s\S]*?)(?=^- \*\*`|<!--|^\s*$)/gm;
+    let bullet;
+    while ((bullet = bulletRegex.exec(exprSectionMatch[1])) !== null) {
+      const variantName = bullet[1].trim().replace(/\.png$/i, '');
+      const promptText = bullet[2].trim();
+      if (promptText) {
+        results.push({ variantName, promptText, negativeText: '', type, section: 'expression' });
+      }
+    }
+  }
+
   // Primary prompt fallbacks. These must not be suppressed by the named variant
   // entries above. Mirrors the original two-step dispatch: try the draft
   // section first, then fall back to a bare `## Prompt` when no draft was

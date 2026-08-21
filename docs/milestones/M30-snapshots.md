@@ -289,7 +289,8 @@ The combinatorial ceiling remains manageable (2 nsfw × 3 alignment × 2^n myste
       shared-set herd p99 must stay below the 250 ms target. The distinct-key
       herd has no pre-built snapshot by design (unique investigating sets), so
       its ~399 ms live-merge p99 is the documented ceiling — record the measured
-      result rather than holding it to the 250 ms target.
+      result rather than holding it to the 250 ms target. Measured results are
+      recorded in [M30-benchmark-results.md](./M30-benchmark-results.md).
 - [ ] M30 Phase A is marked Shipped in this document and `docs/milestones/README.md`.
 
 ## Related Documents

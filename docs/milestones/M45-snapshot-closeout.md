@@ -32,8 +32,18 @@ npm run test --workspace=server
 npm run build --workspace=server
 ```
 
-Run the canonical M30 benchmark with its required services and record the result in the
-benchmark document. Do not schedule M31 based on architecture speculation alone.
+Run the canonical M30 benchmark with its required services and record the result in
+`docs/milestones/M30-benchmark-results.md`:
+
+```bash
+# Required services: postgres-oltp, redis, minio, intake-worker (content tables),
+# game-server — all up and healthy (in-container wget health checks).
+# Environment: CONTENT_POOL_MAX unset-or-default, representative content migrated.
+node server/scripts/m30_benchmark.ts   # S4 shared-set herd at 500 concurrent; distinct-key sweep per the script's scenarios
+```
+
+Record the measured p99 in the benchmark document with the environment noted.
+Do not schedule M31 based on architecture speculation alone.
 
 ## Relationship to Existing Records
 

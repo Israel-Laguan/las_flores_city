@@ -57,10 +57,12 @@ Foundation/runtime architecture → graph authoring architecture → authoring r
 
 1. Create branch `milestone/MM-<short-slug>` following convention, e.g.
    `milestone/30-snapshots`.
-2. Open the matching active `M##-*.md` doc; follow **Goal → Scope → Key changes →
-   Verification → Definition of Done**. Use the architecture documents for current-state
-   contracts and implementation boundaries.
+2. Open the matching active `M##-*.md` doc; follow **Goal → Scope → Acceptance
+   Criteria → Verification** (older records use **Key changes / Definition of Done**
+   — follow whichever schema the doc itself uses). Use the architecture documents
+   for current-state contracts and implementation boundaries.
 3. Keep the PR at ~25 files. If it grows past that, split into two (see the deferred
    note in the milestone doc).
-4. On merge, update the active milestone header **Status → Shipped** and record durable
-   architecture decisions in the relevant document under `docs/`.
+4. On merge, update the active milestone header to its terminal status using the
+   repository's status vocabulary (`Complete`, `OPEN`, `Planned`, `Deferred`) and
+   record durable architecture decisions in the relevant document under `docs/`.
