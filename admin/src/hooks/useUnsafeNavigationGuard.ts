@@ -92,12 +92,6 @@ export function useUnsafeNavigationGuard(dirty: boolean): void {
   // direction.
   const historyIndexRef = useRef<number>(-1);
 
-  // Direction sentinel for browsers without the Navigation API. When both
-  // indices are -1 we record whether the last observed transition moved the
-  // index forward or backward so a declined Forward still compensates with
-  // history.go(-1).
-  const directionRef = useRef<'forward' | 'back'>('forward');
-
   // Publish the shared dirty flag so other components (e.g. TopBar) can guard
   // router-driven exits such as logout — and clear it when this editor
   // unmounts, otherwise the next admin page would keep prompting for unsaved
@@ -147,16 +141,17 @@ export function useUnsafeNavigationGuard(dirty: boolean): void {
       // returns to the editor entry without appending a fresh history entry,
       // so repeated Back presses do not pile up history.
       const hasNavIndex = prevIndex >= 0 && index >= 0;
-      const goingForward = hasNavIndex
-        ? index > prevIndex
-        : directionRef.current === 'forward';
-      directionRef.current = goingForward ? 'back' : 'forward';
-
-      // When the Navigation API is unavailable we fall back to the
-      // `directionRef` heuristic above: a declined popstate is compensated in
-      // the opposite direction so the user stays on the editor route. Without
-      // that fallback, the guard would lose all browser Back/Forward coverage
-      // in browsers lacking the Navigation API.
+      if (!hasNavIndex) {
+        // Without the Navigation API there is no reliable Back-vs-Forward
+        // signal (the `directionRef` heuristic cannot distinguish the first
+        // unsolicited popstate), so compensating could push the user FURTHER
+        // from the editor and unmount it, losing the draft. The click and
+        // beforeunload guards still cover the common exit paths in these
+        // browsers; do not compensate here.
+        return;
+      }
+      const goingForward = index > prevIndex;
+      // A declined popstate is compensated in the OPPOSITE direction: +1 after
       isReturningRef.current = true;
       window.history.go(goingForward ? -1 : 1);
     };

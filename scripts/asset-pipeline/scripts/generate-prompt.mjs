@@ -607,7 +607,10 @@ function variationsBlock(name, mode) {
      \`expression\` tag — see docs/ASSET_EXPRESSION_VOCABULARY.md. -->
 
 - **\`__default.png\`**: Use the base portrait as reference. Neutral resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop.
-- **\`__<expr>.png\`**: Use the base portrait as reference. <expression-specific description>. Keep the same art style as reference, same clothing and backdrop.
+<!-- Add character-specific expression variants below as concrete prompts
+     (e.g. __happy.png, __sad.png, __angry.png, __determined.png). Each bullet
+     must name a real asset file — placeholder bullets are parsed as real
+     variants by draft-generation tooling. -->
 `;
   }
   if (mode === 'scene') {
@@ -637,7 +640,9 @@ function variationsBlock(name, mode) {
      docs/ASSET_EXPRESSION_VOCABULARY.md. -->
 
 - **\`__default.png\`**: Use the base asset as reference. Keep the same art style and layout.
-- **\`__<variant>.png\`**: Use the base asset as reference. <variant-specific description>. Keep the same art style and layout.
+<!-- Add asset-specific variants below as concrete prompts (e.g.
+     __alt_palette.png, __night.png). Placeholder bullets are parsed as real
+     variants by draft-generation tooling — do not emit them. -->
 `;
 }
 

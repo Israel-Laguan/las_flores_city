@@ -21,8 +21,8 @@ The elevated heights of Los Andes in Las Flores 2077: a sweeping terrace overloo
 --no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural
 
 ## Variations
-- [ ] night — City lights below
-- [ ] sunset — Golden valley view
+- [ ] los_andes__night.png — City lights below
+- [ ] los_andes__sunset.png — Golden valley view
 
 ## Expression Variants
 <!-- Environment variants staged as `assets/los_andes__<tag>.png` and wired into

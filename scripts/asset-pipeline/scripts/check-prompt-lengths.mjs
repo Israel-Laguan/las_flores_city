@@ -71,8 +71,9 @@ Options:
 Every section bound for NVIDIA NIM is hard-capped at 800 characters:
   - \`## Prompt (Draft)\` (preferred)
   - \`## Prompt — <name>\` named variants
-  - \`## Expression Variants\` environment/expression prompts (canonical shape)
   - \`story-illustration\` Base Scene (NIM-bound, NOT exempt)
+(Note: \`## Expression Variants\` blocks are NOT measured by this script —
+only the generator's draft/named/i2i sections are parsed.)
 Bare \`## Prompt\` is a manual reference prompt (~2000 chars) and is NEVER
 auto-sent to NIM/Pollinations; it is capped at 2000. Named and bare \`## Prompt\`
 variants are measured on the combined prompt (prompt text + negative prompt);

@@ -72,6 +72,7 @@ podman run -d --name las-flores-minio \
 # image rejects — a real password must be supplied.
 podman run -d --name las-flores-neo4j \
   --network las-flores-net -p 7474:7474 -p 7687:7687 \
+  -v neo4j-data:/data \
   -e NEO4J_AUTH=neo4j/lasfloresdev123 \
   -e NEO4J_server_memory_heap_max__size=512M -e NEO4J_server_memory_pagecache_size=256M \
   docker.io/library/neo4j:5-community

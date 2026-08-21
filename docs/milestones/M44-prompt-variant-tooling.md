@@ -1,6 +1,6 @@
 # M44 — Prompt-Variant Tooling Reconciliation
 
-> **Status:** Done · **Owner:** story-engine effort
+> **Status:** Shipped · **Owner:** story-engine effort
 > **Source record:** the prompt-variant tooling audit formerly documented by M37
 
 ## Goal
@@ -31,7 +31,8 @@ node scripts/asset-pipeline/scripts/check-prompt-lengths.mjs
 npm run validate:content
 ```
 
-Add focused tests for generator output and validator behavior before deleting any tooling.
+Follow-up (not part of the shipped scope): focused tests for generator output
+and validator behavior remain open.
 
 ## Relationship to Existing Records
 

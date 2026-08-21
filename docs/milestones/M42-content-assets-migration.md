@@ -1,7 +1,7 @@
 # M42 — Content Assets and Migration Completion
 
 > **Status:** Planned · **Owner:** story-engine effort
-> **Source record:** M40 prompt/expression asset carryforward; incorporates the remaining M35 content-completeness work
+> **Source record:** M40 prompt/expression asset carryforward; also absorbs the remaining content-completeness work from the retired M35 exploration (no separate M35 archive exists)
 
 ## Goal
 
@@ -19,7 +19,7 @@ agree.
 
 ## Acceptance Criteria
 
-- [ ] All missing M35 content files exist and pass the content audit.
+- [ ] All content files identified by the retired M35 audit exist and pass the content audit.
 - [ ] Required expression and scene background assets are published to MinIO with valid YAML/DB URLs.
 - [ ] `verify-assets.mjs` reports no missing published assets and no visual-expression gaps.
 - [ ] `migrateContent` completes successfully and the migrated rows match the authored files.
@@ -38,5 +38,7 @@ migration result, asset counts, and any unrelated pre-existing failures.
 
 ## Relationship to Existing Records
 
-M35 and M40 remain source records. M40 remains the backlog definition for G-M40-1 through
+M40 remains a live source record and the backlog definition for G-M40-1 through
 G-M40-4; M42 is the execution and end-to-end completion milestone for that work.
+The M35 reference above is historical only — that exploration record was retired
+without an archive and has no separate live document.

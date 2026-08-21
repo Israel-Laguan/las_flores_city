@@ -66,7 +66,11 @@ export default function LocationDetailPage() {
 
   useBreadcrumbLabel(id, loadedId === id ? record?.name ?? null : null);
 
-  if (loading) {
+  // loadedId !== id guards the first render after navigating between detail
+  // pages: state persists across the route change, so `record` still holds the
+  // PREVIOUS location until the reset effect runs. Without this check the new
+  // URL briefly flashes the old location's title and details.
+  if (loading || loadedId !== id) {
     return (
       <div className={styles.main}>
         <Link href="/locations" className={styles.backLink}>&larr; Back to Locations</Link>

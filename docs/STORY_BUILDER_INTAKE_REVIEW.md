@@ -19,7 +19,7 @@ Reviewed the end-to-end intake path:
 
 - Pipeline: outline → validate/repair → conflict check → scaffold → background fill (`PLAN_FILL_CONCURRENCY=3`, `PLAN_FILL_TIMEOUT_MS=120s`) → client poll → review → approve-and-solidify.
 - Deterministic fallback outline when the LLM returns zero items (`ContentPlanService.generateFallbackPlan`), with `_meta.outline_source` / `_meta.outline_repaired` provenance.
-- The former fill-target behavior is now inlined in `StoryBuilderPlanOps.ts`; the operations doc §4.2 note is stale on this point.
+- The former fill-target behavior is now inlined in `StoryBuilderPlanOps.ts`, and the operations doc §4.2 has been updated to match.
 - End-to-end probe verified 2026-07-21 (12 items, fill 12/12 done) — see `STORY_BUILDER_OPERATIONS.md` §2.
 
 ---

@@ -1,7 +1,8 @@
 # M43 — Plan-to-Migration Effectiveness
 
 > **Status:** Planned · **Owner:** story-engine effort
-> **Source record:** the scoped-intake findings formerly documented by M39
+> **Source record:** the scoped-intake findings from the former M39 exploration
+> (that record was retired without a separate archive; M43 is now its owner)
 
 ## Goal
 

@@ -119,6 +119,28 @@ describe('validateAndRepairOutlineImpl — merge/repair by name+slug', () => {
     expect(out.items[0].id).not.toBe(out.items[1].id);
   });
 
+  it('regenerates the second occurrence of a duplicated VALID uuid (dedup branch)', () => {
+    const dupId = '55555555-5555-4555-8555-555555555555';
+    const plan = basePlan({
+      items: [
+        baseItem({ id: dupId, name: 'First', slug: 'first' }),
+        baseItem({ id: dupId, name: 'Second', slug: 'second' }),
+      ],
+      links: [
+        { fromItem: dupId, toItem: dupId, type: 'unlocks' } as ContentPlan['links'][number],
+      ],
+    });
+    const out = validateAndRepairOutlineImpl(plan, 'desc');
+    // First occurrence keeps the canonical id; the duplicate gets a fresh UUID.
+    expect(out.items[0].id).toBe(dupId);
+    expect(out.items[1].id).toMatch(UUID_RE);
+    expect(out.items[1].id).not.toBe(dupId);
+    // The dedup branch must NOT register the duplicate's old id in
+    // oldToNewIds, so links referencing the canonical id are untouched.
+    expect(out.links[0].fromItem).toBe(dupId);
+    expect(out.links[0].toItem).toBe(dupId);
+  });
+
   it('derives a slug from the name when missing/invalid', () => {
     const plan = basePlan({ items: [baseItem({ name: 'New Hero', slug: '' })] });
     const out = validateAndRepairOutlineImpl(plan, 'desc');

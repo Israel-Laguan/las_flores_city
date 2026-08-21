@@ -39,8 +39,9 @@ OLTP path.
 
 The intake boundary enforces “LLMs propose; the core system commits.”
 
-- `POST /admin/story-builder/plan` is preview-only: outline and advisory conflict scan,
-  with no scaffold, database insert, or plan ID.
+- `POST /admin/story-builder/plans/:id/preview` is preview-only: outline and
+  advisory conflict scan, with no scaffold or database insert. The plan itself
+  is created by `POST /admin/story-builder/plans`.
 - Authors explicitly commit through the scaffold endpoint or refine the in-memory
   preview.
 - `ValidationHarnessService.runValidationHarness()` performs deterministic checks for
@@ -51,7 +52,10 @@ The intake boundary enforces “LLMs propose; the core system commits.”
 
 ## Durable Jobs
 
-Background work is tracked in `job_runs`, keyed by `(plan_id, job_type)`. A row records
+Background work is tracked in `job_runs`, one row per `(plan_id, job_type)` with
+`attempt` incremented on the same row across retries (keyed by its `id` UUID; a
+unique `(plan_id, job_type)` key is deliberately NOT used — see
+`062_job_runs.sql`). A row records
 status, attempt budget, retry time, current stage, committed stages, partial results, and
 errors. Attempts increment on the same row.
 

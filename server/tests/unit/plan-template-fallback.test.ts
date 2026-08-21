@@ -38,8 +38,9 @@ jest.mock('@las-flores/infra', () => ({
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 describe('plan template builder (GAP 3 — graph-db equivalent)', () => {
-  it('generateFallbackPlanImpl is the registered deterministic builder', () => {
-    expect(typeof generateFallbackPlanImpl).toBe('function');
+  it('generateFallbackPlanImpl output carries fallback provenance (behavioral check)', () => {
+    const plan = generateFallbackPlanImpl('a detective hunts the syndicate across neon districts');
+    expect(plan._meta?.outline_source).toBe('fallback');
   });
 
   it('yields a schema-valid plan (template contract) with items + links array', () => {
