@@ -9,7 +9,8 @@
 > tail** (p99 ≈ 0.55–0.63 s at 500 players, unchanged at pool size 10 vs 30;
 > DB connections not saturated). M30 is accordingly **moving into Phase A
 > (tree-level snapshots) implementation** — plan:
-> `.kilo/plans/m30-presolved-overlay-snapshots.md`. M31 stays deferred per §15.9.
+> `docs/milestones/M30-snapshots.md` is now the implementation plan for M30 Phase A.
+> M31 stays deferred per §15.9.
 
 ---
 
@@ -27,7 +28,7 @@ Not part of the near-term sequence; revisit only when load demands it.
 
 ### Decision record (gate benchmark, 2026-08-18)
 
-- **Status:** gate benchmark done (`docs/milestones/M30-benchmark-results.md`); Phase A planned - `.kilo/plans/m30-presolved-overlay-snapshots.md`.
+- **Status:** gate benchmark done (`docs/milestones/M30-benchmark-results.md`); Phase A implementation is tracked in `docs/milestones/M30-snapshots.md`.
 - **Metric:** the reproducible S4 distinct-key herd p99 ≈ 0.55–0.63 s at 500 players
   after a Breakthrough invalidation. The initial gate reading ("contentPool 8–9/10
   saturation") was **not reproduced** on a controlled A/B pool 10 vs 30 (max active
@@ -41,7 +42,7 @@ Not part of the near-term sequence; revisit only when load demands it.
   set)` → MinIO JSON at migration time; post-invalidation miss = one MinIO GET +
   one JSON.parse, no per-state re-merge/rewrite).
 - **REVISED DECISION (2026-08-18): PROCEED with M30 Phase A - tree-level snapshots.**
-  Plan: `.kilo/plans/m30-presolved-overlay-snapshots.md`. The pool-size lever is dropped from remediation (tested, no effect). Phase B (chunk snapshots) is a separate follow-up PR per the <=25-files rule.
+  Plan: `docs/milestones/M30-snapshots.md`. The pool-size lever is dropped from remediation (tested, no effect). Phase B (chunk snapshots) is a separate follow-up PR per the <=25-files rule.
 
 ---
 

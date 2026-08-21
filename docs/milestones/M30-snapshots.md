@@ -1,7 +1,7 @@
 # M30 — Pre-Resolved Per-State Overlay Snapshots (Implementation)
 
 > **Status:** Phase A in progress · **Phase:** Implementation
-> **Plan:** [`.kilo/plans/m30-presolved-overlay-snapshots.md`](.kilo/plans/m30-presolved-overlay-snapshots.md)
+> **Plan:** this document is the canonical implementation plan for M30 Phase A.
 > **Gate Verdict:** MET (`docs/milestones/M30-benchmark-results.md`)
 
 ## Overview
@@ -280,9 +280,17 @@ This ensures snapshot content is byte-for-byte identical to what the live merge 
 **Rationale:** All 3 are reachable in content (player can choose alignment via meta-plot).
 The combinatorial ceiling remains manageable (2 nsfw × 3 alignment × 2^n mystery sets).
 
+## Definition of Done
+
+- [ ] Snapshot implementation and tests pass in the verification commands above.
+- [ ] Server and intake-worker images are rebuilt and both in-container health checks
+      return `{"success":true}`.
+- [ ] S4 at scale 500 is re-run with snapshots present and distinct-key p99 is below
+      the 250 ms target, or the measured result and explanation are recorded here.
+- [ ] M30 Phase A is marked Shipped in this document and `docs/milestones/README.md`.
+
 ## Related Documents
 
-- [Plan: `.kilo/plans/m30-presolved-overlay-snapshots.md`](.kilo/plans/m30-presolved-overlay-snapshots.md)
 - [Benchmark Results: `docs/milestones/M30-benchmark-results.md`](M30-benchmark-results.md)
 - [Deferral Decision: `docs/milestones/M30-M31-deferred.md`](M30-M31-deferred.md)
 - [Architecture Analysis: `docs/ARCHITECTURE_SEPARATION_ANALYSIS.md`](../ARCHITECTURE_SEPARATION_ANALYSIS.md)

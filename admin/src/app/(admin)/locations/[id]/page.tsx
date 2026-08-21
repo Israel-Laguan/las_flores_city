@@ -66,7 +66,7 @@ export default function LocationDetailPage() {
 
   useBreadcrumbLabel(id, loadedId === id ? record?.name ?? null : null);
 
-  if (loading || loadedId !== id) {
+  if (loading) {
     return (
       <div className={styles.main}>
         <Link href="/locations" className={styles.backLink}>&larr; Back to Locations</Link>

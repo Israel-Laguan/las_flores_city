@@ -152,12 +152,11 @@ export function useUnsafeNavigationGuard(dirty: boolean): void {
         : directionRef.current === 'forward';
       directionRef.current = goingForward ? 'back' : 'forward';
 
-      if (!hasNavIndex) {
-        // Without the Navigation API we cannot determine whether popstate
-        // was Back or Forward, so we do not attempt compensation.
-        return;
-      }
-
+      // When the Navigation API is unavailable we fall back to the
+      // `directionRef` heuristic above: a declined popstate is compensated in
+      // the opposite direction so the user stays on the editor route. Without
+      // that fallback, the guard would lose all browser Back/Forward coverage
+      // in browsers lacking the Navigation API.
       isReturningRef.current = true;
       window.history.go(goingForward ? -1 : 1);
     };
