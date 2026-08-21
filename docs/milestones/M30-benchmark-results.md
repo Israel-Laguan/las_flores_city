@@ -7,15 +7,12 @@
 > **Deliverable:** this document — methodology, raw numbers, and a mechanical
 > MET / NOT-MET verdict per the gate criteria in `M30-M31-deferred.md`.
 >
-> **Verdict (summary):** **MET** — the distinct-key herd (S4) produces p99 = 562 ms
-> at 500 concurrent players and the shared `contentPool` (max 10) saturates
-> (observed 8–9/10 active) during the herd, with the full wall time to drain a
-> single Breakthrough invalidation reaching **1.17 s** at 500 concurrent. This
-> meets the S4 gate (`p99 > 1 s` OR `OLTP/content pool saturation at ≤ 500`).
-> However, the dominant cost is **content-pool saturation**, not the `deepMergeNodes`
-> CPU cost (which is ~0.4 ms). The correct remedy is primarily a pool-sizing
-> fix, with M30 as the strategic elimination of the per-miss merge entirely.
-> See Recommendation.
+> **Verdict (summary):** **MET** — the distinct-key herd (S4) produces a reproducible
+> p99 of approximately 0.55–0.63 s at 500 concurrent players. The later controlled
+> pool-size A/B did not reproduce the initial 8–9/10 saturation observation, so the
+> operative signal is the user-visible tail, not a proven pool-capacity bottleneck.
+> M30 Phase A removes the per-state merge and multi-read amplification from the
+> snapshot-covered path.
 >
 > **Status (2026-08-18):** M30 Phase A is **implemented and verified**. The
 > post-build benchmark shows the snapshot fast path delivers **p99 = 141 ms**

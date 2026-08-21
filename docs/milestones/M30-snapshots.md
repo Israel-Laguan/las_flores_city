@@ -33,7 +33,7 @@ Reuses the `dialogue_chunks` table with synthetic `chunk_key` values encoding th
   - `nsfwFlag`: `'t'` or `'f'` for true/false
   - `alignment`: `'neutral'`, `'loyalist'`, or `'fugitive'`
 - **content_url:** points to MinIO blob at `s3://bucket/snapshots/{treeId}__{setHash}__{nsfw}__{alignment}__{hash}.json`
-- **nodes:** the pre-merged node map (fallback when MinIO unavailable)
+- Snapshot content is stored in the CDN blob referenced by `content_url`; the retired dialogue JSONB node columns are not used.
 
 ### Snapshot State Dimensions
 
@@ -245,7 +245,7 @@ BENCH_S4_SAMPLE=1 BENCH_SCENARIO=S4 BENCH_S4_SCALE=500 node m30_benchmark.ts
 | Risk | Mitigation |
 |---|---|
 | Snapshot content stale | Content-addressed keys + pointer-based versioning self-heal |
-| MinIO unavailable during build | Best-effort publish; in-DB `nodes` column acts as fallback |
+| MinIO unavailable during build | Snapshot publication must be retried; no in-DB `nodes` fallback exists after M32 |
 | MinIO unavailable at runtime | Fallback to live merge path |
 | Snapshot missing for a state | Fallback to live merge path |
 | Storage bloat | Snapshot count is bounded by combinatorial ceiling (~240 real regime) |

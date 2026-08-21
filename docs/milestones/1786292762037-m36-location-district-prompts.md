@@ -89,4 +89,4 @@ node scripts/asset-pipeline/scripts/check-prompt-lengths.mjs 2>&1 | grep "Over l
 
 ## Related
 
-- M40: `1786377431414-m40-prompt-expression-asset-carryforward.md` — carries the prompt-length work (G28.1) and expression asset gaps (G29.x) that M28/M29 could not close.
+- M42: `M42-content-assets-migration.md` — executes the remaining prompt-length and expression-asset work carried forward from M40.
