@@ -20,14 +20,14 @@ The industrial backbone of Las Flores 2077: factories and warehouses line the st
 ## Negative Prompt
 --no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural
 
-## Variants (image-to-image)
+## Variations
+- [ ] night — Factories lit in the dark
+- [ ] sunset — Orange haze over the stacks
 
-### `night` — Factories lit in the dark
-**Scale:** 5:3
-**Edit prompt:**
-Re-light the district as a night scene: dark sky, smokestacks silhouetted, warm industrial lamps and neon yard lights glowing, steam lit from below, cooler blue-black palette. Same layout, same graphic novel style, no people.
+## Expression Variants
+<!-- Environment variants staged as `assets/industrial__<tag>.png` and wired into
+     `background_urls[]` (scenes) with an `expression` tag — see
+     docs/ASSET_EXPRESSION_VOCABULARY.md. -->
 
-### `sunset` — Orange haze over the stacks
-**Scale:** 5:3
-**Edit prompt:**
-Re-light the district with a golden-orange sunset: the haze glowing amber around the smokestacks, long shadows across the loading bays, warm light on the wet pavement. Same layout, same graphic novel style, no people.
+- **`__night.png`**: Use the base scene as reference. Re-light the district as a night scene: dark sky, smokestacks silhouetted, warm industrial lamps and neon yard lights glowing, steam lit from below, cooler blue-black palette. Same layout, same graphic novel style, no people.
+- **`__sunset.png`**: Use the base scene as reference. Re-light the district with a golden-orange sunset: the haze glowing amber around the smokestacks, long shadows across the loading bays, warm light on the wet pavement. Same layout, same graphic novel style, no people.

@@ -20,19 +20,16 @@ A small, sterile apartment interior in the Old Town suburbs of Las Flores 2077. 
 ## Negative Prompt
 --no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural
 
-## Variants (image-to-image)
+## Variations
+- [ ] night — Apartment after dark
+- [ ] sunset — Golden hour interior
+- [ ] day — Clear dry daylight
 
-### `night` — Apartment after dark
-**Scale:** 5:3
-**Edit prompt:**
-Re-light the apartment as a deep night scene: the room darker, neon street glow brighter through the rain-streaked window, cooler blue palette, warm lamp the only interior light. Same layout, same graphic novel style, no people.
+## Expression Variants
+<!-- Environment variants staged as `assets/apartment__<tag>.png` and wired into
+     `background_urls[]` (scenes) with an `expression` tag — see
+     docs/ASSET_EXPRESSION_VOCABULARY.md. -->
 
-### `sunset` — Golden hour interior
-**Scale:** 5:3
-**Edit prompt:**
-Re-light the apartment with warm golden-hour light through the window: amber tones across the walls and floor, softer interior, the rain on the glass catching golden light. Same layout, same graphic novel style, no people.
-
-### `day` — Clear dry daylight
-**Scale:** 5:3
-**Edit prompt:**
-Re-light the apartment as a clear dry day: bright natural daylight floods through the window, no rain on the glass, muted cool interior, crisp shadows. Same layout, same graphic novel style, no people.
+- **`__night.png`**: Use the base scene as reference. Re-light the apartment as a deep night scene: the room darker, neon street glow brighter through the rain-streaked window, cooler blue palette, warm lamp the only interior light. Same layout, same graphic novel style, no people.
+- **`__sunset.png`**: Use the base scene as reference. Re-light the apartment with warm golden-hour light through the window: amber tones across the walls and floor, softer interior, the rain on the glass catching golden light. Same layout, same graphic novel style, no people.
+- **`__day.png`**: Use the base scene as reference. Re-light the apartment as a clear dry day: bright natural daylight floods through the window, no rain on the glass, muted cool interior, crisp shadows. Same layout, same graphic novel style, no people.
