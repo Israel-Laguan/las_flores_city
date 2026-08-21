@@ -11,15 +11,15 @@
 Reviewed the end-to-end intake path:
 
 - **UI**: `admin/src/app/story-builder/` (DescribeStep, ReviewStep, hooks, polling logic)
-- **Server**: `server/src/routes/admin-story-builder-generate.ts`, `server/src/services/ContentPlanService.ts`, `PlanGenerationJob.ts`, `LiteLLMProvider.ts`, `LLMPrompts.ts`, `ContentFillService.ts`
+- **Server**: `server/src/routes/admin-story-builder-generate.ts`, `server/src/services/ContentPlanService.ts`, `server/src/services/StoryBuilderOrchestrator.ts`, `LiteLLMProvider.ts`, `LLMPrompts.ts`, `StoryBuilderPlanOps.ts`
 - **Harness**: `server/scripts/latency_probe.ts`
-- **Docs**: `docs/DATA_INTAKE.md`, `docs/STORY_BUILDER_DESIGN.md`, `docs/STORY_BUILDER_OPERATIONS.md`, `.agents/skills/story-processing/SKILL.md`, `.kilo/plans/` (M13 unified intake, story-bible ingestion fix, async-fill split)
+- **Docs**: `docs/DATA_INTAKE.md`, `docs/STORY_BUILDER_DESIGN.md`, `docs/STORY_BUILDER_OPERATIONS.md`, `.agents/skills/story-processing/SKILL.md`
 
 ## 2. Current state (what works)
 
 - Pipeline: outline → validate/repair → conflict check → scaffold → background fill (`PLAN_FILL_CONCURRENCY=3`, `PLAN_FILL_TIMEOUT_MS=120s`) → client poll → review → approve-and-solidify.
 - Deterministic fallback outline when the LLM returns zero items (`ContentPlanService.generateFallbackPlan`), with `_meta.outline_source` / `_meta.outline_repaired` provenance.
-- `FILL_TARGETS` (`ContentFillService.ts:6-31`) now covers full character metadata — the operations doc §4.2 note is stale on this point.
+- The former fill-target behavior is now inlined in `StoryBuilderPlanOps.ts`, and the operations doc §4.2 has been updated to match.
 - End-to-end probe verified 2026-07-21 (12 items, fill 12/12 done) — see `STORY_BUILDER_OPERATIONS.md` §2.
 
 ---
@@ -120,5 +120,3 @@ Per the AGENTS.md checklist:
 - `docs/STORY_BUILDER_DESIGN.md` — design rationale and shipped state
 - `docs/STORY_BUILDER_OPERATIONS.md` — operational findings and runbook (incl. the story-bible probe)
 - `.agents/skills/story-processing/SKILL.md` — story-editing guardrails for agents
-- `.kilo/plans/1784582839538-story-builder-async-fill-plan.md` — async-fill split that shipped
-

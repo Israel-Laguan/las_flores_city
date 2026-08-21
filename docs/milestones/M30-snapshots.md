@@ -1,7 +1,7 @@
 # M30 — Pre-Resolved Per-State Overlay Snapshots (Implementation)
 
 > **Status:** Phase A in progress · **Phase:** Implementation
-> **Plan:** [`.kilo/plans/m30-presolved-overlay-snapshots.md`](.kilo/plans/m30-presolved-overlay-snapshots.md)
+> **Plan:** this document is the canonical implementation plan for M30 Phase A.
 > **Gate Verdict:** MET (`docs/milestones/M30-benchmark-results.md`)
 
 ## Overview
@@ -33,7 +33,7 @@ Reuses the `dialogue_chunks` table with synthetic `chunk_key` values encoding th
   - `nsfwFlag`: `'t'` or `'f'` for true/false
   - `alignment`: `'neutral'`, `'loyalist'`, or `'fugitive'`
 - **content_url:** points to MinIO blob at `s3://bucket/snapshots/{treeId}__{setHash}__{nsfw}__{alignment}__{hash}.json`
-- **nodes:** the pre-merged node map (fallback when MinIO unavailable)
+- Snapshot content is stored in the CDN blob referenced by `content_url`; the retired dialogue JSONB node columns are not used.
 
 ### Snapshot State Dimensions
 
@@ -245,7 +245,7 @@ BENCH_S4_SAMPLE=1 BENCH_SCENARIO=S4 BENCH_S4_SCALE=500 node m30_benchmark.ts
 | Risk | Mitigation |
 |---|---|
 | Snapshot content stale | Content-addressed keys + pointer-based versioning self-heal |
-| MinIO unavailable during build | Best-effort publish; in-DB `nodes` column acts as fallback |
+| MinIO unavailable during build | Snapshot publication must be retried; no in-DB `nodes` fallback exists after M32 |
 | MinIO unavailable at runtime | Fallback to live merge path |
 | Snapshot missing for a state | Fallback to live merge path |
 | Storage bloat | Snapshot count is bounded by combinatorial ceiling (~240 real regime) |
@@ -280,9 +280,21 @@ This ensures snapshot content is byte-for-byte identical to what the live merge 
 **Rationale:** All 3 are reachable in content (player can choose alignment via meta-plot).
 The combinatorial ceiling remains manageable (2 nsfw × 3 alignment × 2^n mystery sets).
 
+## Definition of Done
+
+- [ ] Snapshot implementation and tests pass in the verification commands above.
+- [ ] Server and intake-worker images are rebuilt and both in-container health checks
+      return `{"success":true}`.
+- [ ] S4 at scale 500 is re-run with snapshots present: the snapshot-covered
+      shared-set herd p99 must stay below the 250 ms target. The distinct-key
+      herd has no pre-built snapshot by design (unique investigating sets), so
+      its ~399 ms live-merge p99 is the documented ceiling — record the measured
+      result rather than holding it to the 250 ms target. Measured results are
+      recorded in [M30-benchmark-results.md](./M30-benchmark-results.md).
+- [ ] M30 Phase A is marked Shipped in this document and `docs/milestones/README.md`.
+
 ## Related Documents
 
-- [Plan: `.kilo/plans/m30-presolved-overlay-snapshots.md`](.kilo/plans/m30-presolved-overlay-snapshots.md)
 - [Benchmark Results: `docs/milestones/M30-benchmark-results.md`](M30-benchmark-results.md)
 - [Deferral Decision: `docs/milestones/M30-M31-deferred.md`](M30-M31-deferred.md)
 - [Architecture Analysis: `docs/ARCHITECTURE_SEPARATION_ANALYSIS.md`](../ARCHITECTURE_SEPARATION_ANALYSIS.md)

@@ -5,7 +5,7 @@
  * 
  * Scans all .prompt.md files and reports prompts that exceed NVIDIA NIM's
  * 800-character hard limit. 800 is a hard NIM limit for ALL NIM-bound
- * sections (`## Prompt (Draft)`, `## Prompt — <name>`, i2i variants);
+ * sections (`## Prompt (Draft)`, `## Prompt — <name>`, named variants);
  * `story-illustration` Base Scene is NIM-bound and is NOT exempt. Bare
  * `## Prompt` is a manual reference (~2000). Exemption would only hide
  * text the generator silently truncates.
@@ -71,8 +71,9 @@ Options:
 Every section bound for NVIDIA NIM is hard-capped at 800 characters:
   - \`## Prompt (Draft)\` (preferred)
   - \`## Prompt — <name>\` named variants
-  - image-to-image background variants (\`### \`night\` — <name>\` + \`**Edit prompt:**\`)
   - \`story-illustration\` Base Scene (NIM-bound, NOT exempt)
+(Note: \`## Expression Variants\` blocks are NOT measured by this script —
+only the generator's draft/named/i2i sections are parsed.)
 Bare \`## Prompt\` is a manual reference prompt (~2000 chars) and is NEVER
 auto-sent to NIM/Pollinations; it is capped at 2000. Named and bare \`## Prompt\`
 variants are measured on the combined prompt (prompt text + negative prompt);
@@ -141,29 +142,29 @@ function parsePromptFile(filePath) {
       results.push({ variantName, promptText, negativeText, type, section: 'named' });
     }
   }
-  // Track separately from `results.length` below: image-to-image variants add
+  // Track separately from `results.length` below: named variants add
   // entries, but they must NOT suppress the primary prompt fallbacks.
   const hasNamedVariants = results.some((r) => r.section === 'named');
 
-  // Image-to-image variants used by scene/background prompt files:
-  //   ### `night` — Deeper night gallery
-  //   **Scale:** 5:3
-  //   **Edit prompt:**
-  //   Re-light the aquarium as a near-dark night gallery: ...
-  // The edit prompt length is checked standalone; the variant runner sends
-  // only `edit_prompt`.
-  const i2iRegex = /^### `([^`]+)`[^\n]*\n([\s\S]*?)(?=^### `|^#{1,3} |(?![\s\S]))/gm;
-  while ((match = i2iRegex.exec(content)) !== null) {
-    const variantName = match[1].trim();
-    const editMatch = match[2].match(/\*\*Edit prompt:\*\*[^\S\n]*\n([\s\S]*)$/);
-    const promptText = editMatch ? editMatch[1].trim() : '';
-
-    if (promptText) {
-      results.push({ variantName, promptText, negativeText: '', type, section: 'variant' });
+  // Expression-variant bullets under `## Expression Variants` (canonical
+  // format per docs/PROMPT_AUTHORING_SPEC.md):
+  //   - **`__night.png`**: Use the base scene as reference. ...
+  // These prompts are NIM-bound like the named variants, so they must be
+  // length-checked too. They must NOT suppress the primary fallbacks below.
+  const exprSectionMatch = content.match(/^## Expression Variants\n([\s\S]*?)(?=^## |$)/m);
+  if (exprSectionMatch) {
+    const bulletRegex = /^- \*\*`([^`\n]+)`\*\*: ?([\s\S]*?)(?=^- \*\*`|<!--|^\s*$)/gm;
+    let bullet;
+    while ((bullet = bulletRegex.exec(exprSectionMatch[1])) !== null) {
+      const variantName = bullet[1].trim().replace(/\.png$/i, '');
+      const promptText = bullet[2].trim();
+      if (promptText) {
+        results.push({ variantName, promptText, negativeText: '', type, section: 'expression' });
+      }
     }
   }
 
-  // Primary prompt fallbacks. These must not be suppressed by the i2i variant
+  // Primary prompt fallbacks. These must not be suppressed by the named variant
   // entries above. Mirrors the original two-step dispatch: try the draft
   // section first, then fall back to a bare `## Prompt` when no draft was
   // extracted (e.g. a draft header whose body starts on a blank line).

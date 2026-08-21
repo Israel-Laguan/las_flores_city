@@ -41,7 +41,9 @@ This automates network/volume creation, service start (including the `intake-wor
 1. **Create network and volumes**
    ```bash
    podman network create las-flores-net
-   podman volume create postgres-oltp-data postgres-olap-data redis-data minio-data
+   for v in postgres-oltp-data postgres-olap-data redis-data minio-data neo4j-data; do
+     podman volume create "$v"
+   done
    ```
 
 2. **Start backing services**
@@ -77,6 +79,7 @@ This automates network/volume creation, service start (including the `intake-wor
    # image rejects — a real password must be supplied.
    podman run -d --name las-flores-neo4j \
      --network las-flores-net -p 7474:7474 -p 7687:7687 \
+     -v neo4j-data:/data \
      -e NEO4J_AUTH=neo4j/lasfloresdev123 \
      -e NEO4J_server_memory_heap_max__size=512M -e NEO4J_server_memory_pagecache_size=256M \
      docker.io/library/neo4j:5-community
@@ -143,12 +146,14 @@ This automates network/volume creation, service start (including the `intake-wor
    podman build -f admin/Dockerfile -t las-flores-admin .
    INTAKE_IP=$(O las-flores-intake-worker)
    podman run -d --name las-flores-admin --network las-flores-net \
-     --add-host="las-flores-intake-worker:$INTAKE_IP" -p 3002:3000 \
+     --add-host="las-flores-intake-worker:$INTAKE_IP" -p 127.0.0.1:3002:3000 \
      -v ./admin/src:/app/admin/src -v ./shared:/app/shared \
-     -e NODE_ENV=development \
-     -e NEXT_PUBLIC_SERVER_URL=http://localhost:3001 \
-     -e INTERNAL_SERVER_URL=http://las-flores-intake-worker:3001 \
-     las-flores-admin
+      -e NODE_ENV=development \
+      -e NEXT_PUBLIC_SERVER_URL=http://localhost:3001 \
+      -e INTERNAL_SERVER_URL=http://las-flores-intake-worker:3001 \
+      -e NEXT_PUBLIC_DEV_LOGIN_ENABLED=true \
+      -e DEV_LOGIN_ENABLED=true \
+      las-flores-admin
    ```
 
 8. **Verify migrations** (SQL-only; `apply-migrations.sh` is a verify tool — content migration runs inside the intake-worker at boot)
@@ -207,7 +212,7 @@ podman rm -f las-flores-server las-flores-intake-worker las-flores-admin \
   las-flores-neo4j las-flores-minio las-flores-redis \
   las-flores-postgres-olap las-flores-postgres-oltp
 podman network rm las-flores-net
-podman volume rm -f postgres-oltp-data postgres-olap-data redis-data minio-data
+podman volume rm -f postgres-oltp-data postgres-olap-data redis-data minio-data neo4j-data
 ```
 
 ---

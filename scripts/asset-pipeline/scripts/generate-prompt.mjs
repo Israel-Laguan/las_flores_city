@@ -88,19 +88,7 @@ ${fullPrompt}
 ## Negative Prompt
 photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lines, cybernetics, cargo pants, back pockets, backpacks, bulky luggage, sombreros, wristwatches${negatives ? `, ${negatives}` : ''}
 
-## Variants (image-to-image)
-> Base image required. Run each with:
-> \`akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait\`
-> Output saved as \`${slugify(name)}__<variant_slug>.png\`
-
-<!-- Add character-specific variants below. Each variant needs:
-  ### \`slug\` — Title describing the variant
-  **Scale:** 3:4
-  **Edit prompt:**
-  Instruction for flux-kontext-dev to transform the base image.
-  Keep face identical. Same graphic novel style.
--->
-`;
+${variationsBlock(name, 'character')}`;
   },
 
   background({ name, timeOfDay, keyElements, lighting, atmosphere, mood, contrast, sourcePath }) {
@@ -130,19 +118,7 @@ ${fullPrompt}
 ## Negative Prompt
 photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lines, cybernetics, cargo pants, back pockets, backpacks, bulky luggage, sombreros, wristwatches
 
-## Variants (image-to-image)
-> Base image required. Run each with:
-> \`akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait\`
-> Output saved as \`${slugify(name)}__<variant_slug>.png\`
-
-<!-- Add location-specific variants below. Each variant needs:
-  ### \`slug\` — Title describing the variant
-  **Scale:** 16:9
-  **Edit prompt:**
-  Instruction for flux-kontext-dev to transform the base image.
-  Same graphic novel style.
--->
-`;
+${variationsBlock(name, 'scene')}`;
   },
 
   tile({ name, terrainType, description, colors }) {
@@ -316,18 +292,7 @@ ${fullPrompt}
 ## Negative Prompt
 photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lines, cybernetics, cargo pants, back pockets, backpacks, bulky luggage, sombreros, wristwatches
 
-## Variants (image-to-image)
-> Base image required. Run each with:
-> \`akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait\`
-> Output saved as \`${slugify(name)}__<variant_slug>.png\`
-
-<!-- Add wallpaper-specific variants below. Each variant needs:
-  ### \`slug\` — Title describing the variant
-  **Scale:** 9:16
-  **Edit prompt:**
-  Instruction for flux-kontext-dev to transform the base image.
--->
-`;
+${variationsBlock(name, 'generic')}`;
   },
 
   'app-icon'({ name, description, iconStyle }) {
@@ -359,18 +324,7 @@ ${fullPrompt}
 ## Negative Prompt
 photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, text, complex details, neon glow, cartoon, anime
 
-## Variants (image-to-image)
-> Base image required. Run each with:
-> \`akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait\`
-> Output saved as \`${slugify(name)}__<variant_slug>.png\`
-
-<!-- Add icon-specific variants below. Each variant needs:
-  ### \`slug\` — Title describing the variant
-  **Scale:** 1:1
-  **Edit prompt:**
-  Instruction for flux-kontext-dev to transform the base image.
--->
-`;
+${variationsBlock(name, 'generic')}`;
   },
 
   biometric({ name, age, gender, ethnicity, phenotype, body_shape, skeletal_description, physical_description }) {
@@ -628,47 +582,68 @@ function slugify(text) {
 }
 
 /**
- * Parse variant sections from a .prompt.md file.
- * Looks for the "## Variants (image-to-image)" section and extracts
- * each ### `slug` subsection with its title, scale, and edit_prompt.
+ * Canonical variation block (per docs/PROMPT_AUTHORING_SPEC.md and
+ * docs/ASSET_EXPRESSION_VOCABULARY.md). Replaces the retired two-stage
+ * i2i variant format ("Variants (image-to-image)" + "**Edit prompt:**").
  *
- * @param {string} content - Full .prompt.md file content
- * @returns {Array<{slug: string, title: string, scale: string, edit_prompt: string}>}
+ * Emits a `## Variations` checklist plus a `## Expression Variants` section of
+ * usable prompts staged as `assets/<slug>__<tag>.png` and wired into the
+ * entity asset arrays with an `expression` tag.
+ *
+ * @param {string} name - Entity display name (used to derive the asset slug).
+ * @param {'character'|'scene'|'generic'} mode - Determines the staged array.
  */
-function parseVariants(content) {
-  const variants = [];
-  // Find the variants section
-  const sectionMatch = content.match(/## Variants \(image-to-image\)\n([\s\S]*?)(?=\n## |\n---|\n$)/);
-  if (!sectionMatch) return variants;
+function variationsBlock(name, mode) {
+  const slug = slugify(name);
+  if (mode === 'character') {
+    return `## Variations
+- [ ] Casual street scene with neighborhood backdrop
+- [ ] Formal civic event under hall lighting
+- [ ] Intimate interior with warm lamp light
 
-  const section = sectionMatch[1];
+## Expression Variants
+<!-- Variants are staged as \`assets/${slug}__<tag>.png\` and wired into
+     \`portrait_urls[]\` (characters) / \`background_urls[]\` (scenes) with an
+     \`expression\` tag — see docs/ASSET_EXPRESSION_VOCABULARY.md. -->
 
-  // Split by ### headers to get individual variants
-  const variantBlocks = section.split(/\n### /);
-  for (const block of variantBlocks) {
-    if (!block.trim()) continue;
-
-    // Extract slug from `slug` — Title
-    const slugMatch = block.match(/^`([^`]+)`\s*—\s*(.+)/m);
-    if (!slugMatch) continue;
-
-    const slug = slugMatch[1];
-    const title = slugMatch[2].trim();
-
-    // Extract scale
-    const scaleMatch = block.match(/\*\*Scale:\*\*\s*(.+)/i);
-    const scale = scaleMatch ? scaleMatch[1].trim() : '3:4';
-
-    // Extract edit prompt (everything after **Edit prompt:** until next ### or end of block)
-    const promptMatch = block.match(/\*\*Edit prompt:\*\*\s*\n([\s\S]*?)(?=\n### |\n---|\n<!--|$)/i);
-    const edit_prompt = promptMatch ? promptMatch[1].trim() : '';
-
-    if (slug && edit_prompt) {
-      variants.push({ slug, title, scale, edit_prompt });
-    }
+- **\`__default.png\`**: Use the base portrait as reference. Premium contemporary graphic novel realism, refined editorial line art illustration. Neutral resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop.
+<!-- Add character-specific expression variants below as concrete prompts
+     (e.g. __happy.png, __sad.png, __angry.png, __determined.png). Each bullet
+     must name a real asset file — placeholder bullets are parsed as real
+     variants by draft-generation tooling. -->
+`;
   }
+  if (mode === 'scene') {
+    return `## Variations
+- [ ] Night — re-light under streetlights and neon
+- [ ] Sunset — golden-hour raking light
+- [ ] Rain — wet surfaces, diffused light
 
-  return variants;
+## Expression Variants
+<!-- Environment variants staged as \`assets/${slug}__<tag>.png\` and wired into
+     \`background_urls[]\` (scenes) with an \`expression\` tag — see
+     docs/ASSET_EXPRESSION_VOCABULARY.md. -->
+
+- **\`__default.png\`**: Use the base scene as reference. Day / neutral shot, same layout, same graphic novel style, no people.
+- **\`__night.png\`**: Use the base scene as reference. Re-light as a night scene: warm streetlights and neon accents, cooler palette, deeper shadows. Same layout, same graphic novel style, no people.
+- **\`__sunset.png\`**: Use the base scene as reference. Re-light with golden-hour sun: amber light raking across the scene, long shadows. Same layout, same graphic novel style, no people.
+`;
+  }
+  return `## Variations
+- [ ] Alternate color palette variant
+- [ ] Alternate lighting variant
+- [ ] Seasonal variant
+
+## Expression Variants
+<!-- Variants are staged as \`assets/${slug}__<tag>.png\` and wired into the
+     entity asset arrays with an \`expression\` tag — see
+     docs/ASSET_EXPRESSION_VOCABULARY.md. -->
+
+- **\`__default.png\`**: Use the base asset as reference. Keep the same art style and layout.
+<!-- Add asset-specific variants below as concrete prompts (e.g.
+     __alt_palette.png, __night.png). Placeholder bullets are parsed as real
+     variants by draft-generation tooling — do not emit them. -->
+`;
 }
 
 // ── Simple YAML Parsers (no deps) ────────────────────────────────────────
@@ -1183,4 +1158,4 @@ if (isMainModule) {
   main();
 }
 
-export { parseVariants, slugify };
+export { slugify };

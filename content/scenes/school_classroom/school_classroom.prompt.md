@@ -20,19 +20,16 @@ School Classroom in Las Flores 2077. Cyberpunk aesthetic, neon-lit urban environ
 ## Negative Prompt
 --no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural
 
-## Variants (image-to-image)
+## Variations
+- [ ] night — Night classroom
+- [ ] sunset — Golden hour class
+- [ ] day — Clear dry daylight
 
-### `night` — Night classroom
-**Scale:** 5:3
-**Edit prompt:**
-Re-light the classroom as a night scene: outside darkness, corporate billboard neon through the rain-streaked windows much brighter, electric shadows deeper across the desks, cool blue palette. Same layout, same graphic novel style, no people.
+## Expression Variants
+<!-- Environment variants staged as `assets/school_classroom__<tag>.png` and wired into
+     `background_urls[]` (scenes) with an `expression` tag — see
+     docs/ASSET_EXPRESSION_VOCABULARY.md. -->
 
-### `sunset` — Golden hour class
-**Scale:** 5:3
-**Edit prompt:**
-Re-light the classroom with golden-hour sun through the windows: warm amber mixing with the neon streaks, long soft shadows across the scanner desks. Same layout, same graphic novel style, no people.
-
-### `day` — Clear dry daylight
-**Scale:** 5:3
-**Edit prompt:**
-Re-light the classroom as a clear dry day: bright natural daylight through the windows, no rain streaks, muted cooler light on the desks and holographic displays. Same layout, same graphic novel style, no people.
+- **`__night.png`**: Use the base scene as reference. Re-light the classroom as a night scene: outside darkness, corporate billboard neon through the rain-streaked windows much brighter, electric shadows deeper across the desks, cool blue palette. Same layout, same graphic novel style, no people.
+- **`__sunset.png`**: Use the base scene as reference. Re-light the classroom with golden-hour sun through the windows: warm amber mixing with the neon streaks, long soft shadows across the scanner desks. Same layout, same graphic novel style, no people.
+- **`__day.png`**: Use the base scene as reference. Re-light the classroom as a clear dry day: bright natural daylight through the windows, no rain streaks, muted cooler light on the desks and holographic displays. Same layout, same graphic novel style, no people.

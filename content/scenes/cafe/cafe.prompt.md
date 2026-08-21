@@ -20,14 +20,15 @@ A cozy, slightly worn coffee shop interior in the Old Town district of Las Flore
 ## Negative Prompt
 --no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural
 
-## Variants (image-to-image)
+## Variations
+- [ ] cafe__night.png — Evening café glow
+- [ ] cafe__sunset.png — Golden hour café
 
-### `night` — Evening café glow
-**Scale:** 5:3
-**Edit prompt:**
-Re-light the café as an evening scene: dim the room, warm golden overhead lamps, neon streetlight glowing through the front window, deeper shadows on the brick. Same layout, same graphic novel style, no people.
+## Expression Variants
+<!-- Variant prompts below are authored but NOT yet staged: the
+     `assets/cafe__<tag>.png` files and the `background_urls[]` entries
+     with an `expression` tag will be added once the images are generated —
+     see docs/ASSET_EXPRESSION_VOCABULARY.md. -->
 
-### `sunset` — Golden hour café
-**Scale:** 5:3
-**Edit prompt:**
-Re-light the café with golden-hour sun through the window: warm amber washes over the brick and counter, soft highlights on the espresso machine. Same layout, same graphic novel style, no people.
+- **`__night.png`**: Use the base scene as reference. Re-light the café as an evening scene: dim the room, warm golden overhead lamps, neon streetlight glowing through the front window, deeper shadows on the brick. Same layout, same graphic novel style, no people.
+- **`__sunset.png`**: Use the base scene as reference. Re-light the café with golden-hour sun through the window: warm amber washes over the brick and counter, soft highlights on the espresso machine. Same layout, same graphic novel style, no people.

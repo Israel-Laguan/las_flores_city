@@ -803,7 +803,7 @@ Phase 4 reuses phases 2 and 3's infrastructure entirely. The graph DB is a bette
 ### Architecture decisions still open
 
 - **AGE vs Neo4j for the graph store — ✅ RESOLVED → Neo4j** (decision recorded in
-  `docs/milestones/M19-foundation.md`). Neo4j wins on visual relationship authoring
+  `docs/GRAPH_AUTHORING_ARCHITECTURE.md`). Neo4j wins on visual relationship authoring
   (Bloom/Neodash drag-to-connect), which is the whole point of the authoring canvas;
   Apache AGE (zero new containers) is retained only as a fallback if a future constraint
   rules out another container. M27/M28 may build on this without re-opening the decision.
@@ -1273,7 +1273,6 @@ mirrors §12's "Minimal viable path" and should gate sequencing in §10.
 
 *This document is a living analysis. As phases are implemented, update the sequencing
 section and mark decisions as resolved in §11.*
-
 
 
 

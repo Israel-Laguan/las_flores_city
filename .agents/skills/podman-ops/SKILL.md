@@ -32,7 +32,9 @@ Operational guardrails for running the Las Flores 2077 stack with **Podman** ins
 
 ```bash
 podman network create las-flores-net
-podman volume create postgres-oltp-data postgres-olap-data redis-data minio-data
+for v in postgres-oltp-data postgres-olap-data redis-data minio-data neo4j-data; do
+  podman volume create "$v"
+done
 ```
 
 ### Phase 2: Start backing services
@@ -72,6 +74,7 @@ podman run -d --name las-flores-minio \
 # image rejects — a real password must be supplied.
 podman run -d --name las-flores-neo4j \
   --network las-flores-net -p 7474:7474 -p 7687:7687 \
+  -v neo4j-data:/data \
   -e NEO4J_AUTH=neo4j/lasfloresdev123 \
   -e NEO4J_server_memory_heap_max__size=512M -e NEO4J_server_memory_pagecache_size=256M \
   docker.io/library/neo4j:5-community
@@ -104,7 +107,6 @@ podman run -d --name las-flores-intake-worker \
   -v ./infra:/app/infra \
   -v ./content:/app/content \
   -v ./docs:/app/docs:ro \
-  -e DEV_MODE=true \
   -e DATABASE_URL="postgresql://las_flores:las_flores_dev_password@$OLTP_IP:5432/las_flores" \
   -e ANALYTICS_DATABASE_URL="postgresql://las_flores_analytics:las_flores_analytics_dev_password@$OLAP_IP:5432/las_flores_analytics" \
   -e REDIS_URL="redis://$REDIS_IP:6379" \
@@ -140,7 +142,6 @@ podman run -d --name las-flores-server \
   -v ./infra:/app/infra \
   -v ./content:/app/content \
   -v ./docs:/app/docs:ro \
-  -e DEV_MODE=true \
   -e DATABASE_URL="postgresql://las_flores:las_flores_dev_password@$OLTP_IP:5432/las_flores" \
   -e ANALYTICS_DATABASE_URL="postgresql://las_flores_analytics:las_flores_analytics_dev_password@$OLAP_IP:5432/las_flores_analytics" \
   -e REDIS_URL="redis://$REDIS_IP:6379" \
@@ -162,6 +163,42 @@ podman run -d --name las-flores-server \
 ```
 
 > **Alternative (`--add-host`)**: instead of raw IPs in env, inject `--add-host="las-flores-postgres-oltp:$OLTP_IP"` … and keep human-readable hostnames in `DATABASE_URL`/`REDIS_URL`/`MINIO_ENDPOINT`. Both patterns are verified working on this rootless host (no `aardvark-dns`). Note the `host.containers.internal:host-gateway` mapping is separate and required for host-side LiteLLM.
+
+### Phase 4b: Build & start the admin panel (port 3002 → intake-worker:3001)
+
+The admin panel talks to the **intake-worker** (port 3001), not the game-server.
+Build the admin image and run it with `--add-host` so the container can resolve
+`las-flores-intake-worker` to the intake-worker's IP. The browser uses
+`NEXT_PUBLIC_SERVER_URL` (host:3001) and server-side route handlers use
+`INTERNAL_SERVER_URL` (intake-worker:3001, resolved via `--add-host`).
+
+```bash
+podman build -f admin/Dockerfile -t las-flores-admin .
+INTAKE_IP=$(podman inspect las-flores-intake-worker | jq -r '.[] | .NetworkSettings.Networks["las-flores-net"].IPAddress')
+podman run -d --name las-flores-admin \
+  --network las-flores-net \
+  --add-host="las-flores-intake-worker:$INTAKE_IP" \
+  -p 127.0.0.1:3002:3000 \
+  -v ./admin/src:/app/admin/src \
+  -v ./shared:/app/shared \
+  -e NODE_ENV=development \
+  -e NEXT_PUBLIC_SERVER_URL=http://localhost:3001 \
+  -e INTERNAL_SERVER_URL=http://las-flores-intake-worker:3001 \
+  -e NEXT_PUBLIC_DEV_LOGIN_ENABLED=true \
+  -e DEV_LOGIN_ENABLED=true \
+  las-flores-admin
+```
+
+Verify the admin panel is up and can reach the intake-worker:
+
+```bash
+podman logs las-flores-admin | grep "Ready in"
+podman exec las-flores-admin env | grep SERVER_URL
+# Exercise the admin → intake-worker path directly from inside the admin
+# container (node:20-alpine includes busybox wget):
+podman exec las-flores-admin wget -qO- http://las-flores-intake-worker:3001/health
+# expected: {"success":true,...}
+```
 
 ### Phase 5: Apply Migrations (verify only)
 
@@ -193,7 +230,7 @@ podman rm -f las-flores-server las-flores-intake-worker las-flores-admin \
   las-flores-neo4j las-flores-minio las-flores-redis \
   las-flores-postgres-olap las-flores-postgres-oltp
 podman network rm las-flores-net
-podman volume rm -f postgres-oltp-data postgres-olap-data redis-data minio-data
+podman volume rm -f postgres-oltp-data postgres-olap-data redis-data minio-data neo4j-data
 ```
 
 ### Phase 8: Rootless networking fallback

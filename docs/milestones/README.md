@@ -13,8 +13,8 @@
 
 ## Locked decisions
 
-- **Graph store: Neo4j.** Finalized in the M19 analysis stage (see
-  `M19-foundation.md§Analysis`). Rationale: Bloom/Neodash visual editing is a
+- **Graph store: Neo4j.** Finalized during the foundation work (see
+  [`GRAPH_AUTHORING_ARCHITECTURE.md`](../GRAPH_AUTHORING_ARCHITECTURE.md)). Rationale: Bloom/Neodash visual editing is a
   game-changer for the admin graph-canvas authoring UX; `plan_json` (JSONB) is the
   baseline being replaced.
 - **Production is a build artifact.** Canon lives in the authoring layer (Postgres +
@@ -28,64 +28,41 @@
 ## Milestone overview & dependency graph
 
 ```text
-M19 (foundation: boundaries + content-read pool + analysis)
-   │
-   └──► M20 (intake hardening: deterministic gate + conflict scan)
-            │
-            └──► M21 (process split: intake-worker / B1)
-                     │
-                     ├──► M22 (durable/resumable/idempotent jobs)
-                     │
-                     ├──► M23 (content externalization → CDN)
-                     │
-                     └──► M24 (patch versioning + claims/evidence)
-                              │
-                              ├──► M25 (entity identity + bounded conflict detection)
-                              │         │
-                              │         └──► M26 (AI Critique Service ↗️ nodes)
-                              │              │
-                              │              └──► M27-b (AI Critique into Graph: lifts M26 annotations into Neo4j; waits on M27 graph substrate) [shipped]
-                              │
-                              └──► M27 (graph authoring: seed + delta model)
-                                       │
-                                       └──► M28 (graph merge + exporter)
-                                                │
-                                                └──► M29 (chat assistant + review queue)
-                                                         │
-M30 (pre-resolved overlay snapshots ── endgame, deferred; docs: M30-M31-deferred.md + M30-snapshots.md + M30-benchmark-results.md) │
-M31 (task-graph agent swarm ────────── optional, deferred; doc folded into M30-M31-deferred.md)┘
-                                        │  after M28 + M29 flip flags
-                                        ▼
-                                       M32 (authoring-path retirement: Pin → Prove → Prune)
+Foundation/runtime architecture → graph authoring architecture → authoring retirement
+                                         │
+                                          ├──► M30 (pre-resolved overlay snapshots; Phase A in progress)
+                                          ├──► M31 (task-graph agent swarm; deferred)
+                                          └──► M41 (documentation gap cleanup)
+                                                   │
+                                                   ├──► M42 (content assets + migration)
+                                                   ├──► M43 (plan migration effectiveness)
+                                                   ├──► M44 (prompt-variant tooling)
+                                                   └──► M45 (snapshot closeout + M31 decision)
 ```
 
 | # | Milestone | Phase | Core value | Risk |
 |---|-----------|-------|-----------|------|
-| **M19** | Foundation: module boundaries + content-read pool + AGE-vs-Neo4j analysis | 0 | Code reflects the data decoupling; content reads leave the gameplay pool; graph decision locked | Low |
-| **M20** | Intake hardening: deterministic validation harness + intake conflict scan | 1 | "Never let fuzzy extraction mutate canon" pre-approve gate | Medium |
-| **M21** | Process split: extract `intake-worker` (B1) — **Shipped** | 2 | AI/generation never starves the game event loop | Med-High |
-| **M22** | Durable, resumable, idempotent job runtime | 3 | Jobs survive failures; resume from partial state | Medium |
-| **M23** | Content externalization phase 1 (chunks + dialogues → CDN) | 4 | OLTP content reads drop to ~zero on the hot path | Medium |
-| **M24** | Patch-level versioning + claims/evidence store — **Implemented** | 5 | Rollback = lookup; deliberation is persisted | Medium |
-| **M25** | Entity identity resolution + bounded conflict detection | 5 | Stable identity, no silent LLM best-guess | Medium |
-| **M26** | AI Critique Service + `:Conflict`/`:Suggestion` nodes | 6 | Semantic critique as graph annotations | Medium |
-| **M27** | Graph authoring canvas: seed + delta model (read path) — **Shipped** | 7 | Neo4j becomes the authoring front-end | High |
-| **M27-b** | AI Critique into Graph: lifts M26 Postgres annotations into Neo4j graph nodes; waits on M27 graph substrate — **Shipped** | 7 | `:Conflict`/`:Suggestion` nodes read back from graph | Med-High |
-| **M28** | Graph merge + graph→ContentPlan exporter (write path) | 7 | Approve triggers graph-merge → existing materialize | High |
-| **M29** | Chat assistant (chatExplain/chatPropose) + `needs_review` queue | 8 | Human-in-the-loop review & fix loop | Medium |
-| **M32** | Authoring-path retirement: Pin → Prove → Prune — **Shipped** | 7/8 | Delete the superseded `plan_json` authoring surface + legacy LLM methods the same PR that flips the flags | Medium |
-| **M30** | Pre-resolved per-state overlay snapshots | Phase A in progress | Kill the Redis merge step | Med (Phase A in progress) · docs: M30-M31-deferred.md, M30-snapshots.md, M30-benchmark-results.md |
-| **M31** | Task-graph agent swarm | optional | 80% benefit already covered by M21–M22 + M29 | High (deferred) · doc folded into M30-M31-deferred.md |
+| **Architecture docs** | Runtime/intake, graph authoring, and authoring retirement contracts | Complete | Durable current-state architecture outside milestone planning | — |
+| **M30** | Pre-resolved per-state overlay snapshots | Phase A in progress | Kill the Redis merge step | Med (Phase A in progress) · docs: M30-snapshots.md, M30-benchmark-results.md |
+| **M31** | Task-graph agent swarm | optional | Most benefit is already covered by the runtime and graph-authoring architecture | High (deferred) · doc: M30-M31-deferred.md |
+| **M41** | Documentation gap cleanup and backlog ownership reconciliation | Complete | Keep milestone claims and ownership aligned with current code | Low |
+| **M42** | Content assets and migration completion | Planned | Finish missing content images/files, publish assets, and prove content migration is complete | Medium · doc: M42-content-assets-migration.md |
+| **M43** | Plan-to-migration effectiveness | Planned | Confirm the authoring plan pipeline produces verified migrated content without a parallel write path | Medium · doc: M43-plan-migration-effectiveness.md |
+| **M44** | Prompt-variant tooling reconciliation | Shipped | Align generators and validators with the canonical prompt/asset-variant contract | Medium · doc: M44-prompt-variant-tooling.md |
+| **M45** | Snapshot closeout and M31 decision | Planned | Close the M30 evidence loop and record whether deferred task-graph work remains justified | Medium · doc: M45-snapshot-closeout.md |
 
 ---
 
 ## How to run a milestone
 
 1. Create branch `milestone/MM-<short-slug>` following convention, e.g.
-   `milestone/19-foundation`.
-2. Open the matching `M##-*.md` doc; follow **Goal → Scope → Key changes →
-   Verification → Definition of Done**.
+   `milestone/30-snapshots`.
+2. Open the matching active `M##-*.md` doc; follow **Goal → Scope → Acceptance
+   Criteria → Verification** (older records use **Key changes / Definition of Done**
+   — follow whichever schema the doc itself uses). Use the architecture documents
+   for current-state contracts and implementation boundaries.
 3. Keep the PR at ~25 files. If it grows past that, split into two (see the deferred
    note in the milestone doc).
-4. On merge, update the doc header **Status → Shipped** and mark resolved decisions in
-   `ARCHITECTURE_SEPARATION_ANALYSIS.md` §11.
+4. On merge, update the active milestone header to its terminal status using the
+   repository's status vocabulary (`Complete`, `OPEN`, `Planned`, `Deferred`) and
+   record durable architecture decisions in the relevant document under `docs/`.

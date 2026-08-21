@@ -4,6 +4,7 @@
 **Created:** 2026-08-10 · **Purpose:** close the bulk content gaps M33 could not
 finish (NIM generation, asset publishing, verifier cleanup).
 **Predecessor:** M33 (retired 2026-08-10; all non-content gaps closed).
+**Status:** OPEN — this document is the canonical owner for the remaining M40 content work.
 
 ---
 
@@ -73,6 +74,21 @@ finish (NIM generation, asset publishing, verifier cleanup).
 - Out of scope for this milestone.
 - Covered per-character by M29 for Wen Zhao.
 
+## Consolidated ownership
+
+This milestone absorbs the remaining content work previously duplicated in the
+residual M6, M7, and M29 documents:
+
+- M6 Part A is complete. M6 Part B's general PNG fidelity re-audit remains optional
+  and is not a prerequisite for closing M40.
+- M29's only outstanding item is G-M40-2 plus the G-M40-4 verifier run.
+- M7's only outstanding item is G-M40-3 and its background verification.
+
+The residual M6/M7/M29 planning documents were deleted after their residual work
+was absorbed here (verified in M41-documentation-gap-cleanup.md); M40 is the sole
+owner of this work. The deleted records must not be resurrected as separate work
+or acceptance criteria outside this document.
+
 ---
 
 ## Acceptance criteria
@@ -88,4 +104,4 @@ finish (NIM generation, asset publishing, verifier cleanup).
 ## Related
 
 - M36: `1786292762037-m36-location-district-prompts.md` (depends on prompt-length work)
-- M37: `1786292762037-m37-prompt-variant-tooling.md` (depends on prompt-length work)
+- M44: `M44-prompt-variant-tooling.md` (implements the prompt-variant tooling cleanup)
