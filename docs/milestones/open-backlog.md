@@ -141,10 +141,28 @@ only overwrite (replaces corrupt file); `default-2` variants intentionally exclu
 
 ---
 
-## 5. M34 — story builder test coverage
+## 5. M34 — story builder test coverage — **DONE (2026-08-21)**
 
 Source: `.kilo/plans/1786381576125-m34-story-builder-test-coverage.md`
 Milestone: `docs/milestones/1786292762037-m34-story-builder-test-coverage.md`
+(milestone doc + plan file were already deleted before this task)
+
+> Coverage implemented and verified green for all surviving M34 features.
+> GAP 1&2 (mission-reward integration: `mission-reward-grants.test.ts`,
+> `mission-reward-anti-double.test.ts`) were validated green in the §1 Podman
+> run; GAP 5 (`llm-prompts-content.test.ts`) and GAP 7 (`addItemFromRoster`
+> vitest) unit tests are green; GAP 3/4/6 targeted features that were **removed
+> during the graph-db integration (PR #109)**, so their tests were replaced with
+> coverage of the current equivalents:
+>   - GAP 3 → `server/tests/unit/plan-template-fallback.test.ts`
+>     (`generateFallbackPlanImpl` / `validateAndRepairOutlineImpl` builder contract)
+>   - GAP 4 → `server/tests/unit/outline-chunking.test.ts`
+>     (`normalizeName` + slug/dedup repair — the surviving OutlineChunking merge logic)
+>   - GAP 6 → `server/tests/unit/admin-story-builder-critique.test.ts`
+>     (analyze route returns 400 on invalid `plan_json` / `scope`)
+> New suites: 18 tests, all green. Unit+smoke run: 1051 passed; the only 2
+> failures are `tests/smoke/heartbeat.smoke.test.ts` (needs a live Redis/DB,
+> which is torn down per §1 context — environmental, not a regression).
 
 Features shipped; ~80% of declared test matrix never landed. Follow AGENTS.md test-isolation
 rules (dedicated synthetic UUIDs, own test user created/cleaned in beforeAll/afterAll, never
