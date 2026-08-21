@@ -40,8 +40,8 @@ This automates network/volume creation, service start (including the `intake-wor
 
 1. **Create network and volumes**
    ```bash
-   podman network create las-flores-net
-   podman volume create postgres-oltp-data postgres-olap-data redis-data minio-data
+    podman network create las-flores-net
+    podman volume create postgres-oltp-data postgres-olap-data redis-data minio-data neo4j-data
    ```
 
 2. **Start backing services**
@@ -145,10 +145,12 @@ This automates network/volume creation, service start (including the `intake-wor
    podman run -d --name las-flores-admin --network las-flores-net \
      --add-host="las-flores-intake-worker:$INTAKE_IP" -p 3002:3000 \
      -v ./admin/src:/app/admin/src -v ./shared:/app/shared \
-     -e NODE_ENV=development \
-     -e NEXT_PUBLIC_SERVER_URL=http://localhost:3001 \
-     -e INTERNAL_SERVER_URL=http://las-flores-intake-worker:3001 \
-     las-flores-admin
+      -e NODE_ENV=development \
+      -e NEXT_PUBLIC_SERVER_URL=http://localhost:3001 \
+      -e INTERNAL_SERVER_URL=http://las-flores-intake-worker:3001 \
+      -e NEXT_PUBLIC_DEV_LOGIN_ENABLED=true \
+      -e DEV_LOGIN_ENABLED=true \
+      las-flores-admin
    ```
 
 8. **Verify migrations** (SQL-only; `apply-migrations.sh` is a verify tool — content migration runs inside the intake-worker at boot)
@@ -207,7 +209,7 @@ podman rm -f las-flores-server las-flores-intake-worker las-flores-admin \
   las-flores-neo4j las-flores-minio las-flores-redis \
   las-flores-postgres-olap las-flores-postgres-oltp
 podman network rm las-flores-net
-podman volume rm -f postgres-oltp-data postgres-olap-data redis-data minio-data
+podman volume rm -f postgres-oltp-data postgres-olap-data redis-data minio-data neo4j-data
 ```
 
 ---
