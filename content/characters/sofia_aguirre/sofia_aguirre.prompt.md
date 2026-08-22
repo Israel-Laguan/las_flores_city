@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Sofia Aguirre studying intently at a desk, surrounded by books and notes
-- [ ] Sofia Aguirre deep in thought about their studies, determined to succeed
-- [ ] Sofia Aguirre studying with classmates in a library, working together on a project
+- [ ] Sofia Aguirre moving through the district, A 32-year-old nursing student from San Pedro de los Pescadores who...
+- [ ] Sofia Aguirre in a quiet moment, 
+- [ ] Sofia Aguirre caught in a pivotal scene, A 32-year-old nursing student from San Pedro de los Pescadores who...
 
 ## Expression Variants
 

@@ -22,6 +22,7 @@ Paseo de las Estrellas in Las Flores, establishing wide shot, premium contempora
 photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lines, cybernetics, cargo pants, back pockets, backpacks, bulky luggage, sombreros, wristwatches
 
 ## Variations
-- [ ] Night version: same scene at night with different lighting
-- [ ] Rainy version: same scene with rain and mood effects
-- [ ] Wide shot: broader view of the location
+
+- [ ] Night version: Paseo de las Estrellas after dark — The Paseo de las Estrellas is North Las Flores's answer to e...
+- [ ] Rainy version: Paseo de las Estrellas in the rain — wet surfaces, reflected neon, moody atmosphere,  featuring Holographic Storefront Mile and EV Charging Lane Network
+- [ ] Wide shot: wider establishing view of Paseo de las Estrellas including  featuring Holographic Storefront Mile and EV Charging Lane Network, broader environmental context

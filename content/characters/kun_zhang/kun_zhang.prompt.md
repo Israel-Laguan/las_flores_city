@@ -21,9 +21,9 @@ Slight Chinese man in his early 80s, slender build, dark brown eyes that are wis
 
 ## Variations
 
-- [ ] Kun Zhang in a meeting, reviewing documents with colleagues
-- [ ] Kun Zhang considering a strategic decision, weighing options thoughtfully
-- [ ] Kun Zhang in a business meeting, collaborating with team members on a strategy
+- [ ] Kun Zhang reviewing the situation, Born in China during a period of significant social and economic ch...
+- [ ] Kun Zhang in a tense moment, 
+- [ ] Kun Zhang caught in a pivotal scene, Born in China during a period of significant social and economic ch...
 
 ## Expression Variants
 

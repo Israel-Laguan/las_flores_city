@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Karla at work in their professional environment, focused on their tasks
-- [ ] Karla in a moment of reflection, considering their next steps
-- [ ] Karla with colleagues in a professional setting, engaged in discussion
+- [ ] Karla surveying the scene, A young activist and farmer, approximately 24 years old, murdered i...
+- [ ] Karla in a tense moment, 
+- [ ] Karla caught in a pivotal scene, A young activist and farmer, approximately 24 years old, murdered i...
 
 ## Expression Variants
 

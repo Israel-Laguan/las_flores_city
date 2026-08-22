@@ -21,9 +21,9 @@ Broad-shouldered 24-year-old Caribbean man, solid build, dark expressive eyes, a
 
 ## Variations
 
-- [ ] Miguel Jhonson studying intently at a desk, surrounded by books and notes
-- [ ] Miguel Jhonson deep in thought about their studies, determined to succeed
-- [ ] Miguel Jhonson studying with classmates in a library, working together on a project
+- [ ] Miguel Jhonson reviewing the situation, ### Early Life - **Born and raised** in Las Flores's western distri...
+- [ ] Miguel Jhonson in a determined moment, 
+- [ ] Miguel Jhonson caught in a pivotal scene, ### Early Life - **Born and raised** in Las Flores's western distri...
 
 ## Expression Variants
 

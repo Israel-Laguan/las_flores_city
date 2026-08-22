@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Mateo Vargas at work in their professional environment, focused on their tasks
-- [ ] Mateo Vargas in a moment of reflection, considering their next steps
-- [ ] Mateo Vargas with colleagues in a professional setting, engaged in discussion
+- [ ] Mateo Vargas conversing with a contact, Mateo hails from a modest background in Las Flores and has worked h...
+- [ ] Mateo Vargas in a determined moment, - **Charming and suave**: Capable of disarming individuals with a f...
+- [ ] Mateo Vargas caught in a pivotal scene, Mateo hails from a modest background in Las Flores and has worked h...
 
 ## Expression Variants
 

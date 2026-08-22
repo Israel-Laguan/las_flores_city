@@ -1,0 +1,266 @@
+id: 9c2e6a10-8f4d-4b7a-9c3e-1a2b3c4d5e04
+name: "Valentina Quan - Act 4: The Father Wound"
+description: "On a long delayed-flight night, Valentina finally tells the origin story: a Dragon Head middle-manager father, the mother who had to vouch to his bosses just to be acknowledged, the envelope economy, tuition-chasing, and the airport job that was his only real gift. Probing into triad business — not family — spooks her badly; connecting it to her fling pattern breaks through."
+character_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+scene_id: "00000000-0000-0000-0000-000000000000"
+dialogue_scope: character
+start_node_id: vq_father_start
+
+nodes:
+  vq_father_start:
+    id: vq_father_start
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "A storm cell has the whole airport on ground stop. She's in the dim, half-deserted crew lounge with a cold tea she isn't drinking, watching nothing out the window."
+    thought: "(Expression: contemplative. She heard him come in and didn't perform a greeting — that alone says how heavy tonight is.)"
+    visual:
+      expression: contemplative
+      position: right
+      transition: fade
+    choices:
+      - id: entry_deep
+        text: "[She reaches for your hand before you sit]"
+        next_node_id: vq_father_open_deep
+        required_flags:
+          vq_gave_space: true
+      - id: entry_trust
+        text: "[She looks like she's ready to talk]"
+        next_node_id: vq_father_open_trust
+        required_stats:
+          vq_trust: "gte:30"
+        hidden_if:
+          vq_gave_space: true
+      - id: entry_shallow
+        text: "'Rough delay?'"
+        next_node_id: vq_father_open_shallow
+
+  vq_father_open_shallow:
+    id: vq_father_open_shallow
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "Rough something. Sit if you want. I keep deciding not to say things and then almost saying them. It's exhausting. Maybe tonight I skip to the end."
+    thought: "(Expression: contemplative. She is negotiating with herself in real time. The story has never been told because telling it makes it real, and real things have to be survived.)"
+    visual:
+      expression: contemplative
+      position: right
+      transition: fade
+    choices:
+      - id: shallow_continue
+        text: "'I've got nowhere else to be.'"
+        next_node_id: vq_father_story_1
+
+  vq_father_open_trust:
+    id: vq_father_open_trust
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "You know how I keep saying the long version isn't for layovers? The airport's closed, my flight's cancelled, and I'm tired of carrying the short one. So. Long version."
+    thought: "(Expression: vulnerable. She chose him on purpose this time — checked the trust like fuel quantity before committing. That's as close to a leap as she gets.)"
+    visual:
+      expression: vulnerable
+    effects:
+      stat_set:
+        vq_trust: 5
+    choices:
+      - id: trust_continue
+        text: "'Long version. I'm listening.'"
+        next_node_id: vq_father_story_1
+
+  vq_father_open_deep:
+    id: vq_father_open_deep
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "You didn't push, that night at the bar. I've been thinking about it for weeks. Nobody's ever... Anyway. You once said you wanted the long version. Tonight the airline grounded me into generosity. Take my hand and don't let go while I do this."
+    thought: "(Expression: tender. She asked for contact instead of bracing against it — a first. Her hand is cold and her grip is too tight, and both of those are the most honest things she's offered anyone.)"
+    visual:
+      expression: tender
+    effects:
+      stat_set:
+        vq_trust: 10
+    choices:
+      - id: deep_continue
+        text: "'I've got you. Start anywhere.'"
+        next_node_id: vq_father_story_1
+
+  vq_father_story_1:
+    id: vq_father_story_1
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "My father works for the Dragon Head. Not a soldier — don't picture guns. A manager. Middle of the ladder, quiet shirts, good watch. He was never married to my mother. He got her pregnant and then he was a weather pattern: an envelope of cash, a warning about who she wasn't allowed to see, a night of drinking until he was someone else. Money and jealousy. Never anything you'd call intimacy."
+    thought: "(Expression: sad. She recites it flat, the way crew read emergency exits — this happened, this happens. Saying 'the Dragon Head' out loud costs her something every time.)"
+    visual:
+      expression: sad
+    choices:
+      - id: story1_listen
+        text: "(Keep holding her hand. Let her go at her own pace.)"
+        next_node_id: vq_father_story_2
+      - id: story1_mother_q
+        text: "'How did your mother even meet a man like that?'"
+        next_node_id: vq_father_story_2
+
+  vq_father_story_2:
+    id: vq_father_story_2
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "She chased him. Through his handlers, can you believe it — a working-class girl from the outer districts sitting across from his bosses, vouching for herself, asking them to make him answer her calls. And it worked. Technically. My last name is proof. But his influence followed her everywhere. No one would hire her. She became a housewife without a wedding, waiting for envelopes. Somewhere in all that chasing she learned to hate him. There was no door out."
+    thought: "(Expression: afraid. This is the part she's ashamed of on her mother's behalf and furious about on her own. Her voice does the cabin-announcement steadiness thing when it might otherwise break.)"
+    visual:
+      expression: afraid
+    choices:
+      - id: story2_continue
+        text: "'And you grew up watching all of it.'"
+        next_node_id: vq_father_tuition
+
+  vq_father_tuition:
+    id: vq_father_tuition
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "I grew up learning that money is weather. Nice things appeared, then didn't. When tuition came due, I chased him myself — some months paid, some months left on read for weeks. His one real gift was connections. They landed me this uniform. Now that I earn my own keep? Payments stopped completely. Other cities, other women. Mom scrapes by and refuses my transfers — she keeps one script: buy your own house, don't end up waiting by a phone like me. I send it anyway. She sends back lectures. It's the only language we have left that doesn't hurt."
+    thought: "(Expression: calculating, going soft. The ledger voice comes naturally — she learned accounting before she learned attachment. Then the last line cracks the ledger open and she lets it stay cracked.)"
+    visual:
+      expression: calculating
+    choices:
+      - id: tuition_pattern
+        text: "'Valentina. Men arrive intense and generous and gone — and you leave first so it's your exit. That's why none of them last.'"
+        next_node_id: vq_father_breakthrough
+      - id: tuition_probe
+        text: "'And the Dragon Head itself? What does he actually do for them?'"
+        next_node_id: vq_father_probe
+      - id: tuition_quiet
+        text: "(Say nothing. Move her cold tea aside and keep hold of her hand.)"
+        next_node_id: vq_father_quiet
+
+  # --- Breakthrough: connect the wound to the fling pattern ---
+  vq_father_breakthrough:
+    id: vq_father_breakthrough
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "...That's not— "
+    thought: "(Expression: shocked. Every denial she owns lines up and refuses to deploy, because he didn't accuse her — he read her own logbook back to her. Her eyes are wet and furious about being wet. Nobody has ever connected the two ledgers before, including her.)"
+    visual:
+      expression: shocked
+    choices:
+      - id: breakthrough_hold
+        text: "(Wait. Don't fill the silence for her.)"
+        next_node_id: vq_father_breakthrough_2
+
+  vq_father_breakthrough_2:
+    id: vq_father_breakthrough_2
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "...Okay. Okay, yes. Fine. He taught me the arithmetic without ever teaching it to me on purpose. Love arrives like his envelopes did — unpredictable, transactional, gone. So I leave first. Being left is unbearable. Leaving is just... scheduling. I don't know any other way to live. I genuinely don't. Is that what you wanted to hear?"
+    thought: "(Expression: vulnerable. It came out raw and unpolished, no deflection attached, which for Valentina is a confession delivered kneeling. The last question isn't hostility — it's terror, wearing sarcasm's jacket.)"
+    visual:
+      expression: vulnerable
+    effects:
+      stat_set:
+        vq_trust: 15
+    choices:
+      - id: breakthrough_answer
+        text: "'No. What I want is for you to know there are other arithmetics. That's all.'"
+        next_node_id: vq_father_end
+
+  # --- Risk: probing triad business ---
+  vq_father_probe:
+    id: vq_father_probe
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "...What did you just ask me?"
+    thought: "(Expression: afraid. Everything warm in the room shuts off at once. Family is hers to give; the business is the other country — the one that eats curious people. He just planted a flag on the wrong side of the border.)"
+    visual:
+      expression: afraid
+    effects:
+      stat_set:
+        vq_trust: -10
+    choices:
+      - id: probe_back_off
+        text: "'Forget it. I overstepped. I'm sorry.'"
+        next_node_id: vq_father_recover
+      - id: probe_press
+        text: "'Come on. Middle managers in organizations like that don't stay middle. What does he move?'"
+        next_node_id: vq_father_exit
+
+  vq_father_recover:
+    id: vq_father_recover
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "...Don't do that again. Please. Not because it scares me. Because I can't have two worlds, and if you make me choose which one you get to be safe in, I'll choose wrong every time. ...The rest of what I said stands. All of it. Just — the business stays a locked door. Even from you."
+    thought: "(Expression: guarded. The panic settles back down into something like trust, bruised but breathing. She re-drew one boundary and left every other door she opened tonight still open. That took more forgiveness than she'll admit.)"
+    visual:
+      expression: contemplative
+    effects:
+      stat_set:
+        vq_trust: 5
+    choices:
+      - id: recover_continue
+        text: "'Locked door. Understood. The rest of it — thank you for trusting me with it.'"
+        next_node_id: vq_father_end
+
+  vq_father_exit:
+    id: vq_father_exit
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "This conversation is over. You don't get the family story AND the business tour, guapo. One of those is mine to give and one of those gets people's fingernails pulled out. ...Go home. Please. Before I remember that I liked you."
+    thought: "(Expression: angry. Underneath the fury is fear with its coat off — fear for him, though she'd rather swallow glass than say so. The hand she held is now a liability she regrets wanting.)"
+    visual:
+      expression: angry
+    is_end: true
+    effects:
+      state_set:
+        last_vq_encounter_at: NOW
+
+  # --- Safe path: quiet support ---
+  vq_father_quiet:
+    id: vq_father_quiet
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "...You're not going to ask me anything? Analyze it? Fix it? You're just going to sit there holding my hand like the story is allowed to just exist? ...God. Okay. I need a minute with that. Stay there."
+    thought: "(Expression: tender. Silence, for her, has always been either punishment or ambush. This one is shelter. She files the sensation carefully, the way she'd stow something fragile in an overhead bin.)"
+    visual:
+      expression: tender
+    effects:
+      stat_set:
+        vq_trust: 8
+    choices:
+      - id: quiet_continue
+        text: "(Stay exactly where you are.)"
+        next_node_id: vq_father_end
+
+  # --- Shared close ---
+  vq_father_end:
+    id: vq_father_end
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "Ground stop's lifting. They'll call my flight. ...Thank you. For tonight. I have spent twenty-five years being a well-kept secret on both sides of my own family, and you just sat there and made room for all of it. I don't know what to call you yet. But you're in the long version now. Permanently. That's rarer than you think."
+    thought: "(Expression: determined. Exhausted, wrung-out determination — she told the whole story and the ceiling held. Whatever comes next, the secret is out of her body, and she is not putting it back.)"
+    visual:
+      expression: determined
+    is_end: true
+    effects:
+      flag_set:
+        vq_father_revealed: true
+      state_set:
+        vq_arc: opened
+        last_vq_encounter_at: NOW
+      stat_set:
+        vq_trust: 5
+
+metadata:
+  version: "1.0"
+  required_flags:
+    vq_push_done: true
+  # Once revealed, hide this tree so the resolver offers Act 5.
+  hidden_if:
+    vq_father_revealed: true
+  tags:
+    - "valentina_quan"
+    - "act4"
+    - "father_wound"
+    - "dragon_head"
+  notes: |
+    Act 4 reveals the origin story. Entry quality scales with history:
+    vq_gave_space opens the deepest version; vq_trust gte:30 opens the
+    trusting version; everyone else gets the guarded version.
+    Probing Dragon Head BUSINESS (not family) costs vq_trust 10; pressing
+    further triggers the early-exit node (vq_father_exit), which completes
+    NOTHING — the player can retry this tree later because vq_push_done
+    remains the only gate and no completion flag is set on that path.

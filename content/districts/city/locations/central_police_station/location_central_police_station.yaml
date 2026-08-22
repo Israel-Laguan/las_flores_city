@@ -31,3 +31,4 @@ conclusion: |
   The central police station of Las Flores embodies the city's commitment to maintaining a safe and secure environment for its residents. Through its thoughtful design and comprehensive facilities, it supports a police force that is not only operationally effective but also deeply engaged with the community it serves. The station underscores the principle that public safety is a collaborative effort, requiring trust and cooperation between law enforcement and the citizens they protect.
 asset_paths:
   image: central_police_station__default.png
+background_url: s3://las-flores/backgrounds/central_police_station/central_police_station__default.png

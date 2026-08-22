@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Mia Chen-Rojas at work in their professional environment, focused on their tasks
-- [ ] Mia Chen-Rojas in a moment of reflection, considering their next steps
-- [ ] Mia Chen-Rojas with colleagues in a professional setting, engaged in discussion
+- [ ] Mia Chen-Rojas reviewing the situation, Mia Chen-Rojas is a 19-year-old mixed Chinese and Latino influencer...
+- [ ] Mia Chen-Rojas in a determined moment, 
+- [ ] Mia Chen-Rojas caught in a pivotal scene, Mia Chen-Rojas is a 19-year-old mixed Chinese and Latino influencer...
 
 ## Expression Variants
 

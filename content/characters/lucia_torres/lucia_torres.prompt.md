@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Lucia Torres in a meeting, reviewing documents with colleagues
-- [ ] Lucia Torres considering a strategic decision, weighing options thoughtfully
-- [ ] Lucia Torres in a business meeting, collaborating with team members on a strategy
+- [ ] Lucia Torres conversing with a contact, Lucia Torres, 28, from Camino Verde neighborhood of Las Flores. Gre...
+- [ ] Lucia Torres in a contemplative moment, Lucia is friendly, adaptable, and resourceful, possessing a natural...
+- [ ] Lucia Torres caught in a pivotal scene, Lucia Torres, 28, from Camino Verde neighborhood of Las Flores. Gre...
 
 ## Expression Variants
 

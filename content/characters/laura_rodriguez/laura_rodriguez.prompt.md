@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Laura Rodríguez at work in their professional environment, focused on their tasks
-- [ ] Laura Rodríguez in a moment of reflection, considering their next steps
-- [ ] Laura Rodríguez with colleagues in a professional setting, engaged in discussion
+- [ ] Laura Rodríguez surveying the scene, Laura Rodríguez, 48, human‑rights lawyer from Las Flores' working‑c...
+- [ ] Laura Rodríguez in a contemplative moment, 
+- [ ] Laura Rodríguez caught in a pivotal scene, Laura Rodríguez, 48, human‑rights lawyer from Las Flores' working‑c...
 
 ## Expression Variants
 

@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Wang Mei Li in a meeting, reviewing documents with colleagues
-- [ ] Wang Mei Li considering a strategic decision, weighing options thoughtfully
-- [ ] Wang Mei Li in a business meeting, collaborating with team members on a strategy
+- [ ] Wang Mei Li reflecting on recent events, Born in ~2005 to wealthy Shanghai immigrants, Mei Li grew up with s...
+- [ ] Wang Mei Li in a determined moment, 
+- [ ] Wang Mei Li caught in a pivotal scene, Born in ~2005 to wealthy Shanghai immigrants, Mei Li grew up with s...
 
 ## Expression Variants
 

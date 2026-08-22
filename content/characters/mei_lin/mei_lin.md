@@ -1,13 +1,19 @@
-# Mei Lin
+# Lin Mei
 
 **Title:** 22-year-old Business Student & Older Sister
 
-**Description (full):**
+**Appearance & Heritage:**
+Lin Mei has a solid, broad-shouldered build and sun-tanned skin—lasting physical reminders of years spent hauling crates at the family's port business. Her face is defined by a strong, angular, and slightly asymmetrical jawline, topped with striking, naturally arched "swallow-tail" eyebrows. She keeps her sleek black hair in a high, practical ponytail. 
 
-Mei Lin is a 22-year-old business student and the older sister to Lin Xiu. She has long, sleek black hair often styled in a high ponytail, complementing her angular jawline. She favors modern, chic clothing, often combining high-fashion pieces with streetwear elements, giving her a trendy yet approachable look.
+Coming from a Peranakan (Straits Chinese) background, Lin Mei's fashion is a unique blend of her heritage and modern trends. She favors modern, chic clothing that combines high-fashion pieces with streetwear, but always incorporates subtle traditional Nyonya batik prints or intricate beadwork into her outfits.
 
-Mei Lin exudes a confident and sometimes intimidating presence. She feels the weight of her responsibility as the eldest and often compensates for her insecurities by trying to feel superior to her peers. While she has a sharp tongue and can come off as dismissive or condescending, deep down, she longs for acknowledgment and respect.
+**Personality & Quirks:**
+Lin Mei exudes a confident and sometimes intimidating presence. She feels the heavy weight of her responsibility as the eldest and often compensates for her insecurities by acting superior to her peers. While she has a sharp tongue and can be condescending, she deeply longs for acknowledgment. 
+*Shared Quirk:* When dealing with strangers or feeling defensive, she adopts a specific posture: arms tightly crossed, one hand lightly tapping the opposite elbow.
 
-Growing up near the port, Mei Lin and her sister often helped their parents sell goods, giving her a strong work ethic. She currently attends the university, where she studies business. Despite her academic success, she navigates feelings of inadequacy, leading her to occasionally mistreat others in an attempt to elevate herself.
+**Background:**
+Growing up near the port, Lin Mei and her sister often helped their parents sell and move goods, forging a relentless work ethic. She currently studies business at the university. Despite her academic success, she wrestles with feelings of inadequacy.
 
-Mei Lin and Lin Xiu share a complex relationship built on mutual support yet underpinned by competition. They often reassure each other in private but can turn against others when feeling threatened or insecure. Their bond is rooted in their shared experiences and struggles, making moments of vulnerability rare but impactful.
+**Dynamic with Sister (Lin Xiu):**
+Lin Mei and Lin Xiu share a complex relationship built on mutual support yet underpinned by competition. They reassure each other in private but turn against others when threatened. 
+*The Secret Language:* When they want to exclude outsiders—or when they are furiously arguing with each other—the sisters instantly switch into a rapid-fire, hyper-specific mix of Hokkien and local port slang that nobody else at the university understands.

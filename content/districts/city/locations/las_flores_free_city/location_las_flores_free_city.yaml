@@ -29,3 +29,4 @@ conclusion: |
   Las Flores Free City is a microcosm of geographic and social diversity, spanning from ocean to mountains and from desert to swamps. Its 270,000 inhabitants occupy a landscape where wealth and poverty, history and modernity, nature and urbanization exist in constant dialogue. The city's identity is shaped by these contrasts, making it a complex, dynamic urban environment where the topography itself tells the story of its people.
 asset_paths:
   image: las_flores_free_city__default.png
+background_url: s3://las-flores/backgrounds/las_flores_free_city/las_flores_free_city__default.png

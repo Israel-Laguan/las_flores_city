@@ -66,5 +66,5 @@ Retirement verification consists of:
 ## Ownership
 
 Remaining prompt, expression, and scene-background asset work belongs exclusively to
-`docs/milestones/1786377431414-m40-prompt-expression-asset-carryforward.md`. Deleted or
-historical asset milestone records must not be recreated as independent backlogs.
+`docs/milestones/M42-content-assets-migration.md`. Deleted or historical asset
+milestone records (M6, M7, M29, M36, M40) must not be recreated as independent backlogs.

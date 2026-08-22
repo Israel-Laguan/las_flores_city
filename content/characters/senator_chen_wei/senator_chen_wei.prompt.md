@@ -21,9 +21,9 @@ Medium-height Chinese senior statesman in his late 60s, solid build, dark brown 
 
 ## Variations
 
-- [ ] Senator Chen Wei in a meeting, reviewing documents with colleagues
-- [ ] Senator Chen Wei considering a strategic decision, weighing options thoughtfully
-- [ ] Senator Chen Wei in a business meeting, collaborating with team members on a strategy
+- [ ] Senator Chen Wei reflecting on recent events, Prominent Chinese politician and businessman behind the lithium boo...
+- [ ] Senator Chen Wei in a quiet moment, 
+- [ ] Senator Chen Wei caught in a pivotal scene, Prominent Chinese politician and businessman behind the lithium boo...
 
 ## Expression Variants
 

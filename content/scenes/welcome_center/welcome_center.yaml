@@ -4,7 +4,7 @@ description: The official welcome center for new arrivals in Las Flores. A sleek
 district: City
 district_lore: urban_core
 district_subzone: Central City
-background_url: /assets/scenes/welcome_center/background.png
+background_url: s3://las-flores/backgrounds/welcome_center/welcome_center__default.png
 ambient_sound_url: null
 mood: neutral
 available_dialogues:

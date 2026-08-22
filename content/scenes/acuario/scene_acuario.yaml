@@ -4,7 +4,7 @@ description: The main gallery floor of the Acuario Las Flores, where holographic
 district: Port
 district_lore: port_area
 district_subzone: Port Area
-background_url: https://cdn.lasflores2077.com/locations/bg_acuario_interior.png
+background_url: s3://las-flores/backgrounds/acuario/acuario__default.png
 mood: contemplative
 available_dialogues: []
 metadata:

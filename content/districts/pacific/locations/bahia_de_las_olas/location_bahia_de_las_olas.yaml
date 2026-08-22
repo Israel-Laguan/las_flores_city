@@ -11,3 +11,4 @@ tags:
 lore_path: bahia_de_las_olas.md
 asset_paths:
   image: bahia_de_las_olas__default.png
+background_url: s3://las-flores/backgrounds/bahia_de_las_olas/bahia_de_las_olas__default.png

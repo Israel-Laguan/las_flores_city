@@ -11,3 +11,4 @@ tags:
 lore_path: financial_district.md
 asset_paths:
   image: financial_district__default.png
+background_url: s3://las-flores/backgrounds/financial_district/financial_district__default.png

@@ -21,9 +21,9 @@ Athletic Dutch man, solid build, dark expressive eyes, a straight nose, and a de
 
 ## Variations
 
-- [ ] Levi de Jong in a meeting, reviewing documents with colleagues
-- [ ] Levi de Jong considering a strategic decision, weighing options thoughtfully
-- [ ] Levi de Jong in a business meeting, collaborating with team members on a strategy
+- [ ] Levi de Jong conversing with a contact, Levi's family moved to Las Flores when he was a teenager, drawn by...
+- [ ] Levi de Jong in a contemplative moment, Levi exudes charm that draws people in effortlessly. His charismati...
+- [ ] Levi de Jong caught in a pivotal scene, Levi's family moved to Las Flores when he was a teenager, drawn by...
 
 ## Expression Variants
 

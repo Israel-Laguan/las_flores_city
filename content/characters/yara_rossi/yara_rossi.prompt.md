@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Yara Rossi studying intently at a desk, surrounded by books and notes
-- [ ] Yara Rossi deep in thought about their studies, determined to succeed
-- [ ] Yara Rossi studying with classmates in a library, working together on a project
+- [ ] Yara Rossi surveying the scene, Born in Ecuador in 2019 and moved to Las Flores in 2024 at age 5. B...
+- [ ] Yara Rossi in a alert moment, 
+- [ ] Yara Rossi caught in a pivotal scene, Born in Ecuador in 2019 and moved to Las Flores in 2024 at age 5. B...
 
 ## Expression Variants
 

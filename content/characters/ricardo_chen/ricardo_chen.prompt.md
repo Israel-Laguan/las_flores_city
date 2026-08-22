@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Ricardo Chen in a meeting, reviewing documents with colleagues
-- [ ] Ricardo Chen considering a strategic decision, weighing options thoughtfully
-- [ ] Ricardo Chen in a business meeting, collaborating with team members on a strategy
+- [ ] Ricardo Chen conversing with a contact, Wealthy son of Chinese immigrants who established an export busines...
+- [ ] Ricardo Chen in a determined moment, 
+- [ ] Ricardo Chen caught in a pivotal scene, Wealthy son of Chinese immigrants who established an export busines...
 
 ## Expression Variants
 

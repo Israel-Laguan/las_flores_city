@@ -20,7 +20,7 @@ Minera Estrella Andes Mine in Las Flores, daytime, mining extraction site, mount
 photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lines, cybernetics, cargo pants, back pockets, backpacks, bulky luggage, sombreros, wristwatches
 
 ## Variations
-- [ ] Night version: same scene at night with different lighting
-- [ ] Rainy version: same scene with rain and mood effects
-- [ ] Wide shot: broader view of the location
 
+- [ ] Night version: Minera Estrella Andes Mine after dark — Situated in the foothills of the Andean Mountains, Minera Es...
+- [ ] Rainy version: Minera Estrella Andes Mine in the rain — wet surfaces, reflected neon, moody atmosphere,  featuring Open-Pit Extraction Zone and Underground Mining Tunnels
+- [ ] Wide shot: wider establishing view of Minera Estrella Andes Mine including  featuring Open-Pit Extraction Zone and Underground Mining Tunnels, broader environmental context

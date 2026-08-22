@@ -11,20 +11,22 @@ aspect_ratio: 3:4
 # Prompt: Mei Lin
 
 ## Prompt (Draft)
-Medium-height Chinese woman, solid build, dark expressive eyes, a straight nose, and a defined jaw, calm and determined expression, steady, composed bearing, dark hair, practical work clothing, small sport earbud clipped to earlobe. Weathered urban Latin American building under harsh tropical sun backdrop. premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+
+Chinese business student in her early 20s, explicitly non-idol features. Solid, broad-shouldered build from physical labor, sun-tanned skin with natural texture. Strong, angular, slightly asymmetrical jawline. Sharp "swallow-tail" arched eyebrows, almond eyes, flat expression, full lips. Sleek black hair styled in a high ponytail. Shrewd keen bearing, arms crossed with one hand tapping her elbow. Modern, chic clothing: a high-fashion fitted top incorporating subtle traditional Peranakan batik prints, mixed with streetwear elements. The backdrop is a bustling commercial district shopfront or market with soft afternoon light. Premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
-Medium-height Chinese woman, solid build, dark expressive eyes, a straight nose, and a defined jaw, calm and determined expression, steady, composed bearing, dark hair, practical work clothing, small sport earbud clipped to earlobe. Weathered urban Latin American building under harsh tropical sun backdrop. premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Chinese business student in her early 20s with explicitly non-idol features. Solid, broad-shouldered build from physical labor, sun-tanned skin with natural texture. Strong, angular, slightly asymmetrical jawline. Sharp "swallow-tail" arched eyebrows, almond eyes, flat expression, full lips. Sleek black hair styled in a high ponytail. Shrewd keen bearing, arms crossed defensively with one hand lightly tapping her elbow. Modern, chic clothing: a high-fashion fitted top incorporating subtle traditional Peranakan Nyonya batik prints, mixed with streetwear elements. The backdrop is a bustling commercial district shopfront or market with soft afternoon light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
---no neon, no androids, no clean backgrounds, photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality, CGI, airbrushed, East Asian stereotypes, anime features, idealized proportions
+
+--no neon, no androids, no clean backgrounds, photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality, CGI, airbrushed, East Asian stereotypes, idealized proportions, glass skin, K-pop idol, C-pop idol, delicate features
 
 ## Variations
 
-- **University Study**: Mei Lin studying intently at a desk in a university library. Absorbed concentration, looking slightly down at her notes. Books and notes edge the frame. She wears her minimalist practical work clothing and sport earbud. Background is blurred rows of bookshelves. Premium contemporary graphic novel realism, refined editorial line art illustration, clean confident linework, painterly soft shading, muted natural palette.
-- **Port District Workplace**: Mei Lin standing near the bustling port district, organizing shipping crates. Calm, commanding presence. She wears a practical work jacket over her usual clothes. Background features weathered cargo containers and a bright tropical sky. Premium contemporary graphic novel realism, refined editorial line art illustration, clean confident linework, painterly soft shading, muted natural palette.
-- **Private Moment at Home**: Mei Lin sitting in a modestly furnished, dimly lit apartment, looking thoughtful and slightly vulnerable. She wears casual, comfortable loungewear, her hair tied back more loosely. Background is a quiet living room with soft, warm lighting. Premium contemporary graphic novel realism, refined editorial line art illustration, clean confident linework, painterly soft shading, muted natural palette.
-- **Sibling Dynamic**: Mei Lin standing protectively next to her sister, Lin Xiu, in a weathered urban street. Mei Lin looks sharp and defensive, while providing subtle support. She wears her standard pocketless work clothing. Background is a vibrant but gritty street corner. Premium contemporary graphic novel realism, refined editorial line art illustration, clean confident linework, painterly soft shading, muted natural palette.
+- [ ] At a market stall negotiating prices, hands resting on a woven basket
+- [ ] Outside her shopfront, checking a tablet amid passing shoppers
+- [ ] In the commercial district at dusk, warm storefront lights behind her
 
 ## Expression Variants
 

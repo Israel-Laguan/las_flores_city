@@ -21,9 +21,9 @@ Medium-height Latina woman, solid build, dark expressive eyes, a straight nose, 
 
 ## Variations
 
-- [ ] Isabella Rodriguez studying intently at a desk, surrounded by books and notes
-- [ ] Isabella Rodriguez deep in thought about their studies, determined to succeed
-- [ ] Isabella Rodriguez studying with classmates in a library, working together on a project
+- [ ] Isabella Rodriguez moving through the district, Isabella "Izzy" Rodriguez is a 23-year-old environmental activist a...
+- [ ] Isabella Rodriguez in a quiet moment, 
+- [ ] Isabella Rodriguez caught in a pivotal scene, Isabella "Izzy" Rodriguez is a 23-year-old environmental activist a...
 
 ## Expression Variants
 

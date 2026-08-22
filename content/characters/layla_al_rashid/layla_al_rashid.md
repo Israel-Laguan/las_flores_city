@@ -12,15 +12,17 @@
 Layla's Spanish is a sheltered, book-learned mix. Raised mostly at home and in the Arabic-speaking household, her Spanish carries a soft Arabic inflection — gentle rolled r's, drifting articles, the occasional swallowed consonant. She code-switches heavily into English (words like *like*, *okay*, *boyfriend*, *cute*, *date*), because the films and books she learned "freedom" from were in English, and English feels safer for the feelings she has no Arabic or Spanish word for yet. She fills the gaps with hums and hedges — *"mm"*, *"eh"*, *"pues"*, trailing *"…no?"* — and she trails off or self-corrects mid-sentence, as if still rehearsing the confident woman she is pretending to be. The accent is part of the performance: at home she speaks the careful, demure Spanish her mother approves of; at university the English-Spanish hum spills out because that is what her "liberated" self sounds like in her head.
 
 ## Physical Description
-- Hair: Long dark brown wavy hair, slight widow's peak, worn loose and unintentionally pretty
+- Hair: Long dark brown wavy hair, slight widow's peak, worn loose and unstyled — not glamorous, just untended
 - Eyes: Deep amber-brown, warm and searching, bright when given attention
-- Build: Youthful, soft-rounded features, slender
-- Skin: Warm olive complexion
-- Distinguishing features: No jewelry, no makeup (mom-approved); plain modest clothing — muted high-necked long-sleeve blouse, long sleeves; a practiced-but-faltering "confident woman" smile she is clearly performing
+- Build: Youthful, soft-rounded features, slender — ordinary, the kind of frame that registers as "nice enough" and is immediately forgotten
+- Skin: Warm olive complexion, uneven in places
+- Distinguishing features: No jewelry, no makeup (mom-approved); plain modest clothing — muted high-necked long-sleeve blouse, long sleeves; a practiced-but-faltering "confident woman" smile she is clearly performing. She is not ugly, but she is not the girl anyone notices — she blends into the background of every room she enters, which is exactly how her mother wants it and exactly what she is trying to escape
 
 ## Overview
 
 Layla Al-Rashid is the daughter of Arab immigrants who work at Mineria Estrella. She grew up in the northern district's small, tight-knit diaspora community, where the Arab families live under the watchful eye of both their own elders and the dominant Chinese-influenced social norms. Everyone knows everyone; reputation is currency. Layla learned early that survival in that world is a performance: be the good, devout, sheltered daughter, and the community leaves you alone.
+
+At university she is one half of a duo nobody envies. She and Wen Zhao are two uptight, sheltered girls from strict immigrant families — the ones who sit together at lunch because no one else invites them. They are not the popular girls. They are not the pretty girls. They are the girls other students are vaguely polite to and immediately forget. Their friendship runs on shared resentment and the mutual reassurance that their invisibility is everyone else's fault.
 
 She is now a university student living a double life. At home she is still the "princess" — obedient, demure, prayerful, the pride of her parents. At university she is experimenting with a self she has only met in films and novels: a confident, liberated, mature woman. Her first act of rebellion is small and book-learned — she flirts back when someone flirts with her. She does not yet know what freedom actually feels like; she is quoting it.
 

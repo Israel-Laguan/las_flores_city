@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Maria Martinez van der Meer in a meeting, reviewing documents with colleagues
-- [ ] Maria Martinez van der Meer considering a strategic decision, weighing options thoughtfully
-- [ ] Maria Martinez van der Meer in a business meeting, collaborating with team members on a strategy
+- [ ] Maria Martinez van der Meer conversing with a contact, Born into a prominent Las Flores family with deep social and politi...
+- [ ] Maria Martinez van der Meer in a determined moment, 
+- [ ] Maria Martinez van der Meer caught in a pivotal scene, Born into a prominent Las Flores family with deep social and politi...
 
 ## Expression Variants
 

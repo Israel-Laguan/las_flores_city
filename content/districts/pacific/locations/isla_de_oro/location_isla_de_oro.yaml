@@ -27,3 +27,4 @@ conclusion: |
   Isla de Oro represents a unique duality within the Las Flores archipelago. On one hand, it is a model of eco-tourism and conservation, where islanders and visitors share a deep respect for nature. On the other, it hosts an exclusive enclave for the world's elite, demonstrating that luxury and environmental stewardship can coexist. Together, these contrasting elements create an island sanctuary that preserves its natural beauty while welcoming diverse visitors from around the globe.
 asset_paths:
   image: isla_de_oro__default.png
+background_url: s3://las-flores/backgrounds/isla_de_oro/isla_de_oro__default.png

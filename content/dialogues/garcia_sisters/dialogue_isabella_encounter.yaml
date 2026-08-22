@@ -1,0 +1,79 @@
+id: "b8f5a111-e29b-41d4-a716-446655440001"
+name: "Isabella Garcia - Encounter & Endings"
+description: "The player encounters Isabella at her father's house. Responses determine relationship and ending."
+scene_id: "00000000-0000-0000-0000-000000000000"
+character_id: "c2000004-e29b-41d4-a716-446655440004"
+dialogue_scope: "character"
+start_node_id: "b8f5a111-e29b-41d4-a716-446655440002"
+nodes:
+  b8f5a111-e29b-41d4-a716-446655440002:
+    id: "b8f5a111-e29b-41d4-a716-446655440002"
+    type: "character"
+    speaker_id: "c2000004-e29b-41d4-a716-446655440004"
+    text: "If you're here to gawk, get out. If you're looking for my dad, he's not here. And if you're an art rep, you're definitely lost—they don't visit houses that smell like sickness. State your business."
+    thought: "(Expression: default. Her 'hedgehog' defense is up immediately. She pauses her work on an old, cracked tablet, eyeing you with a prickly, preemptive hostility while breathing heavily.)"
+    choices:
+      - id: "sympathize_art"
+        text: "I actually saw some of your digital pieces. The rawness... it feels like someone screaming for help."
+        next_node_id: "b8f5a111-e29b-41d4-a716-446655440003"
+        relationship_change:
+          stat: "friendship"
+          amount: 5
+      - id: "mention_sofia"
+        text: "Your sister Sofia sent me. She wanted to know how you, Ariana, and your dad are doing."
+        next_node_id: "b8f5a111-e29b-41d4-a716-446655440004"
+        relationship_change:
+          stat: "friendship"
+          amount: -5
+
+  b8f5a111-e29b-41d4-a716-446655440003:
+    id: "b8f5a111-e29b-41d4-a716-446655440003"
+    type: "character"
+    speaker_id: "c2000004-e29b-41d4-a716-446655440004"
+    text: "[She flinches, wrapping her arms around herself.] It's just poisoned water and bad luck. Don't read too much into it. People don't buy pain anyway, they just pity it."
+    thought: "(Expression: vulnerable. The prickles retract slightly. She is disarmed, terrified by how accurately you saw through her, but desperate for the connection.)"
+    choices:
+      - id: "support_isabella"
+        text: "It's not pity. It's recognition. Let me commission a piece. Something real."
+        next_node_id: "b8f5a111-e29b-41d4-a716-446655440005"
+      - id: "pity_isabella"
+        text: "It must be an awful life, stuck coughing in this house while Sofia is practically running things outside."
+        next_node_id: "b8f5a111-e29b-41d4-a716-446655440006"
+
+  b8f5a111-e29b-41d4-a716-446655440004:
+    id: "b8f5a111-e29b-41d4-a716-446655440004"
+    type: "character"
+    speaker_id: "c2000004-e29b-41d4-a716-446655440004"
+    text: "Sofia. Of course. [Her voice trembles, cracking with a visceral bitterness.] Because 'Sofi' is the saint of the slums, tossing crumbs to the sick sister rotting in her childhood bedroom. Did she tell you I raise her kid? Did she tell you I choke on my own lungs every morning while she gets the glory?"
+    thought: "(Expression: angry. Her shell shatters into raw, tragic self-pity. Sofia's success is a crushing mirror that makes Isabella feel like her bad luck is a personal defect.)"
+    choices:
+      - id: "defend_sofia"
+        text: "She's deaf and walks with a cane. She didn't exactly have it easy either."
+        next_node_id: "b8f5a111-e29b-41d4-a716-446655440006"
+      - id: "agree_isabella"
+        text: "It's incredibly unfair. You lost your life to that river, and you're the one holding the family together in the shadows."
+        next_node_id: "b8f5a111-e29b-41d4-a716-446655440007"
+
+  b8f5a111-e29b-41d4-a716-446655440005:
+    id: "b8f5a111-e29b-41d4-a716-446655440005"
+    type: "character"
+    speaker_id: "c2000004-e29b-41d4-a716-446655440004"
+    text: "Real... [She swallows hard, wiping at her eyes.] I can do a digital commission. Or... dad got me a real canvas last month. I just... I need someone in my corner for once. I'm so tired of fighting alone."
+    thought: "(Expression: sad. The True Ally Ending. The hedgehog drops her quills entirely. She lets the player see her exhaustion and grief without lashing out.)"
+    is_end: true
+
+  b8f5a111-e29b-41d4-a716-446655440006:
+    id: "b8f5a111-e29b-41d4-a716-446655440006"
+    type: "character"
+    speaker_id: "c2000004-e29b-41d4-a716-446655440004"
+    text: "Get out! GET OUT! Take your pity back to Saint Sofia! I don't need either of you judging me in my own damn house!"
+    thought: "(Expression: angry. The Enemy Ending. The perceived pity and comparison causes her to completely melt down. She violently pushes the player away.)"
+    is_end: true
+
+  b8f5a111-e29b-41d4-a716-446655440007:
+    id: "b8f5a111-e29b-41d4-a716-446655440007"
+    type: "character"
+    speaker_id: "c2000004-e29b-41d4-a716-446655440004"
+    text: "[She lets out a ragged, shaking breath.] Unfair doesn't even begin to cover it. But... you see it. Nobody else sees what it costs me. If you really want to help... commission a piece."
+    thought: "(Expression: determined. The Pragmatic Ally Ending. She bonds with the player over shared resentment. It feeds her self-pity, but earns her trust.)"
+    is_end: true

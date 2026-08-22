@@ -61,6 +61,9 @@ Sofia's greatest pride and motivation is her daughter:
 - **Education:** Studying to become a doctor
 - **Hope:** Sofia's sacrifices are giving Ariana a better future
 
+**Rift with Isabella:**
+Despite her physical disabilities, Sofia's resourcefulness has allowed her to earn more money and garner significantly more respect in the community than her older sister Isabella. This success, coupled with the community's deep admiration for "Sofi," has caused Isabella—who feels held back by her own chronic respiratory problems—to grow bitter and distant, often treating Sofia poorly out of resentment.
+
 ## Community Role
 
 Despite her hardships, Sofia has become a symbol of resilience in Old Las Flores:

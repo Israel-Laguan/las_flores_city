@@ -21,3 +21,129 @@ asset_paths:
 portrait_urls:
   - url: s3://las-flores/portraits/valentina_quan/valentina_quan__default.png
     label: dev
+    expression: default
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__happy.png
+    label: dev
+    expression: happy
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__smirk.png
+    label: dev
+    expression: smirk
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__focused.png
+    label: dev
+    expression: focused
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__contemplative.png
+    label: dev
+    expression: contemplative
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__vulnerable.png
+    label: dev
+    expression: vulnerable
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__tender.png
+    label: dev
+    expression: tender
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__afraid.png
+    label: dev
+    expression: afraid
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__determined.png
+    label: dev
+    expression: determined
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__sad.png
+    label: dev
+    expression: sad
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__shocked.png
+    label: dev
+    expression: shocked
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__angry.png
+    label: dev
+    expression: angry
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__calculating.png
+    label: dev
+    expression: calculating
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__surprised.png
+    label: dev
+    expression: surprised
+  # Hairstyle variant: street attire with polished bun (generation target)
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__street_bun_default.png
+    label: dev
+    expression: street_bun_default
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__street_bun_happy.png
+    label: dev
+    expression: street_bun_happy
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__street_bun_smirk.png
+    label: dev
+    expression: street_bun_smirk
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__street_bun_focused.png
+    label: dev
+    expression: street_bun_focused
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__street_bun_contemplative.png
+    label: dev
+    expression: street_bun_contemplative
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__street_bun_vulnerable.png
+    label: dev
+    expression: street_bun_vulnerable
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__street_bun_tender.png
+    label: dev
+    expression: street_bun_tender
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__street_bun_afraid.png
+    label: dev
+    expression: street_bun_afraid
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__street_bun_determined.png
+    label: dev
+    expression: street_bun_determined
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__street_bun_sad.png
+    label: dev
+    expression: street_bun_sad
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__street_bun_shocked.png
+    label: dev
+    expression: street_bun_shocked
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__street_bun_angry.png
+    label: dev
+    expression: street_bun_angry
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__street_bun_calculating.png
+    label: dev
+    expression: street_bun_calculating
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__street_bun_surprised.png
+    label: dev
+    expression: street_bun_surprised
+  # Attire variant: flight-attendant work uniform (generation target)
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__work_default.png
+    label: dev
+    expression: work_default
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__work_happy.png
+    label: dev
+    expression: work_happy
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__work_smirk.png
+    label: dev
+    expression: work_smirk
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__work_focused.png
+    label: dev
+    expression: work_focused
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__work_contemplative.png
+    label: dev
+    expression: work_contemplative
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__work_vulnerable.png
+    label: dev
+    expression: work_vulnerable
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__work_tender.png
+    label: dev
+    expression: work_tender
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__work_afraid.png
+    label: dev
+    expression: work_afraid
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__work_determined.png
+    label: dev
+    expression: work_determined
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__work_sad.png
+    label: dev
+    expression: work_sad
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__work_shocked.png
+    label: dev
+    expression: work_shocked
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__work_angry.png
+    label: dev
+    expression: work_angry
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__work_calculating.png
+    label: dev
+    expression: work_calculating
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__work_surprised.png
+    label: dev
+    expression: work_surprised

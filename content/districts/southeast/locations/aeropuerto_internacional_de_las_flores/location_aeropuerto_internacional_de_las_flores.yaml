@@ -11,3 +11,4 @@ tags:
 lore_path: aeropuerto_internacional_de_las_flores.md
 asset_paths:
   image: aeropuerto_internacional_de_las_flores__default.png
+background_url: s3://las-flores/backgrounds/aeropuerto_internacional_de_las_flores/aeropuerto_internacional_de_las_flores__default.png

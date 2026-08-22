@@ -11,3 +11,4 @@ tags:
 narrative_path: centro_empresarial_chino_latino.md
 scene:
   background_url: centro_empresarial_chino_latino__default.png
+background_url: s3://las-flores/backgrounds/centro_empresarial_chino_latino/centro_empresarial_chino_latino__default.png

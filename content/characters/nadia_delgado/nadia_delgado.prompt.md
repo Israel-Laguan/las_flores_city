@@ -21,9 +21,9 @@ Slender Latina woman in her mid-20s, slender, sturdy build, warm brown, bright, 
 
 ## Variations
 
-- [ ] Nadia Delgado in a meeting, reviewing documents with colleagues
-- [ ] Nadia Delgado considering a strategic decision, weighing options thoughtfully
-- [ ] Nadia Delgado in a business meeting, collaborating with team members on a strategy
+- [ ] Nadia Delgado moving through the district, Nadia grew up in Bahía de las Olas, surrounded by the rich marine l...
+- [ ] Nadia Delgado in a quiet moment, 
+- [ ] Nadia Delgado caught in a pivotal scene, Nadia grew up in Bahía de las Olas, surrounded by the rich marine l...
 
 ## Expression Variants
 

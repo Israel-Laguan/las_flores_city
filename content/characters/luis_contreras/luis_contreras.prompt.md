@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Luis Contreras studying intently at a desk, surrounded by books and notes
-- [ ] Luis Contreras deep in thought about their studies, determined to succeed
-- [ ] Luis Contreras studying with classmates in a library, working together on a project
+- [ ] Luis Contreras reviewing the situation, Third-year engineering student at Universidad Nacional de Las Flore...
+- [ ] Luis Contreras in a contemplative moment, 
+- [ ] Luis Contreras caught in a pivotal scene, Third-year engineering student at Universidad Nacional de Las Flore...
 
 ## Expression Variants
 

@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Maria Chicham studying intently at a desk, surrounded by books and notes
-- [ ] Maria Chicham deep in thought about their studies, determined to succeed
-- [ ] Maria Chicham studying with classmates in a library, working together on a project
+- [ ] Maria Chicham moving through the district, Final year medicine student from remote village along Rio Las Flore...
+- [ ] Maria Chicham in a determined moment, 
+- [ ] Maria Chicham caught in a pivotal scene, Final year medicine student from remote village along Rio Las Flore...
 
 ## Expression Variants
 

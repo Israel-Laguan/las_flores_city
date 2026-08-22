@@ -11,3 +11,4 @@ tags:
 lore_path: agricultural_valley.md
 asset_paths:
   image: agricultural_valley__default.png
+background_url: s3://las-flores/backgrounds/agricultural_valley/agricultural_valley__default.png

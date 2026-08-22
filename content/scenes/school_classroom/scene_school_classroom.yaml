@@ -5,7 +5,8 @@ district: Universidad del Valle
 district_lore: Universidad del Valle
 district_subzone: Universidad del Valle
 mood: neon-lit, tense, surveilled
-available_dialogues: []
+available_dialogues:
+  - a0f2b3c4-d5e6-4789-8901-234567890123
 lore_path: school_classroom.md
 asset_paths:
   background: school_classroom__default.png

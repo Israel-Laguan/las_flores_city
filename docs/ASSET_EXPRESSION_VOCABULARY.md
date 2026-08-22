@@ -35,6 +35,22 @@ content/characters/<slug>/assets/
 Characters do **not** need all expressions — the character's
 `<slug>.prompt.md` "Variants" section specifies which to author.
 
+### AI Prompting Guidelines for Expressions
+
+When writing or updating a character's `.prompt.md` file for expression variants, **always adhere to these two rules** to ensure high-quality Visual Novel integration:
+
+1. **Flat Neutral Backgrounds**: The main prompt and every expression variant must specify a flat, neutral background (e.g., `Flat warm grey background`, `Solid flat grey background`) instead of a detailed environment (like a campus, bedroom, or city street). The negative prompt must include `no detailed backgrounds, no environmental backgrounds, no scenery`. This is critical for clean, easy background removal when compositing the character over a scene in the Visual Novel UI.
+2. **Distinct Hand and Posture Body Language**: Do not just change the facial features. Each expression variant must describe distinct upper-body posture, arm placement, and hand gestures that reflect the character's personality and the specific emotion. For example, a `sad` expression should have slumped shoulders and limp arms; a `focused` expression might have a hand pinching the chin; an `angry` expression should have clenched fists and a rigid posture.
+
+### Existing asset fallback
+
+The names and `.png` extension above are preferred conventions, not
+requirements for existing assets. Intake and audit scripts accept a suitable
+image with another filename or supported type (`.png`, `.jpg`, `.jpeg`,
+`.webp`, or `.avif`). If an expression-specific match is unavailable, select
+the first suitable image in `assets/`. If no suitable image exists, generate
+one before publishing.
+
 ### YAML (`portrait_urls[]`)
 
 ```yaml
@@ -167,6 +183,11 @@ visual:
 CSS-only moods (`tense`, `soft_bloom`, `alert`) match nothing in the pool and
 fall back gracefully.
 
+The canonical names and `.png` extension are preferred for new assets, but
+existing background files may use another filename or supported image type.
+When no exact variant filename is available, select the first suitable image
+in `assets/`; generate a replacement only when no suitable image exists.
+
 ## 3. Data flow (server → client)
 
 ```text
@@ -186,7 +207,9 @@ scenes.background_urls (JSONB)
 
 ### Adding an expression to a character
 
-1. Generate the image into `content/characters/<slug>/assets/<slug>__<expression>.png`
+1. Generate the image into `content/characters/<slug>/assets/<slug>__<expression>.png`;
+   if a suitable existing asset has another name or supported type, select it
+   instead of duplicating it
 2. Publish via `AssetPublishService` → URL added to MinIO
 3. Add a `portrait_urls[]` entry with the `expression` tag
 4. Reference it in dialogue nodes via `visual.expression`
@@ -194,7 +217,9 @@ scenes.background_urls (JSONB)
 
 ### Adding an environment variant to a scene
 
-1. Generate the image into `content/scenes/<slug>/assets/<slug>__<variant>.png`
+1. Generate the image into `content/scenes/<slug>/assets/<slug>__<variant>.png`;
+   if a suitable existing asset has another name or supported type, select it
+   instead of duplicating it
 2. Publish → MinIO URL
 3. Add a `background_urls[]` entry with the `expression` tag
 4. Author per-node (`visual.background` + `visual.mood`) or rely on the

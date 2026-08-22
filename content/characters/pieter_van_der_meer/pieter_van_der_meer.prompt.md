@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Pieter van der Meer in a meeting, reviewing documents with colleagues
-- [ ] Pieter van der Meer considering a strategic decision, weighing options thoughtfully
-- [ ] Pieter van der Meer in a business meeting, collaborating with team members on a strategy
+- [ ] Pieter van der Meer reviewing the situation, Pieter Van der Meer was a formidable figure in the international mi...
+- [ ] Pieter van der Meer in a tense moment, 
+- [ ] Pieter van der Meer caught in a pivotal scene, Pieter Van der Meer was a formidable figure in the international mi...
 
 ## Expression Variants
 

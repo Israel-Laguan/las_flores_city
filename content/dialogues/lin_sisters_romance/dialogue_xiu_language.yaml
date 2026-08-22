@@ -1,0 +1,103 @@
+id: "e0f3b4c5-d6e7-4890-8901-234567890222"
+name: "Language of the Heart"
+description: "A private romantic moment in the player's apartment where Lin Xiu playfully teaches some Hokkien port slang and hides a sweet confession."
+scene_id: "55555555-6666-4777-8888-999999990001"
+character_id: "33333333-4444-4555-8666-777777770001"
+dialogue_scope: "scene"
+start_node_id: "e1111111-4444-5555-6666-777777777777"
+nodes:
+  e1111111-4444-5555-6666-777777777777:
+    id: "e1111111-4444-5555-6666-777777777777"
+    type: "character"
+    speaker_id: "33333333-4444-4555-8666-777777770001"
+    text: "You know, you're always staring at my batik jackets and asking about my family's slang. You want me to actually teach you a word, local boy?"
+    thought: "Lin Xiu sits cross-legged on the edge of the spare chair, swinging her boots. Her round face is flushed, and she's playing with one of her colorful beaded earrings, her sharp swallow-tail brows lifting in a challenge."
+    choices:
+      - id: "teach_useful"
+        text: "Sure. Teach me something I can use when I visit the docks."
+        next_node_id: "e2222222-4444-5555-6666-777777777777"
+      - id: "teach_endearment"
+        text: "Only if you teach me a term of endearment."
+        next_node_id: "e3333333-4444-5555-6666-777777777777"
+
+  e2222222-4444-5555-6666-777777777777:
+    id: "e2222222-4444-5555-6666-777777777777"
+    type: "character"
+    speaker_id: "33333333-4444-4555-8666-777777770001"
+    text: "Okay. First lesson: 'Kian-si.' It means 'fear of death'—or basically, a coward. It's what my sister calls you when you hesitate. But..."
+    thought: "She giggles, her eyes crinkling warmly. She stops swinging her boots and leans forward slightly."
+    choices:
+      - id: "ask_but"
+        text: "But what?"
+        next_node_id: "e4444444-4444-5555-6666-777777777777"
+
+  e3333333-4444-5555-6666-777777777777:
+    id: "e3333333-4444-4555-8666-777777770001"
+    type: "character"
+    speaker_id: "33333333-4444-4555-8666-777777770001"
+    text: "A term of endearment? You're too bold. Fine, listen closely: 'Li si wa e sim-koa.'"
+    thought: "She blushes, dropping her gaze for a split second before looking back up with a playful smirk."
+    choices:
+      - id: "ask_meaning"
+        text: "What does that mean?"
+        next_node_id: "e5555555-4444-5555-6666-777777777777"
+
+  e4444444-4444-5555-6666-777777777777:
+    id: "e4444444-4444-5555-6666-777777777777"
+    type: "character"
+    speaker_id: "33333333-4444-4555-8666-777777770001"
+    text: "But there's also... 'Li si wa e sim-koa.' It's a phrase my grandmother used to use."
+    thought: "She says it softly, the rhythmic Hokkien words rolling naturally off her tongue. A brief, quiet vulnerability flashes across her face."
+    choices:
+      - id: "ask_meaning_2"
+        text: "What does it mean?"
+        next_node_id: "e5555555-4444-5555-6666-777777777777"
+
+  e5555555-4444-5555-6666-777777777777:
+    id: "e5555555-4444-5555-6666-777777777777"
+    type: "character"
+    speaker_id: "33333333-4444-4555-8666-777777770001"
+    text: "Oh, it means... 'You are incredibly annoying.' Or maybe 'you have a flat nose.'"
+    thought: "She giggles, crossing her arms in her family's signature posture, but she's tapping her elbow with a slow, happy rhythm. She's lying. In Hokkien, 'sim-koa' literally means 'heart and liver'—the most vital, precious part of oneself. She just called you her sweetheart, hiding the confession behind a protective joke."
+    choices:
+      - id: "playful_translate"
+        text: "I don't believe you. I'm going to run that through the translator app."
+        next_node_id: "e6666666-4444-5555-6666-777777777777"
+        relationship_change:
+          stat: "romance"
+          amount: 2
+      - id: "playful_accept"
+        text: "Then I guess I'm happy to be your favorite annoyance."
+        next_node_id: "e7777777-4444-5555-6666-777777777777"
+        relationship_change:
+          stat: "romance"
+          amount: 2
+
+  e6666666-4444-5555-6666-777777777777:
+    id: "e6666666-4444-5555-6666-777777777777"
+    type: "character"
+    speaker_id: "33333333-4444-4555-8666-777777770001"
+    text: "Don't you dare! If you translate it, the magic is gone. Just... accept my translation, okay? It's better that way."
+    thought: "She jumps up from the chair, playfully swiping at your phone. For a second, she is close enough for you to catch the subtle scent of the port spices and jasmine on her jacket. She smiles, completely at ease in your space."
+    is_end: true
+    effects:
+      state_set:
+        lin_xiu_romance_status: "confessed_slang"
+
+  e7777777-4444-5555-6666-777777777777:
+    id: "e7777777-4444-5555-6666-777777777777"
+    type: "character"
+    speaker_id: "33333333-4444-4555-8666-777777770001"
+    text: "Good. Keep being annoying. I think it suits you."
+    thought: "She relaxes back into the chair, a soft, satisfied smile resting on her face. Her sharp swallow-tail brows are completely relaxed, and she watches you with a warmth she rarely shows outside this room."
+    is_end: true
+    effects:
+      state_set:
+        lin_xiu_romance_status: "confessed_slang"
+metadata:
+  version: "1.0"
+  author: "Las Flores Team"
+  tags:
+    - "lin_xiu"
+    - "romance"
+    - "apartment"

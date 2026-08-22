@@ -21,9 +21,9 @@ Slender 23-year-old Latin American woman, solid build, dark expressive eyes, a s
 
 ## Variations
 
-- [ ] Isabella Vargas studying intently at a desk, surrounded by books and notes
-- [ ] Isabella Vargas deep in thought about their studies, determined to succeed
-- [ ] Isabella Vargas studying with classmates in a library, working together on a project
+- [ ] Isabella Vargas surveying the scene, ### Early Life - **Family:** Grandfather lives alone in Las Flores'...
+- [ ] Isabella Vargas in a quiet moment, 
+- [ ] Isabella Vargas caught in a pivotal scene, ### Early Life - **Family:** Grandfather lives alone in Las Flores'...
 
 ## Expression Variants
 

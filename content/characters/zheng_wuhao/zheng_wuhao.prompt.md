@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Zheng Wuhao at work in their professional environment, focused on their tasks
-- [ ] Zheng Wuhao in a moment of reflection, considering their next steps
-- [ ] Zheng Wuhao with colleagues in a professional setting, engaged in discussion
+- [ ] Zheng Wuhao reflecting on recent events, The first responder to the Great Lithium Leak who downplayed the se...
+- [ ] Zheng Wuhao in a tense moment, 
+- [ ] Zheng Wuhao caught in a pivotal scene, The first responder to the Great Lithium Leak who downplayed the se...
 
 ## Expression Variants
 

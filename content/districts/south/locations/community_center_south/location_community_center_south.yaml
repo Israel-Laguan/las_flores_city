@@ -1,4 +1,4 @@
-id: "22222222-3333-4444-8555-666666660001"
+id: 22222222-3333-4444-8555-666666660001
 name: Community Center South
 type: location
 color: null
@@ -45,3 +45,4 @@ conclusion: |
   The Community Center South embodies the resilience of South Las Flores. In a district facing economic hardship, gang violence, and corporate exploitation, the center provides a space for education, organization, and resistance. It is both a practical resource for residents and a symbolic heart of the community's determination to maintain its identity and dignity.
 asset_paths:
   image: community_center_south__default.png
+background_url: s3://las-flores/backgrounds/community_center_south/community_center_south__default.png

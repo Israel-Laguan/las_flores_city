@@ -186,6 +186,7 @@ export const YAMLLocationSchema = z.object({
     })).optional(),
   }).optional(),
   lore_ref: z.string().max(255).optional(),
+  background_url: z.string().optional(),
   image_urls: z.array(AssetEntrySchema).optional(),
   lore_path: safePath,
   asset_paths: z.object({

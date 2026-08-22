@@ -10,11 +10,11 @@ Valentina grew up in a multicultural environment shaped by her diverse heritage.
 
 ## Appearance
 
-Valentina has an elegant appearance, with long dark hair she often styles in a polished bun. Her expressive hazel eyes convey warmth and charisma, though they occasionally mask her inner struggles. She favours tailored uniforms that exude professionalism and accessorises with subtle jewellery to highlight her personal style.
+Valentina is a classic Asian beauty, with long dark hair she often styles in a polished elegant bun. Her expressive hazel eyes convey warmth and charisma, though they occasionally mask her inner struggles. She favours tailored uniforms that exude professionalism and accessorises with subtle jewellery to highlight her personal style. Off-duty she wears casual contemporary street clothing that flatters her figure without being provocative.
 
 ## Personality
 
-On the surface Valentina presents as a cheerful and accomplished woman, charming passengers and colleagues alike with her friendly demeanour. She enjoys meeting new people, exploring different cultures, and seeking out thrilling experiences. Beneath that facade, however, lies a persistent sense of emptiness she grapples with in silence. She frequently finds herself in fleeting romances with pilots and other flight crew, seeking validation and connection, but these affairs fill the void only temporarily.
+On the surface Valentina presents as a cheerful and accomplished woman, charming passengers and colleagues alike with her friendly demeanour. Her charm is a performance she learned at home — warmth deployed to control a room before it can control her. She enjoys meeting new people, exploring different cultures, and seeking out thrilling experiences. Beneath that facade, however, lies a persistent sense of emptiness she grapples with in silence. She frequently finds herself in fleeting romances with pilots and other flight crew, seeking validation and connection, but these affairs fill the void only temporarily.
 
 ## Interests
 
@@ -30,4 +30,4 @@ Valentina dreams of finding purpose and fulfilment beyond the airline industry. 
 
 ## Summary
 
-Valentina Quan is a young woman living a seemingly glamorous life as a flight attendant, yet dealing with profound struggles beneath her polished exterior. Her fluency in multiple languages has opened doors to travel and connection, but her internal battles with depression and feelings of emptiness reveal a poignant conflict. Her character explores themes of identity, the search for genuine happiness, and the complexities of mental health in a fast-paced, demanding world.
+Valentina Quan is a young woman living a seemingly glamorous life as a flight attendant, yet dealing with profound struggles beneath her polished exterior. Raised between a Dragon Head triad father who treated family as an occasional transaction and a mother trapped by him in dependent poverty, she learned that love arrives like money does — unpredictably, and never for long. Her fluency in multiple languages has opened doors to travel and connection, but a string of empty flings, a fear of settling down, and her internal battles with depression reveal a poignant conflict. Her character explores themes of identity, inherited wounds, the search for genuine happiness, and the complexities of mental health in a fast-paced, demanding world.

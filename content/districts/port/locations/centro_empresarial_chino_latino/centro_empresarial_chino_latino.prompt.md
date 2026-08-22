@@ -22,7 +22,7 @@ Centro Empresarial Chino-Latino in Las Flores, daytime, modern fusion of chinese
 photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lines, cybernetics, cargo pants, back pockets, backpacks, bulky luggage, sombreros, wristwatches
 
 ## Variations
-- [ ] Night version: same scene at night with different lighting
-- [ ] Rainy version: same scene with rain and mood effects
-- [ ] Wide shot: broader view of the location
 
+- [ ] Night version: Centro Empresarial Chino Latino after dark — A business hub reflecting the Chinese-Latin American cultura...
+- [ ] Rainy version: Centro Empresarial Chino Latino in the rain — wet surfaces, reflected neon, moody atmosphere
+- [ ] Wide shot: wider establishing view of Centro Empresarial Chino Latino, broader environmental context

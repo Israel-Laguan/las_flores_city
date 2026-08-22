@@ -1,0 +1,209 @@
+id: 9c2e6a10-8f4d-4b7a-9c3e-1a2b3c4d5e02
+name: "Valentina Quan - Act 2: The Facade"
+description: "A shared layover pulls back the curtain a centimeter: markets and photography, the Instagram life versus the empty apartment, and the fling pattern — pilots and crew, always short, always ended on her initiative. Empathizing earns real trust. Mid-conversation her phone lights up with remittance anxiety: a stubborn mother who refuses help and demands she buy a house."
+character_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+scene_id: "00000000-0000-0000-0000-000000000000"
+dialogue_scope: character
+start_node_id: vq_layover_start
+
+nodes:
+  vq_layover_start:
+    id: vq_layover_start
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "There you are. Twelve-hour layover and the city scares me already — good scared. Sit. Tell me you're not about to be sensible about it."
+    thought: "(Expression: happy. She waved first this time. She noticed herself doing it and did it anyway, which is new enough that she's decided not to examine it.)"
+    visual:
+      expression: happy
+      position: right
+      transition: fade
+    choices:
+      - id: layover_markets
+        text: "'Convince me. Best market in this whole circuit.'"
+        next_node_id: vq_layover_markets
+        time_block_cost:
+          amount: 1
+          description: "Layover stories with Valentina"
+      - id: layover_photos
+        text: "'You post a lot of photos. Ever in any of them?'"
+        next_node_id: vq_layover_photos
+        time_block_cost:
+          amount: 1
+          description: "Layover stories with Valentina"
+      - id: layover_flings_q
+        text: "'Anyone waiting for you when you land? Anyone special?'"
+        next_node_id: vq_layover_flings
+        time_block_cost:
+          amount: 1
+          description: "Layover stories with Valentina"
+
+  vq_layover_markets:
+    id: vq_layover_markets
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "Okay — dawn market behind the old rail station, before the tour buses. An old woman sells mangoes there and pretends not to speak English so I have to use my terrible Spanish. I bought three last month just so she'd scold me again."
+    thought: "(Expression: contemplative. This part is real. Markets are the only place she lingers — everything else she collects through glass, or through a lens.)"
+    visual:
+      expression: contemplative
+    choices:
+      - id: markets_to_photos
+        text: "'And how much of that ever makes it onto your feed?'"
+        next_node_id: vq_layover_photos
+
+  vq_layover_photos:
+    id: vq_layover_photos
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "All of it! The good angles, anyway. Sunrise over the harbor, rooftop pool, mystery meat skewer — my followers think I live in a magazine. ...The apartment I actually rent has one mug in the cupboard and a suitcase I never fully unpack. Don't put that in the caption."
+    thought: "(Expression: sad. The joke is practiced; the flatness under it isn't. She said 'the apartment I actually rent' like it belonged to a stranger she visits between lives.)"
+    visual:
+      expression: sad
+    choices:
+      - id: photos_to_flings
+        text: "'So who's in the apartment-shaped hole? Anyone?'"
+        next_node_id: vq_layover_flings
+
+  vq_layover_flings:
+    id: vq_layover_flings
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "Ha! Crew gossip travels faster than our aircraft, so you've probably heard already. Fine — yes. There've been people. A first officer here, a purser there. Nothing that survives a roster change. And before you ask: every single one of them ended because I ended it. All mine. Every exit."
+    thought: "(Expression: smirk. She reports the pattern like a safety demonstration — routine, memorized, slightly bored. If he notices she never once says anyone's name, he'll be the first.)"
+    visual:
+      expression: smirk
+    choices:
+      - id: fling_tease
+        text: "'A purser AND a first officer? Efficient.'"
+        next_node_id: vq_layover_tease
+      - id: fling_empathize
+        text: "'Sounds less fun than it looks from outside.'"
+        next_node_id: vq_layover_empathize
+      - id: fling_why
+        text: "'Why do they never last? Really?'"
+        next_node_id: vq_layover_why
+
+  vq_layover_tease:
+    id: vq_layover_tease
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "Efficient. I like that. Listen, guapo — airport romances are duty-free: cheap, shiny, and gone by customs. No receipts, no returns. It works for me."
+    thought: "(Expression: happy. He took the bait and let her keep the surface intact. Part of her is relieved. A smaller part files him under 'polite' and quietly lowers the ceiling of what tonight could be.)"
+    visual:
+      expression: happy
+    effects:
+      stat_set:
+        vq_trust: 5
+    choices:
+      - id: tease_to_phone
+        text: "'If you say so.'"
+        next_node_id: vq_layover_phone
+
+  vq_layover_empathize:
+    id: vq_layover_empathize
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "...No. No, it isn't, actually. They're emotional — I'm not made of stone, whatever the crew locker thinks. But hollow. Like drinking turbulence. You feel something move and nothing fills."
+    thought: "(Expression: vulnerable. She said it out loud. Nobody has heard that sentence before, including her — it existed only as a feeling she outran. Her hands are wrapped around the glass like it might leave too.)"
+    visual:
+      expression: vulnerable
+    effects:
+      stat_set:
+        vq_trust: 15
+    choices:
+      - id: empathize_to_phone
+        text: "'Thank you for telling me the true version.'"
+        next_node_id: vq_layover_phone
+
+  vq_layover_why:
+    id: vq_layover_why
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "Schedules. Opposite rotations, different hemispheres — it's logistics, really. Ask any crew member. ...What? Why are you looking at me like that? Fine. Maybe I end it before the roster does. Same result on paper."
+    thought: "(Expression: focused. The logbook answer comes first, automatically. The correction slips out before she can stop it, and now she's the one surprised in this conversation.)"
+    visual:
+      expression: focused
+    effects:
+      stat_set:
+        vq_trust: 8
+    choices:
+      - id: why_to_phone
+        text: "'Same result on paper. Sure.'"
+        next_node_id: vq_layover_phone
+
+  vq_layover_phone:
+    id: vq_layover_phone
+    type: narrator
+    text: "Her phone buzzes against the bar. She glances down — and everything performative about her face stops. Three missed calls. A transfer notification declined. Her thumb hovers, then flips the phone face-down with more force than the gesture needs."
+    choices:
+      - id: phone_ask
+        text: "'Everything okay? That looked heavier than a roster change.'"
+        next_node_id: vq_layover_mother
+      - id: phone_space
+        text: "Say nothing. Refill her glass and wait."
+        next_node_id: vq_layover_space
+
+  vq_layover_mother:
+    id: vq_layover_mother
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "It's my mom. She's... stubborn. I send what I can and she sends it back with interest — lectures. 'Buy your own house. Don't end up waiting by a phone like me.' As if I know how to buy anything but plane tickets. I don't— sorry. You didn't sign up for this."
+    thought: "(Expression: vulnerable. That's all he gets — the shape of the thing, none of its name. Some silences are walls. This one is a door left open exactly one centimeter.)"
+    visual:
+      expression: vulnerable
+    effects:
+      stat_set:
+        vq_trust: 8
+    choices:
+      - id: mother_to_end
+        text: "'You don't have to carry it alone. That's all I'll say.'"
+        next_node_id: vq_layover_end
+
+  vq_layover_space:
+    id: vq_layover_space
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "...You're not going to ask? Everyone asks. Even the ones who pretend they won't. Thank you. It's family stuff. The kind that doesn't fit in a layover. Maybe someday the long version."
+    thought: "(Expression: tender. He gave her the one thing no one gives her — an unmonitored silence. She catches herself cataloguing him as permanent inventory and forcibly stops.)"
+    visual:
+      expression: tender
+    effects:
+      stat_set:
+        vq_trust: 5
+    choices:
+      - id: space_to_end
+        text: "'The long version sounds worth the wait.'"
+        next_node_id: vq_layover_end
+
+  vq_layover_end:
+    id: vq_layover_end
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "Careful, guapo. Keep being like this and I might start texting you from time zones I don't work. ...Boarding call soon. Walk me as far as security?"
+    thought: "(Expression: tender. The mask is back on, but it sits differently now — looser at the edges. She told him something true tonight. Two somethings, counting the phone.)"
+    visual:
+      expression: tender
+    is_end: true
+    effects:
+      flag_set:
+        vq_layover_done: true
+      state_set:
+        vq_arc: flirtation
+        last_vq_encounter_at: NOW
+      stat_set:
+        vq_trust: 5
+
+metadata:
+  version: "1.0"
+  required_flags:
+    vq_intro_done: true
+  # Completed act hides itself so the resolver advances to Act 3.
+  hidden_if:
+    vq_layover_done: true
+  tags:
+    - "valentina_quan"
+    - "act2"
+    - "layover"
+  notes: |
+    Act 2 surfaces the fling pattern (empathize path pays the most trust)
+    and plants the mother subplot via the phone beat. Completes with
+    vq_layover_done + vq_arc=flirtation.

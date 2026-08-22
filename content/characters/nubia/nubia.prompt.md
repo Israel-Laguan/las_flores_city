@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Nubia at work in their professional environment, focused on their tasks
-- [ ] Nubia in a moment of reflection, considering their next steps
-- [ ] Nubia with colleagues in a professional setting, engaged in discussion
+- [ ] Nubia surveying the scene, Karla's partner and fellow activist, murdered alongside Karla in Fe...
+- [ ] Nubia in a quiet moment, 
+- [ ] Nubia caught in a pivotal scene, Karla's partner and fellow activist, murdered alongside Karla in Fe...
 
 ## Expression Variants
 
