@@ -24,11 +24,11 @@ A cozy, slightly worn coffee shop interior in the Old Town district of Las Flore
 - [ ] cafe__night.png — Evening café glow
 - [ ] cafe__sunset.png — Golden hour café
 
-## Expression Variants
+## Environment Variants
 <!-- Variant prompts below are authored but NOT yet staged: the
      `assets/cafe__<tag>.png` files and the `background_urls[]` entries
-     with an `expression` tag will be added once the images are generated —
+     with a `variant` tag will be added once the images are generated —
      see docs/ASSET_EXPRESSION_VOCABULARY.md. -->
 
-- **`__night.png`**: Use the base scene as reference. Re-light the café as an evening scene: dim the room, warm golden overhead lamps, neon streetlight glowing through the front window, deeper shadows on the brick. Same layout, same graphic novel style, no people.
-- **`__sunset.png`**: Use the base scene as reference. Re-light the café with golden-hour sun through the window: warm amber washes over the brick and counter, soft highlights on the espresso machine. Same layout, same graphic novel style, no people.
+- **`__night.png`**: Use the base scene as reference. Re-light the café as an evening scene: dim the room, warm golden overhead lamps, neon streetlight glowing through the front window, deeper shadows on the brick. Same layout, same graphic novel style, no people. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette.
+- **`__sunset.png`**: Use the base scene as reference. Re-light the café with golden-hour sun through the window: warm amber washes over the brick and counter, soft highlights on the espresso machine. Same layout, same graphic novel style, no people. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette.

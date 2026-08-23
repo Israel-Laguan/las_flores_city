@@ -22,7 +22,7 @@ export const ScenePayloadResponseSchema = ApiResponseSchema.extend({
       id: zodUuid(),
       title: z.string(),
       backgroundUrl: z.string(),
-      // Expression-tagged background variants (`background_urls[]` from the
+            // Variant-tagged background variants (`background_urls[]` from the
       // scene YAML) — kept in sync with ScenePayloadSchema so response
       // parsing does not strip them from the VN layer.
       backgroundUrls: z.array(AssetEntrySchema).optional(),

@@ -57,18 +57,21 @@ export function resolvePortraitUrl(
 export interface ResolvableAssetEntry {
   url: string;
   label?: string;
+  // `expression` tags a character portrait variant; `variant` tags a scene
+  // environment variant (consumers read the key appropriate to their pool).
   expression?: string;
+  variant?: string;
 }
 
 /**
  * Resolve a dialogue backdrop from the node's `visual.background`, the
- * scene's expression-tagged variant pool, or the current scene backdrop.
+ * scene's variant-tagged environment pool, or the current scene backdrop.
  *
  * Resolution priority:
  *   1. `visualBackground` — when present (a URL or plain filename) it is
  *      authoritative and returned directly (node authoring always wins).
- *   2. `hints` — an ordered list of expression tags tried in sequence; the
- *      first variant whose `expression` matches (case-insensitive) wins.
+ *   2. `hints` — an ordered list of variant tags tried in sequence; the
+ *      first variant whose `variant` matches (case-insensitive) wins.
  *      A single string is treated as a one-element list (backward
  *      compatible). The caller builds precedence via `buildBackgroundHints`
  *      (game environment: weather > time-of-day > node mood).
@@ -89,20 +92,20 @@ export function resolveBackgroundUrl(
     typeof url === 'string' && url.length > 0;
 
   if (Array.isArray(backgroundUrls) && backgroundUrls.length > 0) {
-    // 2. Try each hint in order; first expression-tag match wins.
+    // 2. Try each hint in order; first variant-tag match wins.
     for (const hint of normalizeHints(hints)) {
       const match = backgroundUrls.find(
-        (e) => e && typeof e.expression === 'string' &&
-          e.expression.toLowerCase() === hint.toLowerCase() &&
+        (e) => e && typeof e.variant === 'string' &&
+          e.variant.toLowerCase() === hint.toLowerCase() &&
           usable(e.url),
       );
       if (match) return match.url;
     }
     // 3. Fall back to the first usable, untagged entry (the default variant).
-    //    An entry carrying an `expression` tag is a specific themed variant
+    //    An entry carrying a `variant` tag is a specific themed variant
     //    (e.g. rain/night/sunset), never a general fallback — using it here
     //    could render a themed backdrop without a matching game hint.
-    const fallback = backgroundUrls.find((e) => e && !e.expression && usable(e.url));
+    const fallback = backgroundUrls.find((e) => e && !e.variant && usable(e.url));
     if (fallback) return fallback.url;
   }
 
@@ -134,7 +137,7 @@ function normalizeHints(hints: string | string[] | undefined): string[] {
 /**
  * Game-driven environment hint chain for background variants (Phase 4).
  *
- * Builds the ordered list the resolver tries against `background_urls[].expression`:
+  * Builds the ordered list the resolver tries against `background_urls[].variant`:
  *   1. `weather`    — strongest game signal, when it is NOT `'clear'`/absent.
  *   2. `timeOfDay`  — from the real in-game clock (`getTimeOfDay(timeBlocks)`);
  *                     `dusk` is mapped to the asset vocabulary tag `sunset`.

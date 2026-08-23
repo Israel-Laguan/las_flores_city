@@ -24,10 +24,10 @@ The main performance floor of La Casa de la Música in Las Flores 2077, a conver
 - [ ] night — Club in full swing
 - [ ] sunset — Golden rehearsal glow
 
-## Expression Variants
+## Environment Variants
 <!-- Environment variants staged as `assets/la_casa_de_la_musica__<tag>.png` and wired into
-     `background_urls[]` (scenes) with an `expression` tag — see
+     `background_urls[]` (scenes) with a `variant` tag — see
      docs/ASSET_EXPRESSION_VOCABULARY.md. -->
 
-- **`__night.png`**: Use the base scene as reference. Re-light the venue as an active night club: the holographic light rig blazing with volumetric beams, deep shadows in the rafters, pulsing neon accent lights, richer color contrast. Same layout, same graphic novel style, no people.
-- **`__sunset.png`**: Use the base scene as reference. Re-light the venue with warm golden-hour light through the warehouse windows: amber washes across the floor and rafters, the light rig softly glowing, dust in the sunbeams. Same layout, same graphic novel style, no people.
+- **`__night.png`**: Use the base scene as reference. Re-light the venue as an active night club: the holographic light rig blazing with volumetric beams, deep shadows in the rafters, pulsing neon accent lights, richer color contrast. Same layout, same graphic novel style, no people. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette.
+- **`__sunset.png`**: Use the base scene as reference. Re-light the venue with warm golden-hour light through the warehouse windows: amber washes across the floor and rafters, the light rig softly glowing, dust in the sunbeams. Same layout, same graphic novel style, no people. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette.

@@ -12,7 +12,10 @@ const safePath = z.string().max(255).refine(
 export const AssetEntrySchema = z.object({
   url: z.string().url(),
   label: z.enum(['dev', 'staging', 'production']).optional(),
+  // `expression` = character portrait variant (portrait_urls[]);
+  // `variant` = scene environment variant (background_urls[]).
   expression: z.string().max(50).optional(),
+  variant: z.string().max(50).optional(),
 });
 
 export type AssetEntry = z.infer<typeof AssetEntrySchema>;

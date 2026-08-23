@@ -157,11 +157,11 @@ describe('AssetStageResolver', () => {
 
   describe('resolveStageOrderedPool()', () => {
     const entries: AssetEntry[] = [
-      { url: 'https://dev.example.com/rain.png', label: 'dev', expression: 'rain' },
-      { url: 'https://prod.example.com/rain.png', label: 'production', expression: 'rain' },
+      { url: 'https://dev.example.com/rain.png', label: 'dev', variant: 'rain' },
+      { url: 'https://prod.example.com/rain.png', label: 'production', variant: 'rain' },
       { url: 'https://dev.example.com/base.png', label: 'dev' },
       { url: 'https://prod.example.com/base.png', label: 'production' },
-      { url: 'https://staging.example.com/rain.png', label: 'staging', expression: 'rain' },
+      { url: 'https://staging.example.com/rain.png', label: 'staging', variant: 'rain' },
     ];
 
     it('in production: production entries come first, then staging, then dev', () => {
@@ -170,8 +170,8 @@ describe('AssetStageResolver', () => {
       expect(ordered.map(e => e.label)).toEqual([
         'production', 'production', 'staging', 'dev', 'dev',
       ]);
-      // First-match expression lookup lands on the production rain variant.
-      expect(ordered.find(e => e.expression === 'rain')).toBe(entries[1]);
+      // First-match variant lookup lands on the production rain variant.
+      expect(ordered.find(e => e.variant === 'rain')).toBe(entries[1]);
     });
 
     it('in development: dev entries come first', () => {

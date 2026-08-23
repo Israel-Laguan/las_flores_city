@@ -24,10 +24,10 @@ The public arrivals and departures concourse of a Las Flores 2077 airport termin
 - [ ] night — Terminal at night
 - [ ] sunset — Golden hour departures
 
-## Expression Variants
+## Environment Variants
 <!-- Environment variants staged as `assets/aeropuerto__<tag>.png` and wired into
-     `background_urls[]` (scenes) with an `expression` tag — see
+     `background_urls[]` (scenes) with a `variant` tag — see
      docs/ASSET_EXPRESSION_VOCABULARY.md. -->
 
-- **`__night.png`**: Use the base scene as reference. Re-light the terminal as a night scene: darken the concourse, brighten the holographic departures board and neon accents, glass walls glow with runway lights and distant city lights, cooler blue palette. Same layout, same graphic novel style, no people.
-- **`__sunset.png`**: Use the base scene as reference. Re-light the terminal with warm golden-hour sun pouring through the glass walls: amber highlights on the floor and kiosks, softer cool ceiling light, long sunbeams across the concourse. Same layout, same graphic novel style, no people.
+- **`__night.png`**: Use the base scene as reference. Re-light the terminal as a night scene: darken the concourse, brighten the holographic departures board and neon accents, glass walls glow with runway lights and distant city lights, cooler blue palette. Same layout, same graphic novel style, no people. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette.
+- **`__sunset.png`**: Use the base scene as reference. Re-light the terminal with warm golden-hour sun pouring through the glass walls: amber highlights on the floor and kiosks, softer cool ceiling light, long sunbeams across the concourse. Same layout, same graphic novel style, no people. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette.

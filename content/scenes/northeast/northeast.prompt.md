@@ -24,10 +24,10 @@ A street in the rapidly developing Northeast Quarter of Las Flores 2077. New tow
 - [ ] night — Construction site lights
 - [ ] sunset — Golden rise of glass
 
-## Expression Variants
+## Environment Variants
 <!-- Environment variants staged as `assets/northeast__<tag>.png` and wired into
-     `background_urls[]` (scenes) with an `expression` tag — see
+     `background_urls[]` (scenes) with a `variant` tag — see
      docs/ASSET_EXPRESSION_VOCABULARY.md. -->
 
-- **`__night.png`**: Use the base scene as reference. Re-light the quarter as a night scene: cranes silhouetted against a dark sky, work-site floodlights and glowing new façades, the older buildings in shadow, cooler blue palette. Same layout, same graphic novel style, no people.
-- **`__sunset.png`**: Use the base scene as reference. Re-light the quarter with a golden sunset: amber light reflecting off the new glass towers, long shadows from the scaffolding, warm glow on the raw concrete. Same layout, same graphic novel style, no people.
+- **`__night.png`**: Use the base scene as reference. Re-light the quarter as a night scene: cranes silhouetted against a dark sky, work-site floodlights and glowing new façades, the older buildings in shadow, cooler blue palette. Same layout, same graphic novel style, no people. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette.
+- **`__sunset.png`**: Use the base scene as reference. Re-light the quarter with a golden sunset: amber light reflecting off the new glass towers, long shadows from the scaffolding, warm glow on the raw concrete. Same layout, same graphic novel style, no people. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette.

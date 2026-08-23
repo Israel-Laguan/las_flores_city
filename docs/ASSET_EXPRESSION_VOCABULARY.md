@@ -100,13 +100,13 @@ background_urls:
     label: dev
   - url: https://cdn.../<slug>__night.png
     label: dev
-    expression: night
+    variant: night
   - url: https://cdn.../<slug>__rain.png
     label: dev
-    expression: rain
+    variant: rain
   - url: https://cdn.../<slug>__sunset.png
     label: dev
-    expression: sunset
+    variant: sunset
 ```
 
 ### Two layers stay separate
@@ -114,7 +114,7 @@ background_urls:
 | Layer | What it does | Lives in |
 |---|---|---|
 | **`mood`** | CSS/Canvas2D treatment *on top of* the background | `DialogueNodeVisual.mood` |
-| **`expression`** (background) | Selects a different background image entirely | `background_urls[].expression` |
+| **`variant`** (background) | Selects a different background image entirely | `background_urls[].variant` |
 
 The two stack: a `night` background variant under `mood: tense` produces
 a tense night confrontation.
@@ -125,8 +125,8 @@ a tense night confrontation.
 (`client/src/utils/resolvePortraitUrl.ts`) rejects by priority:
 
 1. `visual.background` present → **authoritative** (URL or plain filename), returned directly — per-node authoring always wins over auto-suggestions
-2. `hints` — an **ordered** list of expression tags, tried in sequence against
-   `background_urls[].expression` (case-insensitive); first match wins.
+2. `hints` — an **ordered** list of variant tags, tried in sequence against
+   `background_urls[].variant` (case-insensitive); first match wins.
    A single string is treated as a one-element list (backward compatible).
    The hint chain is built by `buildBackgroundHints(timeOfDay, weather?, mood?)`:
    **weather > time-of-day > node `mood`** (see below).
@@ -170,13 +170,13 @@ The chain therefore behaves like:
 `mood` values partially overlap with environment tags (`rain`, `night`
 overlap; `tense`/`soft_bloom`/`alert` are CSS-only). The two layers stay
 **separate**: `mood` = CSS/Canvas2D treatment *on top of* the background;
-`expression` = selects a pre-painted variant *below*. The dialogue node drives
+`variant` = selects a pre-painted variant *below*. The dialogue node drives
 the variant through `visual.mood` as the **last, soft** hint — only consulted
 when the game-driven environment chain matched nothing:
 
 ```yaml
 visual:
-  mood: rain       # soft hint: prefers background_urls[expression=rain],
+  mood: rain       # soft hint: prefers background_urls[variant=rain],
                    # but only if the game clock/weather didn't already match
 ```
 
@@ -221,6 +221,6 @@ scenes.background_urls (JSONB)
    if a suitable existing asset has another name or supported type, select it
    instead of duplicating it
 2. Publish → MinIO URL
-3. Add a `background_urls[]` entry with the `expression` tag
+3. Add a `background_urls[]` entry with the `variant` tag
 4. Author per-node (`visual.background` + `visual.mood`) or rely on the
-   mood-as-expression hint — the variant pool resolves automatically
+   mood-as-environment hint — the variant pool resolves automatically

@@ -25,11 +25,11 @@ Rainy Street Motorcycle in Las Flores 2077. Cyberpunk aesthetic, neon-lit urban 
 - [ ] sunset — Golden hour
 - [ ] day — Clear day, dry
 
-## Expression Variants
+## Environment Variants
 <!-- Environment variants staged as `assets/rainy_street_motorcycle__<tag>.png` and wired into
-     `background_urls[]` (scenes) with an `expression` tag — see
+     `background_urls[]` (scenes) with a `variant` tag — see
      docs/ASSET_EXPRESSION_VOCABULARY.md. -->
 
-- **`__night.png`**: Use the base scene as reference. Re-light the scene as a deeper night: neon bleeding brighter, wet-asphalt reflections stronger, darker sky, the motorcycle's underglow more electric, cooler blue-magenta palette. Same cyberpunk neon-lit environment, same motorcycle, same street, no people.
-- **`__sunset.png`**: Use the base scene as reference. Re-light the scene as golden hour: long shadows across the wet asphalt, amber underglow and warm neon, the motorcycle chrome catching orange light, the rain still falling. Same cyberpunk neon-lit environment, same motorcycle, same street, no people.
-- **`__day.png`**: Use the base scene as reference. Re-light the scene as a clear dry day: dry asphalt, muted neon during daytime, harsher tropical light, the parked motorcycle with chrome catching white sun. Same cyberpunk neon-lit environment, same motorcycle, same street, no people.
+- **`__night.png`**: Use the base scene as reference. Re-light the scene as a deeper night: neon bleeding brighter, wet-asphalt reflections stronger, darker sky, the motorcycle's underglow more electric, cooler blue-magenta palette. Same cyberpunk neon-lit environment, same motorcycle, same street, no people. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette.
+- **`__sunset.png`**: Use the base scene as reference. Re-light the scene as golden hour: long shadows across the wet asphalt, amber underglow and warm neon, the motorcycle chrome catching orange light, the rain still falling. Same cyberpunk neon-lit environment, same motorcycle, same street, no people. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette.
+- **`__day.png`**: Use the base scene as reference. Re-light the scene as a clear dry day: dry asphalt, muted neon during daytime, harsher tropical light, the parked motorcycle with chrome catching white sun. Same cyberpunk neon-lit environment, same motorcycle, same street, no people. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette.

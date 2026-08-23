@@ -72,9 +72,9 @@ describe('buildBackgroundHints (weather > time-of-day > mood)', () => {
 describe('resolveBackgroundUrl with ordered game hints', () => {
   const VARIANTS = [
     { url: 'https://cdn.test/plaza__default.png', label: 'dev' as const },
-    { url: 'https://cdn.test/plaza__night.png', label: 'dev' as const, expression: 'night' },
-    { url: 'https://cdn.test/plaza__sunset.png', label: 'dev' as const, expression: 'sunset' },
-    { url: 'https://cdn.test/plaza__rain.png', label: 'dev' as const, expression: 'rain' },
+    { url: 'https://cdn.test/plaza__night.png', label: 'dev' as const, variant: 'night' },
+    { url: 'https://cdn.test/plaza__sunset.png', label: 'dev' as const, variant: 'sunset' },
+    { url: 'https://cdn.test/plaza__rain.png', label: 'dev' as const, variant: 'rain' },
   ];
   const SCENE = 'https://cdn.test/scene.png';
 
@@ -128,7 +128,7 @@ describe('resolveBackgroundUrl with ordered game hints', () => {
   });
 
   it('falls back to the scene backdrop when the pool has no usable urls', () => {
-    const pool = [{ url: '', label: 'dev' as const, expression: 'night' }];
+    const pool = [{ url: '', label: 'dev' as const, variant: 'night' }];
     const hints = buildBackgroundHints('night', 'rain');
     expect(resolveBackgroundUrl(undefined, SCENE, hints, pool))
       .toBe(SCENE);

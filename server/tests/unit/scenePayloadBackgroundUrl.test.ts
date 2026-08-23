@@ -2,7 +2,7 @@
 // assembleScenePayload() — background_urls passthrough
 //
 // Verifies that the player-facing scene payload carries the
-// expression-tagged `background_urls[]` variant pool from the scene
+// variant-tagged `background_urls[]` variant pool from the scene
 // row through to the VN layer (as `scene.backgroundUrls`), without
 // disturbing the resolved default `scene.backgroundUrl`.
 // ============================================================
@@ -59,8 +59,8 @@ const SCENE_ID = 'b0000001-0000-4000-8000-000000000099';
 
 const VARIANT_POOL = [
   { url: 'https://cdn.test/plaza__default.png', label: 'production' },
-  { url: 'https://cdn.test/plaza__rain.png', label: 'production', expression: 'rain' },
-  { url: 'https://cdn.test/plaza__night.png', label: 'production', expression: 'night' },
+  { url: 'https://cdn.test/plaza__rain.png', label: 'production', variant: 'rain' },
+  { url: 'https://cdn.test/plaza__night.png', label: 'production', variant: 'night' },
 ];
 
 describe('assembleScenePayload — backgroundUrls passthrough', () => {
@@ -69,7 +69,7 @@ describe('assembleScenePayload — backgroundUrls passthrough', () => {
     cacheStore.clear();
   });
 
-  it('carries the expression-tagged background_urls[] through as scene.backgroundUrls', async () => {
+  it('carries the variant-tagged background_urls[] through as scene.backgroundUrls', async () => {
     (globalThis as any).__sceneRow = {
       id: SCENE_ID,
       name: 'Central Plaza',
@@ -95,8 +95,8 @@ describe('assembleScenePayload — backgroundUrls passthrough', () => {
       name: 'Mixed Pool Parking Lot',
       background_url: null,
       background_urls: [
-        { url: 'https://cdn.test/dev__rain.png', label: 'dev', expression: 'rain' },
-        { url: 'https://cdn.test/prod__rain.png', label: 'production', expression: 'rain' },
+        { url: 'https://cdn.test/dev__rain.png', label: 'dev', variant: 'rain' },
+        { url: 'https://cdn.test/prod__rain.png', label: 'production', variant: 'rain' },
         { url: 'https://cdn.test/dev__default.png', label: 'dev' },
       ],
       ambient_sound_url: null,
@@ -110,8 +110,8 @@ describe('assembleScenePayload — backgroundUrls passthrough', () => {
     expect(payload!.scene.backgroundUrl).toBe('https://cdn.test/prod__rain.png');
     // VN layer pool is env-ordered: production first, dev last.
     expect(payload!.scene.backgroundUrls).toEqual([
-      { url: 'https://cdn.test/prod__rain.png', label: 'production', expression: 'rain' },
-      { url: 'https://cdn.test/dev__rain.png', label: 'dev', expression: 'rain' },
+      { url: 'https://cdn.test/prod__rain.png', label: 'production', variant: 'rain' },
+      { url: 'https://cdn.test/dev__rain.png', label: 'dev', variant: 'rain' },
       { url: 'https://cdn.test/dev__default.png', label: 'dev' },
     ]);
   });

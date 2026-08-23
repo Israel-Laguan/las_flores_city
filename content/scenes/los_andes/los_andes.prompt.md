@@ -24,10 +24,10 @@ The elevated heights of Los Andes in Las Flores 2077: a sweeping terrace overloo
 - [ ] los_andes__night.png — City lights below
 - [ ] los_andes__sunset.png — Golden valley view
 
-## Expression Variants
+## Environment Variants
 <!-- Environment variants staged as `assets/los_andes__<tag>.png` and wired into
-     `background_urls[]` (scenes) with an `expression` tag — see
+     `background_urls[]` (scenes) with a `variant` tag — see
      docs/ASSET_EXPRESSION_VOCABULARY.md. -->
 
-- **`__night.png`**: Use the base scene as reference. Re-light the heights as a night scene: the residential terraces softly lit, the entire city below glittering with neon and streetlights, a wide starry mountain sky above. Same layout, same graphic novel style, no people.
-- **`__sunset.png`**: Use the base scene as reference. Re-light the heights with a golden-hour sunset: warm amber washing over the modernist residences and the valley below, long mountain shadows, the city catching the last light. Same layout, same graphic novel style, no people.
+- **`__night.png`**: Use the base scene as reference. Re-light the heights as a night scene: the residential terraces softly lit, the entire city below glittering with neon and streetlights, a wide starry mountain sky above. Same layout, same graphic novel style, no people. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette.
+- **`__sunset.png`**: Use the base scene as reference. Re-light the heights with a golden-hour sunset: warm amber washing over the modernist residences and the valley below, long mountain shadows, the city catching the last light. Same layout, same graphic novel style, no people. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette.
