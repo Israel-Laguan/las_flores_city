@@ -92,6 +92,10 @@ const ContentPlanMetaSchema = z.object({
   outline_source: z.enum(['llm', 'fallback']).optional(),
   outline_repaired: z.boolean().optional(),
   scaffolded_at: z.string().optional(),
+  // M43: stamped on scoped template plans (PlanTemplateBuilders) so re-staging
+  // the same template is idempotent — stagePlan skips the create-conflict gate
+  // and overwrites the template's own target files in place.
+  template_replay: z.boolean().optional(),
   jobPrefix: z.string().optional(),
   fill_attempts: z.record(z.string(), z.number()).optional(),
   entity_roster: z.array(z.object({

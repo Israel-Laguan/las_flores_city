@@ -48,6 +48,10 @@ export default function LocationDetailPage() {
           setLoadedId(id);
         } else {
           setError(data.error || 'Failed to fetch location');
+          // Mark terminal outcomes as current too — otherwise the
+          // `loadedId !== id` guard below pins the page on "Loading..." forever,
+          // making the error/not-found branches unreachable.
+          setLoadedId(id);
         }
       } catch (err: any) {
         if (cancelled) return;
@@ -56,6 +60,7 @@ export default function LocationDetailPage() {
         } else {
           setError('Failed to fetch location');
         }
+        setLoadedId(id);
       } finally {
         if (!cancelled) setLoading(false);
       }

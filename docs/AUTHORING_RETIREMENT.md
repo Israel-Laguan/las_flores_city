@@ -9,7 +9,9 @@ Dialogue trees and chunks are published as content-addressed MinIO/CDN JSON blob
 rows retain identity and `content_url` pointers; the heavy dialogue node/leaf maps are not
 stored in the retired JSONB columns.
 
-Publication order is:
+The runtime lifecycle and fallback boundaries are defined authoritatively in the
+`Dialogue Snapshot Runtime Contract` section of `docs/ARCHITECTURE_RUNTIME.md`. The
+delivery-specific publication order is:
 
 ```text
 publish MinIO -> update database pointer -> invalidate dialogue cache keys
@@ -22,8 +24,18 @@ blob produces a fresh version even if invalidation is missed.
 helpers. A missing `content_url` is an error. Unit tests must provide a content URL and mock
 the content-fetch module; integrations publish real content URLs.
 
-Dialogue overlays remain in the database because they are not externalized. M30 snapshots
-reuse `dialogue_chunks` pointer rows and publish pre-resolved tree states as CDN objects.
+Dialogue overlays remain in the database because they are not externalized.
+
+Pre-resolved dialogue states reuse `dialogue_chunks` as pointer rows. During content
+migration, the intake worker computes bounded combinations of sorted mystery sets, NSFW
+entitlement, and alignment, publishes each merged node map as a content-addressed MinIO
+object, and stores the object URL under a synthetic snapshot `chunk_key`. The resolver
+checks this pointer after a Redis miss and hydrates the single object before caching the
+resolved tree. States without a snapshot pointer, or whose snapshot blob cannot be read,
+use the live base-plus-overlay merge path. Base tree and chunk content itself requires a
+valid `content_url` after M32 removed the old JSONB payloads; it does not have an in-DB
+fallback. Publishing follows the same MinIO -> pointer update -> cache invalidation and
+pointer-versioning contract as other CDN content.
 
 ## Pin, Prove, Prune
 
@@ -65,6 +77,7 @@ Retirement verification consists of:
 
 ## Ownership
 
-Remaining prompt, expression, and scene-background asset work belongs exclusively to
-`docs/milestones/M42-content-assets-migration.md`. Deleted or historical asset
-milestone records (M6, M7, M29, M36, M40) must not be recreated as independent backlogs.
+Prompt, portrait-expression, and scene-background conventions live in
+`docs/ASSET_EXPRESSION_VOCABULARY.md` and `docs/VARIANT_GENERATION_RUNBOOK.md`. Completed
+milestone records are not current ownership documents and must not be recreated as
+independent backlogs.

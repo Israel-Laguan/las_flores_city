@@ -190,6 +190,32 @@ export async function selectTemplate(templateId: string, description: string) {
   } as { success: boolean; data?: { plan: ContentPlan }; error?: string };
 }
 
+export interface PlanTemplateParams {
+  name: string;
+  slug: string;
+  description?: string;
+}
+
+/**
+ * Create a plan from a registered scoped template (M43: mission, location).
+ * The server builds a ContentPlanSchema-valid plan in 'proposed' status for
+ * review; execution still flows through the standard stage → migrate →
+ * verify pipeline.
+ */
+export async function createPlanFromTemplate(
+  templateId: string,
+  params: PlanTemplateParams & Record<string, unknown>,
+): Promise<{ success: boolean; data?: { planId: string; plan: ContentPlan }; error?: string }> {
+  try {
+    return await postJSON<{ success: boolean; data?: { planId: string; plan: ContentPlan }; error?: string }>(
+      '/admin/story-builder/plans/from-template',
+      { templateId, ...params },
+    );
+  } catch (error: any) {
+    return { success: false, error: error?.message || 'Failed to create plan from template' };
+  }
+}
+
 export async function fetchTemplates() {
   // M32 retired GET /admin/story-builder/templates; template authoring moved to
   // graph-intake description authoring. Return an empty catalog so the picker

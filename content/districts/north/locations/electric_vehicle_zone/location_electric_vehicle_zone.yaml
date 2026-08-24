@@ -9,6 +9,4 @@ tags:
   - Technology
   - Sustainable
 narrative_path: electric_vehicle_zone.md
-scene:
-  background_url: electric_vehicle_zone__default.png
 background_url: s3://las-flores/backgrounds/electric_vehicle_zone/electric_vehicle_zone__default.png

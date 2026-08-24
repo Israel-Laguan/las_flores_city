@@ -4,6 +4,14 @@ import * as yaml from 'js-yaml';
 import type { ContentPlanItem, ContentLink, AssetNeed } from '@las-flores/shared';
 import { generateYaml, resolveFilePath } from './ContentSkeletonGenerator.js';
 
+// ── Canon guard (M43) ────────────────────────────────────────────────────────
+// Every import of this module is audited by
+// scripts/check-story-builder-writer-guard.mjs (wired into `npm run lint`).
+// Canon entity YAML may only be written inside the migration pipeline
+// (stage → migrateContent → PlanVerificationService). Call sites outside the
+// pipeline are restricted to non-canon artifacts (.md lore stubs, .prompt.md,
+// assets/) via the low-level atomicWriteYaml primitive only.
+
 export interface TopoSortResult {
   sorted: ContentPlanItem[];
   missingDeps: Array<{ itemId: string; itemName: string; missingDepId: string }>;

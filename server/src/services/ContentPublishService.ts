@@ -12,9 +12,10 @@
 // forces re-resolution. This is what keeps the CDN from ever
 // serving stale blobs.
 //
-// Publishing is best-effort: callers wrap these in try/catch and
-// continue with an in-DB fallback (`content_url` stays NULL) when
-// MinIO is unavailable. The resolver handles the NULL fallback.
+// Publishing is best-effort for pre-resolved snapshots: callers wrap these in
+// try/catch and the resolver can use the live merge when a snapshot pointer or
+// blob is unavailable. Base dialogue trees and chunks require content_url
+// after M32 removed the heavy in-DB JSONB payloads.
 // ============================================================
 
 import { createHash } from 'node:crypto';

@@ -5,8 +5,59 @@ import { queryOLTP } from '@las-flores/infra';
 import { emitAdminEvent } from '../services/AdminEventEmitter.js';
 import { isNeo4jEnabled } from '../services/Neo4jClient.js';
 import { getDeltasForPlan, clearDeltasForPlan } from '../services/GraphDeltaService.js';
+import { buildPlanFromTemplate, UnknownTemplateError } from '../services/PlanTemplateBuilders.js';
 
 export const adminStoryBuilderPlansRouter = express.Router();
+
+// POST /plans/from-template — Create a plan from a registered scoped template
+// (M43). The plan is created in 'proposed' status for review; execution still
+// flows through the standard stage → migrate → verify pipeline.
+adminStoryBuilderPlansRouter.post('/plans/from-template', async (req: AuthRequest, res) => {
+  try {
+    const { templateId, name, slug, description, ...extra } = req.body ?? {};
+
+    if (!templateId || typeof templateId !== 'string') {
+      res.status(400).json({ success: false, error: 'templateId is required', timestamp: new Date().toISOString() });
+      return;
+    }
+    if (!name || !slug) {
+      res.status(400).json({ success: false, error: 'name and slug are required', timestamp: new Date().toISOString() });
+      return;
+    }
+
+    let plan;
+    try {
+      plan = buildPlanFromTemplate(templateId, { name, slug, description, ...extra });
+    } catch (err: any) {
+      if (err instanceof UnknownTemplateError) {
+        res.status(400).json({ success: false, error: err.message, timestamp: new Date().toISOString() });
+        return;
+      }
+      res.status(400).json({ success: false, error: `Invalid template params: ${err.message}`, timestamp: new Date().toISOString() });
+      return;
+    }
+    plan.status = 'proposed';
+
+    const result = await queryOLTP(
+      `INSERT INTO content_plans (description, plan_json, status, created_by)
+       VALUES ($1, $2, 'proposed', $3)
+       RETURNING id`,
+      [plan.description, plan, req.userId || null]
+    );
+
+    const planId = result.rows[0].id;
+    emitAdminEvent('plan_created', { templateId, itemCount: plan.items.length }, planId, req.userId);
+
+    res.json({
+      success: true,
+      data: { planId, plan },
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error('[story-builder] POST /plans/from-template error:', error);
+    res.status(500).json({ success: false, error: error.message || 'Failed to create plan from template', timestamp: new Date().toISOString() });
+  }
+});
 
 // POST /admin/story-builder/plans — Create a new plan
 // Use POST /plans/graph-intake for description-based plan creation (M32)
