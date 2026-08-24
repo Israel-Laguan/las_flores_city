@@ -94,7 +94,21 @@ tracked separately); server lint/build clean; unit+smoke 101 suites / 1116
 tests green cache-free; containers rebuilt/recreated healthy, edited YAMLs
 republished to CDN via checksum re-migration.
 
-This milestone stays **open** — Phase 6 arc batches remain pending.
+**Phase 6, second batch — Camila Santander (2026-08-24):** all 13 legacy
+`relationship_change` effects across `camila_santander_intro`, `camila_santander_hangout`,
+`camila_santander_spree`, `camila_confrontation`, `camila_falsifier`, and
+`camila_vdm_approach` converted to choice-level `effects.relationship_effect`
+(`friendship`/`romance` fields) with `state_set.last_camila_encounter_at: NOW`
+bookkeeping. The two positive-romance confrontation choices (`confront_call_it`
++1, `confront_its_for_you` +2) gained `required_relationship: {friendship: gte:5}`
+gates; negative deltas stay ungated per the validator contract. Same verification
+sequence green: `validate:content` clean of relationship warnings, unit+smoke
+101 suites / 1116 tests cache-free, server lint/build clean, containers rebuilt/
+recreated healthy, all six edited YAMLs re-migrated via checksum change.
+
+This milestone stays **open** — Phase 6 arc batches remain pending (Layla/Wen,
+Lin sisters, Ana Villanueva, remaining characters) plus the M47 proper intake
+stress run (Scenarios A–E).
 
 
 ## Goal

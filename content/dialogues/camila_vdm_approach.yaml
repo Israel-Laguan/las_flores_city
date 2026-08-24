@@ -29,9 +29,11 @@ nodes:
       - id: "vdm_warn_camila"
         text: "[WARN CAMILA] You just made a mistake telling me this."
         next_node_id: "f0000000-0000-0000-0000-000000000045"
-        relationship_change:
-          stat: "friendship"
-          amount: 2
+        effects:
+          relationship_effect:
+            friendship: 2
+          state_set:
+            last_camila_encounter_at: NOW
 
   f0000000-0000-0000-0000-000000000043:
     id: "f0000000-0000-0000-0000-000000000043"

@@ -44,9 +44,11 @@ nodes:
       - id: "praise_genius"
         text: "That is genuinely evil genius level."
         next_node_id: "spree_node_3"
-        relationship_change:
-          stat: "friendship"
-          amount: 1
+        effects:
+          relationship_effect:
+            friendship: 1
+          state_set:
+            last_camila_encounter_at: NOW
 
   spree_node_3:
     id: "spree_node_3"
@@ -61,9 +63,11 @@ nodes:
       - id: "hand_sugar"
         text: "Here. Let's ruin some heavy machinery."
         next_node_id: "spree_node_5"
-        relationship_change:
-          stat: "friendship"
-          amount: 2
+        effects:
+          relationship_effect:
+            friendship: 2
+          state_set:
+            last_camila_encounter_at: NOW
 
   spree_node_4:
     id: "spree_node_4"
@@ -75,15 +79,19 @@ nodes:
       - id: "push_back"
         text: "Not everyone is like that, Camila."
         next_node_id: "spree_node_5_soft"
-        relationship_change:
-          stat: "friendship"
-          amount: 1
+        effects:
+          relationship_effect:
+            friendship: 1
+          state_set:
+            last_camila_encounter_at: NOW
       - id: "agree_cynical"
         text: "You're right. It's us or them."
         next_node_id: "spree_node_5_hard"
-        relationship_change:
-          stat: "friendship"
-          amount: 2
+        effects:
+          relationship_effect:
+            friendship: 2
+          state_set:
+            last_camila_encounter_at: NOW
 
   spree_node_5:
     id: "spree_node_5"

@@ -16,9 +16,11 @@ nodes:
       - id: "reply_beautiful"
         text: "It's amazing. Thanks for bringing me up here."
         next_node_id: "intro_node_2"
-        relationship_change:
-          stat: "friendship"
-          amount: 1
+        effects:
+          relationship_effect:
+            friendship: 1
+          state_set:
+            last_camila_encounter_at: NOW
       - id: "reply_suspicious"
         text: "It's nice. But I know you didn't bring me all the way out here just for the fresh air."
         next_node_id: "intro_node_2"
@@ -47,15 +49,19 @@ nodes:
       - id: "hack_drone"
         text: "[Hack the drone's navigation protocol to send it crashing into the trees.]"
         next_node_id: "intro_node_trust_gained"
-        relationship_change:
-          stat: "friendship"
-          amount: 2
+        effects:
+          relationship_effect:
+            friendship: 2
+          state_set:
+            last_camila_encounter_at: NOW
       - id: "throw_rock"
         text: "[Pick up a heavy rock and smash the drone out of the air.]"
         next_node_id: "intro_node_trust_gained"
-        relationship_change:
-          stat: "friendship"
-          amount: 2
+        effects:
+          relationship_effect:
+            friendship: 2
+          state_set:
+            last_camila_encounter_at: NOW
       - id: "ignore_drone"
         text: "That sucks. Well, I should probably head back down to the city."
         next_node_id: "intro_node_part_ways"

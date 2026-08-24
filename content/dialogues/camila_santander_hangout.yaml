@@ -44,21 +44,27 @@ nodes:
       - id: "push_romance"
         text: "I'm up here, and I don't want anything from you. Just your company."
         next_node_id: "hangout_node_lover"
-        relationship_change:
-          stat: "friendship"
-          amount: 3
+        effects:
+          relationship_effect:
+            friendship: 3
+          state_set:
+            last_camila_encounter_at: NOW
       - id: "push_friend"
         text: "That's rough. But you don't have to fight the developers entirely alone."
         next_node_id: "hangout_node_friend"
-        relationship_change:
-          stat: "friendship"
-          amount: 2
+        effects:
+          relationship_effect:
+            friendship: 2
+          state_set:
+            last_camila_encounter_at: NOW
       - id: "push_tragic"
         text: "If you hate people so much, why not just take the developers' buyout and disappear?"
         next_node_id: "hangout_node_tragic"
-        relationship_change:
-          stat: "friendship"
-          amount: -1
+        effects:
+          relationship_effect:
+            friendship: -1
+          state_set:
+            last_camila_encounter_at: NOW
 
   hangout_node_3a:
     id: "hangout_node_3a"
@@ -70,15 +76,19 @@ nodes:
       - id: "push_friend_2"
         text: "I've got your back. As a partner."
         next_node_id: "hangout_node_friend"
-        relationship_change:
-          stat: "friendship"
-          amount: 2
+        effects:
+          relationship_effect:
+            friendship: 2
+          state_set:
+            last_camila_encounter_at: NOW
       - id: "push_enemy"
         text: "Just make sure my cut is always on time, or we'll have a problem."
         next_node_id: "hangout_node_enemy"
-        relationship_change:
-          stat: "friendship"
-          amount: -4
+        effects:
+          relationship_effect:
+            friendship: -4
+          state_set:
+            last_camila_encounter_at: NOW
 
   hangout_node_lover:
     id: "hangout_node_lover"
