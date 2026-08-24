@@ -33,3 +33,9 @@ asset_paths:
 background_urls:
   - url: s3://las-flores/backgrounds/parque_atracciones/parque_atracciones__default.png
     label: dev
+  - url: s3://las-flores/backgrounds/parque_atracciones/parque_atracciones__night.png
+    label: dev
+    variant: night
+  - url: s3://las-flores/backgrounds/parque_atracciones/parque_atracciones__sunset.png
+    label: dev
+    variant: sunset

@@ -17,3 +17,9 @@ asset_paths:
 background_urls:
   - url: s3://las-flores/backgrounds/far_south/far_south__default.png
     label: dev
+  - url: s3://las-flores/backgrounds/far_south/far_south__night.png
+    label: dev
+    variant: night
+  - url: s3://las-flores/backgrounds/far_south/far_south__sunset.png
+    label: dev
+    variant: sunset

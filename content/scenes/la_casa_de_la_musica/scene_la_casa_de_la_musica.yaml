@@ -33,3 +33,9 @@ asset_paths:
 background_urls:
   - url: s3://las-flores/backgrounds/la_casa_de_la_musica/la_casa_de_la_musica__default.png
     label: dev
+  - url: s3://las-flores/backgrounds/la_casa_de_la_musica/la_casa_de_la_musica__night.png
+    label: dev
+    variant: night
+  - url: s3://las-flores/backgrounds/la_casa_de_la_musica/la_casa_de_la_musica__sunset.png
+    label: dev
+    variant: sunset

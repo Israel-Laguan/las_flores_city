@@ -24,3 +24,9 @@ asset_paths:
 background_urls:
   - url: s3://las-flores/backgrounds/industrial/industrial__default.png
     label: dev
+  - url: s3://las-flores/backgrounds/industrial/industrial__night.png
+    label: dev
+    variant: night
+  - url: s3://las-flores/backgrounds/industrial/industrial__sunset.png
+    label: dev
+    variant: sunset

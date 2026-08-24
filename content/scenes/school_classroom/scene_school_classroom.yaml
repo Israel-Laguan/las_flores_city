@@ -13,3 +13,12 @@ asset_paths:
 background_urls:
   - url: s3://las-flores/backgrounds/school_classroom/school_classroom__default.png
     label: dev
+  - url: s3://las-flores/backgrounds/school_classroom/school_classroom__night.png
+    label: dev
+    variant: night
+  - url: s3://las-flores/backgrounds/school_classroom/school_classroom__sunset.png
+    label: dev
+    variant: sunset
+  - url: s3://las-flores/backgrounds/school_classroom/school_classroom__day.png
+    label: dev
+    variant: day

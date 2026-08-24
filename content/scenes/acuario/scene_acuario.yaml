@@ -1,6 +1,6 @@
 id: bd65f55f-3ae3-4f8d-b90c-87e9b854e890
 name: Acuario Las Flores — Interior
-description: A cost-optimized entertainment complex with a controlled linear path, presented from floor-level visitor perspective looking toward the entrance. This repurposed LW Group warehouse offers an immersive promotional view: from just inside the entry hall, the camera gazes through welcoming backlit signage and biometric scanner arch toward the bright exterior, with the linear visitor path stretching into the distance beyond. Glimpses of the vibrant 20m holographic reef tunnel, token exhibit row, touch pool station, mural wall, restaurant court, and gift shop corridor are visible beyond the entrance. Holographic displays and interactive touchscreens provide the illusion of marine conservation while minimizing real animal investment. Bright interior lighting and natural daylight create a promotional aesthetic throughout. Maintenance robots keep the facility clean. The parking lot outside equals the building's footprint, serviced by electric shuttle carts.
+description: "A cost-optimized entertainment complex with a controlled linear path, presented from floor-level visitor perspective looking toward the entrance. This repurposed LW Group warehouse offers an immersive promotional view: from just inside the entry hall, the camera gazes through welcoming backlit signage and biometric scanner arch toward the bright exterior, with the linear visitor path stretching into the distance beyond. Glimpses of the vibrant 20m holographic reef tunnel, token exhibit row, touch pool station, mural wall, restaurant court, and gift shop corridor are visible beyond the entrance. Holographic displays and interactive touchscreens provide the illusion of marine conservation while minimizing real animal investment. Bright interior lighting and natural daylight create a promotional aesthetic throughout. Maintenance robots keep the facility clean. The parking lot outside equals the building's footprint, serviced by electric shuttle carts."
 district: Port
 district_lore: port_area
 district_subzone: Port Area
@@ -42,3 +42,12 @@ asset_paths:
 background_urls:
   - url: s3://las-flores/backgrounds/acuario/acuario__default.png
     label: dev
+  - url: s3://las-flores/backgrounds/acuario/acuario__night.png
+    label: dev
+    variant: night
+  - url: s3://las-flores/backgrounds/acuario/acuario__sunset.png
+    label: dev
+    variant: sunset
+  - url: s3://las-flores/backgrounds/acuario/acuario__rain.png
+    label: dev
+    variant: rain

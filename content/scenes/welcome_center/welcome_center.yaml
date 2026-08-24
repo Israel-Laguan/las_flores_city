@@ -40,3 +40,12 @@ asset_paths:
 background_urls:
   - url: s3://las-flores/backgrounds/welcome_center/welcome_center__default.png
     label: dev
+  - url: s3://las-flores/backgrounds/welcome_center/welcome_center__night.png
+    label: dev
+    variant: night
+  - url: s3://las-flores/backgrounds/welcome_center/welcome_center__sunset.png
+    label: dev
+    variant: sunset
+  - url: s3://las-flores/backgrounds/welcome_center/welcome_center__day.png
+    label: dev
+    variant: day

@@ -23,3 +23,9 @@ asset_paths:
 background_urls:
   - url: s3://las-flores/backgrounds/cafe/cafe__default.png
     label: dev
+  - url: s3://las-flores/backgrounds/cafe/cafe__night.png
+    label: dev
+    variant: night
+  - url: s3://las-flores/backgrounds/cafe/cafe__sunset.png
+    label: dev
+    variant: sunset
