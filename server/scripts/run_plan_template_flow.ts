@@ -53,13 +53,20 @@ async function main(): Promise<void> {
   plan.items[0].id = locationId;
 
   // 2. Create the plan row (proposed → approved), as POST /plans/from-template does.
+  // plan_json.status is kept in sync with the row status at each transition so
+  // readers never see contradictory states.
+  (plan as any).status = 'proposed';
   const inserted = await queryOLTP<{ id: string }>(
     `INSERT INTO content_plans (description, plan_json, status)
      VALUES ($1, $2::jsonb, 'proposed') RETURNING id`,
     [plan.description, JSON.stringify(plan)],
   );
   const planId = inserted.rows[0].id;
-  await queryOLTP(`UPDATE content_plans SET status = 'approved', updated_at = NOW() WHERE id = $1`, [planId]);
+  (plan as any).status = 'approved';
+  await queryOLTP(
+    `UPDATE content_plans SET status = 'approved', plan_json = $2::jsonb, updated_at = NOW() WHERE id = $1`,
+    [planId, JSON.stringify(plan)],
+  );
   console.log('PLAN_ID      :', planId);
   console.log('MISSION_ID   :', missionId);
   console.log('LOCATION_ID  :', locationId);

@@ -89,23 +89,32 @@ export async function fetchChunkFromContentUrl(
       | { nodes?: Record<string, DialogueNode>; leaves?: Record<string, Leaf> }
       | null
       | undefined;
-    // A present-but-empty section is treated as unavailable. A malformed
-    // (array / non-record) section is likewise discarded.
+    // A chunk payload must carry a non-empty `nodes` record AND a present
+    // `leaves` record (which may be `{}` for terminal chunks). Missing,
+    // malformed (array / non-record), or value-invalid sections are rejected
+    // and the whole payload is treated as unavailable — we never silently
+    // coerce a partial payload into empty fallback sections.
     const candidateNodes = parsed?.nodes;
     const candidateLeaves = parsed?.leaves;
-    const nodes =
-      candidateNodes && isNodeMap(candidateNodes) && Object.keys(candidateNodes).length > 0
-        ? candidateNodes
-        : null;
-    const leaves =
-      candidateLeaves && isLeafMap(candidateLeaves) && Object.keys(candidateLeaves).length > 0
-        ? candidateLeaves
-        : null;
-    if (nodes === null && leaves === null) return null;
-    return {
-      nodes: nodes ?? {},
-      leaves: leaves ?? {},
-    };
+    if (
+      !candidateNodes ||
+      Array.isArray(candidateNodes) ||
+      typeof candidateNodes !== 'object' ||
+      Object.keys(candidateNodes).length === 0 ||
+      !isNodeMap(candidateNodes)
+    ) {
+      return null;
+    }
+    if (
+      candidateLeaves === undefined ||
+      candidateLeaves === null ||
+      Array.isArray(candidateLeaves) ||
+      typeof candidateLeaves !== 'object' ||
+      (Object.keys(candidateLeaves).length > 0 && !isLeafMap(candidateLeaves))
+    ) {
+      return null;
+    }
+    return { nodes: candidateNodes, leaves: candidateLeaves };
   } catch (error: any) {
     console.warn(`[DialogueResolver] CDN content fetch failed for ${contentUrl}: ${error?.message}`);
     return null;

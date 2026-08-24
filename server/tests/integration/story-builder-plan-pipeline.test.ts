@@ -22,7 +22,7 @@ import { describe, test, expect, beforeAll, afterAll, beforeEach, jest } from '@
 import fs from 'fs/promises';
 import os from 'os';
 import path from 'path';
-import pg from 'pg';
+import { oltpPool, closeConnections } from '@las-flores/infra';
 
 import {
   buildMissionTemplatePlan,
@@ -33,8 +33,6 @@ import { executePlan } from '../../src/services/StoryBuilderPlanOps.js';
 import { generateLoreStubs, resolveContentDir } from '../../src/services/StoryBuilderLore.js';
 import { verifyPlanCrossReferences } from '../../src/services/PlanVerificationService.js';
 
-const { Pool } = pg;
-
 // Dedicated synthetic IDs (collision-avoidance per AGENTS.md).
 const MISSION_ID = 'e4300000-0000-4000-8000-0000000000a1';
 const LOCATION_ID = 'e4300000-0000-4000-8000-0000000000a2';
@@ -43,7 +41,7 @@ const DISTRICT_NAME = 'M43 Pipeline Fixture District';
 
 const SLUGS = ['m43_pipeline_mission', 'm43_pipeline_location', 'm43_pipeline_bad'];
 
-let pool: pg.Pool;
+// Shared lazy OLTP pool from @las-flores/infra (sanctioned access pattern).
 let tmpDir: string;
 let contentDir: string;
 let cwdSpy: any;
@@ -96,23 +94,18 @@ async function listFilesRecursive(dir: string): Promise<string[]> {
 }
 
 async function clearDbState(): Promise<void> {
-  await pool.query(`DELETE FROM mysteries WHERE id = ANY($1::uuid[])`, [
+  await oltpPool.query(`DELETE FROM mysteries WHERE id = ANY($1::uuid[])`, [
     [MISSION_ID, BAD_MISSION_ID],
   ]);
-  await pool.query(`DELETE FROM scenes WHERE id = $1::uuid`, [LOCATION_ID]);
+  await oltpPool.query(`DELETE FROM scenes WHERE id = $1::uuid`, [LOCATION_ID]);
   // Scenes are deleted above, so the fixture district has no remaining dependents.
-  await pool.query(`DELETE FROM districts WHERE name = $1`, [DISTRICT_NAME]);
-  await pool.query(
+  await oltpPool.query(`DELETE FROM districts WHERE name = $1`, [DISTRICT_NAME]);
+  await oltpPool.query(
     `DELETE FROM migration_log WHERE file_path LIKE '%m43_pipeline%'`,
   );
 }
 
 beforeAll(async () => {
-  pool = new Pool({
-    connectionString:
-      process.env.DATABASE_URL || 'postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores',
-    connectionTimeoutMillis: 5000,
-  });
   await clearDbState();
   tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'm43-pipeline-'));
   // resolveContentDir() resolves ../content when cwd basename is 'server'.
@@ -123,7 +116,7 @@ beforeAll(async () => {
 afterAll(async () => {
   cwdSpy?.mockRestore();
   await clearDbState();
-  await pool.end();
+  await closeConnections();
   await fs.rm(tmpDir, { recursive: true, force: true });
 });
 
@@ -145,7 +138,7 @@ describe('plan → file write → migrateContent → verification (mission + loc
     expect(files).toContain('locations/m43_pipeline_location/location_m43_pipeline_location.yaml');
 
     // Migrated rows exist with correct links.
-    const mystery = await pool.query<{ id: string; title: string; status: string }>(
+    const mystery = await oltpPool.query<{ id: string; title: string; status: string }>(
       'SELECT id, title, status FROM mysteries WHERE id = $1::uuid',
       [MISSION_ID],
     );
@@ -153,7 +146,7 @@ describe('plan → file write → migrateContent → verification (mission + loc
     expect(mystery.rows[0].title).toBe('M43 Pipeline Mission');
     expect(mystery.rows[0].status).toBe('ACTIVE');
 
-    const scene = await pool.query<{ id: string; metadata: any; district_name: string | null }>(
+    const scene = await oltpPool.query<{ id: string; metadata: any; district_name: string | null }>(
       `SELECT s.id, s.metadata, d.name AS district_name
          FROM scenes s LEFT JOIN districts d ON d.id = s.district_id
         WHERE s.id = $1::uuid`,
@@ -174,8 +167,8 @@ describe('plan → file write → migrateContent → verification (mission + loc
   test('re-running the same plan is idempotent (no ghost files, no duplicate rows)', async () => {
     const plan = combinedPlan();
     const filesBefore = await listFilesRecursive(contentDir);
-    const mysteriesBefore = await pool.query('SELECT COUNT(*)::int AS c FROM mysteries WHERE id = $1::uuid', [MISSION_ID]);
-    const logBefore = await pool.query<{ file_path: string }>(
+    const mysteriesBefore = await oltpPool.query('SELECT COUNT(*)::int AS c FROM mysteries WHERE id = $1::uuid', [MISSION_ID]);
+    const logBefore = await oltpPool.query<{ file_path: string }>(
       `SELECT file_path FROM migration_log WHERE file_path LIKE '%m43_pipeline%' ORDER BY file_path`,
     );
 
@@ -187,11 +180,11 @@ describe('plan → file write → migrateContent → verification (mission + loc
     expect(filesAfter).toEqual(filesBefore);
 
     // No duplicate rows.
-    const mysteriesAfter = await pool.query('SELECT COUNT(*)::int AS c FROM mysteries WHERE id = $1::uuid', [MISSION_ID]);
+    const mysteriesAfter = await oltpPool.query('SELECT COUNT(*)::int AS c FROM mysteries WHERE id = $1::uuid', [MISSION_ID]);
     expect(mysteriesAfter.rows[0].c).toBe(Math.max(mysteriesBefore.rows[0].c, 1));
 
     // migration_log still holds exactly one entry per plan file (checksum skip).
-    const logAfter = await pool.query<{ file_path: string }>(
+    const logAfter = await oltpPool.query<{ file_path: string }>(
       `SELECT file_path FROM migration_log WHERE file_path LIKE '%m43_pipeline%' ORDER BY file_path`,
     );
     expect(logAfter.rows.map((r) => r.file_path)).toEqual(logBefore.rows.map((r) => r.file_path));
@@ -199,7 +192,7 @@ describe('plan → file write → migrateContent → verification (mission + loc
 
   test('an invalid plan fails validation WITHOUT mutating canon', async () => {
     // Sentinel pre-existing canon that must remain untouched.
-    const sentinel = await pool.query<{ title: string }>(
+    const sentinel = await oltpPool.query<{ title: string }>(
       'SELECT title FROM mysteries WHERE id = $1::uuid',
       [MISSION_ID],
     );
@@ -223,9 +216,9 @@ describe('plan → file write → migrateContent → verification (mission + loc
     ).rejects.toThrow();
 
     // No canon mutation: no row for the rejected entity, sentinel unchanged.
-    const badRow = await pool.query('SELECT id FROM mysteries WHERE id = $1::uuid', [BAD_MISSION_ID]);
+    const badRow = await oltpPool.query('SELECT id FROM mysteries WHERE id = $1::uuid', [BAD_MISSION_ID]);
     expect(badRow.rows).toHaveLength(0);
-    const sentinelAfter = await pool.query<{ title: string }>(
+    const sentinelAfter = await oltpPool.query<{ title: string }>(
       'SELECT title FROM mysteries WHERE id = $1::uuid',
       [MISSION_ID],
     );

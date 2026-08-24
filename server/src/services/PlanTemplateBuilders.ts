@@ -102,9 +102,14 @@ export function buildLocationTemplatePlan(input: LocationTemplateInput): Content
 }
 
 function finalize(plan: ContentPlan): ContentPlan {
-  // The builder contract is "output is always ContentPlanSchema-valid";
-  // invalid input must fail here, never downstream at migration time.
-  return ContentPlanSchema.parse(plan);
+  // Template plans are safe to re-stage: the template_replay marker lets
+  // stagePlan overwrite this plan's own target files in place (migrateContent
+  // then checksum-skips unchanged rows). Invalid input must still fail here,
+  // never downstream at migration time.
+  return ContentPlanSchema.parse({
+    ...plan,
+    _meta: { ...plan._meta, template_replay: true },
+  });
 }
 
 type TemplateBuilder = (params: Record<string, any>) => ContentPlan;

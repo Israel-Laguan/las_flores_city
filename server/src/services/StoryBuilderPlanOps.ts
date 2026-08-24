@@ -375,9 +375,13 @@ export async function stagePlan(plan: ContentPlan, options?: StagePlanOptions): 
   const fileSnapshots = new Map<string, string | null>();
   const contentDir = resolveContentDir();
   const isScaffolded = !!plan._meta?.scaffolded_at;
+  // Template replays (scoped template plans) are allowed to overwrite their own
+  // target files in place, so the create-conflict gate does not apply to them.
+  // Conflict detection for non-template plans is unchanged.
+  const isTemplateReplay = !!plan._meta?.template_replay;
 
   try {
-    if (!isScaffolded) {
+    if (!isScaffolded && !isTemplateReplay) {
       const conflicts = await checkCreateConflicts(plan, contentDir);
       if (conflicts.length > 0) {
         return {

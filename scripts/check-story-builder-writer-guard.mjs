@@ -25,20 +25,36 @@
 import { readdirSync, readFileSync, existsSync } from 'fs';
 import { join, relative } from 'path';
 
-const ROOT = process.argv[2] ? resolveRoot(process.argv[2]) : new URL('..', import.meta.url).pathname.replace(/\/$/, '');
-
 function resolveRoot(p) {
   return p.startsWith('/') ? p.replace(/\/$/, '') : `${process.cwd()}/${p}`.replace(/\/$/, '');
 }
 
-const SRC_DIR = join(ROOT, 'server', 'src');
-
-const WRITER_MODULE_RE = /from\s+'[^']*StoryBuilderFileWriter(?:\.js)?'/;
+// Import detection accepts both single and double quotes (TypeScript allows
+// either), and the scan includes .tsx files alongside .ts.
+const WRITER_MODULE_RE = /from\s+['"][^'"]*StoryBuilderFileWriter(?:\.js)?['"]/;
 const CANON_FNS = ['writePlanItems', 'updateExistingFile', 'applyLink'];
+// Migration-entry invocation: an actual call expression, not a comment,
+// string literal, unused import, or function *declaration*.
+const MIGRATION_CALL_RE = /(?<!function\s)(?<!async\s)\b(?:migrateContent|migrateStagedPlan|executePlan|runSolidify)\s*\(/;
+
+/**
+ * Strip // line comments and block comments, and blank out the contents of
+ * string literals, so identifiers inside comments or strings cannot satisfy
+ * the migration-path check.
+ */
+export function stripComments(source) {
+  return source
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/(^|[^:'"`\\])\/\/[^\n]*/g, '$1')
+    // Blank string-literal contents (single/double/template), keeping quotes.
+    .replace(/'([^'\\\n]|\\.)*'/g, (m) => m.replace(/[^']/g, ' '))
+    .replace(/"([^"\\\n]|\\.)*"/g, (m) => m.replace(/[^"]/g, ' '))
+    .replace(/`(?:[^`\\]|\\.)*`/g, (m) => m.replace(/[^`]/g, ' '));
+}
 
 // Explicit registry: every writer call site is either inside the migration
 // pipeline (mode 'pipeline') or restricted to non-canon sidecar artifacts.
-const REGISTRY = {
+export const REGISTRY = {
   // Pipeline entry: executePlan/stagePlan write via writePlanItems/applyLink,
   // then executePlan runs migrateContent; staged plans migrate through
   // migrateStagedPlan (StoryBuilderMigration.ts) during solidify.
@@ -58,63 +74,72 @@ function listTsFiles(dir) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const full = join(dir, entry.name);
     if (entry.isDirectory()) out.push(...listTsFiles(full));
-    else if (entry.name.endsWith('.ts')) out.push(full);
+    else if (/\.(ts|tsx)$/.test(entry.name)) out.push(full);
   }
   return out;
 }
 
-let failed = false;
-function report(msg) {
-  console.error(`  ${msg}`);
-  failed = true;
-}
+export function runGuard(root) {
+  const SRC = join(root, 'server', 'src');
+  const importers = [];
+  const problems = [];
 
-const allFiles = listTsFiles(SRC_DIR);
-const importers = [];
-
-for (const file of allFiles) {
-  const content = readFileSync(file, 'utf8');
-  if (!WRITER_MODULE_RE.test(content)) continue;
-  const rel = relative(SRC_DIR, file).split('\\').join('/');
-  importers.push(rel);
-
-  const entry = REGISTRY[rel];
-  if (!entry) {
-    report(`UNREGISTERED writer call site: server/src/${rel} — add it to REGISTRY in check-story-builder-writer-guard.mjs as 'pipeline' (migrates via migrateContent) or 'sidecar' (non-canon artifacts only).`);
-    continue;
+  function report(msg) {
+    problems.push(msg);
   }
-  if (!existsSync(file)) continue; // unreachable, kept for clarity
 
-  const usesCanon = CANON_FNS.some((fn) => new RegExp(`\\b${fn}\\b`).test(content));
-  if (entry.mode === 'pipeline') {
-    if (!/\bmigrateContent\b/.test(content) && !/from\s+'\.\.\/content\/migrate\.js'|from\s+"[^"]*content\/migrate\.js"/.test(content)) {
-      // A pipeline file itself need not import migrateContent if it delegates
-      // to a module that does (e.g. StoryBuilderMigration); allow delegation.
-      const delegates = /migrateStagedPlan|runSolidify|executePlan/.test(content);
-      if (!delegates) {
-        report(`PIPELINE file server/src/${rel} shows no path to migrateContent/migrateStagedPlan.`);
+  for (const file of listTsFiles(SRC)) {
+    const content = readFileSync(file, 'utf8');
+    if (!WRITER_MODULE_RE.test(content)) continue;
+    const rel = relative(SRC, file).split('\\').join('/');
+    importers.push(rel);
+
+    const entry = REGISTRY[rel];
+    if (!entry) {
+      report(`UNREGISTERED writer call site: server/src/${rel} — add it to REGISTRY in check-story-builder-writer-guard.mjs as 'pipeline' (migrates via migrateContent) or 'sidecar' (non-canon artifacts only).`);
+      continue;
+    }
+
+    const code = stripComments(content);
+    const usesCanon = CANON_FNS.some((fn) => new RegExp(`\\b${fn}\\s*\\(`).test(code));
+    if (entry.mode === 'pipeline') {
+      // A pipeline file must show a REACHABLE migration path: an actual call
+      // expression of migrateContent (or a delegation entry that itself calls
+      // it), after comment stripping. Comments, strings, and unused imports
+      // do not count.
+      if (!MIGRATION_CALL_RE.test(code)) {
+        report(`PIPELINE file server/src/${rel} shows no reachable migrateContent/migrateStagedPlan call.`);
+      }
+    } else {
+      if (usesCanon) {
+        report(`SIDECAR file server/src/${rel} uses canon plan-writers (${CANON_FNS.join('/')}); only atomicWriteYaml is allowed outside the migration pipeline.`);
       }
     }
+  }
+
+  for (const key of Object.keys(REGISTRY)) {
+    if (!importers.includes(key)) {
+      if (!existsSync(join(SRC, key))) {
+        report(`STALE registry entry: server/src/${key} no longer exists — remove it from the REGISTRY.`);
+      } else {
+        console.warn(`  note: registered file server/src/${key} no longer imports StoryBuilderFileWriter (registry entry can be retired).`);
+      }
+    }
+  }
+
+  return { ok: problems.length === 0, importers, problems };
+}
+
+// Main entry (skipped under `node --test` so the fixture suite can import this
+// module without executing the real repo scan).
+if (process.env.NODE_TEST_CONTEXT === undefined) {
+  const root = process.argv[2] ? resolveRoot(process.argv[2]) : new URL('..', import.meta.url).pathname.replace(/\/$/, '');
+  const result = runGuard(root);
+  for (const problem of result.problems) console.error(`  ${problem}`);
+  if (!result.ok) {
+    console.error('\n✗ StoryBuilderFileWriter canon guard FAILED. Canon entity YAML must only be written inside the migration pipeline (stage → migrateContent → verify).');
+    process.exit(1);
   } else {
-    if (usesCanon) {
-      report(`SIDECAR file server/src/${rel} uses canon plan-writers (${CANON_FNS.join('/')}); only atomicWriteYaml is allowed outside the migration pipeline.`);
-    }
+    console.log(`✓ StoryBuilderFileWriter guard OK — ${result.importers.length} call site(s), all guarded (${Object.keys(REGISTRY).length} registered).`);
   }
-}
-
-for (const key of Object.keys(REGISTRY)) {
-  if (!importers.includes(key)) {
-    if (!existsSync(join(SRC_DIR, key))) {
-      report(`STALE registry entry: server/src/${key} no longer exists — remove it from the REGISTRY.`);
-    } else {
-      console.warn(`  note: registered file server/src/${key} no longer imports StoryBuilderFileWriter (registry entry can be retired).`);
-    }
-  }
-}
-
-if (failed) {
-  console.error('\n✗ StoryBuilderFileWriter canon guard FAILED. Canon entity YAML must only be written inside the migration pipeline (stage → migrateContent → verify).');
-  process.exit(1);
-} else {
-  console.log(`✓ StoryBuilderFileWriter guard OK — ${importers.length} call site(s), all guarded (${Object.keys(REGISTRY).length} registered).`);
 }

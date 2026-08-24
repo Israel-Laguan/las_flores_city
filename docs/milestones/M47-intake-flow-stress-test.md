@@ -266,18 +266,29 @@ Do not implement the task table, swarm, or review changes as part of M47.
 
 ## Verification
 
-Before and after the run, verify the intake worker and game server with in-container
-`wget` health checks. Run the applicable automated checks:
+Before and after the run, verify both containers are healthy with in-container
+`wget` (the alpine image has no `curl`; see `AGENTS.md`):
+
+```bash
+podman exec las-flores-intake-worker wget -qO- http://localhost:3001/health
+# expected: {"success":true,...}
+podman exec las-flores-server wget -qO- http://localhost:3000/health
+# expected: {"success":true,"data":{"status":"healthy",...}}
+```
+
+Run the applicable automated checks:
 
 ```bash
 npm run test --workspace=server
 npm run build --workspace=server
 ```
 
-If Jest shows the known corrupted-cache symptoms, use:
+If Jest shows the known corrupted-cache symptoms, bypass the cache entirely.
+`--workspace` is an npm option, not a Jest option, so route it through npm and
+run unit and smoke separately (`npm run test` also runs integration):
 
 ```bash
-npx --no-install jest --workspace=server tests/unit tests/smoke --no-cache --forceExit
+npm exec --workspace=server -- jest tests/unit tests/smoke --no-cache --forceExit
 ```
 
 If the stress harness changes server code, also run the server lint/build and rebuild the

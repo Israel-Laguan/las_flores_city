@@ -54,9 +54,9 @@ interface BaseDialogueChunkRow {
   chunk_key: string;
   nodes: Record<string, DialogueNode>;
   leaves: Record<string, Leaf>;
-  // M23: pointer to the externalized `{nodes, leaves}` blob in MinIO/CDN.
-  // When set, `loadBaseChunk` fetches from the CDN; NULL falls back to the
-  // in-DB `nodes`/`leaves` columns.
+  // M23/M32: pointer to the externalized `{nodes, leaves}` blob in MinIO/CDN.
+  // `loadBaseChunk` hydrates `nodes`/`leaves` from the CDN exclusively; an
+  // unavailable CDN payload is an error (the in-DB JSONB columns are gone).
   content_url?: string | null;
 }
 

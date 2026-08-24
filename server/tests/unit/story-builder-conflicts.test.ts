@@ -143,3 +143,55 @@ describe('stagePlan on scaffolded plan (files already on disk)', () => {
     expect(contents).toBe('name: Diego\n');
   });
 });
+
+describe('stagePlan on template replay plans (template_replay marker)', () => {
+  beforeEach(() => {
+    (globalThis as any).__contentDir = contentDir;
+  });
+
+  it('re-staging the same template plan succeeds and overwrites its own file in place', async () => {
+    const plan: any = {
+      id: '00000000-0000-0000-0000-000000000002',
+      description: 'template plan',
+      items: [makeItem()],
+      links: [],
+      status: 'proposed',
+      _meta: { template_replay: true },
+    };
+
+    // First staging writes the target files.
+    const first = await stagePlan(plan);
+    expect(first.success).toBe(true);
+    expect(first.createdFiles).toContain('characters/diego/char_diego.yaml');
+
+    // Second staging of the SAME plan must also succeed — the create-conflict
+    // gate is bypassed for template replays, and the writer overwrites its own
+    // targets idempotently.
+    const second = await stagePlan(plan);
+    expect(second.success).toBe(true);
+
+    const contents = await fs.readFile(
+      path.join(contentDir, 'characters', 'diego', 'char_diego.yaml'),
+      'utf-8',
+    );
+    expect(contents).toContain('name: Diego');
+  });
+
+  it('still rejects unrelated create conflicts when template_replay is absent', async () => {
+    const fullPath = path.join(contentDir, 'characters', 'diego', 'char_diego.yaml');
+    await fs.mkdir(path.dirname(fullPath), { recursive: true });
+    await fs.writeFile(fullPath, 'name: Diego\n', 'utf-8');
+
+    const plan: any = {
+      id: '00000000-0000-0000-0000-000000000003',
+      description: 'non-template plan',
+      items: [makeItem()],
+      links: [],
+      status: 'proposed',
+    };
+
+    const result = await stagePlan(plan);
+    expect(result.success).toBe(false);
+    expect(result.error).toContain("'create'");
+  });
+});
