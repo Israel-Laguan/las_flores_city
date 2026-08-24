@@ -35,6 +35,34 @@ The content pool is read-only at the Postgres session level. Player writes must 
 it. Dialogue and location browsing reads use `queryContent`; player state remains on the
 OLTP path.
 
+## Dialogue Snapshot Runtime Contract
+
+Pre-resolved dialogue snapshots are a bounded runtime optimization over the canonical
+content-delivery path. During content migration, dialogue trees are compiled and their
+base node maps are published as immutable, content-addressed MinIO/CDN JSON. The snapshot
+pass then computes reachable mystery-set, NSFW-entitlement, and alignment combinations,
+publishes each merged node map as another immutable blob, and persists the returned
+`content_url` in `dialogue_chunks` under a deterministic `__snapshot_...` `chunk_key`.
+
+The ordering is always:
+
+```text
+generate -> publish MinIO/CDN blob -> persist content_url pointer -> invalidate dialogue caches
+```
+
+`DialogueResolver` derives the state and content-version cache key, returns a Redis hit
+when available, and otherwise looks up the snapshot pointer. A valid snapshot blob is
+hydrated, cached, and returned. If a snapshot state has no pointer, or its blob is missing,
+empty, or unreadable, the resolver performs the deterministic live base-plus-overlay merge
+and caches that result instead. Snapshot generation and publication errors are therefore
+non-fatal to migration; uncovered or failed states remain resolvable live.
+
+Base trees and chunks are different from optional snapshot states: since M32 removed the
+heavy dialogue JSONB columns, a base `content_url` is required. A missing or unreadable
+base pointer is an error, not an in-database fallback. Republished content changes the
+pointer-derived cache version, and migration also invalidates `dialogue:*` keys after
+publication.
+
 ## Intake Safety
 
 The intake boundary enforces “LLMs propose; the core system commits.”
@@ -95,6 +123,11 @@ npm run lint --workspace=server
 npm run build --workspace=server
 npm run validate:content
 ```
+
+Snapshot lifecycle coverage is maintained by
+`server/tests/integration/m30.snapshots.test.ts`,
+`server/tests/unit/DialogueResolver.snapshot.unit.test.ts`, and the CDN contract tests
+under `server/tests/integration/dialogue-cdn.integration.test.ts`.
 
 For a running stack, verify both processes from inside their containers with `wget` on
 ports `3000` and `3001`. Durable-job integration coverage lives under the current

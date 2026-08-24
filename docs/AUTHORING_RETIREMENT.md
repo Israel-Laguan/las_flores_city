@@ -9,7 +9,9 @@ Dialogue trees and chunks are published as content-addressed MinIO/CDN JSON blob
 rows retain identity and `content_url` pointers; the heavy dialogue node/leaf maps are not
 stored in the retired JSONB columns.
 
-Publication order is:
+The runtime lifecycle and fallback boundaries are defined authoritatively in the
+`Dialogue Snapshot Runtime Contract` section of `docs/ARCHITECTURE_RUNTIME.md`. The
+delivery-specific publication order is:
 
 ```text
 publish MinIO -> update database pointer -> invalidate dialogue cache keys
@@ -25,13 +27,15 @@ the content-fetch module; integrations publish real content URLs.
 Dialogue overlays remain in the database because they are not externalized.
 
 Pre-resolved dialogue states reuse `dialogue_chunks` as pointer rows. During content
-migration, the intake worker computes reachable combinations of sorted mystery sets, NSFW
+migration, the intake worker computes bounded combinations of sorted mystery sets, NSFW
 entitlement, and alignment, publishes each merged node map as a content-addressed MinIO
 object, and stores the object URL under a synthetic snapshot `chunk_key`. The resolver
 checks this pointer after a Redis miss and hydrates the single object before caching the
-resolved tree. Snapshot generation is bounded; states without a pointer use the live
-base-plus-overlay merge path. Publishing follows the same MinIO → pointer update → cache
-invalidation order as other CDN content.
+resolved tree. States without a snapshot pointer, or whose snapshot blob cannot be read,
+use the live base-plus-overlay merge path. Base tree and chunk content itself requires a
+valid `content_url` after M32 removed the old JSONB payloads; it does not have an in-DB
+fallback. Publishing follows the same MinIO -> pointer update -> cache invalidation and
+pointer-versioning contract as other CDN content.
 
 ## Pin, Prove, Prune
 

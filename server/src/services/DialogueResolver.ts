@@ -357,9 +357,9 @@ export class DialogueResolver {
   /**
    * Load the base dialogue tree (raw, no overlays).
    *
-   * M23: fetches the heavy `nodes` map from CDN via `content_url` when a
-   * pointer is present; otherwise falls back to the in-DB JSONB. `start_node_id`
-   * and `updated_at` always come from the DB (cheap references, not heavy blobs).
+   * M23/M32: fetches the heavy `nodes` map from CDN via `content_url`.
+   * A missing or unreadable pointer is an error because the in-DB JSONB payload
+   * was removed. `start_node_id` and `updated_at` remain cheap DB metadata.
    */
   private static async loadBaseTree(
     baseTreeId: string
@@ -548,8 +548,8 @@ export class DialogueResolver {
    * clause. Shared by `loadBaseChunk` (lookup by id) and
    * `loadBaseChunkByKey` (lookup by chunk_key).
    *
-   * M23: hydrates the heavy `{nodes, leaves}` map from the CDN via
-   * `content_url` when present; otherwise falls back to the in-DB JSONB.
+   * M23/M32: hydrates the heavy `{nodes, leaves}` map from the CDN via
+   * the required `content_url` pointer; the old in-DB JSONB payload is gone.
    */
   private static async loadBaseChunkRow(
     column: 'id' | 'chunk_key',
@@ -586,8 +586,8 @@ export class DialogueResolver {
   /**
    * Load a base chunk from dialogue_chunks by its UUID id.
    *
-   * M23: fetches the heavy `{nodes, leaves}` map from CDN via `content_url`
-   * when present; otherwise falls back to the in-DB JSONB.
+   * M23/M32: fetches the heavy `{nodes, leaves}` map from CDN via the
+   * required `content_url` pointer; the old in-DB JSONB payload is gone.
    */
   private static async loadBaseChunk(chunkId: string): Promise<BaseDialogueChunkRow> {
     return DialogueResolver.loadBaseChunkRow('id', chunkId);
