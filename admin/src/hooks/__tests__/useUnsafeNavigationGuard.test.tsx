@@ -99,7 +99,7 @@ describe('useUnsafeNavigationGuard', () => {
       expect(goSpy).toHaveBeenCalledWith(-1);
     });
 
-    it('defaults to forward compensation when no prior direction is known', () => {
+    it('does not compensate when no prior direction is known', () => {
       render(<Editor dirty />);
 
       act(() => {
@@ -107,16 +107,21 @@ describe('useUnsafeNavigationGuard', () => {
       });
 
       expect(confirmSpy).toHaveBeenCalledTimes(1);
-      // Without the Navigation API and no prior direction sentinel, the guard
-      // defaults to forward compensation so a declined Forward traversal
-      // returns to the editor.
-      expect(goSpy).toHaveBeenCalledWith(-1);
+      // Without the Navigation API there is no reliable Back-vs-Forward signal,
+      // so compensating could push the user FURTHER from the editor and unmount
+      // it, losing the draft. The guard prompts but leaves the URL alone
+      // instead of guessing a direction.
+      expect(goSpy).not.toHaveBeenCalled();
+      expect(screen.getByRole('link', { name: 'Back to Dialogues' })).toBeInTheDocument();
     });
 
     it('does not re-prompt for the compensating navigation it triggered', () => {
+      withNavigationIndex(2);
       render(<Editor dirty />);
 
       act(() => {
+        // Declined Back — the guard compensates with history.go(1).
+        withNavigationIndex(1);
         window.dispatchEvent(new PopStateEvent('popstate'));
       });
       // history.go(1) fires a second popstate; it must be swallowed, otherwise

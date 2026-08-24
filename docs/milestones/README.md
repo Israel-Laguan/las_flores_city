@@ -34,7 +34,7 @@ Foundation/runtime architecture → graph authoring architecture → authoring r
                                            ├──► M31 (task-graph agent swarm; deferred)
                                            └──► M42 (content assets + migration; CLOSED)
                                                     │
-                                                    ├──► M43 (plan migration effectiveness)
+                                                    ├──► M43 (plan migration effectiveness; complete)
                                                     └──► M45 (snapshot closeout + M31 decision)
 ```
 
@@ -46,7 +46,7 @@ Foundation/runtime architecture → graph authoring architecture → authoring r
 | **M36** | Location & district prompt quality | Complete | 74 location + 50 character generic prompt bullets replaced with lore-specific variants | Low |
 | **M40** | Prompt/expression/background asset carryforward | Complete | Wen Zhao expressions published/tagged; scene + location backgrounds published | Low |
 | **M42** | Content assets and migration completion | Closed | 46 scene background environment variants published to MinIO, wired into scene YAML `background_urls[]` + DB `scenes.background_urls` | Medium · doc: M42-content-assets-migration.md |
-| **M43** | Plan-to-migration effectiveness | Planned | Confirm the authoring plan pipeline produces verified migrated content without a parallel write path | Medium · doc: M43-plan-migration-effectiveness.md |
+| **M43** | Plan-to-migration effectiveness | Complete | Scoped mission/location plan templates + repo-wide writer canon guard; plan pipeline verified end-to-end (idempotent, fail-safe) | Medium · doc: M43-plan-migration-effectiveness.md |
 | **M45** | Snapshot closeout and M31 decision | Planned | Close the M30 evidence loop and record whether deferred task-graph work remains justified | Medium · doc: M45-snapshot-closeout.md |
 
 ---
