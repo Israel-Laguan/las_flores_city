@@ -2,7 +2,7 @@ import path from 'path';
 import { validateContent } from './validate.js';
 
 const isCli = process.argv[1]
-  ? path.resolve(process.argv[1]).endsWith(path.join('src', 'content', 'validate.ts'))
+  ? path.resolve(process.argv[1]).endsWith(path.join('src', 'content', 'validate-cli.ts'))
   : false;
 
 if (isCli) {

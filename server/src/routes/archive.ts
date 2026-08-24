@@ -132,7 +132,7 @@ async function startSimulation(
     await initializeDialogueState(client, userId, baseTreeId, rootNodeId);
   });
 
-  const availableChoices = await filterChoices(rootNode.choices || [], userId);
+  const availableChoices = await filterChoices(rootNode.choices || [], userId, rootNode.speaker_id);
   const speaker = rootNode.speaker_id ? await getSpeaker(rootNode.speaker_id) : null;
   const isEnd = rootNode.is_end === true || (!rootNode.choices || rootNode.choices.length === 0);
 

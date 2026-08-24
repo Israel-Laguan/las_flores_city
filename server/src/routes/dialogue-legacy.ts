@@ -56,7 +56,7 @@ export async function handleLegacyChoiceIndex(
   }
 
   const { currentNodeId, currentNode, nodes } = state;
-  const availableChoices = await filterChoices(currentNode.choices || [], userId);
+  const availableChoices = await filterChoices(currentNode.choices || [], userId, currentNode.speaker_id);
 
   if (choiceIndex >= availableChoices.length) {
     return res.status(400).json({
@@ -102,7 +102,7 @@ async function buildLegacyResponse(
   const nextNodeId = chosenOption.next_node_id;
   const nextNode = nodes[nextNodeId];
   const isEnd = !nextNode || nextNode.is_end === true || (!nextNode.choices || nextNode.choices.length === 0);
-  const nextChoices = isEnd ? [] : await filterChoices(nextNode?.choices || [], userId);
+  const nextChoices = isEnd ? [] : await filterChoices(nextNode?.choices || [], userId, nextNode?.speaker_id);
 
   if (chosenOption.join_mystery) {
     const mysteryId = Array.isArray(chosenOption.join_mystery) ? chosenOption.join_mystery[0] : chosenOption.join_mystery;

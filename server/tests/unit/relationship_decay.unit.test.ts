@@ -5,6 +5,7 @@ import {
   DecayBounds,
   DecayInput,
   RELATIONSHIP_STAT_PREFIXES,
+  computeCanonicalRelationshipDecay,
 } from '../../src/workers/RelationshipDecayWorker.js';
 import { daysAgo } from '../fixtures/timeHelpers.js';
 
@@ -55,6 +56,44 @@ describe('computeRelationshipDecay — basic functionality', () => {
     const result = computeRelationshipDecay(input, DEFAULT_RATES, DEFAULT_BOUNDS);
 
     expect(result.hasChanges).toBe(false);
+  });
+});
+
+describe('computeCanonicalRelationshipDecay', () => {
+  it('decays canonical axes and vibe by elapsed game days', () => {
+    const result = computeCanonicalRelationshipDecay({
+      trust: 40,
+      familiarity: 20,
+      tension: 10,
+      dailyVibe: 30,
+      currentDay: 8,
+      lastInteractionDay: 3,
+      lastDecayDay: null,
+    });
+
+    expect(result).toEqual({
+      trust: 30,
+      familiarity: 15,
+      tension: 15,
+      dailyVibe: 0,
+      lastDecayDay: 8,
+      hasChanges: true,
+    });
+  });
+
+  it('is idempotent when the worker already processed the current day', () => {
+    const result = computeCanonicalRelationshipDecay({
+      trust: 40,
+      familiarity: 20,
+      tension: 10,
+      dailyVibe: -10,
+      currentDay: 8,
+      lastInteractionDay: 3,
+      lastDecayDay: 8,
+    });
+
+    expect(result.hasChanges).toBe(false);
+    expect(result.lastDecayDay).toBe(8);
   });
 });
 

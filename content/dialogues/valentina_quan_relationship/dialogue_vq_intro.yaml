@@ -76,6 +76,12 @@ nodes:
       expression: default
     is_end: true
     effects:
+      relationship_effect:
+        axes:
+          tension: 5
+        vibe: -15
+        memory:
+          pushed_too_soon: 10
       flag_set:
         vq_met: true
       state_set:
@@ -96,9 +102,16 @@ nodes:
       - id: flirt_play
         text: "'Allowed. But I pick the topic once you finish laughing at me.'"
         next_node_id: vq_intro_flirt_play
-        relationship_change:
-          stat: romance
-          amount: 4
+        effects:
+          relationship_effect:
+            axes:
+              trust: 1
+              tension: 2
+            bond: 1
+            vibe: 8
+            romance: 4
+            memory:
+              flirted_at_lounge: 10
 
   vq_intro_flirt_play:
     id: vq_intro_flirt_play
@@ -123,12 +136,13 @@ nodes:
       expression: calculating
     is_end: true
     effects:
+      relationship_effect:
+        axes:
+          trust: 2
       flag_set:
         vq_met: true
       state_set:
         last_vq_encounter_at: NOW
-      stat_set:
-        vq_trust: 2
 
   # --- Observant branch: surprised, then genuine interest ---
   vq_intro_observant:
@@ -171,9 +185,17 @@ nodes:
       - id: observant_coffee
         text: "'Then let me start easy. Coffee. Tomorrow, before your sign-in.'"
         next_node_id: vq_intro_observant_end
-        relationship_change:
-          stat: romance
-          amount: 3
+        effects:
+          relationship_effect:
+            axes:
+              trust: 8
+              familiarity: 5
+              alignment: 2
+            bond: 3
+            vibe: 15
+            romance: 3
+            memory:
+              noticed_hands: 20
 
   vq_intro_observant_end:
     id: vq_intro_observant_end
@@ -185,14 +207,20 @@ nodes:
       expression: tender
     is_end: true
     effects:
+      relationship_effect:
+        axes:
+          trust: 10
+          familiarity: 2
+        bond: 1
+        vibe: 4
+        memory:
+          shared_lounge: 8
       flag_set:
         vq_met: true
         vq_intro_done: true
       state_set:
         vq_arc: met
         last_vq_encounter_at: NOW
-      stat_set:
-        vq_trust: 10
 
 metadata:
   version: "1.0"

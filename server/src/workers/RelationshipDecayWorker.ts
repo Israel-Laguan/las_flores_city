@@ -1,5 +1,4 @@
 import { oltpPool } from '@las-flores/infra';
-import { RELATIONSHIP_STAT_PREFIXES } from '@las-flores/shared';
 
 /**
  * Batch size for paginating eligible users in processDecay. Used for the
@@ -46,6 +45,49 @@ export interface DecayResult {
   newStats: Record<string, number>;
   newState: Record<string, string>;
   hasChanges: boolean;
+}
+
+export interface CanonicalDecayInput {
+  trust: number;
+  familiarity: number;
+  tension: number;
+  dailyVibe: number;
+  currentDay: number;
+  lastInteractionDay: number | null;
+  lastDecayDay: number | null;
+}
+
+export interface CanonicalDecayResult {
+  trust: number;
+  familiarity: number;
+  tension: number;
+  dailyVibe: number;
+  lastDecayDay: number | null;
+  hasChanges: boolean;
+}
+
+export function computeCanonicalRelationshipDecay(input: CanonicalDecayInput): CanonicalDecayResult {
+  if (input.lastInteractionDay == null) {
+    return { trust: input.trust, familiarity: input.familiarity, tension: input.tension,
+      dailyVibe: input.dailyVibe, lastDecayDay: input.lastDecayDay, hasChanges: false };
+  }
+  const referenceDay = Math.max(input.lastInteractionDay, input.lastDecayDay ?? input.lastInteractionDay);
+  const days = Math.min(30, input.currentDay - referenceDay);
+  if (days <= 0) {
+    return { trust: input.trust, familiarity: input.familiarity, tension: input.tension,
+      dailyVibe: input.dailyVibe, lastDecayDay: input.lastDecayDay, hasChanges: false };
+  }
+  const trust = Math.max(-100, input.trust - days * DEFAULT_RATES.trustDecayPerDay);
+  const familiarity = Math.max(0, input.familiarity - days * DEFAULT_RATES.familiarityDecayPerDay);
+  const tension = Math.min(100, input.tension + days * DEFAULT_RATES.tensionGrowthPerDay);
+  const dailyVibe = input.dailyVibe > 0
+    ? Math.max(0, input.dailyVibe - days * 10)
+    : Math.min(0, input.dailyVibe + days * 10);
+  return {
+    trust, familiarity, tension, dailyVibe, lastDecayDay: input.currentDay,
+    hasChanges: trust !== input.trust || familiarity !== input.familiarity ||
+      tension !== input.tension || dailyVibe !== input.dailyVibe || input.lastDecayDay !== input.currentDay,
+  };
 }
 
 // Default rates and bounds
@@ -212,16 +254,14 @@ export class RelationshipDecayWorker {
         let batch: { id: string }[];
         try {
           const { rows } = await selectClient.query<{ id: string }>(
-            `SELECT DISTINCT ps.user_id AS id
-               FROM player_states ps
-              WHERE ps.state IS NOT NULL
-                AND ps.state != '{}'::jsonb
-                AND EXISTS (
-                  SELECT 1 FROM jsonb_object_keys(ps.state) AS k(key)
-                  WHERE key LIKE 'last_\\_%\\_encounter\\_at'
-                )
-                ${cursor ? 'AND ps.user_id > $1' : ''}
-              ORDER BY ps.user_id
+            `SELECT DISTINCT ON (ur.user_id) ur.user_id AS id
+               FROM user_relationships ur
+               JOIN player_states ps ON ps.user_id = ur.user_id
+              WHERE ur.last_interaction_day IS NOT NULL
+                AND ur.status <> 'ENDED'
+                AND ps.current_day > GREATEST(ur.last_interaction_day, COALESCE(ur.last_decay_day, ur.last_interaction_day))
+                ${cursor ? 'AND ur.user_id > $1' : ''}
+              ORDER BY ur.user_id
               LIMIT ${DECAY_BATCH_SIZE}`,
             cursor ? [cursor] : []
           );
@@ -279,14 +319,8 @@ export class RelationshipDecayWorker {
     await client.query('BEGIN');
 
     try {
-      // Get current player state
-      const { rows: stateRows } = await client.query<{
-        flags: Record<string, boolean>;
-        state: Record<string, string>;
-        stats: Record<string, number>;
-      }>(
-        `SELECT flags, state, stats FROM player_states WHERE user_id = $1 FOR UPDATE`,
-        [userId]
+      const { rows: stateRows } = await client.query<{ current_day: number }>(
+        `SELECT current_day FROM player_states WHERE user_id = $1 FOR UPDATE`, [userId]
       );
 
       if (stateRows.length === 0) {
@@ -294,42 +328,27 @@ export class RelationshipDecayWorker {
         return;
       }
 
-      const playerState = stateRows[0];
-      const currentState = playerState.state || {};
-      const currentStats = playerState.stats || {};
-
-      let updatedStats = { ...currentStats };
-      let updatedState = { ...currentState };
-      let hasChanges = false;
-
-      const now = new Date();
-
-      // Process each relationship character using the pure decay function
-      for (const prefix of RELATIONSHIP_STAT_PREFIXES) {
-        const result = computeRelationshipDecay(
-          {
-            stats: updatedStats,
-            state: updatedState,
-            prefix,
-            now,
-          },
-          DEFAULT_RATES,
-          DEFAULT_BOUNDS
-        );
-
-        // Merge results
-        if (result.hasChanges) {
-          updatedStats = result.newStats;
-          updatedState = result.newState;
-          hasChanges = true;
-        }
-      }
-
-      // Update player state if changes occurred
-      if (hasChanges) {
+      const relationshipRows = await client.query(
+        `SELECT character_id, trust, familiarity, tension, daily_vibe,
+                last_interaction_day, last_decay_day
+           FROM user_relationships
+          WHERE user_id = $1 AND last_interaction_day IS NOT NULL AND status <> 'ENDED'
+          FOR UPDATE`, [userId]
+      );
+      for (const row of relationshipRows.rows) {
+        const result = computeCanonicalRelationshipDecay({
+          trust: row.trust, familiarity: row.familiarity, tension: row.tension,
+          dailyVibe: row.daily_vibe, currentDay: stateRows[0].current_day,
+          lastInteractionDay: row.last_interaction_day, lastDecayDay: row.last_decay_day,
+        });
+        if (!result.hasChanges) continue;
         await client.query(
-          `UPDATE player_states SET stats = $1, state = $2 WHERE user_id = $3`,
-          [updatedStats, updatedState, userId]
+          `UPDATE user_relationships
+              SET trust = $1, familiarity = $2, tension = $3, daily_vibe = $4,
+                  last_decay_day = $5, updated_at = NOW()
+            WHERE user_id = $6 AND character_id = $7`,
+          [result.trust, result.familiarity, result.tension, result.dailyVibe,
+            result.lastDecayDay, userId, row.character_id]
         );
       }
 

@@ -51,7 +51,7 @@ commsRouter.post(
 
       const nextChoicesRaw: any[] =
         d.isEnd || !d.nextNode || !d.nextNode.choices ? [] : d.nextNode.choices;
-      const nextChoices = await applyChoiceFilters(nextChoicesRaw, userId);
+      const nextChoices = await applyChoiceFilters(nextChoicesRaw, userId, characterId);
 
       return res.json(ok(toDetail(reloaded, nextChoices, d.isEnd)));
     } catch (e: any) {

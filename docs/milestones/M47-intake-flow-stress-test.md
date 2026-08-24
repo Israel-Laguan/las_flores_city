@@ -1,8 +1,94 @@
 # M47 - Intake Flow Stress Test and Evidence Gate
 
-> **Status:** Planned · **Owner:** story-engine effort
+> **Status:** In Progress · **Owner:** story-engine effort
 > **Source:** `ARCHITECTURE_SEPARATION_ANALYSIS.md` sections 6, 15.7-15.9,
 > `ARCHITECTURE_RUNTIME.md`, `DATA_INTAKE.md`, and the former M31/M45/M46 decision records
+
+## Implementation Status
+
+### Phases 1–5 (complete, pre-existing)
+
+Intake flow phases 1–5 are complete; this section records the follow-on work done
+on 2026-08-24 as the remaining pre-Phase-6 step: the manual Valentina Quan
+relationship-arc playtest (M48 posture-threshold tuning).
+
+### Valentina playtest harness (2026-08-24)
+
+Infrastructure built and verified for the 7-scenario posture playtest
+(`server/tests/integration/vqRelationshipGates.test.ts` defines the matrix):
+
+- **Stack**: Podman dev stack healthy (intake-worker :3001 first, then game-server
+  :3000), verified with in-container `wget` health checks.
+- **Arc loads end-to-end**: dev-login → `POST /dialogue/start {characterId:
+  670eea6f-3983-4d5a-8195-b08be6c81661, sceneId: <any>}` resolves Act 1 via the
+  speaker fallback path; acts advance through tree-level `hidden_if`/`required_flags`
+  metadata (`vq_intro_done` → `vq_layover_done` → `vq_push_done` →
+  `vq_father_revealed`). Note: Acts 4/5 gate on `vq_father_revealed`, not
+  `vq_father_done`.
+- **Seeder**: `scripts/seed-vq-playtest.sh <1..7>` seeds `user_relationships` +
+  arc/player flags per scenario (variants: `5 re`, `6 re`, `7 low`; also `show`,
+  `clean`). It pins `last_interaction_day`/`last_decay_day` so the decay worker
+  cannot shift vibe/tension mid-test.
+- **Login ordering gotcha**: `POST /auth/dev-login` resets `player_states.flags`
+  to `{}` via its ON CONFLICT upsert — always log in BEFORE running the seeder.
+
+### Bug fixed: stale CDN blobs after content edits
+
+`shouldSkipMigration` in `server/src/content/migrate.ts` matched `migration_log`
+by file path but never compared the stored checksum against the file's current
+checksum. Any previously-migrated file was skipped forever, so YAML edits never
+republished node blobs to MinIO — the runtime resolver served pre-M48 gate logic
+for `valentina_quan_relationship` while offline gate tests passed. Fixed by
+comparing checksums and reprocessing on change (the `file_checksum = $3` match
+arm was also removed — matching a *different* file by identical content was
+never intended). Lint/build clean; image rebuilt; both containers recreated and
+healthy; scenario 1 verified live: Act 5 offers `branch_grounded` +
+`branch_friends` as the integration test expects.
+
+### Playtest outcomes (2026-08-24, API-driven pass)
+
+The 7-scenario manual pass was executed as an **API-driven run** (dev-login →
+`seed-vq-playtest.sh <n>` → `/dialogue/start`, walking visible choices; transcripts in
+`.kilo/plans/vq-transcripts/`). Login-before-seed ordering held every iteration.
+One seeder bug found and fixed en route: scenario 6 warm variant seeded
+`status = FRIEND`, which violates the `user_relationships_status_check` constraint —
+changed to `CONFIDANT`.
+
+Per-scenario results (seed axes → `derivePosture` → observed branches):
+
+| Scenario | Seed (t/f/al/te/vibe/rom) | derivePosture | Observed at `vq_endings_start` | Verdict |
+|---|---|---|---|---|
+| 1 | 50/60/0/10/20/30 CONFIDANT | WARM | grounded, friends | match |
+| 2 | 10/40/0/20/10/35 ACQUAINTANCE | CURIOUS | friends only (grounded+departed hidden) | match |
+| 3 | 12/15/0/65 | GUARDED | father tree: `tuition_pattern` hidden, quiet/probe visible | match |
+| 4 | 0/60/-40/65 | CONFRONTATIONAL | intro tree, clean walk | match |
+| 5 neglect / re | vibe -45 / +25 | WARM / WARM | pacing shown / pacing hidden + grounded back | match |
+| 6 pushed-away | 5/30/0/40 + flag | CURIOUS ⚠ | shut_out, friends (probed with full act flags) | mood mismatch → retuned to DISTANT |
+| 6 re | 45/60/0/10/20/20 CONFIDANT | CURIOUS ⚠ | departed, friends (shut_out hidden) | mood mismatch → retuned to WARM |
+| 7 low / romantic | rom 10 / rom 30 | WARM | friends only / grounded, friends | match |
+
+**POSTURE_THRESHOLDS retune applied** (`shared/src/relationshipPostures.ts`),
+verified against all 10 playtest vectors with no regressions:
+
+- `warmTrustMin: 50 -> 40` — warm re-engagement at trust 45 read CURIOUS under
+  the first draft; a confident friend reunion should read WARM.
+- `distantFamiliarityMax: 20 -> 30` — pushed-away stranger at trust 5 /
+  familiarity 30 read CURIOUS; cold low-trust states up to modest familiarity
+  now read DISTANT.
+
+Verification after the retune: `validate:content` passed, server lint/build clean,
+unit+smoke cache-free run green (101 suites / 1116 tests), server image rebuilt,
+intake-worker + game-server recreated and healthy via in-container `wget`,
+post-tuning spot check of both scenario 6 variants confirmed unchanged gate
+behavior (branch visibility is driven by relationship filters/flags, not posture).
+
+Pre-existing `validate:content` warnings noted for a Phase 6 follow-up batch:
+romance deltas without relationship gates (`flirt_play`, `observant_coffee`,
+`wall_*`) and missing `last_vq_encounter_at` bookkeeping on several choice-level
+effects. Non-blocking.
+
+This milestone stays **open** — Phase 6 arc batches remain pending.
+
 
 ## Goal
 

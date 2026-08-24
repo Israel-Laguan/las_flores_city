@@ -99,6 +99,11 @@ jest.mock('@las-flores/infra', () => ({
   queryOLTP: queryOLTPMock,
   queryOLAP: jest.fn(),
   withOLTPTransaction: withOLTPTransactionMock,
+  // M48: resolveDialogueTree preloads the speaker's relationship row via
+  // the pool-based getter; empty result = missing row (fail-closed gates).
+  oltpPool: {
+    query: jest.fn(async () => ({ rows: [] })),
+  },
 }));
 
 const rootNode = {

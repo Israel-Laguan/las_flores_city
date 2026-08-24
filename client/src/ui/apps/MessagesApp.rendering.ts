@@ -63,7 +63,9 @@ export function createInboxRow(t: SMSThreadPreview): string {
   const previewText = t.lastMessage?.text ?? '—';
   const preview = previewText.length > 60 ? previewText.slice(0, 57) + '...' : previewText;
   const time = formatRelativeTime(t.lastNpcMessageAt);
-  const rel = `F:${t.friendshipLevel} R:${t.romanceLevel}`;
+  const rel = t.relationship
+    ? `${t.relationship.status} · V:${t.relationship.dailyVibe}`
+    : `F:${t.friendshipLevel} R:${t.romanceLevel}`;
 
   return `
     <div class="inbox-row${unreadClass}" data-character-id="${escapeAttr(t.characterId)}">
@@ -166,7 +168,9 @@ export function renderThread(
   const choices = (!detail.isEnd && detail.choices.length > 0)
     ? `<div class="choices">${detail.choices.map((c) => createChoiceButton(c)).join('')}</div>`
     : (!detail.isEnd ? `<div class="no-choices">No replies available right now.</div>` : '');
-  const rel = `F:${detail.friendshipLevel}  R:${detail.romanceLevel}`;
+  const rel = detail.relationship
+    ? `${detail.relationship.status}  V:${detail.relationship.dailyVibe}  B:${detail.relationship.bondLevel}`
+    : `F:${detail.friendshipLevel}  R:${detail.romanceLevel}`;
 
   container.innerHTML = `
     <div class="comms-app">

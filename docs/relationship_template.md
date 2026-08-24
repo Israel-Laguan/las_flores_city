@@ -296,3 +296,83 @@ The following engine components support this template:
 - ❌ **Symmetric options**: Both choices look equally viable and equally good
 - ❌ **List-form required_flags**: Use record form `key: true`, not array form `- key`
 - ❌ **conditions: block**: Use direct gates (`required_flags`, etc.), not nested `conditions:`
+
+---
+
+## M48: Canonical Relationship Gate Contract
+
+Relationship gating now reads the **canonical `user_relationships` store** (axes / bond /
+vibe / romance / friendship / status / flags / memory), not the legacy
+`player_states.stats` `<slug>_trust` keys. Valentina Quan (slug `valentina_quan`,
+character `670eea6f-3983-4d5a-8195-b08be6c81661`) is the reference conversion. Legacy
+`<slug>_trust` arcs (`adeyemi_/aisha_/petra_/sofia_`) keep working via `required_stats`.
+
+### Choice-level gates (DialogueChoiceSchema)
+```yaml
+- id: branch_grounded
+  required_relationship:
+    axes: { trust: "gte:40" }      # op:number grammar
+    romance: "gte:25"
+    bond: "gte:10"
+    vibe: "gte:0"
+    friendship: "gte:30"
+    status: ROMANTIC                # exact match
+    flags: { confided: true }
+    memory: { shared_lounge: "gte:8" }
+    neutral_default: false          # default false = fail-closed
+  hidden_if_relationship:
+    axes: { trust: "gte:20" }       # ANY match hides the choice
+  required_posture: WARM            # single posture
+  hidden_if_posture: DISTANT
+```
+- **Missing row ⇒ fail-closed** for `required_relationship`, and **never hides** for
+  `hidden_if_relationship`, unless `neutral_default: true` (evaluate against a
+  STRANGER/zero baseline). This is intentional — a gate referencing a relationship that
+  does not exist must not silently pass.
+- `target_character_id` (optional override) points a gate at a different character than
+  the tree's `character_id` (multi-speaker trees). Default target = tree `character_id`.
+
+### Effects (write to the same store)
+```yaml
+effects:
+  relationship_effect:
+    axes: { trust: 10, tension: 2 }
+    bond: 1
+    vibe: 8
+    romance: 4
+    friendship: 0
+    status: ROMANTIC
+    memory: { shared_lounge: 8 }
+    flags: { confided: true }
+```
+- `normalizeDelta` couples `romance`→`tension` (+trunc(romance/2)) and
+  `friendship`→`familiarity`/`visibility`/`trust` — design thresholds with this in mind.
+- Arc flags (`vq_*`, `vq_arc`, `last_vq_encounter_at`) remain **player-state**
+  `flag_set`/`state_set` + `required_flags`/`hidden_if` — they are dialogue-arc state
+  machines, not relationship posture.
+
+### Posture vocabulary (derivePosture — centralized thresholds in `POSTURE_THRESHOLDS`)
+| Posture | Trigger |
+|---|---|
+| `WARM` | ROMANTIC/PARTNER with healthy axes; or trust≥50 & familiarity≥50 & tension<40 |
+| `CURIOUS` | default |
+| `GUARDED` | tension≥60 & familiarity<30; or trust≥30 & familiarity≥20 & tension≥40 |
+| `VOLATILE_ROMANCE` | ROMANTIC/PARTNER with trust<30 & tension≥50 |
+| `DISTANT` | status DISTANCED; or trust<20 & familiarity<20; or missing row |
+| `CONFRONTATIONAL` | tension≥60 & alignment<-20 |
+| `RECONCILIATORY` | reserved |
+| `BROKEN` | status ENDED |
+
+### Fallback rule (mandatory)
+An entry node must always retain **≥1 choice with no `required_relationship` /
+`hidden_if_relationship`** so `filterChoices` can never return an empty list
+(fail-closed). The ungated option is the default fallback (Valentina's
+`branch_friends` is always available; `branch_pacing` covers low-vibe re-engagement).
+
+### Audit checklist (per character conversion)
+- [ ] Every entry node has ≥1 ungated choice (no empty-list risk)
+- [ ] Romance raised only behind a `required_relationship` gate (no romance-without-gate)
+- [ ] `relationship_effect` nodes also set `state_set: last_<slug>_encounter_at: NOW`
+- [ ] `neutral_default: true` used ONLY for intentional fail-open (e.g. first-time guarded version), never as the default
+- [ ] Axis/comparison grammar valid (`gte:`/`lte:`/`gt:`/`lt:`/`eq:`/`ne:`); posture from the enum
+- [ ] `AUDIT.md` row per file: arc, entry points, target, gates, effects, fallback, conflicts

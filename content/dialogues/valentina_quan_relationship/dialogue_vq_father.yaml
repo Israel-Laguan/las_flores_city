@@ -26,13 +26,16 @@ nodes:
       - id: entry_trust
         text: "[She looks like she's ready to talk]"
         next_node_id: vq_father_open_trust
-        required_stats:
-          vq_trust: "gte:30"
+        required_relationship:
+          axes:
+            trust: "gte:30"
         hidden_if:
           vq_gave_space: true
       - id: entry_shallow
         text: "'Rough delay?'"
         next_node_id: vq_father_open_shallow
+        required_relationship:
+          neutral_default: true
 
   vq_father_open_shallow:
     id: vq_father_open_shallow
@@ -58,8 +61,9 @@ nodes:
     visual:
       expression: vulnerable
     effects:
-      stat_set:
-        vq_trust: 5
+      relationship_effect:
+        axes:
+          trust: 5
     choices:
       - id: trust_continue
         text: "'Long version. I'm listening.'"
@@ -74,8 +78,9 @@ nodes:
     visual:
       expression: tender
     effects:
-      stat_set:
-        vq_trust: 10
+      relationship_effect:
+        axes:
+          trust: 10
     choices:
       - id: deep_continue
         text: "'I've got you. Start anywhere.'"
@@ -122,6 +127,9 @@ nodes:
       - id: tuition_pattern
         text: "'Valentina. Men arrive intense and generous and gone — and you leave first so it's your exit. That's why none of them last.'"
         next_node_id: vq_father_breakthrough
+        required_relationship:
+          axes:
+            trust: "gte:20"
       - id: tuition_probe
         text: "'And the Dragon Head itself? What does he actually do for them?'"
         next_node_id: vq_father_probe
@@ -152,8 +160,9 @@ nodes:
     visual:
       expression: vulnerable
     effects:
-      stat_set:
-        vq_trust: 15
+      relationship_effect:
+        axes:
+          trust: 15
     choices:
       - id: breakthrough_answer
         text: "'No. What I want is for you to know there are other arithmetics. That's all.'"
@@ -169,8 +178,9 @@ nodes:
     visual:
       expression: afraid
     effects:
-      stat_set:
-        vq_trust: -10
+      relationship_effect:
+        axes:
+          trust: -10
     choices:
       - id: probe_back_off
         text: "'Forget it. I overstepped. I'm sorry.'"
@@ -188,8 +198,9 @@ nodes:
     visual:
       expression: contemplative
     effects:
-      stat_set:
-        vq_trust: 5
+      relationship_effect:
+        axes:
+          trust: 5
     choices:
       - id: recover_continue
         text: "'Locked door. Understood. The rest of it — thank you for trusting me with it.'"
@@ -218,8 +229,9 @@ nodes:
     visual:
       expression: tender
     effects:
-      stat_set:
-        vq_trust: 8
+      relationship_effect:
+        axes:
+          trust: 8
     choices:
       - id: quiet_continue
         text: "(Stay exactly where you are.)"
@@ -241,8 +253,9 @@ nodes:
       state_set:
         vq_arc: opened
         last_vq_encounter_at: NOW
-      stat_set:
-        vq_trust: 5
+      relationship_effect:
+        axes:
+          trust: 5
 
 metadata:
   version: "1.0"

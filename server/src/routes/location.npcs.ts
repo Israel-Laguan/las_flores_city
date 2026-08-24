@@ -159,10 +159,13 @@ export function selectPortraitUrl(
 
 export function buildNpcPayload(
   npcEntries: Array<{ character_id: string; is_permanent: boolean; default_mood: string; character_name?: string; portrait_urls?: any; atlas_url?: string | null }>,
-  relMap: Map<string, { friendship: number; romance: number }>
+  relMap: Map<string, { friendship: number; romance: number; bond: number; vibe: number; status: string; axes: Record<string, number> }>
 ): any[] {
   return npcEntries.map(entry => {
-    const rel = relMap.get(entry.character_id) || { friendship: 0, romance: 0 };
+    const rel = relMap.get(entry.character_id) || {
+      friendship: 0, romance: 0, bond: 0, vibe: 0, status: 'STRANGER',
+      axes: { trust: 0, familiarity: 0, alignment: 0, tension: 0, debt: 0, visibility: 0 },
+    };
     const mood = selectMood(entry.default_mood, rel.friendship, rel.romance);
     const name = entry.character_name || 'Unknown';
     const portraitUrl = selectPortraitUrl(entry.portrait_urls, mood, name);
@@ -175,6 +178,10 @@ export function buildNpcPayload(
       relationship: {
         friendship: rel.friendship,
         romance: rel.romance,
+        bond: rel.bond,
+        vibe: rel.vibe,
+        status: rel.status,
+        axes: rel.axes,
       },
       canInteract: true,
     };
@@ -189,19 +196,31 @@ export function buildNpcPayload(
   });
 }
 
-export async function getSceneRelationships(userId: string, characterIds: string[]): Promise<Map<string, { friendship: number; romance: number }>> {
+export async function getSceneRelationships(userId: string, characterIds: string[]): Promise<Map<string, { friendship: number; romance: number; bond: number; vibe: number; status: string; axes: Record<string, number> }>> {
   const relResult = await queryOLTP(
-    `SELECT character_id, friendship_level, romance_level
+    `SELECT character_id, friendship_level, romance_level, bond_level, daily_vibe, status,
+            trust, familiarity, alignment, tension, debt, visibility
      FROM user_relationships
      WHERE user_id = $1 AND character_id = ANY($2)`,
     [userId, characterIds]
   );
 
-  const relMap = new Map<string, { friendship: number; romance: number }>();
+  const relMap = new Map<string, { friendship: number; romance: number; bond: number; vibe: number; status: string; axes: Record<string, number> }>();
   for (const row of relResult.rows) {
     relMap.set(row.character_id, {
       friendship: row.friendship_level,
       romance: row.romance_level,
+      bond: row.bond_level,
+      vibe: row.daily_vibe,
+      status: row.status,
+      axes: {
+        trust: row.trust,
+        familiarity: row.familiarity,
+        alignment: row.alignment,
+        tension: row.tension,
+        debt: row.debt,
+        visibility: row.visibility,
+      },
     });
   }
 

@@ -1,6 +1,6 @@
 id: 9c2e6a10-8f4d-4b7a-9c3e-1a2b3c4d5e05
 name: "Valentina Quan - Act 5: Runways"
-description: "Her last night in town before a schedule change. Four endings selected by history: Grounded (she agrees to try staying — requires vq_gave_space, vq_trust gte:40, and never having pushed her away), Departure Gate (warm romance left open-ended), Runway Friends (honest and kind), and Shut Out (if she was pushed, she transfers to an international route)."
+description: "Her last night in town before a schedule change. Four endings selected by history: Grounded (she agrees to try staying — requires vq_gave_space, trust gte:40 AND romance gte:25, and never having pushed her away), Departure Gate (warm romance left open-ended; trust gte:15 AND romance gte:15), Runway Friends (honest and kind, always available), and Shut Out (if she was pushed, she transfers to an international route). A pacing fallback (branch_pacing) appears when her daily vibe is too raw."
 character_id: 670eea6f-3983-4d5a-8195-b08be6c81661
 scene_id: "00000000-0000-0000-0000-000000000000"
 dialogue_scope: character
@@ -25,24 +25,42 @@ nodes:
           vq_gave_space: true
         hidden_if:
           vq_pushed_away: true
-        required_stats:
-          vq_trust: "gte:40"
+        required_relationship:
+          axes:
+            trust: "gte:40"
+          romance: "gte:25"
+        hidden_if_relationship:
+          vibe: "lt:-30"
       - id: branch_shut_out
         text: "[The ground you lost is too much]"
         next_node_id: vq_end_shutout_start
         required_flags:
           vq_pushed_away: true
+        hidden_if_relationship:
+          axes:
+            trust: "gte:20"
       - id: branch_departed
         text: "[Let her fly — something real, but the sky calls]"
         next_node_id: vq_end_departed_start
-        required_stats:
-          vq_trust: "gte:15"
+        required_relationship:
+          axes:
+            trust: "gte:15"
+          romance: "gte:15"
+        hidden_if_relationship:
+          vibe: "lt:-30"
         hidden_if:
           vq_pushed_away: true
           vq_gave_space: true
       - id: branch_friends
         text: "[Keep her — as a friend, honestly and kindly]"
         next_node_id: vq_end_friends_start
+      - id: branch_pacing
+        text: "[Read the room — she's raw tonight. Say you'll come back.]"
+        next_node_id: vq_end_pacing
+        required_relationship:
+          vibe: "lt:-30"
+        hidden_if:
+          vq_pushed_away: true
 
   # ============================================
   # ENDING 1: GROUNDED (best — she agrees to try staying)
@@ -74,9 +92,10 @@ nodes:
       - id: grounded_accept
         text: "'A first attempt. Best deal I've ever been offered.'"
         next_node_id: vq_end_grounded_resolved
-        relationship_change:
-          stat: romance
-          amount: 15
+        effects:
+          relationship_effect:
+            romance: 15
+            status: ROMANTIC
 
   vq_end_grounded_resolved:
     id: vq_end_grounded_resolved
@@ -93,8 +112,9 @@ nodes:
       state_set:
         vq_arc: grounded
         last_vq_encounter_at: NOW
-      stat_set:
-        vq_trust: 20
+      relationship_effect:
+        axes:
+          trust: 20
 
   # ============================================
   # ENDING 2: DEPARTURE GATE (warm, open-ended)
@@ -140,8 +160,9 @@ nodes:
       state_set:
         vq_arc: departed_open
         last_vq_encounter_at: NOW
-      stat_set:
-        vq_trust: 10
+      relationship_effect:
+        axes:
+          trust: 10
 
   # ============================================
   # ENDING 3: RUNWAY FRIENDS (honest, kind)
@@ -173,6 +194,25 @@ nodes:
         vq_ending_friendship: true
       state_set:
         vq_arc: friendship
+        last_vq_encounter_at: NOW
+
+  # ============================================
+  # PACING FALLBACK: she's raw tonight — come back later
+  # ============================================
+  vq_end_pacing:
+    id: vq_end_pacing
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "She looks at you like she wants to say yes and can't find the door. 'Tonight's not the night, guapo. Not because of you. Because of every other night. Come back when the runway lights feel like a home and not an escape.'"
+    thought: "(Expression: vulnerable. The wall is down but the wound is fresh; she's asking for time the way other people ask for space. That's progress, even if it doesn't feel like it.)"
+    visual:
+      expression: vulnerable
+    is_end: true
+    effects:
+      flag_set:
+        vq_ending_pacing: true
+      state_set:
+        vq_arc: pacing
         last_vq_encounter_at: NOW
 
   # ============================================
@@ -208,8 +248,9 @@ nodes:
       state_set:
         vq_arc: shut_out
         last_vq_encounter_at: NOW
-      stat_set:
-        vq_trust: -10
+      relationship_effect:
+        axes:
+          trust: -10
 
 metadata:
   version: "1.0"

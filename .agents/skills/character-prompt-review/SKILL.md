@@ -205,6 +205,16 @@ consumer: content_audit
 path: content/characters/<slug>/
 ```
 
+## M48 Posture → Expression Coverage
+
+When reviewing a character with relationship arcs, check that the character's expression
+vocabulary covers the eight postures (`WARM`, `CURIOUS`, `GUARDED`, `VOLATILE_ROMANCE`,
+`DISTANT`, `CONFRONTATIONAL`, `RECONCILIATORY`, `BROKEN` — see
+`shared/src/relationshipPostures.ts`) **without per-axis duplication**: one expression tag may
+serve several postures (e.g. `tender` covers WARM and RECONCILIATORY; `guarded`/`calculating`
+cover GUARDED and DISTANT). Flag postures with NO covering expression as gaps; do not require a
+1:1 posture-to-expression mapping.
+
 ## Notes
 
 - Keep the report faithful to the on-disk state; never mark an item complete without reading the file.
