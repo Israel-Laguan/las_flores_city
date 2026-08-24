@@ -128,6 +128,50 @@ function isAssetUrl(value) {
   );
 }
 
+const ASSET_REFERENCE_FIELDS = [
+  'background_url',
+  'portrait_url',
+  'ambient_sound_url',
+  'base_image_url',
+  'overlay_image_url',
+  'url',
+  'audio_url',
+];
+
+const ASSET_REFERENCE_PATTERN = new RegExp(
+  `(?:^|\\n)[ \\t]*(?:-[ \\t]*)?(?:scene:[ \\t]*)?(${ASSET_REFERENCE_FIELDS.join('|')}):[ \\t]*(.*)$`,
+  'gm'
+);
+
+function normalizeScalar(value) {
+  const withoutComment = String(value || '').replace(/[ \\t]+#.*/, '').trim();
+  const quoted = withoutComment.match(/^("|')(.*)\\1$/);
+  return quoted ? quoted[2] : withoutComment;
+}
+
+/**
+ * Extract supported asset references while retaining malformed fields for
+ * validation. The previous URL-only regex silently skipped values such as
+ * `url: not-a-url`, making bad content look valid.
+ */
+function extractAssetReferences(raw) {
+  const urls = [];
+  const malformed = [];
+  let match;
+
+  while ((match = ASSET_REFERENCE_PATTERN.exec(raw)) !== null) {
+    const field = match[1];
+    const value = normalizeScalar(match[2]);
+    if (isAssetUrl(value)) {
+      urls.push(value);
+    } else {
+      malformed.push({ field, value });
+    }
+  }
+
+  return { urls, malformed };
+}
+
 /**
  * Resolve an asset reference to an HTTP(S) URL that can be HEAD-checked.
  * - Full http(s) URLs pass through unchanged.
@@ -407,20 +451,19 @@ async function main() {
       // Parse YAML manually to avoid needing a YAML library
       const raw = fs.readFileSync(yamlFile, 'utf-8');
       
-      // Simple YAML URL extraction pattern: look for `*_url:` / `url:` values
-      // (including nested list items). Accepts http(s): and the `s3://`
-      // published URI format written by uploadToMinio.
-      const urlPattern = /(?:^|\n)\s*(?:-\s*)?(?:scene:\s*)?(?:background_url|portrait_url|ambient_sound_url|base_image_url|overlay_image_url|url|audio_url):\s*["']?((?:https?:\/\/|s3:\/\/)[^"'\s]+)["']?/g;
-      const urls = [];
-      let match;
-      while ((match = urlPattern.exec(raw)) !== null) {
-        urls.push(match[1]);
-      }
+      // Extract URL-bearing fields, including malformed values so invalid
+      // asset references cannot pass silently.
+      const { urls, malformed } = extractAssetReferences(raw);
 
-      if (urls.length === 0) continue;
+      if (urls.length === 0 && malformed.length === 0) continue;
 
       const relPath = path.relative(process.cwd(), yamlFile);
-      console.log(`\n📄 ${relPath} (${urls.length} URLs):`);
+      console.log(`\n📄 ${relPath} (${urls.length} URLs, ${malformed.length} invalid references):`);
+
+      for (const { field, value } of malformed) {
+        errorCount++;
+        console.log(`  ⚠️  Invalid asset reference: ${field}: ${value || '(empty)'}`);
+      }
 
       for (const url of urls) {
         totalUrls++;
@@ -503,9 +546,9 @@ async function main() {
   console.log(`  📝 Prompts:       ${allPromptFiles.length}`);
   console.log();
 
-  if (missingCount > 0) {
+  if (missingCount > 0 || errorCount > 0) {
     process.exitCode = 1;
-    console.log('  Some assets are missing. Generate and upload them, then re-run.');
+    console.log('  Asset validation failed. Fix the reported references or upload missing assets, then re-run.');
   } else if (okCount > 0) {
     console.log('  All checked assets are present in MinIO. ✅');
   }

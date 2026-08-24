@@ -9,6 +9,14 @@
 
 ---
 
+## Recently completed
+
+| # | Milestone | Outcome |
+|---|-----------|---------|
+| **M42** | Asset pipeline test follow-up | Closed 2026-08-23. Added `server/tests/unit/assetPipelineScripts.test.ts` (generator + validator regression). `verify-assets.mjs` now flags malformed/empty asset references and exits nonzero. Validated against the Podman stack (unit 1,065 passed, smoke 10 passed, migrations no-drift, lint 0 errors). |
+
+---
+
 ## Locked decisions
 
 - **Graph store: Neo4j.** Finalized during the foundation work (see
@@ -27,18 +35,18 @@
 
 ```text
 Foundation/runtime architecture → graph authoring architecture → authoring retirement
-                                           │
-                                           ├──► M31 (task-graph agent swarm; deferred)
-                                           ├──► M42 (asset pipeline test follow-up; open)
-                                           └──► M45 (snapshot closeout; planned)
+                                             │
+                                             ├──► M31 (task-graph agent swarm; deferred)
+                                             ├──► M45 (snapshot closeout; planned)
+                                             └──► M46 (content-reference hygiene; proposed)
 ```
 
 | # | Milestone | Phase | Core value | Risk |
 |---|-----------|-------|-----------|------|
 | **Architecture docs** | Runtime/intake, graph authoring, content delivery, and authoring-retirement contracts | Current | Durable current-state architecture outside milestone planning | — |
 | **M31** | Task-graph agent swarm | Deferred | Schedule only if durable jobs, specialized passes, and human review prove insufficient | High · doc: M31-deferred.md |
-| **M42** | Asset pipeline test follow-up | Open | Add focused generator and validator regression coverage | Low · doc: M42-content-assets-migration.md |
 | **M45** | Snapshot closeout | Planned | Reconcile current snapshot evidence and make the M31 decision | Medium · doc: M45-snapshot-closeout.md |
+| **M46** | Content-reference hygiene | Proposed | Fix the malformed/empty asset references M42's validator now surfaces | Low · doc: M46-content-reference-hygiene.md |
 
 ---
 
