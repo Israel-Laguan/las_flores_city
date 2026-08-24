@@ -5,7 +5,6 @@ district: City
 district_lore: urban_core
 district_subzone: Central City
 background_url: s3://las-flores/backgrounds/welcome_center/welcome_center__default.png
-ambient_sound_url: null
 mood: neutral
 available_dialogues:
   - 550e8400-e29b-41d4-a716-446655440003

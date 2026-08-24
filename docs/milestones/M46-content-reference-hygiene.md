@@ -1,6 +1,6 @@
-# M46 — Content-Reference Hygiene (Proposed)
+# M46 — Content-Reference Hygiene
 
-> **Status:** Proposed · **Owner:** story-engine effort
+> **Status:** Completed · **Closed:** 2026-08-23 · **Owner:** story-engine effort
 > **Source:** M42 (`verify-assets.mjs` malformed-reference detection), `scripts/asset-pipeline/scripts/verify-assets.mjs`
 > **Preceded by:** M42 (asset pipeline test follow-up — closed 2026-08-23)
 
@@ -41,10 +41,35 @@ concern, not a content defect, and must not block M46.
 
 ## Acceptance Criteria
 
-- [ ] No `Invalid asset reference` lines emitted by `verify-assets.mjs` for in-repo content (after decisions above are applied).
-- [ ] Dialogue stub folders either carry the expected files or are explicitly excluded from audit/validator expectations.
-- [ ] `background_url` convention (bare filename vs `s3://`) is resolved consistently between content, schema, and validator.
-- [ ] A short note records the deliberate decision to keep the MinIO 403 sweep out of CI gating.
+- [x] No `Invalid asset reference` lines emitted by `verify-assets.mjs` for in-repo content (after decisions above are applied).
+- [x] Dialogue stub folders either carry the expected files or are explicitly excluded from audit/validator expectations.
+- [x] `background_url` convention (bare filename vs `s3://`) is resolved consistently between content, schema, and validator.
+- [x] A short note records the deliberate decision to keep the MinIO 403 sweep out of CI gating.
+
+## Decision Record
+
+- **`ambient_sound_url`**: Removed from `the_apartment` (relative path) and
+  `welcome_center` (literal null). No ambient track exists anywhere; the field is
+  schema-optional and the scene upsert already defaults to NULL. Re-add only when a
+  real track exists and is published as `s3://las-flores/...`.
+- **`background_url` convention** — one convention: the top-level field must be a
+  published URL (`s3://las-flores/backgrounds/<slug>/<slug>__default.png`). Bare
+  filenames are staging references and live ONLY in `asset_paths.*`. The four
+  district locations that carried a stale nested `scene:` shorthand block had it
+  deleted; their existing top-level `s3://` line is canonical. No validator or
+  schema relaxation — bare filenames remain flagged as malformed.
+- **Dialogue stub folders** (`garcia_sisters`, `lin_sisters_*`,
+  `valentina_quan_relationship`): confirmed intentionally unpublished as *image*
+  entities — the folders hold complete playable dialogue trees; character visuals
+  come from the character entities. Consequence: `content-audit.mjs` now treats
+  dialogues as `expectMd: false` (.md/.prompt.md optional), and `verify-assets.mjs`
+  skips dialogue folders in the orphaned-prompt sweep. The authored
+  `valentina_quan_relationship.prompt.md` is kept for future image generation.
+- **MinIO 403 sweep stays out of CI gating (deliberate):** every `s3://` HEAD check
+  returns 403 against the non-public local dev bucket, so gating CI on the script's
+  exit code would produce permanent false failures unrelated to content quality.
+  CI may gate only on the zero-`Invalid asset reference` property (and, once a
+  public bucket or signed-HEAD path exists, revisit full URL presence gating).
 
 ## Verification
 

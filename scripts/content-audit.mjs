@@ -27,7 +27,9 @@ const FOLDER_TYPES = [
   { dir: 'missions', prefix: 'mission_', expectMd: true },
   { dir: 'stories', prefix: '', expectMd: true },
   { dir: 'story_beats', prefix: 'story_beat_', expectMd: true },
-  { dir: 'dialogues', prefix: 'dialogue_', expectMd: true },
+  // Dialogues are gameplay logic; character visuals come from character
+  // entities, so .md/.prompt.md are optional for dialogue folders (M46 decision).
+  { dir: 'dialogues', prefix: 'dialogue_', expectMd: false },
 ];
 
 // Which YAML array field carries expression-tagged asset entries per type.

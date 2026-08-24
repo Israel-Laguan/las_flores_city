@@ -9,6 +9,4 @@ tags:
   - Education
   - Cultural
 narrative_path: colegio_chino_latino.md
-scene:
-  background_url: colegio_chino_latino__default.png
 background_url: s3://las-flores/backgrounds/colegio_chino_latino/colegio_chino_latino__default.png

@@ -494,9 +494,13 @@ async function main() {
   // Also check if .prompt.md files exist without corresponding assets
   console.log(`\n📝 Checking for orphaned prompts...\n`);
   const allPromptFiles = findAllPromptFiles(CONTENT_DIR);
+  // Dialogue folders are excluded from the orphaned-prompt check: dialogues
+  // are gameplay logic and image assets are optional there (M46 decision),
+  // so an authored .prompt.md awaiting future generation is not a defect.
   const orphanedPrompts = allPromptFiles
     .filter(f => {
       const entityDir = path.dirname(f);
+      if (entityDir.split(path.sep).includes('dialogues')) return false;
       const assetsDir = path.join(entityDir, 'assets');
       return !fs.existsSync(assetsDir);
     })
