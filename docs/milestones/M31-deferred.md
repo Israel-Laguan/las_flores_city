@@ -1,11 +1,12 @@
-# M31 — Deferred / Optional Milestone
+# M31 — Deferred / Optional Work
 
 > **Status:** Deferred (not yet scheduled) · **Source:** `ARCHITECTURE_SEPARATION_ANALYSIS.md` §6, §15.9
 
-M30 is no longer deferred. Its Phase A implementation is tracked in
-`M30-snapshots.md`, with benchmark evidence in `M30-benchmark-results.md`.
+The current runtime, durable-job, graph-authoring, and review-queue architecture remains
+the baseline. This work is not scheduled unless evidence shows that those mechanisms are
+insufficient.
 
-## M31 — Task-Graph Agent Swarm
+## Task-Graph Agent Swarm
 
 **When:** only if M21–M22 (worker + durable jobs) and M29 (review queue) prove insufficient
 for the “messy, unbounded” conflict workflows described in the enrichment discussion.

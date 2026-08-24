@@ -1,13 +1,11 @@
-# Milestone Roadmap — Architecture Separation & Story-Engine Authoring
+# Active Milestone Roadmap — Architecture Separation & Story-Engine Authoring
 
 > **Status:** Active planning · **Owner:** story-engine effort
 > **Source:** [`ARCHITECTURE_SEPARATION_ANALYSIS.md`](../ARCHITECTURE_SEPARATION_ANALYSIS.md)
 > (sequencing §10 + four-moment lifecycle §12–13 + enrichment §15).
 >
-> Each milestone below is a **single pull request** targeting **~25 files** (or smaller
-> when high complexity/risk, larger when mechanical). Every milestone is independently
-> shippable and leaves the game server functional. The numbering continues the repo's
-> existing **M-convention** (`M01–M08`, `M13–M18` are complete).
+> This index contains current actionable or explicitly deferred work. Completed milestone
+> history belongs in the durable architecture documents and git history, not in this list.
 
 ---
 
@@ -25,42 +23,32 @@
 
 ---
 
-## Milestone overview & dependency graph
+## Active Work & Dependency Graph
 
 ```text
 Foundation/runtime architecture → graph authoring architecture → authoring retirement
-                                          │
-                                           ├──► M30 (pre-resolved overlay snapshots; Phase A complete)
+                                           │
                                            ├──► M31 (task-graph agent swarm; deferred)
-                                           └──► M42 (content assets + migration; CLOSED)
-                                                    │
-                                                    ├──► M43 (plan migration effectiveness; complete)
-                                                    └──► M45 (snapshot closeout + M31 decision)
+                                           ├──► M42 (asset pipeline test follow-up; open)
+                                           └──► M45 (snapshot closeout; planned)
 ```
 
 | # | Milestone | Phase | Core value | Risk |
 |---|-----------|-------|-----------|------|
-| **Architecture docs** | Runtime/intake, graph authoring, and authoring retirement contracts | Complete | Durable current-state architecture outside milestone planning | — |
-| **M30** | Pre-resolved per-state overlay snapshots | Phase A complete | Kill the Redis merge step | Med · docs: M30-snapshots.md, M30-benchmark-results.md |
-| **M31** | Task-graph agent swarm | optional | Most benefit is already covered by the runtime and graph-authoring architecture | High (deferred) · doc: M30-M31-deferred.md |
-| **M36** | Location & district prompt quality | Complete | 74 location + 50 character generic prompt bullets replaced with lore-specific variants | Low |
-| **M40** | Prompt/expression/background asset carryforward | Complete | Wen Zhao expressions published/tagged; scene + location backgrounds published | Low |
-| **M42** | Content assets and migration completion | Closed | 46 scene background environment variants published to MinIO, wired into scene YAML `background_urls[]` + DB `scenes.background_urls` | Medium · doc: M42-content-assets-migration.md |
-| **M43** | Plan-to-migration effectiveness | Complete | Scoped mission/location plan templates + repo-wide writer canon guard; plan pipeline verified end-to-end (idempotent, fail-safe) | Medium · doc: M43-plan-migration-effectiveness.md |
-| **M45** | Snapshot closeout and M31 decision | Planned | Close the M30 evidence loop and record whether deferred task-graph work remains justified | Medium · doc: M45-snapshot-closeout.md |
+| **Architecture docs** | Runtime/intake, graph authoring, content delivery, and authoring-retirement contracts | Current | Durable current-state architecture outside milestone planning | — |
+| **M31** | Task-graph agent swarm | Deferred | Schedule only if durable jobs, specialized passes, and human review prove insufficient | High · doc: M31-deferred.md |
+| **M42** | Asset pipeline test follow-up | Open | Add focused generator and validator regression coverage | Low · doc: M42-content-assets-migration.md |
+| **M45** | Snapshot closeout | Planned | Reconcile current snapshot evidence and make the M31 decision | Medium · doc: M45-snapshot-closeout.md |
 
 ---
 
 ## How to run a milestone
 
-1. Create branch `milestone/MM-<short-slug>` following convention, e.g.
-   `milestone/30-snapshots`.
-2. Open the matching active `M##-*.md` doc; follow **Goal → Scope → Acceptance
-   Criteria → Verification** (older records use **Key changes / Definition of Done**
-   — follow whichever schema the doc itself uses). Use the architecture documents
-   for current-state contracts and implementation boundaries.
-3. Keep the PR at ~25 files. If it grows past that, split into two (see the deferred
-   note in the milestone doc).
-4. On merge, update the active milestone header to its terminal status using the
-   repository's status vocabulary (`Complete`, `OPEN`, `Planned`, `Deferred`) and
-   record durable architecture decisions in the relevant document under `docs/`.
+1. Create branch `milestone/MM-<short-slug>` following convention.
+2. Open the matching current `M##-*.md` doc; follow its **Goal → Scope → Acceptance
+   Criteria → Verification** contract and use architecture documents for current-state
+   boundaries.
+3. Keep the PR focused; split work when complexity or risk makes a single change hard to
+   review.
+4. Move durable architecture decisions into `docs/` rather than retaining completed
+   milestone transcripts.

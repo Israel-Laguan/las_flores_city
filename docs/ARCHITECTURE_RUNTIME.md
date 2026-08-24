@@ -50,6 +50,13 @@ The intake boundary enforces “LLMs propose; the core system commits.”
 - `analyzeIntakeConflicts()` provides an advisory LLM conflict preview using existing
   content context. It does not replace deterministic approval validation.
 
+Canon writes are migration-gated. `StoryBuilderPlanOps` is the pipeline writer and its
+canon-writing operations must reach `migrateContent()` before content becomes authoritative.
+`StoryBuilderLore`, `PromptFileGenerator`, and `LocalDraftService` are sidecar writers and
+may use only the low-level atomic-write primitive for non-canon artifacts. The repository
+writer guard (`scripts/check-story-builder-writer-guard.mjs`) keeps this importer registry
+explicit and rejects unregistered writers or sidecars that use canon-writing methods.
+
 ## Durable Jobs
 
 Background work is tracked in `job_runs`, one row per `(plan_id, job_type)` with
