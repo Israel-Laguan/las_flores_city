@@ -85,7 +85,14 @@ behavior (branch visibility is driven by relationship filters/flags, not posture
 Pre-existing `validate:content` warnings noted for a Phase 6 follow-up batch:
 romance deltas without relationship gates (`flirt_play`, `observant_coffee`,
 `wall_*`) and missing `last_vq_encounter_at` bookkeeping on several choice-level
-effects. Non-blocking.
+effects. **Addressed (Phase 6, first batch, 2026-08-24):** gates + encounter
+bookkeeping added to `flirt_play`, `observant_coffee`, `wall_back_off`,
+`wall_vulnerable_first`, `grounded_accept`; `wall_push_harder` keeps its
+negative delta ungated (validator now warns only on positive romance deltas).
+`validate:content` clean of relationship warnings (asset-path warnings remain,
+tracked separately); server lint/build clean; unit+smoke 101 suites / 1116
+tests green cache-free; containers rebuilt/recreated healthy, edited YAMLs
+republished to CDN via checksum re-migration.
 
 This milestone stays **open** — Phase 6 arc batches remain pending.
 

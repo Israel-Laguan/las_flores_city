@@ -132,7 +132,7 @@ function validateRelationshipGates(
       const hasHiddenRel = !!choice?.hidden_if_relationship;
       if (
         typeof romanceDelta === 'number' &&
-        romanceDelta !== 0 &&
+        romanceDelta > 0 &&
         !hasRequiredRel &&
         !hasHiddenRel
       ) {

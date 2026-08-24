@@ -102,6 +102,13 @@ nodes:
       - id: flirt_play
         text: "'Allowed. But I pick the topic once you finish laughing at me.'"
         next_node_id: vq_intro_flirt_play
+        # First-contact tree: neutral_default keeps this visible to players
+        # with no relationship row yet; hides flirting only once tension is
+        # genuinely high (she shuts down charm when hostile).
+        required_relationship:
+          axes:
+            tension: "lte:60"
+          neutral_default: true
         effects:
           relationship_effect:
             axes:
@@ -112,6 +119,8 @@ nodes:
             romance: 4
             memory:
               flirted_at_lounge: 10
+          state_set:
+            last_vq_encounter_at: NOW
 
   vq_intro_flirt_play:
     id: vq_intro_flirt_play
@@ -185,6 +194,10 @@ nodes:
       - id: observant_coffee
         text: "'Then let me start easy. Coffee. Tomorrow, before your sign-in.'"
         next_node_id: vq_intro_observant_end
+        required_relationship:
+          axes:
+            tension: "lte:60"
+          neutral_default: true
         effects:
           relationship_effect:
             axes:
@@ -196,6 +209,8 @@ nodes:
             romance: 3
             memory:
               noticed_hands: 20
+          state_set:
+            last_vq_encounter_at: NOW
 
   vq_intro_observant_end:
     id: vq_intro_observant_end

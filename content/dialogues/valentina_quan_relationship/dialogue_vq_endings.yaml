@@ -92,10 +92,18 @@ nodes:
       - id: grounded_accept
         text: "'A first attempt. Best deal I've ever been offered.'"
         next_node_id: vq_end_grounded_resolved
+        # Mirrors the branch_grounded gate upstream so the romantic beat can
+        # never fire below the earned threshold even if routing changes.
+        required_relationship:
+          axes:
+            trust: "gte:40"
+          romance: "gte:25"
         effects:
           relationship_effect:
             romance: 15
             status: ROMANTIC
+          state_set:
+            last_vq_encounter_at: NOW
 
   vq_end_grounded_resolved:
     id: vq_end_grounded_resolved
