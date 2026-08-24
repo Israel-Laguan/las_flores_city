@@ -26,6 +26,6 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
 
 ## Variations
 
-- [ ] Day version: same scene during open-mic hours
-- [ ] Rainy version: wet pavement, moody atmosphere
-- [ ] Wide shot: broader view showing Central City streets
+- [ ] Night version: La Casa de la Música after dark — La Casa de la Música was founded in 2044 by a coalition of A...
+- [ ] Rainy version: La Casa de la Música in the rain — wet surfaces, reflected neon, moody atmosphere,  featuring Main Performance Floor and Holographic Light Rig
+- [ ] Wide shot: wider establishing view of La Casa de la Música including  featuring Main Performance Floor and Holographic Light Rig, broader environmental context

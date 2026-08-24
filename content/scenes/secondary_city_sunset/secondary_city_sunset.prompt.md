@@ -24,10 +24,10 @@ Secondary City Sunset in Las Flores 2077. Cyberpunk aesthetic, neon-lit agrarian
 - [ ] night — Night fields
 - [ ] day — Clear dry daylight
 
-## Expression Variants
+## Environment Variants
 <!-- Environment variants staged as `assets/secondary_city_sunset__<tag>.png` and wired into
-     `background_urls[]` (scenes) with an `expression` tag — see
+     `background_urls[]` (scenes) with a `variant` tag — see
      docs/ASSET_EXPRESSION_VOCABULARY.md. -->
 
-- **`__night.png`**: Use the base scene as reference. Re-light the scene as a night version: the sun gone, smog and dark sky, neon agribusiness signs and holographic ads blazing brighter, reflections stronger in the wet furrows, cooler palette. Same layout, same graphic novel style, no people.
-- **`__day.png`**: Use the base scene as reference. Re-light the scene as a clear dry day: bright flat daylight through thin smog, dry terraced fields, muted neon, harsher tropical light on the irrigation systems. Same layout, same graphic novel style, no people.
+- **`__night.png`**: Use the base scene as reference. Re-light the scene as a night version: the sun gone, smog and dark sky, neon agribusiness signs and holographic ads blazing brighter, reflections stronger in the wet furrows, cooler palette. Same layout, same graphic novel style, no people. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette.
+- **`__day.png`**: Use the base scene as reference. Re-light the scene as a clear dry day: bright flat daylight through thin smog, dry terraced fields, muted neon, harsher tropical light on the irrigation systems. Same layout, same graphic novel style, no people. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette.

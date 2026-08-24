@@ -155,8 +155,8 @@ describe('Asset cascade resolution', () => {
 
       const variantPool = [
         { url: 'https://dev.example.com/scene-bg.png', label: 'dev' },
-        { url: 'https://dev.example.com/scene-bg__rain.png', label: 'dev', expression: 'rain' },
-        { url: 'https://dev.example.com/scene-bg__night.png', label: 'dev', expression: 'night' },
+        { url: 'https://dev.example.com/scene-bg__rain.png', label: 'dev', variant: 'rain' },
+        { url: 'https://dev.example.com/scene-bg__night.png', label: 'dev', variant: 'night' },
         { url: 'https://staging.example.com/scene-bg.png', label: 'staging' },
         { url: 'https://prod.example.com/scene-bg.png', label: 'production' },
       ];
@@ -176,8 +176,8 @@ describe('Asset cascade resolution', () => {
 
       expect(res.status).toBe(200);
       expect(res.body.data.scene.backgroundUrl).toBe('https://dev.example.com/scene-bg.png');
-      // The raw expression-tagged variant pool reaches the client for the
-      // VN layer's resolveBackgroundUrl(mood-as-expression) selection.
+      // The raw variant-tagged pool reaches the client for the
+      // VN layer's resolveBackgroundUrl(mood-as-environment-hint) selection.
       expect(res.body.data.scene.backgroundUrls).toEqual(variantPool);
     });
 

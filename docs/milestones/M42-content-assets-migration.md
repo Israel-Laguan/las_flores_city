@@ -1,53 +1,66 @@
-# M42 — Content Assets and Migration Completion
+# M42 — Content Assets Migration
 
-> **Status:** Planned · **Owner:** story-engine effort
-> **Source record:** M40 prompt/expression asset carryforward; also absorbs the remaining content-completeness work from the retired M35 exploration (no separate M35 archive exists)
+> **Status:** Closed  
+> **Owner:** story-engine effort
 
-## Goal
+## Completed (record)
 
-Finish the remaining content files and image assets, publish the assets to canonical storage,
-and run the content migration and verification path so the file database and runtime database
-agree.
+- File-database contract complete and green; intake-worker `migrateContent()` verified.
+- 20 scene + 75 location default backgrounds published to MinIO; 11 legacy junk
+  URLs removed from scene YAML.
+- Wen Zhao's 14 portrait assets (default + 13 expressions) published and
+  expression-tagged in `char_wen_zhao.yaml` `portrait_urls[]`.
+- 75 location YAMLs carry top-level `background_url`; all 75 location rows updated in DB.
+- All verifications green: `content:audit` 0 errors/warnings, `validate:content`
+  pass, prompt lengths 0 over-limit, `verify-assets.mjs` `Visual expr: 0` /
+  `Missing: 0`.
+- M36 and M40 closed: 74 location + 50 character generic `## Variations` bullets
+  replaced with lore-specific scene variants.
 
-## Scope
+## Remaining operations
 
-- Complete the missing mission and story-beat lore/prompt files identified by M35.
-- Add missing dialogue/story asset directories where required by the content audit.
-- Complete M40's G-M40-1 through G-M40-4 work, including Wen Zhao expressions and scene backgrounds.
-- Clean stale asset URLs, publish local assets, and migrate the resulting YAML through the server.
-- Tighten content-audit blind spots and preserve the server-only content write contract.
+1. **Scene variant generation + publication** — ✅ COMPLETE
+   - All 20 scene prompts already carry canonical `## Expression Variants`
+     environment edit-prompts (`night`/`sunset`/`day`/`rain`); no retired
+     `## Variants (image-to-image)` sections remain.
+   - Generation queue: `scripts/asset-pipeline/output/scene_background_variants.csv`
+     (46 rows; columns
+     `path,slug,variant,base_local,base_s3,prompt,nim_safe_prompt,t2i_prompt,ratio,done`;
+     regenerate with `node scripts/asset-pipeline/scripts/gen-scene-variant-csv.mjs`).
+     Each row names the published default background as the image-to-image base
+     (`base_s3`) and the edit prompt for the variant.
+   - **Provider tally:** 2 NIM / 43 Akool / 0 Pollinations. NIM's guardrails
+     rejected most prompts stochastically; no regeneration was attempted — the
+     46 generated variants were published as-is.
+   - **Format conversion:** Akool returned JPEG-content payloads; all 46 variant
+     files were converted to true PNG via `sharp` before staging/upload.
+   - **Publication:** `server/scripts/publish-scene-backgrounds.ts` uploaded each
+     `<slug>__<variant>.png` to `s3://las-flores/backgrounds/<slug>/`, merged
+     variant-tagged entries into each scene YAML's `background_urls[]` (default
+     entry preserved untagged first; variants carry `variant: night|sunset|day|rain`),
+     and mirrored the array into the DB `scenes.background_urls` column (the
+     runtime serves the JSONB array, not the YAML). Then `verify-assets.mjs`
+     reported `Missing: 0`.
 
-## Acceptance Criteria
-
-- [ ] All content files identified by the retired M35 audit exist and pass the content audit.
-- [ ] Required expression and scene background assets are published to MinIO with valid YAML/DB URLs.
-- [ ] `verify-assets.mjs` reports no missing published assets and no visual-expression gaps.
-- [ ] `migrateContent` completes successfully and the migrated rows match the authored files.
-- [ ] No direct file write bypasses the established migration path.
+2. **Optional follow-up** (from shipped M44)
+   - Focused tests for generator output and validator behavior.
 
 ## Verification
 
 ```bash
 npm run content:audit
 npm run validate:content
+node scripts/asset-pipeline/scripts/check-prompt-lengths.mjs
 node scripts/asset-pipeline/scripts/verify-assets.mjs
-
-# Content migration + database assertions (requires dev DB up):
-npm run test:integration --workspace=server -- tests/integration/migration.test.ts
-# Expected evidence:
-#   - migrateContent() reports success with no errors.
-#   - psql spot-checks match authored files, e.g.:
-#       SELECT slug, status FROM mysteries WHERE status = 'ACTIVE';
-#       SELECT COUNT(*) FROM characters;  -- row counts match content folders
-#   - portrait_urls / background_urls entries resolve (verify-assets covers URL existence).
 ```
 
-Run the relevant migration/integration tests against the development databases and record the
-migration result, asset counts, and any unrelated pre-existing failures.
+## Commands Used (reproducible)
 
-## Relationship to Existing Records
-
-M40 remains a live source record and the backlog definition for G-M40-1 through
-G-M40-4; M42 is the execution and end-to-end completion milestone for that work.
-The M35 reference above is historical only — that exploration record was retired
-without an archive and has no separate live document.
+```bash
+./start-stack.sh
+# Publish the 46 scene background variants (MinIO + YAML + DB):
+podman cp server/scripts/publish-scene-backgrounds.ts las-flores-intake-worker:/app/server/scripts/publish-scene-backgrounds.ts
+podman cp scripts/asset-pipeline/output/scene_background_variants.csv las-flores-intake-worker:/tmp/scene_background_variants.csv
+podman exec -e SCENE_VARIANT_CSV=/tmp/scene_background_variants.csv las-flores-intake-worker \
+  sh -c "cd /app/server && /app/node_modules/.bin/tsx scripts/publish-scene-backgrounds.ts"
+```

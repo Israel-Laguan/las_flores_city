@@ -11,19 +11,22 @@ aspect_ratio: 3:4
 # Prompt: Lin Xiu
 
 ## Prompt (Draft)
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height Latin Photorealistic portrait of Lin Xiu. Her frame is solid and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark expressive eyes, a straight nose, and a defined jaw. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her dark hair hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless practical clot. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...
+
+Chinese university student in her early 20s, explicitly non-idol features. Shorter, stocky build from physical port labor, sun-tanned skin with natural texture. Round face with sharp "swallow-tail" arched eyebrows, expressive dark eyes, flat nose, full lips. Chic bob cut. Bubbly but defensive bearing, arms crossed with one hand tapping her elbow. Playful, vibrant modern clothing: a trendy top incorporating intricate Peranakan Nyonya beadwork and bright batik patterns, wearing bold statement earrings. The backdrop is a sunlit university campus courtyard or port district. Premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height Chinese woman. Her frame is solid and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark expressive eyes, a straight nose, and a defined jaw. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her dark hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears minimalist, pocketless practical clothing suited to her environment, with personal items reflecting her role. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Chinese university student in her early 20s with explicitly non-idol features. Shorter, stocky build from physical port labor, sun-tanned skin with natural texture. Round face with sharp "swallow-tail" arched eyebrows, expressive dark eyes, flat nose, full lips. Chic bob cut. Bubbly but defensive bearing, arms crossed defensively with one hand lightly tapping her elbow. Playful, vibrant modern clothing: a trendy top incorporating intricate Peranakan Nyonya beadwork and bright batik patterns, wearing bold statement earrings. The backdrop is a sunlit university campus courtyard or bustling port district. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
---no neon, no androids, no clean backgrounds, no modern clothing
+
+--no neon, no androids, no clean backgrounds, photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality, CGI, airbrushed, East Asian stereotypes, idealized proportions, glass skin, K-pop idol, C-pop idol, delicate features
 
 ## Variations
 
-- [ ] Lin Xiu in a meeting, reviewing documents with colleagues
-- [ ] Lin Xiu considering a strategic decision, weighing options thoughtfully
-- [ ] Lin Xiu in a business meeting, collaborating with team members on a strategy
+- [ ] Sitting on campus, writing intensely in a notebook with calloused hands
+- [ ] At the port, sharply judging passing workers while wearing her bright batik patterns
+- [ ] Whispering in Hokkien to her sister Lin Mei, looking suspicious of outsiders
 
 ## Expression Variants
 

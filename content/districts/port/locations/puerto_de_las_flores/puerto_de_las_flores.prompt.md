@@ -22,7 +22,7 @@ Puerto de Las Flores in Las Flores, daytime, street vendor stalls, coastal port 
 photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lines, cybernetics, cargo pants, back pockets, backpacks, bulky luggage, sombreros, wristwatches
 
 ## Variations
-- [ ] Night version: same scene at night with different lighting
-- [ ] Rainy version: same scene with rain and mood effects
-- [ ] Wide shot: broader view of the location
 
+- [ ] Night version: Puerto de Las Flores after dark — The Port of Las Flores stands as the main gateway for import...
+- [ ] Rainy version: Puerto de Las Flores in the rain — wet surfaces, reflected neon, moody atmosphere,  featuring Jade Dragon Ports & Logistics Terminals and Neptunes Haven B.V. Dedicated Pier
+- [ ] Wide shot: wider establishing view of Puerto de Las Flores including  featuring Jade Dragon Ports & Logistics Terminals and Neptunes Haven B.V. Dedicated Pier, broader environmental context

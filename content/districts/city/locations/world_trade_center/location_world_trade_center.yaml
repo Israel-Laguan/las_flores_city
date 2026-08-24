@@ -43,3 +43,4 @@ conclusion: |
 lore_path: world_trade_center.md
 asset_paths:
   image: world_trade_center__default.png
+background_url: s3://las-flores/backgrounds/world_trade_center/world_trade_center__default.png

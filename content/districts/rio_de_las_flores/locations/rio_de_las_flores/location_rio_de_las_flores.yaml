@@ -29,3 +29,4 @@ conclusion: |
   From mountain snowmelt to ocean delta, the Río de las Flores connects every corner of Las Flores in a continuous flow of life, commerce, and story.
 asset_paths:
   image: rio_de_las_flores__default.png
+background_url: s3://las-flores/backgrounds/rio_de_las_flores/rio_de_las_flores__default.png

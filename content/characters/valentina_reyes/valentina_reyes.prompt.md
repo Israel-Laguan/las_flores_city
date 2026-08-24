@@ -21,9 +21,9 @@ Medium-height Latina woman, solid build, dark expressive eyes, a straight nose, 
 
 ## Variations
 
-- [ ] Valentina "Val" Reyes studying intently at a desk, surrounded by books and notes
-- [ ] Valentina "Val" Reyes deep in thought about their studies, determined to succeed
-- [ ] Valentina "Val" Reyes studying with classmates in a library, working together on a project
+- [ ] Valentina Reyes surveying the scene, Val is an 18-year-old university student from a small town near Río...
+- [ ] Valentina Reyes in a contemplative moment, 
+- [ ] Valentina Reyes caught in a pivotal scene, Val is an 18-year-old university student from a small town near Río...
 
 ## Expression Variants
 

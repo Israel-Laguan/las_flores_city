@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Tomás Coronado studying intently at a desk, surrounded by books and notes
-- [ ] Tomás Coronado deep in thought about their studies, determined to succeed
-- [ ] Tomás Coronado studying with classmates in a library, working together on a project
+- [ ] Tomás Coronado reviewing the situation, Tomás Coronado is a 22-year-old engineering student at the Universi...
+- [ ] Tomás Coronado in a alert moment, 
+- [ ] Tomás Coronado caught in a pivotal scene, Tomás Coronado is a 22-year-old engineering student at the Universi...
 
 ## Expression Variants
 

@@ -4,7 +4,7 @@ description: The main interchange platform of Estación Central, the hub where L
 district: City
 district_lore: urban_core
 district_subzone: Central City
-background_url: https://cdn.lasflores2077.com/locations/bg_estacion_central_metro.png
+background_url: s3://las-flores/backgrounds/estacion_central/estacion_central__default.png
 mood: transient
 available_dialogues: []
 metadata:
@@ -35,3 +35,9 @@ asset_paths:
 background_urls:
   - url: s3://las-flores/backgrounds/estacion_central/estacion_central__default.png
     label: dev
+  - url: s3://las-flores/backgrounds/estacion_central/estacion_central__night.png
+    label: dev
+    variant: night
+  - url: s3://las-flores/backgrounds/estacion_central/estacion_central__sunset.png
+    label: dev
+    variant: sunset

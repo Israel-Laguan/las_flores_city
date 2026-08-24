@@ -44,7 +44,7 @@ export const ScenePayloadSchema = z.object({
     id: zodUuid(),
     title: z.string(),
     backgroundUrl: z.string(),
-    // Expression-tagged background variants (`background_urls[]` from the
+        // Variant-tagged background variants (`background_urls[]` from the
     // scene YAML) passed through to the VN layer so the dialogue viewport can
     // select a pre-painted variant (rain/night/sunset) before applying mood.
     backgroundUrls: z.array(AssetEntrySchema).optional(),

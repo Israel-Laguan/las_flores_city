@@ -4,12 +4,13 @@ description: A warm, slightly worn coffee shop in the historic district of Las F
 district: South
 district_lore: old_las_flores
 district_subzone: Old Las Flores
-background_url: https://cdn.lasflores2077.com/locations/bg_old_town_cafe.png
+background_url: s3://las-flores/backgrounds/cafe/cafe__default.png
 mood: cozy
 available_dialogues:
   - 123e4567-e89b-12d3-a456-426614174002
   - f6a7b8c9-d0e1-4345-babc-456789012345
   - a1b2c3d4-e5f6-7890-abcd-ef1234567890
+  - 5a8d9b1c-7f2e-4b3a-9c8d-1e2f3a4b5c6d
 metadata:
   required_story_beat: act1_awakening
   idle_thoughts:
@@ -22,3 +23,9 @@ asset_paths:
 background_urls:
   - url: s3://las-flores/backgrounds/cafe/cafe__default.png
     label: dev
+  - url: s3://las-flores/backgrounds/cafe/cafe__night.png
+    label: dev
+    variant: night
+  - url: s3://las-flores/backgrounds/cafe/cafe__sunset.png
+    label: dev
+    variant: sunset

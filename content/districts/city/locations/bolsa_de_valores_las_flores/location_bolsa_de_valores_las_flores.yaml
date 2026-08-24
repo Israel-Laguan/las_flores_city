@@ -36,3 +36,4 @@ conclusion: |
   The Bolsa de Valores Las Flores is the city's most explicit statement of what it values and how it prices it. The algorithmic systems that now conduct the majority of its business have abstracted the connection between the numbers updating on the lithium futures board and the physical consequences of extraction in the Andean range, in the contaminated river basin, in the labour camps of the Industrial Zone. Those consequences do not disappear from the price signal — they are encoded in it. The exchange's surveillance infrastructure, its access controls, its overnight glow constitute a system that does not distinguish between asset classes or externalities. It prices everything it is permitted to price and ignores everything it is not.
 asset_paths:
   image: bolsa_de_valores_las_flores__default.png
+background_url: s3://las-flores/backgrounds/bolsa_de_valores_las_flores/bolsa_de_valores_las_flores__default.png

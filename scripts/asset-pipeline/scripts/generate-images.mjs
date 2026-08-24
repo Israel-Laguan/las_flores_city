@@ -32,6 +32,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import os from 'node:os';
 import { execSync } from 'node:child_process';
 
@@ -55,8 +56,8 @@ const DEFAULT_SIZE = { width: 1024, height: 1024 };
 // Hard prompt-length caps enforced by the providers. NIM (flux.2-klein-4b)
 // rejects anything over 800 characters with HTTP 422 string_too_long, and the
 // Pollinations URL-based API degrades on very long query strings.
-const NIM_PROMPT_LIMIT = 800;
-const POLLINATIONS_PROMPT_LIMIT = 2000;
+export const NIM_PROMPT_LIMIT = 800;
+export const POLLINATIONS_PROMPT_LIMIT = 2000;
 
 const AKOOL_SCALES = ['1:1', '4:3', '3:4', '16:9', '9:16', '3:2', '2:3'];
 
@@ -103,7 +104,7 @@ export function entrySlug(entry) {
 }
 
 /** Mirror of AssetGenerationService.cleanNegativePrompt(). */
-function cleanNegativePrompt(text) {
+export function cleanNegativePrompt(text) {
   let t = (text || '').trim();
   if (!t) return '';
   t = t.replace(/^--no\s+/, 'no ');
@@ -119,6 +120,8 @@ function truncateAtWord(text, limit) {
   return (cut > limit * 0.5 ? slice.slice(0, cut) : slice).trim();
 }
 
+export { truncateAtWord };
+
 /**
  * Build a prompt that fits inside a provider's hard character limit.
  *
@@ -130,7 +133,7 @@ function truncateAtWord(text, limit) {
  * Returns { prompt, negativeApplied, truncated } so callers can report what
  * happened without silently changing the request.
  */
-function fitPrompt(prompt, negativePrompt, limit) {
+export function fitPrompt(prompt, negativePrompt, limit) {
   const base = (prompt || '').trim();
   const cleaned = cleanNegativePrompt(negativePrompt);
 
@@ -192,7 +195,7 @@ function parseSize(size) {
 }
 
 /** Largest dimension ≤ 1024 preserving an aspect ratio like "3:4" / "16:9". */
-function dimsFromAspect(ratio) {
+export function dimsFromAspect(ratio) {
   if (!ratio) return null;
   const m = String(ratio).match(/^(\d+)\s*[:/]\s*(\d+)$/);
   if (!m) return null;
@@ -209,12 +212,12 @@ function resolveDims(entry) {
     || { ...DEFAULT_SIZE };
 }
 
-function isSupportedScale(ratio) {
+export function isSupportedScale(ratio) {
   return AKOOL_SCALES.includes(String(ratio || '').trim());
 }
 
 /** Nearest supported Akool scale for a given width/height. */
-function scaleFromDims(width, height) {
+export function scaleFromDims(width, height) {
   const target = width / height;
   let best = '1:1';
   let bestDiff = Infinity;
@@ -231,23 +234,36 @@ function scaleFromDims(width, height) {
 
 // ── Provider: NIM ───────────────────────────────────────────────────────────
 
-async function generateNim(prompt, negativePrompt, width, height) {
+/**
+ * NIM (flux.2-klein-4b) only accepts widths/heights in steps of 16
+ * (HTTP 422 literal_error otherwise). Snap to the closest valid size,
+ * clamped to a sane [256, 1024] range.
+ */
+export function snapDimsForNim(width, height) {
+  const snap = (n) => Math.min(1024, Math.max(256, Math.round(Number(n) / 16) * 16));
+  return { width: snap(width), height: snap(height) };
+}
+
+export async function generateNim(prompt, negativePrompt, width, height) {
   const apiKey = process.env.NVIDIA_API_KEY;
   if (!apiKey) throw new Error('NVIDIA_API_KEY not set');
 
   const fitted = fitPrompt(prompt, negativePrompt, NIM_PROMPT_LIMIT);
   const fullPrompt = fitted.prompt;
+  const dims = snapDimsForNim(width, height);
   if (fitted.truncated || (negativePrompt && !fitted.negativeApplied)) {
     console.warn(
       `    nim: prompt trimmed to ${fullPrompt.length}/${NIM_PROMPT_LIMIT} chars`
       + `${fitted.negativeApplied ? ' (negative shortened)' : ' (negative dropped)'}`,
     );
   }
+  if (dims.width !== width || dims.height !== height) {
+    console.warn(`    nim: dims snapped ${width}x${height} -> ${dims.width}x${dims.height} (multiple of 16)`);
+  }
 
   const payload = {
     prompt: fullPrompt,
-    width,
-    height,
+    ...dims,
     seed: 0,
     steps: 4,
   };
@@ -307,7 +323,7 @@ async function generateNim(prompt, negativePrompt, width, height) {
 }
 // ── Provider: Akool (CLI) ───────────────────────────────────────────────────
 
-function isAkoolConfigured() {
+export function isAkoolConfigured() {
   // Env vars take precedence (AKOOL_CLIENT_ID + AKOOL_CLIENT_SECRET, or AKOOL_API_KEY).
   if (
     (process.env.AKOOL_CLIENT_ID && process.env.AKOOL_CLIENT_SECRET)
@@ -394,7 +410,7 @@ function extractJson(text) {
   return objects[objects.length - 1];
 }
 
-async function generateAkool(prompt, negativePrompt, scale) {
+export async function generateAkool(prompt, negativePrompt, scale) {
   if (!isAkoolConfigured()) throw new Error('akool not configured (need AKOOL_CLIENT_ID + AKOOL_CLIENT_SECRET or AKOOL_API_KEY)');
 
   const fullPrompt = negativePrompt
@@ -430,7 +446,7 @@ async function generateAkool(prompt, negativePrompt, scale) {
 
 // ── Provider: Pollinations ──────────────────────────────────────────────────
 
-async function generatePollinations(prompt, negativePrompt, width, height) {
+export async function generatePollinations(prompt, negativePrompt, width, height) {
   // Pollinations puts the prompt in the URL path, so keep it within budget.
   // The negative prompt travels as its own query param here, so it does not
   // compete with the positive prompt for the same character budget.
@@ -575,7 +591,7 @@ function logError(outputDir, message) {
  *   akool     -> ['akool', 'nim', 'pollinations']
  *   pollinations -> ['nim', 'akool', 'pollinations']  (forced to last)
  */
-function buildProviderChain(primary) {
+export function buildProviderChain(primary) {
   const others = ['nim', 'akool'].filter((p) => p !== primary);
   if (primary === 'pollinations') return [...others, 'pollinations'];
   return [primary, ...others, 'pollinations'];
@@ -721,7 +737,12 @@ async function main() {
   if (fail > 0) process.exitCode = 1;
 }
 
-main().catch((err) => {
-  console.error('[FATAL]', err);
-  process.exit(1);
-});
+// Only auto-run when executed directly; importing this module (e.g. from
+// generate-scene-variants.mjs) must not trigger a generation batch.
+const isDirectRun = process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href;
+if (isDirectRun) {
+  main().catch((err) => {
+    console.error('[FATAL]', err);
+    process.exit(1);
+  });
+}

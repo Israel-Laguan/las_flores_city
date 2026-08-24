@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Councilwoman Sofia Duarte in a meeting, reviewing documents with colleagues
-- [ ] Councilwoman Sofia Duarte considering a strategic decision, weighing options thoughtfully
-- [ ] Councilwoman Sofia Duarte in a business meeting, collaborating with team members on a strategy
+- [ ] Sofia Duarte conversing with a contact, Sofia Duarte was born into power. The Duarte family accumulated wea...
+- [ ] Sofia Duarte in a quiet moment, 
+- [ ] Sofia Duarte caught in a pivotal scene, Sofia Duarte was born into power. The Duarte family accumulated wea...
 
 ## Expression Variants
 

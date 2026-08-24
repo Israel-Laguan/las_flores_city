@@ -11,3 +11,4 @@ tags:
 lore_path: andean_mountains.md
 asset_paths:
   image: andean_mountains__default.png
+background_url: s3://las-flores/backgrounds/andean_mountains/andean_mountains__default.png

@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Manuel Rodriguez at work in their professional environment, focused on their tasks
-- [ ] Manuel Rodriguez in a moment of reflection, considering their next steps
-- [ ] Manuel Rodriguez with colleagues in a professional setting, engaged in discussion
+- [ ] Manuel Rodriguez reflecting on recent events, Appointed Governor's representative for the Pacific District, he ab...
+- [ ] Manuel Rodriguez in a determined moment, 
+- [ ] Manuel Rodriguez caught in a pivotal scene, Appointed Governor's representative for the Pacific District, he ab...
 
 ## Expression Variants
 

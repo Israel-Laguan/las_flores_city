@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Ricardo Tan in a meeting, reviewing documents with colleagues
-- [ ] Ricardo Tan considering a strategic decision, weighing options thoughtfully
-- [ ] Ricardo Tan in a business meeting, collaborating with team members on a strategy
+- [ ] Ricardo Tan reflecting on recent events, A charismatic and witty TV host on Canal 15, known for his infectio...
+- [ ] Ricardo Tan in a determined moment, 
+- [ ] Ricardo Tan caught in a pivotal scene, A charismatic and witty TV host on Canal 15, known for his infectio...
 
 ## Expression Variants
 

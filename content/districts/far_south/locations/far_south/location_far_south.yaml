@@ -31,3 +31,4 @@ conclusion: |
   The Far South stands as a unique frontier where traditional desert survival, peaceful fishing communities, and the shadowy world of smuggling intersect. Its remote location and border position make it both a place of cultural preservation and ongoing conflict, embodying the complex realities of life on the edge of Las Flores.
 asset_paths:
   image: far_south__default.png
+background_url: s3://las-flores/backgrounds/far_south/far_south__default.png

@@ -1,0 +1,154 @@
+id: "5a8d9b1c-7f2e-4b3a-9c8d-1e2f3a4b5c6d"
+name: "The Lin Sisters Encounter"
+description: "Meeting Lin Mei and Lin Xiu together at the Old Town Café. A chance to establish a dynamic with one or both."
+scene_id: "123e4567-e89b-12d3-a456-426614174001"
+character_id: "6298f8f3-7df3-4fad-ac57-8b4a520d1726" # Anchored to Lin Mei, but involves both
+dialogue_scope: "scene"
+start_node_id: "a1111111-2222-3333-4444-555555555555"
+nodes:
+  a1111111-2222-3333-4444-555555555555:
+    id: "a1111111-2222-3333-4444-555555555555"
+    type: "character"
+    speaker_id: "6298f8f3-7df3-4fad-ac57-8b4a520d1726"
+    text: "Well. Are you going to keep staring, or are you going to order something? We're trying to study here."
+    thought: "She has her arms tightly crossed, one hand lightly tapping her elbow. Her sister, sitting across from her, watches you with identical, sharp swallow-tail eyebrows."
+    choices:
+      - id: "reply_friendly"
+        text: "Sorry, I was just noticing the intricate beadwork on your outfits. It's beautiful."
+        next_node_id: "b2222222-2222-3333-4444-555555555555"
+      - id: "reply_imperial"
+        text: "You both carry yourselves with a very classic elegance. Like ladies from an ancient imperial court."
+        next_node_id: "h8888888-2222-3333-4444-555555555555"
+      - id: "reply_flirt_mei"
+        text: "Actually, I was staring at you. I couldn't help myself."
+        next_node_id: "e5555555-2222-3333-4444-555555555555"
+      - id: "reply_hostile"
+        text: "Just wondering why you two look so aggressively defensive over a couple of lattes."
+        next_node_id: "f6666666-2222-3333-4444-555555555555"
+
+  b2222222-2222-3333-4444-555555555555:
+    id: "b2222222-2222-3333-4444-555555555555"
+    type: "character"
+    speaker_id: "33333333-4444-4555-8666-777777770001"
+    text: "Oh! Thank you. It's traditional Nyonya batik and beadwork. I made the earrings myself."
+    thought: "The bubbly one smiles, her intense resting expression softening. She introduces herself as Lin Xiu, and her sister as Lin Mei."
+    choices:
+      - id: "reply_friendly_end"
+        text: "Talented work, Lin Xiu. Nice to meet you both. I'll leave you to your studies."
+        next_node_id: "c3333333-2222-3333-4444-555555555555"
+        relationship_change:
+          stat: "friendship"
+          amount: 2
+      - id: "reply_flirt_xiu"
+        text: "Talented, smart, and gorgeous. Are you single, Lin Xiu?"
+        next_node_id: "d4444444-2222-3333-4444-555555555555"
+        relationship_change:
+          stat: "romance"
+          amount: 1
+
+  c3333333-2222-3333-4444-555555555555:
+    id: "c3333333-2222-3333-4444-555555555555"
+    type: "character"
+    speaker_id: "6298f8f3-7df3-4fad-ac57-8b4a520d1726"
+    text: "You do that. But... thanks. For the compliment. See you around."
+    thought: "Lin Mei's tapping slows down. She seems slightly less guarded as you walk away."
+    is_end: true
+    effects:
+      state_set:
+        lin_sisters_dynamic: "friendly"
+
+  d4444444-2222-3333-4444-555555555555:
+    id: "d4444444-2222-3333-4444-555555555555"
+    type: "character"
+    speaker_id: "33333333-4444-4555-8666-777777770001"
+    text: "W-what? Oh, wow. I..."
+    thought: "Lin Xiu blushes furiously, her bubbly confidence faltering. Lin Mei immediately shifts her broad shoulders forward, shielding her sister with a protective glare. You've sparked Xiu's interest, but Mei is definitely watching you closely now."
+    is_end: true
+    effects:
+      state_set:
+        lin_sisters_dynamic: "romance_xiu"
+
+  e5555555-2222-3333-4444-555555555555:
+    id: "e5555555-2222-3333-4444-555555555555"
+    type: "character"
+    speaker_id: "6298f8f3-7df3-4fad-ac57-8b4a520d1726"
+    text: "Smooth. But cheap. I don't have time for distractions right now."
+    thought: "Lin Mei looks you up and down. Her words are dismissive, but the tapping on her elbow stops entirely. Lin Xiu giggles from across the table. You've caught the older sister's attention."
+    is_end: true
+    effects:
+      state_set:
+        lin_sisters_dynamic: "romance_mei"
+
+  h8888888-2222-3333-4444-555555555555:
+    id: "h8888888-2222-3333-4444-555555555555"
+    type: "character"
+    speaker_id: "6298f8f3-7df3-4fad-ac57-8b4a520d1726"
+    text: "Imperial court? Please. You've been watching too many historical holodramas. Our family built their lives here as Straits Chinese migrants hauling actual cargo crates on these docks, and we spent our childhoods helping in the warehouse. We're built on port sweat, not silk fans and court poetry."
+    thought: "Her sharp swallow-tail eyebrows knit together. She is proud of their real working-class roots and dislikes the delicate, idealized stereotype."
+    choices:
+      - id: "imperial_apology"
+        text: "My mistake. I respect the real hustle—the port is what keeps this city alive anyway."
+        next_node_id: "i9999999-2222-3333-4444-555555555555"
+        relationship_change:
+          stat: "friendship"
+          amount: 2
+      - id: "imperial_dismissive"
+        text: "Just trying to pay a compliment. No need to be so defensive."
+        next_node_id: "j0000000-2222-3333-4444-555555555555"
+        relationship_change:
+          stat: "friendship"
+          amount: -1
+
+  i9999999-2222-3333-4444-555555555555:
+    id: "i9999999-2222-3333-4444-555555555555"
+    type: "character"
+    speaker_id: "33333333-4444-4555-8666-777777770001"
+    text: "See, Mei? They get it. Besides, I still wouldn't mind a few designer silk gowns! But yeah, we're university students with dockside roots, not dynastic princesses. I'm Xiu, by the way."
+    thought: "Lin Xiu laughs, completely relaxed. Lin Mei crosses her arms again, but her tense expression softens slightly. She looks at you with a new level of genuine respect."
+    is_end: true
+    effects:
+      state_set:
+        lin_sisters_dynamic: "respected_roots"
+
+  j0000000-2222-3333-4444-555555555555:
+    id: "j0000000-2222-3333-4444-555555555555"
+    type: "character"
+    speaker_id: "6298f8f3-7df3-4fad-ac57-8b4a520d1726"
+    text: "Defensive? No. Just tired of people projecting their delicate fantasies onto us. Order your drink and leave us alone."
+    thought: "Lin Mei turns her back to you entirely, dismissing you. Lin Xiu sighs and gives you a disappointed look."
+    is_end: true
+    effects:
+      state_set:
+        lin_sisters_dynamic: "enemies"
+        
+  f6666666-2222-3333-4444-555555555555:
+    id: "f6666666-2222-3333-4444-555555555555"
+    type: "character"
+    speaker_id: "33333333-4444-4555-8666-777777770001"
+    text: "Wah, this one completely bo-hiao (clueless). Should we just ignore?"
+    thought: "Lin Xiu drops her bubbly facade entirely, switching to rapid-fire Hokkien slang."
+    choices:
+      - id: "hostile_end"
+        text: "[Leave them alone]"
+        next_node_id: "g7777777-2222-3333-4444-555555555555"
+        relationship_change:
+          stat: "friendship"
+          amount: -2
+
+  g7777777-2222-3333-4444-555555555555:
+    id: "g7777777-2222-3333-4444-555555555555"
+    type: "character"
+    speaker_id: "6298f8f3-7df3-4fad-ac57-8b4a520d1726"
+    text: "Yeah. Let them enjoy their sad little coffee alone."
+    thought: "Both sisters fix you with an identical, chillingly blank appraising stare as you walk away. You've definitely made enemies today."
+    is_end: true
+    effects:
+      state_set:
+        lin_sisters_dynamic: "enemies"
+metadata:
+  version: "1.0"
+  author: "Las Flores Team"
+  tags:
+    - "lin_sisters"
+    - "romance_branching"
+    - "first_contact"

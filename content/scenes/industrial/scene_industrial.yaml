@@ -10,6 +10,7 @@ available_dialogues:
   - a0000001-0003-4000-8000-000000000014
   - a0000001-0003-4000-8000-000000000015
   - a0000001-0003-4000-8000-000000000016
+  - c9b8a7d6-e5f4-4321-b123-ef6543210987
 metadata:
   npcs:
     - a0000001-0000-4000-8000-000000000003
@@ -23,3 +24,9 @@ asset_paths:
 background_urls:
   - url: s3://las-flores/backgrounds/industrial/industrial__default.png
     label: dev
+  - url: s3://las-flores/backgrounds/industrial/industrial__night.png
+    label: dev
+    variant: night
+  - url: s3://las-flores/backgrounds/industrial/industrial__sunset.png
+    label: dev
+    variant: sunset

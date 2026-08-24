@@ -1,0 +1,214 @@
+id: 9c2e6a10-8f4d-4b7a-9c3e-1a2b3c4d5e01
+name: "Valentina Quan - Act 1: First Contact"
+description: "The player spots Valentina off-duty at the airport bar: street attire, one earbud, rebooking the same flight for the third time. Small talk ends cold, flirting amuses her on her terms, and only noticing what she's hiding earns genuine interest. She deflects 'Where are you from?' twice — the first breadcrumb of the family she never mentions."
+character_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+scene_id: "00000000-0000-0000-0000-000000000000"
+dialogue_scope: character
+start_node_id: vq_intro_start
+
+nodes:
+  vq_intro_start:
+    id: vq_intro_start
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "She sits alone at the far end of the half-empty lounge bar — street clothes, dark hair in a loose bun, one earbud in, thumb hovering over the same flight rebooked three times already. She catches you looking. 'Can I help you, or is this terminal people-watching?' You've seen her around the terminal in uniform. Off-duty, she looks like a different person."
+    thought: "(Expression: default. Off-duty, unguarded by the uniform, she still scans the room like she's working a cabin — warmth on standby, doors accounted for.)"
+    visual:
+      expression: default
+      position: right
+      transition: fade
+    choices:
+      - id: intro_smalltalk
+        text: "Slide into the seat nearby. 'Long shift?'"
+        next_node_id: vq_intro_smalltalk
+        time_block_cost:
+          amount: 1
+          description: "Small talk at the airport bar"
+      - id: intro_flirt
+        text: "'Can I buy you a drink, or do you already have a queue?'"
+        next_node_id: vq_intro_flirt
+        time_block_cost:
+          amount: 1
+          description: "Flirting at the airport bar"
+      - id: intro_observant
+        text: "'That's the third time you've rebooked the same flight.'"
+        next_node_id: vq_intro_observant
+        time_block_cost:
+          amount: 1
+          description: "Talking with Valentina at the airport bar"
+
+  # --- Small talk branch: polite deflection, ends cold ---
+  vq_intro_smalltalk:
+    id: vq_intro_smalltalk
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "Mm? Oh — no, not flying tonight. Just... waiting. Sorry, long day. You fly often? You look familiar. Terminal-familiar, I mean. That's usually all people here are to each other."
+    thought: "(Expression: default. The smile is automatic, cabin-crew warm and completely weightless. She answers exactly as much as politeness requires and nothing more.)"
+    visual:
+      expression: default
+      position: right
+      transition: fade
+    choices:
+      - id: smalltalk_continue
+        text: "'Terminal-familiar. That's one way to put it. Where are you from, originally?'"
+        next_node_id: vq_intro_smalltalk_home
+
+  vq_intro_smalltalk_home:
+    id: vq_intro_smalltalk_home
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "From? Ha — everywhere. That's the job. You pick up cities like stamps. Lima one week, Amsterdam the next. Home is gate C12, honestly."
+    thought: "(Expression: focused. The answer is smooth because it has been delivered before — a script worn smooth. Her thumb goes still on the phone screen for half a second too long.)"
+    visual:
+      expression: focused
+    choices:
+      - id: smalltalk_press
+        text: "'That's where you work. I asked where you're from.'"
+        next_node_id: vq_intro_cold_end
+
+  vq_intro_cold_end:
+    id: vq_intro_cold_end
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "...You know what, it's getting late, and I have an early sign-in. It was nice talking to you. Really. Enjoy your drink."
+    thought: "(Expression: default. The warmth switches off like a cabin light. Whatever door he knocked on, she has decided he knocked too hard.)"
+    visual:
+      expression: default
+    is_end: true
+    effects:
+      flag_set:
+        vq_met: true
+      state_set:
+        last_vq_encounter_at: NOW
+
+  # --- Flirt branch: amused smirk, she controls the exchange ---
+  vq_intro_flirt:
+    id: vq_intro_flirt
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "A queue. That's cute. No queue. But let's get something straight — I decide when someone buys me a drink. Tonight I'll allow it. Bourbon. Neat. Sit if you can keep up."
+    thought: "(Expression: smirk. He flirted; she took the wheel within one sentence. This is her home turf — charming strangers is a skill she sharpened at a dinner table that never felt safe.)"
+    visual:
+      expression: smirk
+      position: right
+      transition: fade
+    choices:
+      - id: flirt_play
+        text: "'Allowed. But I pick the topic once you finish laughing at me.'"
+        next_node_id: vq_intro_flirt_play
+        relationship_change:
+          stat: romance
+          amount: 4
+
+  vq_intro_flirt_play:
+    id: vq_intro_flirt_play
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "Oh, I finished laughing at you before you sat down. Fine — topic's yours. Spend it well."
+    thought: "(Expression: happy. She's genuinely enjoying herself, which for her is the same thing as being in control. The earbud stays out. That's rare.)"
+    visual:
+      expression: happy
+    choices:
+      - id: flirt_home_q
+        text: "'Where are you from? Actually from.'"
+        next_node_id: vq_intro_flirt_home
+
+  vq_intro_flirt_home:
+    id: vq_intro_flirt_home
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "Bold first spend. ...Layover deals. I'm from wherever the layover deals are good. Ask me something cheaper, guapo."
+    thought: "(Expression: calculating. Deflection number one, wrapped in a wink so he doesn't feel it land wrong. Nobody ever does. That's the point.)"
+    visual:
+      expression: calculating
+    is_end: true
+    effects:
+      flag_set:
+        vq_met: true
+      state_set:
+        last_vq_encounter_at: NOW
+      stat_set:
+        vq_trust: 2
+
+  # --- Observant branch: surprised, then genuine interest ---
+  vq_intro_observant:
+    id: vq_intro_observant
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "...I'm sorry, what did you just say?"
+    thought: "(Expression: shocked. The phone dips below the bar. Nobody watches her closely enough to count rebookings — she makes sure of it. For one unguarded second she just stares.)"
+    visual:
+      expression: shocked
+      position: right
+      transition: fade
+    choices:
+      - id: observant_gentle
+        text: "'Same route, three times. Either you love it or you're avoiding something on the ground.'"
+        next_node_id: vq_intro_observant_2
+
+  vq_intro_observant_2:
+    id: vq_intro_observant_2
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "That's... a strange thing to notice about a stranger. What else have you noticed, exactly?"
+    thought: "(Expression: contemplative. It sounds like a challenge but it isn't — it's an audit. She is deciding whether being seen is dangerous or interesting. It has never once been the second thing.)"
+    visual:
+      expression: contemplative
+    choices:
+      - id: observant_home
+        text: "'That in twenty minutes, you haven't mentioned home once.'"
+        next_node_id: vq_intro_observant_3
+
+  vq_intro_observant_3:
+    id: vq_intro_observant_3
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "I mention home all the— I'm from— ...Huh. Apparently I don't. Okay. You win. Sit down before I change my mind about you."
+    thought: "(Expression: vulnerable. The second deflection died halfway out of her mouth and now there's nowhere to put it. She should be annoyed. She's fascinated instead, and that frightens her more than being noticed did.)"
+    visual:
+      expression: vulnerable
+    choices:
+      - id: observant_coffee
+        text: "'Then let me start easy. Coffee. Tomorrow, before your sign-in.'"
+        next_node_id: vq_intro_observant_end
+        relationship_change:
+          stat: romance
+          amount: 3
+
+  vq_intro_observant_end:
+    id: vq_intro_observant_end
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "Valentina. And don't make it weird if I fall asleep standing up — red-eyes ruin me. ...Most people watch my face, you know. You watched my hands. That's new."
+    thought: "(Expression: tender. A real name, given voluntarily, which by her private accounting is worth more than a phone number. She still didn't say where she's from. But for the first time in months, the lounge feels less like waiting.)"
+    visual:
+      expression: tender
+    is_end: true
+    effects:
+      flag_set:
+        vq_met: true
+        vq_intro_done: true
+      state_set:
+        vq_arc: met
+        last_vq_encounter_at: NOW
+      stat_set:
+        vq_trust: 10
+
+metadata:
+  version: "1.0"
+  # Once the arc is unlocked, hide this tree so the resolver advances to Act 2.
+  # (Cold/flirt endings only set vq_met, so the player can retry for the
+  # observant path.)
+  hidden_if:
+    vq_intro_done: true
+  tags:
+    - "valentina_quan"
+    - "act1"
+    - "first_contact"
+    - "airport"
+  notes: |
+    Act 1 branches: small talk ends cold (vq_met only), flirting amuses her
+    (vq_met + small trust), and the observant pick unlocks the arc
+    (vq_met + vq_intro_done + vq_arc=met). Only vq_intro_done gates Act 2.
+    All flags/state/stats use the vq_ prefix to avoid collision with
+    Valentina Reyes content.

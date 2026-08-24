@@ -22,7 +22,7 @@ Mall del Valle in Las Flores, daytime, modern commercial, luxury retail design a
 photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lines, cybernetics, cargo pants, back pockets, backpacks, bulky luggage, sombreros, wristwatches
 
 ## Variations
-- [ ] Night version: same scene at night with different lighting
-- [ ] Rainy version: same scene with rain and mood effects
-- [ ] Wide shot: broader view of the location
 
+- [ ] Night version: Mall del Valle after dark — Located on the western edge of Central Las Flores, Mall del...
+- [ ] Rainy version: Mall del Valle in the rain — wet surfaces, reflected neon, moody atmosphere,  featuring Small Zoo and Amusement Park
+- [ ] Wide shot: wider establishing view of Mall del Valle including  featuring Small Zoo and Amusement Park, broader environmental context

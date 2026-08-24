@@ -17,9 +17,9 @@ interface SceneData {
   id: string;
   title: string;
   backgroundUrl: string;
-  // Expression-tagged background variants (scene YAML `background_urls[]`)
+  // Variant-tagged background variants (scene YAML `background_urls[]`)
   // passed through to the VN layer (`location:background` event).
-  backgroundUrls?: Array<{ url: string; label?: string; expression?: string }>;
+  backgroundUrls?: Array<{ url: string; label?: string; variant?: string }>;
   ambientSoundUrl: string | null;
   mood: string;
 }

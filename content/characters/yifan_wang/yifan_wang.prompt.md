@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Yifan Wang studying intently at a desk, surrounded by books and notes
-- [ ] Yifan Wang deep in thought about their studies, determined to succeed
-- [ ] Yifan Wang studying with classmates in a library, working together on a project
+- [ ] Yifan Wang surveying the scene, Yifan quickly made his presence felt on campus. Within his first ye...
+- [ ] Yifan Wang in a alert moment, 
+- [ ] Yifan Wang caught in a pivotal scene, Yifan quickly made his presence felt on campus. Within his first ye...
 
 ## Expression Variants
 

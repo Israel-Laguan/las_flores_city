@@ -11,3 +11,4 @@ tags:
 lore_path: neighborhoods_near_factories.md
 asset_paths:
   image: neighborhoods_near_factories__default.png
+background_url: s3://las-flores/backgrounds/neighborhoods_near_factories/neighborhoods_near_factories__default.png

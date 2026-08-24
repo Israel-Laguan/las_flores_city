@@ -4,7 +4,7 @@ description: The central midway of the Parque de Atracciones Las Flores, where h
 district: Port
 district_lore: port_area
 district_subzone: Port Area
-background_url: https://cdn.lasflores2077.com/locations/bg_parque_atracciones.png
+background_url: s3://las-flores/backgrounds/parque_atracciones/parque_atracciones__default.png
 mood: stimulating
 available_dialogues: []
 metadata:
@@ -33,3 +33,9 @@ asset_paths:
 background_urls:
   - url: s3://las-flores/backgrounds/parque_atracciones/parque_atracciones__default.png
     label: dev
+  - url: s3://las-flores/backgrounds/parque_atracciones/parque_atracciones__night.png
+    label: dev
+    variant: night
+  - url: s3://las-flores/backgrounds/parque_atracciones/parque_atracciones__sunset.png
+    label: dev
+    variant: sunset

@@ -21,9 +21,9 @@ Athletic Latino man, solid build, dark expressive eyes, a straight nose, and a d
 
 ## Variations
 
-- [ ] Pedro Quispe studying intently at a desk, surrounded by books and notes
-- [ ] Pedro Quispe deep in thought about their studies, determined to succeed
-- [ ] Pedro Quispe studying with classmates in a library, working together on a project
+- [ ] Pedro Quispe conversing with a contact, Pedro Quispe is a 19-year-old university student caught between his...
+- [ ] Pedro Quispe in a tense moment, 
+- [ ] Pedro Quispe caught in a pivotal scene, Pedro Quispe is a 19-year-old university student caught between his...
 
 ## Expression Variants
 

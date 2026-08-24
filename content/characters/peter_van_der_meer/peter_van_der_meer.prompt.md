@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Peter van der Meer in a meeting, reviewing documents with colleagues
-- [ ] Peter van der Meer considering a strategic decision, weighing options thoughtfully
-- [ ] Peter van der Meer in a business meeting, collaborating with team members on a strategy
+- [ ] Peter van der Meer moving through the district, Peter van der Meer is the second child of Jan and Maria van der Mee...
+- [ ] Peter van der Meer in a tense moment, 
+- [ ] Peter van der Meer caught in a pivotal scene, Peter van der Meer is the second child of Jan and Maria van der Mee...
 
 ## Expression Variants
 

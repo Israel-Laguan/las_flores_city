@@ -13,7 +13,7 @@ export function getEnv(): Env {
   return 'production';
 }
 
-export interface AssetEntry { url: string; label?: string; expression?: string; }
+export interface AssetEntry { url: string; label?: string; expression?: string; variant?: string; }
 
 function parseEntries(entries: any): AssetEntry[] | null {
   if (!entries) return null;

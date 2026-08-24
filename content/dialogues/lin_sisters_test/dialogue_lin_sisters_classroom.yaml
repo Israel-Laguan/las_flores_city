@@ -1,0 +1,114 @@
+id: "a0f2b3c4-d5e6-4789-8901-234567890123"
+name: "The Internship Conflict"
+description: "Overhearing Lin Mei and Lin Xiu arguing in the classroom. A test of their sisterly bond and competing ambitions."
+scene_id: "a7b8c9d0-e1f2-4456-8123-567890123456"
+character_id: "6298f8f3-7df3-4fad-ac57-8b4a520d1726"
+dialogue_scope: "scene"
+start_node_id: "c1111111-3333-4444-5555-666666666666"
+nodes:
+  c1111111-3333-4444-5555-666666666666:
+    id: "c1111111-3333-4444-5555-666666666666"
+    type: "character"
+    speaker_id: "6298f8f3-7df3-4fad-ac57-8b4a520d1726"
+    text: "I've spent three semesters tailoring my coursework for the logistics track. You submitted a creative essay on 'port culture' and you got the corporate offer?"
+    thought: "Lin Mei's arms are tightly crossed, one hand tapping her elbow at double speed. Lin Xiu sits at her desk, looking defensive but proud, wearing her bright batik-blend jacket. They notice you standing by the biometric terminal."
+    choices:
+      - id: "support_mei"
+        text: "Logistics requires hard data, Xiu. Mei spent semesters prepping this. It does seem a little unfair."
+        next_node_id: "c2222222-3333-4444-5555-666666666666"
+      - id: "support_xiu"
+        text: "Corporate logistics needs fresh vision. If the recruiters chose Xiu, she earned it fair and square."
+        next_node_id: "c3333333-3333-4444-5555-666666666666"
+      - id: "stir_pot"
+        text: "You both talk so much about your work ethic, but here you are crying over corporate scraps."
+        next_node_id: "c4444444-3333-4444-5555-666666666666"
+
+  c2222222-3333-4444-5555-666666666666:
+    id: "c2222222-3333-4444-5555-666666666666"
+    type: "character"
+    speaker_id: "33333333-4444-4555-8666-777777770001"
+    text: "Unfair? I put in hours studying the same port files! Just because I don't treat business like a military operation doesn't mean I didn't work for it."
+    thought: "Lin Xiu glares at you, then looks at Lin Mei, expecting her sister to defend her. But Mei looks away, silent, letting your criticism stand. Xiu looks deeply hurt by Mei's silence."
+    choices:
+      - id: "mei_press_issue"
+        text: "Mei, tell her. You deserve that spot more than she does."
+        next_node_id: "c5555555-3333-4444-5555-666666666666"
+      - id: "back_off"
+        text: "Actually, never mind. I shouldn't get between sisters."
+        next_node_id: "c6666666-3333-4444-5555-666666666666"
+
+  c3333333-3333-4444-5555-666666666666:
+    id: "c3333333-3333-4444-5555-666666666666"
+    type: "character"
+    speaker_id: "6298f8f3-7df3-4fad-ac57-8b4a520d1726"
+    text: "You know nothing about logistics. And you know nothing about us. Keep your comments to yourself."
+    thought: "Lin Mei's face goes pale with humiliation. Lin Xiu looks vindicated, but then she glances at her sister's expression and her triumph fades into guilt. Mei turns and walks out, leaving Xiu looking conflicted."
+    is_end: true
+    effects:
+      state_set:
+        lin_sisters_test_outcome: "split_xiu_favored"
+        
+  c4444444-3333-4444-5555-666666666666:
+    id: "c4444444-3333-4444-5555-666666666666"
+    type: "character"
+    speaker_id: "33333333-4444-4555-8666-777777770001"
+    text: "Lau-kuay (Shameless). He thinks he can walk in here and talk down to us."
+    thought: "Lin Xiu drops her bubbly facade entirely, switching to rapid-fire Hokkien slang. She crosses her arms in the exact same stance as Mei."
+    choices:
+      - id: "hostile_freeze"
+        text: "[Leave them alone]"
+        next_node_id: "c7777777-3333-4444-5555-666666666666"
+        relationship_change:
+          stat: "friendship"
+          amount: -2
+
+  c7777777-3333-4444-5555-666666666666:
+    id: "c7777777-3333-4444-5555-666666666666"
+    type: "character"
+    speaker_id: "6298f8f3-7df3-4fad-ac57-8b4a520d1726"
+    text: "Yeah. Go back to your own corporate scraps."
+    thought: "They instantly close ranks. Their sibling rivalry is completely forgotten as they unite to freeze you out of the classroom."
+    is_end: true
+    effects:
+      state_set:
+        lin_sisters_test_outcome: "united_against_player"
+
+  c5555555-3333-4444-5555-666666666666:
+    id: "c5555555-3333-4444-5555-666666666666"
+    type: "character"
+    speaker_id: "6298f8f3-7df3-4fad-ac57-8b4a520d1726"
+    text: "Actually... they're right, Xiu. It was a rigorous business track. You shouldn't have even applied. It was my spot."
+    thought: "Lin Mei breaks her silence, choosing her ambition over her sister. Lin Xiu stares at her, heartbroken."
+    choices:
+      - id: "xiu_storm_out"
+        text: "[Watch them]"
+        next_node_id: "c8888888-3333-4444-5555-666666666666"
+
+  c8888888-3333-4444-5555-666666666666:
+    id: "c8888888-3333-4444-5555-666666666666"
+    type: "character"
+    speaker_id: "33333333-4444-4555-8666-777777770001"
+    text: "Fine. Take the internship. I'll decline the offer first thing tomorrow. I hope it makes you feel as superior as you always try to look."
+    thought: "Lin Xiu gathers her things and storms out of the classroom. Lin Mei stands alone, looking conflicted and hollow despite getting what she wanted. You've driven a deep wedge between them."
+    is_end: true
+    effects:
+      state_set:
+        lin_sisters_test_outcome: "mei_betrayal"
+
+  c6666666-3333-4444-5555-666666666666:
+    id: "c6666666-3333-4444-5555-666666666666"
+    type: "character"
+    speaker_id: "6298f8f3-7df3-4fad-ac57-8b4a520d1726"
+    text: "Yes. You shouldn't. This is family business."
+    thought: "Lin Mei sighs, the tension draining slightly. She turns back to Xiu, her voice dropping. 'Look... let's just go home and talk to Mom and Dad. I'm sorry I snapped.' Xiu nods quietly. They leave together, their bond holding."
+    is_end: true
+    effects:
+      state_set:
+        lin_sisters_test_outcome: "bond_preserved"
+metadata:
+  version: "1.0"
+  author: "Las Flores Team"
+  tags:
+    - "lin_sisters"
+    - "rivalry"
+    - "classroom"

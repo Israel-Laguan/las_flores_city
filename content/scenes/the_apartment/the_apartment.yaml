@@ -4,7 +4,7 @@ description: A small, sterile apartment in the N&M LTD residential block. The wa
 district: City
 district_lore: urban_core
 district_subzone: Central City
-background_url: /assets/scenes/apartment/background.png
+background_url: s3://las-flores/backgrounds/the_apartment/the_apartment__default.png
 ambient_sound_url: /assets/scenes/apartment/ambient.mp3
 mood: tense
 available_dialogues:
@@ -47,3 +47,12 @@ asset_paths:
 background_urls:
   - url: s3://las-flores/backgrounds/the_apartment/the_apartment__default.png
     label: dev
+  - url: s3://las-flores/backgrounds/the_apartment/the_apartment__night.png
+    label: dev
+    variant: night
+  - url: s3://las-flores/backgrounds/the_apartment/the_apartment__sunset.png
+    label: dev
+    variant: sunset
+  - url: s3://las-flores/backgrounds/the_apartment/the_apartment__day.png
+    label: dev
+    variant: day

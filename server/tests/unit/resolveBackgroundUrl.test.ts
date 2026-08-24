@@ -1,11 +1,11 @@
 // ============================================================
-// resolveBackgroundUrl() — expression-aware scene variant selection
+// resolveBackgroundUrl() — variant-aware backdrop selection
 //
 // Unit tests for the client VN viewport resolver
 // (client/src/utils/resolvePortraitUrl.ts). The resolver picks a
 // dialogue backdrop by priority:
 //   1. node.visual.background (authoritative URL/filename)
-//   2. a background_urls[].expression match against the scene's
+//   2. a background_urls[].variant match against the scene's
 //      variant pool (case-insensitive)
 //   3. the first usable entry in background_urls[] (default variant)
 //   4. the current scene backdrop fallback
@@ -16,8 +16,8 @@ import { resolveBackgroundUrl, resolvePortraitUrl } from '../../../client/src/ut
 describe('resolveBackgroundUrl', () => {
   const VARIANTS = [
     { url: 'https://cdn.test/plaza__default.png', label: 'dev' as const },
-    { url: 'https://cdn.test/plaza__night.png', label: 'dev' as const, expression: 'night' },
-    { url: 'https://cdn.test/plaza__rain.png', label: 'dev' as const, expression: 'rain' },
+    { url: 'https://cdn.test/plaza__night.png', label: 'dev' as const, variant: 'night' },
+    { url: 'https://cdn.test/plaza__rain.png', label: 'dev' as const, variant: 'rain' },
   ];
 
   describe('priority 1 — explicit visual.background', () => {
@@ -37,21 +37,21 @@ describe('resolveBackgroundUrl', () => {
     });
   });
 
-  describe('priority 2 — expression-tagged variant selection', () => {
-    it('prefers a matching expression variant over the default', () => {
+  describe('priority 2 — variant-tagged selection', () => {
+    it('prefers a matching variant over the default', () => {
       const url = resolveBackgroundUrl(undefined, 'https://cdn.test/scene.png', 'rain', VARIANTS);
       expect(url).toBe('https://cdn.test/plaza__rain.png');
     });
 
-    it('matches the expression tag case-insensitively', () => {
+    it('matches the variant tag case-insensitively', () => {
       const url = resolveBackgroundUrl(undefined, 'https://cdn.test/scene.png', 'NIGHT', VARIANTS);
       expect(url).toBe('https://cdn.test/plaza__night.png');
     });
 
     it('ignores pool entries with unusable (empty) urls', () => {
       const pool = [
-        { url: 'https://cdn.test/plaza__night.png', label: 'dev' as const, expression: 'night' },
-        { url: '', label: 'dev' as const, expression: 'night' },
+        { url: 'https://cdn.test/plaza__night.png', label: 'dev' as const, variant: 'night' },
+        { url: '', label: 'dev' as const, variant: 'night' },
       ];
       const url = resolveBackgroundUrl(undefined, 'https://cdn.test/scene.png', 'night', pool);
       expect(url).toBe('https://cdn.test/plaza__night.png');
@@ -59,38 +59,38 @@ describe('resolveBackgroundUrl', () => {
   });
 
   describe('priority 3 — default variant fallback', () => {
-    it('falls back to the first usable variant when no expression matches', () => {
+    it('falls back to the first usable variant when no variant matches', () => {
       const url = resolveBackgroundUrl(undefined, 'https://cdn.test/scene.png', 'sunset', VARIANTS);
       expect(url).toBe('https://cdn.test/plaza__default.png');
     });
 
-    it('falls back to the first usable variant when no expression hint is given', () => {
+    it('falls back to the first usable variant when no variant hint is given', () => {
       const url = resolveBackgroundUrl(undefined, 'https://cdn.test/scene.png', undefined, VARIANTS);
       expect(url).toBe('https://cdn.test/plaza__default.png');
     });
 
-    it('skips expression-tagged entries in the fallback (untagged default only)', () => {
+    it('skips variant-tagged entries in the fallback (untagged default only)', () => {
       // Stage ordering can place a themed (rain) variant before the untagged
       // default. When no hint matches, the fallback must NOT return the rain
       // asset — that would render rain without a matching game hint.
       const pool = [
-        { url: 'https://cdn.test/plaza__rain.png', label: 'dev' as const, expression: 'rain' },
+        { url: 'https://cdn.test/plaza__rain.png', label: 'dev' as const, variant: 'rain' },
         { url: 'https://cdn.test/plaza__default.png', label: 'dev' as const },
       ];
       expect(resolveBackgroundUrl(undefined, 'https://cdn.test/scene.png', 'day', pool))
         .toBe('https://cdn.test/plaza__default.png');
     });
 
-    it('falls back to the scene backdrop when the pool has only expression-tagged entries', () => {
+    it('falls back to the scene backdrop when the pool has only variant-tagged entries', () => {
       const pool = [
-        { url: 'https://cdn.test/plaza__rain.png', label: 'dev' as const, expression: 'rain' },
+        { url: 'https://cdn.test/plaza__rain.png', label: 'dev' as const, variant: 'rain' },
       ];
       expect(resolveBackgroundUrl(undefined, 'https://cdn.test/scene.png', 'day', pool))
         .toBe('https://cdn.test/scene.png');
     });
 
     it('falls back to the scene backdrop when the pool has no usable urls', () => {
-      const pool = [{ url: '', label: 'dev' as const, expression: 'night' }];
+      const pool = [{ url: '', label: 'dev' as const, variant: 'night' }];
       expect(resolveBackgroundUrl(undefined, 'https://cdn.test/scene.png', 'night', pool))
         .toBe('https://cdn.test/scene.png');
     });

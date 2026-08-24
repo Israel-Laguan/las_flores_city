@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Lucas Morales studying intently at a desk, surrounded by books and notes
-- [ ] Lucas Morales deep in thought about their studies, determined to succeed
-- [ ] Lucas Morales studying with classmates in a library, working together on a project
+- [ ] Lucas Morales moving through the district, Playa de los Vientos is more than just a hometown to Luca—it is a p...
+- [ ] Lucas Morales in a contemplative moment, Friendly and approachable, Luca is well-liked by his peers at Unive...
+- [ ] Lucas Morales caught in a pivotal scene, Playa de los Vientos is more than just a hometown to Luca—it is a p...
 
 ## Expression Variants
 

@@ -4,7 +4,7 @@ description: The main performance floor of La Casa de la Música, where the holo
 district: City
 district_lore: urban_core
 district_subzone: Central City
-background_url: https://cdn.lasflores2077.com/locations/bg_casa_musica_stage.png
+background_url: s3://las-flores/backgrounds/la_casa_de_la_musica/la_casa_de_la_musica__default.png
 mood: energetic
 available_dialogues: []
 metadata:
@@ -33,3 +33,9 @@ asset_paths:
 background_urls:
   - url: s3://las-flores/backgrounds/la_casa_de_la_musica/la_casa_de_la_musica__default.png
     label: dev
+  - url: s3://las-flores/backgrounds/la_casa_de_la_musica/la_casa_de_la_musica__night.png
+    label: dev
+    variant: night
+  - url: s3://las-flores/backgrounds/la_casa_de_la_musica/la_casa_de_la_musica__sunset.png
+    label: dev
+    variant: sunset

@@ -4,10 +4,11 @@ description: A sterile, low-rent apartment in the Old Town suburbs of Las Flores
 district: South
 district_lore: old_las_flores
 district_subzone: Old Las Flores
-background_url: https://cdn.lasflores2077.com/locations/bg_apartment_interior.png
+background_url: s3://las-flores/backgrounds/apartment/apartment__default.png
 mood: cozy
 available_dialogues:
   - c9a646d3-9c61-4cd8-bc11-657ab255b1bf
+  - e0f3b4c5-d6e7-4890-8901-234567890222
 metadata:
   type: starting_location
   accessible: true
@@ -37,3 +38,12 @@ asset_paths:
 background_urls:
   - url: s3://las-flores/backgrounds/apartment/apartment__default.png
     label: dev
+  - url: s3://las-flores/backgrounds/apartment/apartment__night.png
+    label: dev
+    variant: night
+  - url: s3://las-flores/backgrounds/apartment/apartment__sunset.png
+    label: dev
+    variant: sunset
+  - url: s3://las-flores/backgrounds/apartment/apartment__day.png
+    label: dev
+    variant: day

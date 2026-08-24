@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Zhang Hao in a meeting, reviewing documents with colleagues
-- [ ] Zhang Hao considering a strategic decision, weighing options thoughtfully
-- [ ] Zhang Hao in a business meeting, collaborating with team members on a strategy
+- [ ] Zhang Hao reviewing the situation, Beneath the authoritative surface lies a self-serving operator who...
+- [ ] Zhang Hao in a tense moment, 
+- [ ] Zhang Hao caught in a pivotal scene, Beneath the authoritative surface lies a self-serving operator who...
 
 ## Expression Variants
 

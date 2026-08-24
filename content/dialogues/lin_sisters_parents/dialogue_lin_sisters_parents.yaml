@@ -1,0 +1,118 @@
+id: "c9b8a7d6-e5f4-4321-b123-ef6543210987"
+name: "Meeting the Family Legacy"
+description: "Discussing the cultural expectations of Lin Mei and Lin Xiu's parents regarding a relationship with a local Latino player."
+scene_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567003"
+character_id: "6298f8f3-7df3-4fad-ac57-8b4a520d1726"
+dialogue_scope: "scene"
+start_node_id: "d1111111-4444-5555-6666-777777777777"
+nodes:
+  d1111111-4444-5555-6666-777777777777:
+    id: "d1111111-4444-5555-6666-777777777777"
+    type: "character"
+    speaker_id: "6298f8f3-7df3-4fad-ac57-8b4a520d1726"
+    text: "My mother saw us talking near the university. She spent an hour questioning me last night, asking why I was spending my time with a local instead of studying. She thinks a Latino boy is just a distraction from the family business."
+    thought: "Lin Mei leans against a cargo crate outside the family warehouse. Her arms are crossed, but her tapping is slow and contemplative, revealing worry rather than anger."
+    choices:
+      - id: "reply_pragmatic"
+        text: "I might not be from your community, but I respect the hustle. Tell your father I'm happy to help pull weight around the warehouse to prove it."
+        next_node_id: "d2222222-4444-5555-6666-777777777777"
+      - id: "reply_cultural"
+        text: "It must be tough trying to preserve your Peranakan culture in a massive city like Las Flores. I want to learn about your traditions, not erase them."
+        next_node_id: "d3333333-4444-4555-8666-777777770001"
+      - id: "reply_rebellious"
+        text: "It's 2077, not ancient Malacca. Your parents are living in the past—we should decide who we spend time with, not them."
+        next_node_id: "d4444444-4444-5555-6666-777777777777"
+
+  d2222222-4444-5555-6666-777777777777:
+    id: "d2222222-4444-5555-6666-777777777777"
+    type: "character"
+    speaker_id: "6298f8f3-7df3-4fad-ac57-8b4a520d1726"
+    text: "Words are cheap at the port. But if you're actually willing to learn our logistics grid, my father might at least stop complaining. He respects anyone who understands logistics."
+    thought: "Lin Mei looks at you with a slight, approving arch of her swallow-tail eyebrows. Lin Xiu cuts in from the warehouse door, laughing."
+    choices:
+      - id: "xiu_pragmatic_reaction"
+        text: "[Listen to Xiu]"
+        next_node_id: "d5555555-4444-5555-6666-777777777777"
+        relationship_change:
+          stat: "friendship"
+          amount: 2
+
+  d5555555-4444-5555-6666-777777777777:
+    id: "d5555555-4444-5555-6666-777777777777"
+    type: "character"
+    speaker_id: "33333333-4444-4555-8666-777777770001"
+    text: "Typical Lin Mei—turning a potential relationship into an unpaid shipping internship! But she's right. Prove you aren't lazy, and Dad will buy you a tea."
+    thought: "Lin Xiu winks. The atmosphere feels lighter, grounded in mutual understanding of the work ahead."
+    is_end: true
+    effects:
+      state_set:
+        lin_parents_opinion: "cautious_respect"
+
+  d3333333-4444-4555-8666-777777770001:
+    id: "d3333333-4444-4555-8666-777777770001"
+    type: "character"
+    speaker_id: "33333333-4444-4555-8666-777777770001"
+    text: "That... actually means a lot. Mom is terrified we'll forget our Hokkien, or that the Nyonya recipes will stop with us. It's not that they dislike locals—they're just afraid of fading away in this city."
+    thought: "Lin Xiu's bubbly demeanor softens into genuine vulnerability. Lin Mei slowly uncrosses her arms, looking at you with a quiet, surprised respect."
+    choices:
+      - id: "mei_cultural_reaction"
+        text: "[Listen to Mei]"
+        next_node_id: "d6666666-4444-5555-6666-777777777777"
+        relationship_change:
+          stat: "romance"
+          amount: 2
+
+  d6666666-4444-5555-6666-777777777777:
+    id: "d6666666-4444-5555-6666-777777777777"
+    type: "character"
+    speaker_id: "6298f8f3-7df3-4fad-ac57-8b4a520d1726"
+    text: "She's right. If you want them to accept you, you start by showing you respect where we come from. Maybe Xiu can teach you some Hokkien. Or invite you to dinner to try our sambal."
+    thought: "A warm, genuine moment passes between the three of you. The cultural barrier has become a bridge."
+    is_end: true
+    effects:
+      state_set:
+        lin_parents_opinion: "open_minded"
+
+  d4444444-4444-5555-6666-777777777777:
+    id: "d4444444-4444-5555-6666-777777777777"
+    type: "character"
+    speaker_id: "6298f8f3-7df3-4fad-ac57-8b4a520d1726"
+    text: "Easy for you to say. You don't have to carry the family legacy or face them at dinner. Family duty isn't something we can just delete like a corrupt file."
+    thought: "Lin Mei's jaw sets firmly. The older sister's defensive superiority flashes back. But Lin Xiu steps forward, looking frustrated with her."
+    choices:
+      - id: "xiu_clash"
+        text: "[Listen to Xiu confront Mei]"
+        next_node_id: "d7777777-4444-5555-6666-777777777777"
+
+  d7777777-4444-5555-6666-777777777777:
+    id: "d7777777-4444-5555-6666-777777777777"
+    type: "character"
+    speaker_id: "33333333-4444-4555-8666-777777770001"
+    text: "But they *are* too strict, Mei! Sometimes I feel like we're just museum pieces to them, locked in a display case."
+    thought: "Lin Xiu looks torn between her sister's sense of duty and your rebellious stance. Mei looks at her sister, hurt."
+    choices:
+      - id: "mei_final_word"
+        text: "[Listen to Mei's response]"
+        next_node_id: "d8888888-4444-5555-6666-777777777777"
+        relationship_change:
+          stat: "friendship"
+          amount: -1
+
+  d8888888-4444-5555-6666-777777777777:
+    id: "d8888888-4444-5555-6666-777777777777"
+    type: "character"
+    speaker_id: "6298f8f3-7df3-4fad-ac57-8b4a520d1726"
+    text: "We are curators of our heritage, Xiu. There's a difference. If we don't hold onto it, who will?"
+    thought: "Mei looks at you coldly, clearly blaming you for putting ideas in Xiu's head. Xiu stays silent, caught in the middle of a deep family rift."
+    is_end: true
+    effects:
+      state_set:
+        lin_parents_opinion: "hostile"
+metadata:
+  version: "1.0"
+  author: "Las Flores Team"
+  tags:
+    - "lin_sisters"
+    - "parents"
+    - "culture"
+    - "industrial"

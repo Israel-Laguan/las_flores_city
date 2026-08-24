@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Sophia van der Meer Rodriguez in a meeting, reviewing documents with colleagues
-- [ ] Sophia van der Meer Rodriguez considering a strategic decision, weighing options thoughtfully
-- [ ] Sophia van der Meer Rodriguez in a business meeting, collaborating with team members on a strategy
+- [ ] Sophia van der Meer Rodriguez reviewing the situation, Sophia van der Meer Rodriguez is a compassionate philanthropist who...
+- [ ] Sophia van der Meer Rodriguez in a quiet moment, 
+- [ ] Sophia van der Meer Rodriguez caught in a pivotal scene, Sophia van der Meer Rodriguez is a compassionate philanthropist who...
 
 ## Expression Variants
 

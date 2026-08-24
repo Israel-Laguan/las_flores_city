@@ -20,3 +20,9 @@ asset_paths:
 background_urls:
   - url: s3://las-flores/backgrounds/central_plaza/central_plaza__default.png
     label: dev
+  - url: s3://las-flores/backgrounds/central_plaza/central_plaza__night.png
+    label: dev
+    variant: night
+  - url: s3://las-flores/backgrounds/central_plaza/central_plaza__sunset.png
+    label: dev
+    variant: sunset

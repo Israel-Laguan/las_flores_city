@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Marco Jiménez at work in their professional environment, focused on their tasks
-- [ ] Marco Jiménez in a moment of reflection, considering their next steps
-- [ ] Marco Jiménez with colleagues in a professional setting, engaged in discussion
+- [ ] Marco Jiménez moving through the district, Marco 'Mako' Jiménez, 30-year-old subordinate to Alejandro 'Alex' D...
+- [ ] Marco Jiménez in a determined moment, 
+- [ ] Marco Jiménez caught in a pivotal scene, Marco 'Mako' Jiménez, 30-year-old subordinate to Alejandro 'Alex' D...
 
 ## Expression Variants
 

@@ -45,22 +45,23 @@ map:
     ############
   spawn:
     x: 1
-    "y": 1
+    'y': 1
   waypoints:
     - name: Monument to Freedom
       x: 4
-      "y": 2
+      'y': 2
     - name: Juan Pablo Ramos Memorial
       x: 9
-      "y": 2
+      'y': 2
     - name: City Council Palace
       x: 4
-      "y": 4
+      'y': 4
     - name: Train Station
       x: 9
-      "y": 4
+      'y': 4
     - name: Modern Mall
       x: 6
-      "y": 6
+      'y': 6
 asset_paths:
   image: plaza_de_la_constitucion__default.png
+background_url: s3://las-flores/backgrounds/plaza_de_la_constitucion/plaza_de_la_constitucion__default.png

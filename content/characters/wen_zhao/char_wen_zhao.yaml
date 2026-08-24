@@ -2,14 +2,18 @@ id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
 name: Wen Zhao
 title: Business Student, Secret Libertine
 description: |
-  Wen Zhao is a young Chinese woman in her early 20s, daughter of strict
-  Chinese immigrant parents in the northern district. Where Layla rebels
-  quietly, Wen rebels loudly — dressing provocatively, pushing boundaries,
-  and obsessively chasing the thrill of a "movie" romance. She started as
-  Layla's confidante, but she is fully capable of manipulating or abandoning
-  Layla to secure her own starring role. She wants a boyfriend the way
-  some people want an adrenaline rush — she has no interest in what comes
-  after the climax.
+  Wen Zhao is a plain-looking young Chinese woman in her early 20s, daughter
+  of strict Chinese immigrant parents in the northern district. She and Layla
+  are two sheltered, uptight girls who sit together at lunch because no one
+  else invites them — not popular, not pretty, not the girls anyone asks out.
+  Wen's rebellion is compensatory: she dresses aggressively provocative on a
+  frame that doesn't command attention, forces confident posture into a body
+  that disappears in a crowd, and chases a cinematic movie-romance to prove
+  she *can* be desired. She started as Layla's confidante but is fully capable
+  of manipulating or abandoning Layla to secure her own starring role. She
+  wants a boyfriend the way someone wants proof of concept — not love, just
+  evidence that the plain girl can win.
+
 metadata:
   type: human
   role: npc
@@ -19,7 +23,7 @@ metadata:
   gender: Female
   ethnicity: Chinese
   occupation: University business student
-  physical_description: sleek black hair in high ponytail; sharp angular jawline; deliberately provocative, high-exposure clothing at university (the deliberate opposite of Layla's modest style); swapped instantly for the modest home-wear the moment she crosses the threshold; posture is commanding and performatively sexual in public, rigid and contained at home
+  physical_description: long narrow face, bony jutting jaw, small close-set eyes with heavy imprecise eyeliner, thin overlined lips, flat straight black hair scraped into a tight high ponytail; not fat but not skinny — small A-cup bust on noticeably broad square shoulders, a stocky un-model-like torso that disappears in a crowd rather than flatters; aggressively provocative low-cut clothing at university that reads as defiant overcompensation rather than natural allure (the clothing does the work, the body underneath is unremarkable and a little awkward on her frame); changes instantly to shapeless modest home-wear at the threshold; forcibly confident posture — chin up, broad shoulders back, elbows out, deliberately taking up space she was never naturally given
   background: born in Las Flores to strict Chinese immigrant parents in the northern district; the community's watchful eye shaped her double life
   education: university business student
   mannerisms: sharp-tongued, performatively confident, prone to pushing others into reckless decisions; frames manipulation as "helping"; openly defiant with her mother (will yell, will argue); completely submissive in front of her father; drops hints of real vulnerability only in private, and immediately regrets it
@@ -39,9 +43,42 @@ asset_paths:
 portrait_urls:
   - url: s3://las-flores/portraits/wen_zhao/wen_zhao__default.png
     label: dev
-  - url: s3://las-flores/portraits/wen_zhao/wen_zhao__smirk.png
+  - url: s3://las-flores/portraits/wen_zhao/wen_zhao__afraid.png
     label: dev
-    expression: smirk
+    expression: afraid
+  - url: s3://las-flores/portraits/wen_zhao/wen_zhao__angry.png
+    label: dev
+    expression: angry
   - url: s3://las-flores/portraits/wen_zhao/wen_zhao__calculating.png
     label: dev
     expression: calculating
+  - url: s3://las-flores/portraits/wen_zhao/wen_zhao__contemplative.png
+    label: dev
+    expression: contemplative
+  - url: s3://las-flores/portraits/wen_zhao/wen_zhao__determined.png
+    label: dev
+    expression: determined
+  - url: s3://las-flores/portraits/wen_zhao/wen_zhao__focused.png
+    label: dev
+    expression: focused
+  - url: s3://las-flores/portraits/wen_zhao/wen_zhao__happy.png
+    label: dev
+    expression: happy
+  - url: s3://las-flores/portraits/wen_zhao/wen_zhao__sad.png
+    label: dev
+    expression: sad
+  - url: s3://las-flores/portraits/wen_zhao/wen_zhao__shocked.png
+    label: dev
+    expression: shocked
+  - url: s3://las-flores/portraits/wen_zhao/wen_zhao__smirk.png
+    label: dev
+    expression: smirk
+  - url: s3://las-flores/portraits/wen_zhao/wen_zhao__surprised.png
+    label: dev
+    expression: surprised
+  - url: s3://las-flores/portraits/wen_zhao/wen_zhao__tender.png
+    label: dev
+    expression: tender
+  - url: s3://las-flores/portraits/wen_zhao/wen_zhao__vulnerable.png
+    label: dev
+    expression: vulnerable

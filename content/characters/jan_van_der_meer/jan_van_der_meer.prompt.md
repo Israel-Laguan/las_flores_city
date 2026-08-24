@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Jan van der Meer in a meeting, reviewing documents with colleagues
-- [ ] Jan van der Meer considering a strategic decision, weighing options thoughtfully
-- [ ] Jan van der Meer in a business meeting, collaborating with team members on a strategy
+- [ ] Jan van der Meer reflecting on recent events, Jan van der Meer, born 2019, was the youngest child of Pieter and A...
+- [ ] Jan van der Meer in a alert moment, 
+- [ ] Jan van der Meer caught in a pivotal scene, Jan van der Meer, born 2019, was the youngest child of Pieter and A...
 
 ## Expression Variants
 

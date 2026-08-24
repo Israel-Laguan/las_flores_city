@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Mei Xiang at work in their professional environment, focused on their tasks
-- [ ] Mei Xiang in a moment of reflection, considering their next steps
-- [ ] Mei Xiang with colleagues in a professional setting, engaged in discussion
+- [ ] Mei Xiang reviewing the situation, The lead financial negotiator for China Lithium & Metals during the...
+- [ ] Mei Xiang in a determined moment, 
+- [ ] Mei Xiang caught in a pivotal scene, The lead financial negotiator for China Lithium & Metals during the...
 
 ## Expression Variants
 

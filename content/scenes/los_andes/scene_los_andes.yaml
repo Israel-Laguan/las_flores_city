@@ -17,3 +17,9 @@ asset_paths:
 background_urls:
   - url: s3://las-flores/backgrounds/los_andes/los_andes__default.png
     label: dev
+  - url: s3://las-flores/backgrounds/los_andes/los_andes__night.png
+    label: dev
+    variant: night
+  - url: s3://las-flores/backgrounds/los_andes/los_andes__sunset.png
+    label: dev
+    variant: sunset

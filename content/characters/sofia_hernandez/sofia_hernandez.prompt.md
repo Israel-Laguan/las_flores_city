@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Sofia Hernánez at work in their professional environment, focused on their tasks
-- [ ] Sofia Hernánez in a moment of reflection, considering their next steps
-- [ ] Sofia Hernánez with colleagues in a professional setting, engaged in discussion
+- [ ] Sofia Hernánez reviewing the situation, Sofia Hernánez is a 27-year-old conservationist from Las Flores' An...
+- [ ] Sofia Hernánez in a quiet moment, 
+- [ ] Sofia Hernánez caught in a pivotal scene, Sofia Hernánez is a 27-year-old conservationist from Las Flores' An...
 
 ## Expression Variants
 

@@ -27,3 +27,4 @@ conclusion: |
   Zona Rosa effortlessly transitions from a peaceful daytime retreat to a bustling nighttime hotspot, offering diverse and luxurious entertainment options. Its strategic location and accessibility make it a focal point for those seeking to experience the best of Las Flores's nightlife, ensuring there's something for everyone amidst the neon lights and music-filled streets.
 asset_paths:
   image: zona_rosa__default.png
+background_url: s3://las-flores/backgrounds/zona_rosa/zona_rosa__default.png

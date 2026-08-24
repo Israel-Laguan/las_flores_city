@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Robert Thompson in a meeting, reviewing documents with colleagues
-- [ ] Robert Thompson considering a strategic decision, weighing options thoughtfully
-- [ ] Robert Thompson in a business meeting, collaborating with team members on a strategy
+- [ ] Robert Thompson surveying the scene, A tall, athletic businessman originally from San Diego who moved to...
+- [ ] Robert Thompson in a determined moment, 
+- [ ] Robert Thompson caught in a pivotal scene, A tall, athletic businessman originally from San Diego who moved to...
 
 ## Expression Variants
 

@@ -22,7 +22,7 @@ Isla de Oro in Las Flores, night, resort lodge buildings, coastal port setting. 
 photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lines, cybernetics, cargo pants, back pockets, backpacks, bulky luggage, sombreros, wristwatches
 
 ## Variations
-- [ ] Night version: same scene at night with different lighting
-- [ ] Rainy version: same scene with rain and mood effects
-- [ ] Wide shot: broader view of the location
 
+- [ ] Night version: Isla de Oro after dark — Nestled off the coast of Las Flores, Isla de Oro is an encha...
+- [ ] Rainy version: Isla de Oro in the rain — wet surfaces, reflected neon, moody atmosphere,  featuring Eco-Tourism Visitor Center and Rainforest Trail Network
+- [ ] Wide shot: wider establishing view of Isla de Oro including  featuring Eco-Tourism Visitor Center and Rainforest Trail Network, broader environmental context

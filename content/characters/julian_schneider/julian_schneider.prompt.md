@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Julian Schneider in a meeting, reviewing documents with colleagues
-- [ ] Julian Schneider considering a strategic decision, weighing options thoughtfully
-- [ ] Julian Schneider in a business meeting, collaborating with team members on a strategy
+- [ ] Julian Schneider reflecting on recent events, Julian Schneider, 21, European descendant in Andean Mountains. Stud...
+- [ ] Julian Schneider in a alert moment, 
+- [ ] Julian Schneider caught in a pivotal scene, Julian Schneider, 21, European descendant in Andean Mountains. Stud...
 
 ## Expression Variants
 

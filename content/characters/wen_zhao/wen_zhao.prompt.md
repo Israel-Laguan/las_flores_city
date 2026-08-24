@@ -31,7 +31,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 - **`wen_zhao__default.png`**: Use the base portrait as reference. Bold confident resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry.
 
-- **`wen_zhao__happy.png`**: Use the base portrait as reference. A bright, performatively warm smile — electric and attention-commanding, looking at the camera, 3/4 take. Dark knowing eyes lighting up, cheeks lifting, the smile that of someone who knows exactly what effect it has. Same provocative top, same earbud, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`wen_zhao__happy.png`**: Use the base portrait as reference. A bright, performatively warm smile — electric and attention-commanding, looking at the camera, 3/4 take. Dark knowing eyes lighting up, cheeks lifting, the smile that of someone who knows exactly what effect it has. Same top, same earbud, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
 
 - **`wen_zhao__smirk.png`**: Use the base portrait as reference. A sharp, predatory smirk — she has already decided how this plays out, looking at the camera, 3/4 take. Eyes narrowing with private amusement and calculation, one brow lifted, lips curving in a dangerous, self-aware curve. Same provocative top, same earbud, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
 

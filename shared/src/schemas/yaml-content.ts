@@ -12,7 +12,10 @@ const safePath = z.string().max(255).refine(
 export const AssetEntrySchema = z.object({
   url: z.string().url(),
   label: z.enum(['dev', 'staging', 'production']).optional(),
+  // `expression` = character portrait variant (portrait_urls[]);
+  // `variant` = scene environment variant (background_urls[]).
   expression: z.string().max(50).optional(),
+  variant: z.string().max(50).optional(),
 });
 
 export type AssetEntry = z.infer<typeof AssetEntrySchema>;
@@ -186,6 +189,7 @@ export const YAMLLocationSchema = z.object({
     })).optional(),
   }).optional(),
   lore_ref: z.string().max(255).optional(),
+  background_url: z.string().optional(),
   image_urls: z.array(AssetEntrySchema).optional(),
   lore_path: safePath,
   asset_paths: z.object({

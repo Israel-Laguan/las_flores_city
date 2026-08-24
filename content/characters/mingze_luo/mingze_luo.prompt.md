@@ -21,9 +21,9 @@ Medium-build Chinese man in his early 60s, solid build, dark brown eyes that are
 
 ## Variations
 
-- [ ] Míngzé Luo at work in their professional environment, focused on their tasks
-- [ ] Míngzé Luo in a moment of reflection, considering their next steps
-- [ ] Míngzé Luo with colleagues in a professional setting, engaged in discussion
+- [ ] Míngzé Luo surveying the scene, President of Minera Estrella during the Great Lithium Leak. Denied...
+- [ ] Míngzé Luo in a determined moment, 
+- [ ] Míngzé Luo caught in a pivotal scene, President of Minera Estrella during the Great Lithium Leak. Denied...
 
 ## Expression Variants
 

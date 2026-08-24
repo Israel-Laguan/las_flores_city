@@ -21,9 +21,9 @@ Slender Chinese woman in her late 30s, lithe build, dark brown eyes that are int
 
 ## Variations
 
-- [ ] Liu Fang at work in their professional environment, focused on their tasks
-- [ ] Liu Fang in a moment of reflection, considering their next steps
-- [ ] Liu Fang with colleagues in a professional setting, engaged in discussion
+- [ ] Liu Fang moving through the district, A brave whistleblower from LW Group who collected irrefutable evide...
+- [ ] Liu Fang in a contemplative moment, 
+- [ ] Liu Fang caught in a pivotal scene, A brave whistleblower from LW Group who collected irrefutable evide...
 
 ## Expression Variants
 

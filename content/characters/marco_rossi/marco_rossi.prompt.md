@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Marco Rossi studying intently at a desk, surrounded by books and notes
-- [ ] Marco Rossi deep in thought about their studies, determined to succeed
-- [ ] Marco Rossi studying with classmates in a library, working together on a project
+- [ ] Marco Rossi reflecting on recent events, 22-year-old business administration student at Universidad Nacional...
+- [ ] Marco Rossi in a determined moment, 
+- [ ] Marco Rossi caught in a pivotal scene, 22-year-old business administration student at Universidad Nacional...
 
 ## Expression Variants
 

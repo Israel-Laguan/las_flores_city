@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Jiao Yang in a meeting, reviewing documents with colleagues
-- [ ] Jiao Yang considering a strategic decision, weighing options thoughtfully
-- [ ] Jiao Yang in a business meeting, collaborating with team members on a strategy
+- [ ] Jiao Yang reviewing the situation, Jiao Yang is a second-generation Chinese-American born and raised i...
+- [ ] Jiao Yang in a alert moment, 
+- [ ] Jiao Yang caught in a pivotal scene, Jiao Yang is a second-generation Chinese-American born and raised i...
 
 ## Expression Variants
 

@@ -1,0 +1,65 @@
+id: "b8f5a111-e29b-41d4-a716-446655440011"
+name: "Sofia Garcia - Encounter & Endings"
+description: "The player encounters Sofia in Old Las Flores. Responses determine relationship and ending."
+scene_id: "00000000-0000-0000-0000-000000000000"
+character_id: "c2000005-e29b-41d4-a716-446655440005"
+dialogue_scope: "character"
+start_node_id: "b8f5a111-e29b-41d4-a716-446655440012"
+nodes:
+  b8f5a111-e29b-41d4-a716-446655440012:
+    id: "b8f5a111-e29b-41d4-a716-446655440012"
+    type: "character"
+    speaker_id: "c2000005-e29b-41d4-a716-446655440005"
+    text: "[She taps her cane on the ground, then points to her eyes and her lips, gesturing for you to face her directly so she can read your lips.]"
+    thought: "(Expression: default. Sofia is taking inventory of you. She is highly respected here, and she doesn't waste time with people who don't respect her boundaries.)"
+    choices:
+      - id: "face_direct"
+        text: "[Face her directly and speak clearly] Hello, Sofia. I was hoping we could talk."
+        next_node_id: "b8f5a111-e29b-41d4-a716-446655440013"
+        relationship_change:
+          stat: "friendship"
+          amount: 5
+      - id: "look_away"
+        text: "[Look around the busy street while talking] Hey, I need some information."
+        next_node_id: "b8f5a111-e29b-41d4-a716-446655440014"
+        relationship_change:
+          stat: "friendship"
+          amount: -5
+
+  b8f5a111-e29b-41d4-a716-446655440014:
+    id: "b8f5a111-e29b-41d4-a716-446655440014"
+    type: "character"
+    speaker_id: "c2000005-e29b-41d4-a716-446655440005"
+    text: "[She shakes her head and waves you away, turning back to the community members behind her. She won't waste her time on someone who won't even look at her.]"
+    thought: "(Expression: determined. The Enemy Ending. She completely ignores the player due to their disrespect.)"
+    is_end: true
+
+  b8f5a111-e29b-41d4-a716-446655440013:
+    id: "b8f5a111-e29b-41d4-a716-446655440013"
+    type: "character"
+    speaker_id: "c2000005-e29b-41d4-a716-446655440005"
+    text: "Good. You know how to listen. Not many outsiders do. What brings you to this part of the city?"
+    thought: "(Expression: happy. She appreciates the basic respect and decides to hear the player out.)"
+    choices:
+      - id: "ask_community"
+        text: "I want to help the people here. I've seen what the mining companies did."
+        next_node_id: "b8f5a111-e29b-41d4-a716-446655440015"
+      - id: "ask_isabella"
+        text: "I met your sister, Isabella. She seems to be struggling."
+        next_node_id: "b8f5a111-e29b-41d4-a716-446655440016"
+
+  b8f5a111-e29b-41d4-a716-446655440015:
+    id: "b8f5a111-e29b-41d4-a716-446655440015"
+    type: "character"
+    speaker_id: "c2000005-e29b-41d4-a716-446655440005"
+    text: "Help is cheap in words, expensive in action. But if you're willing to put in the work, I can introduce you to the organizers. We protect our own here."
+    thought: "(Expression: determined. The Community Ally Ending. Sofia accepts the player into her network of trust.)"
+    is_end: true
+
+  b8f5a111-e29b-41d4-a716-446655440016:
+    id: "b8f5a111-e29b-41d4-a716-446655440016"
+    type: "character"
+    speaker_id: "c2000005-e29b-41d4-a716-446655440005"
+    text: "[Her expression tightens into sorrow.] She hurts, and she wants someone to blame. But she and my father take care of my daughter, and for that, I owe her everything. If you see her again, commission a piece from her. Don't tell her it was my idea."
+    thought: "(Expression: sad. The Sisterly Bridge Ending. The player learns of Sofia's hidden guilt and her quiet attempts to support her resentful sister.)"
+    is_end: true

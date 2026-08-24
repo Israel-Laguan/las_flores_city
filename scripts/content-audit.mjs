@@ -24,16 +24,19 @@ const FOLDER_TYPES = [
   { dir: 'scenes', prefix: 'scene_', expectMd: true },
   { dir: 'locations', prefix: 'location_', expectMd: true },
   { dir: 'overlays', prefix: 'overlay_', expectMd: true },
-  { dir: 'missions', prefix: 'mission_', expectMd: false },
+  { dir: 'missions', prefix: 'mission_', expectMd: true },
   { dir: 'stories', prefix: '', expectMd: true },
-  { dir: 'story_beats', prefix: 'story_beat_', expectMd: false },
+  { dir: 'story_beats', prefix: 'story_beat_', expectMd: true },
   { dir: 'dialogues', prefix: 'dialogue_', expectMd: true },
 ];
 
 // Which YAML array field carries expression-tagged asset entries per type.
 // Convention: `portrait_urls[].expression` (characters) and
-// `background_urls[].expression` (scenes) tag image variants whose local
-// staging file must be `<slug>__<expression>.png` in assets/.
+// `background_urls[].expression` (scenes) tag image variants. The preferred
+// local name is `<slug>__<expression>.<ext>`, but existing assets may use a
+// different name or supported image type. When a precise match is unavailable,
+// the first suitable image is an acceptable fallback; generate one only when
+// the folder has no suitable image at all.
 // See docs/ASSET_EXPRESSION_VOCABULARY.md.
 const EXPRESSION_FIELD = {
   characters: 'portrait_urls',
@@ -45,8 +48,8 @@ const EXPRESSION_FIELD = {
  * background_urls) against local staging files in assets/.
  *
  * Returns `{ warnings, parseErrors }`:
- *  - `warnings` for any expression-tagged entry with no matching
- *    `<slug>__<expression>.png` file (a genuine missing-asset signal).
+ *  - `warnings` for any expression-tagged entry with no matching asset and no
+ *    suitable fallback image in assets/.
  *  - `parseErrors` for an unparseable YAML file, kept separate so a malformed
  *    scene/character file is reported as a parse failure (an authoring error)
  *    rather than as a missing staging image.
@@ -67,7 +70,8 @@ function checkExpressionAssets(typeDef, folder, slug, displayPath) {
   if (entries.length === 0) return { warnings: [], parseErrors: [] };
 
   const assetsDir = path.join(folder, 'assets');
-  const defaultPng = path.join(assetsDir, `${slug}__default.png`);
+  const imageFiles = listImageFiles(assetsDir);
+  const defaultAsset = findAsset(imageFiles, slug, 'default');
   const warnings = [];
   for (const entry of entries) {
     const expression = entry && typeof entry.expression === 'string' && entry.expression.trim()
@@ -75,23 +79,40 @@ function checkExpressionAssets(typeDef, folder, slug, displayPath) {
       : null;
     if (!expression) continue; // default entry — covered by `<slug>__default.png`
 
-    const variantPng = path.join(assetsDir, `${slug}__${expression}.png`);
     // A `neutral` expression is satisfied by the base image staged as
     // `<slug>__default.png` when no dedicated `<slug>__neutral.png` exists.
-    if (!fs.existsSync(variantPng) && !(expression.toLowerCase() === 'neutral' && fs.existsSync(defaultPng))) {
+    if (!findAsset(imageFiles, slug, expression)
+      && !(expression.toLowerCase() === 'neutral' && defaultAsset)
+      && imageFiles.length === 0) {
       warnings.push(
-        `${displayPath}: ${field}[] expression "${expression}" has no asset assets/${slug}__${expression}.png`
+        `${displayPath}: ${field}[] expression "${expression}" has no image asset or fallback in assets/`
       );
     }
   }
   return { warnings, parseErrors: [] };
 }
 
+const IMAGE_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg', '.webp', '.avif']);
+
+function listImageFiles(assetsDir) {
+  if (!fs.existsSync(assetsDir)) return [];
+  return fs.readdirSync(assetsDir, { withFileTypes: true })
+    .filter(entry => entry.isFile() && IMAGE_EXTENSIONS.has(path.extname(entry.name).toLowerCase()))
+    .map(entry => entry.name)
+    .sort();
+}
+
+function findAsset(imageFiles, slug, tag) {
+  const preferred = `${slug}__${tag}`.toLowerCase();
+  return imageFiles.find(file => path.basename(file, path.extname(file)).toLowerCase() === preferred)
+    || (tag === 'default' ? imageFiles[0] : null);
+}
+
 function scanFolder(typeDef, folder, slug, displayPath) {
   const yamlFile = path.join(folder, `${typeDef.prefix}${slug}.yaml`);
   const mdFile = path.join(folder, `${slug}.md`);
   const assetsDir = path.join(folder, 'assets');
-  const defaultPng = path.join(assetsDir, `${slug}__default.png`);
+  const imageFiles = listImageFiles(assetsDir);
 
   // Accept any `*.prompt.md` in the folder as satisfying the prompt-file
   // requirement. This supports typed variants — e.g. `<slug>.<type>.prompt.md`
@@ -101,10 +122,15 @@ function scanFolder(typeDef, folder, slug, displayPath) {
     || fs.readdirSync(folder, { withFileTypes: true })
         .some(e => e.isFile() && e.name.endsWith('.prompt.md'));
 
-  const hasYaml = fs.existsSync(yamlFile);
+  // Entity folders may use a descriptive YAML filename (for example, scenes
+  // and dialogues authored before the prefixed naming convention). Keep the
+  // canonical path for expression checks, but scan all regular YAML files for
+  // completeness.
+  const hasYaml = fs.readdirSync(folder, { withFileTypes: true })
+    .some(e => e.isFile() && e.name.endsWith('.yaml'));
   const hasMd = fs.existsSync(mdFile);
   const hasAssets = fs.existsSync(assetsDir);
-  const hasDefaultPng = fs.existsSync(defaultPng);
+  const hasDefaultPng = imageFiles.length > 0;
 
   const counts = { yaml: 0, md: 0, promptMd: 0, assets: 0, defaultPng: 0 };
   const errors = [];

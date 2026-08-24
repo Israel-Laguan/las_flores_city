@@ -21,9 +21,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Simon De Vries at work in their professional environment, focused on their tasks
-- [ ] Simon De Vries in a moment of reflection, considering their next steps
-- [ ] Simon De Vries with colleagues in a professional setting, engaged in discussion
+- [ ] Simon De Vries reviewing the situation, A 21-year-old engineering student in Las Flores, Simon is the son o...
+- [ ] Simon De Vries in a quiet moment, 
+- [ ] Simon De Vries caught in a pivotal scene, A 21-year-old engineering student in Las Flores, Simon is the son o...
 
 ## Expression Variants
 

@@ -20,7 +20,7 @@ Rio Grande Dam in Las Flores, daytime, massive concrete dam structure, mountaino
 photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lines, cybernetics, cargo pants, back pockets, backpacks, bulky luggage, sombreros, wristwatches
 
 ## Variations
-- [ ] Night version: same scene at night with different lighting
-- [ ] Rainy version: same scene with rain and mood effects
-- [ ] Wide shot: broader view of the location
 
+- [ ] Night version: Rio Grande Dam after dark — Nestled in the foothills of the Andean Mountains, the Rio Gr...
+- [ ] Rainy version: Rio Grande Dam in the rain — wet surfaces, reflected neon, moody atmosphere,  featuring Eastern Dam Segment and Artificial Lake
+- [ ] Wide shot: wider establishing view of Rio Grande Dam including  featuring Eastern Dam Segment and Artificial Lake, broader environmental context

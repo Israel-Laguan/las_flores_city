@@ -11,3 +11,4 @@ tags:
 lore_path: forest_and_swamps.md
 asset_paths:
   image: forest_and_swamps__default.png
+background_url: s3://las-flores/backgrounds/forest_and_swamps/forest_and_swamps__default.png

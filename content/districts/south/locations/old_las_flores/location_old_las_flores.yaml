@@ -28,3 +28,4 @@ conclusion: |
   Old Las Flores remains a testament to the enduring spirit of Las Flores' Latin American roots. Despite challenges with infrastructure, security, and maintenance, its rich history, vibrant culture, and unique character draw people from all over the city. Known for lower prices and more natural food options, the district preserves the city's origins and serves as a cultural touchstone. Public transportation—buses, one train line, and boat travel via the river—remains the primary means of travel, with motorbikes filling the gap where electric vehicle and bicycle infrastructure is limited.
 asset_paths:
   image: old_las_flores__default.png
+background_url: s3://las-flores/backgrounds/old_las_flores/old_las_flores__default.png

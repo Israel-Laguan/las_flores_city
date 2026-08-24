@@ -40,3 +40,4 @@ conclusion: |
   The City Council Palace stands as a tribute to Las Flores' commitment to transparent and effective governance. Its design and amenities reflect the city's belief in the importance of public engagement, symbolizing the democratic principles that underlie its legislative processes. Through its facilities, the palace not only serves the functional needs of the council and its representatives but also fosters a connection between the people and their elected officials, embodying the essence of participatory democracy.
 asset_paths:
   image: city_council_palace__default.png
+background_url: s3://las-flores/backgrounds/city_council_palace/city_council_palace__default.png

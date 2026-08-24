@@ -4,7 +4,7 @@ description: The public arrivals and departures concourse of the Aeropuerto Inte
 district: City
 district_lore: urban_core
 district_subzone: Central City
-background_url: https://cdn.lasflores2077.com/locations/bg_aeropuerto_terminal.png
+background_url: s3://las-flores/backgrounds/aeropuerto/aeropuerto__default.png
 mood: transient
 available_dialogues: []
 metadata:
@@ -35,3 +35,9 @@ asset_paths:
 background_urls:
   - url: s3://las-flores/backgrounds/aeropuerto/aeropuerto__default.png
     label: dev
+  - url: s3://las-flores/backgrounds/aeropuerto/aeropuerto__night.png
+    label: dev
+    variant: night
+  - url: s3://las-flores/backgrounds/aeropuerto/aeropuerto__sunset.png
+    label: dev
+    variant: sunset

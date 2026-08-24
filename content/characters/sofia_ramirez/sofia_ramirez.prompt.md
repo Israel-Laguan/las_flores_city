@@ -21,9 +21,9 @@ Medium-height 52-year-old Latina woman, solid build, dark expressive eyes, a str
 
 ## Variations
 
-- [ ] Sofia Ramirez at work in their professional environment, focused on their tasks
-- [ ] Sofia Ramirez in a moment of reflection, considering their next steps
-- [ ] Sofia Ramirez with colleagues in a professional setting, engaged in discussion
+- [ ] Sofia Ramirez moving through the district, Principled attorney who lost credibility after Minera Estrella trial
+- [ ] Sofia Ramirez in a quiet moment, 
+- [ ] Sofia Ramirez caught in a pivotal scene, Principled attorney who lost credibility after Minera Estrella trial
 
 ## Expression Variants
 

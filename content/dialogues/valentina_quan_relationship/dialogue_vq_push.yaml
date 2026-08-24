@@ -1,0 +1,166 @@
+id: 9c2e6a10-8f4d-4b7a-9c3e-1a2b3c4d5e03
+name: "Valentina Quan - Act 3: The Wall"
+description: "The player raises what 'this' could become. Her first instinct is pull-back — 'I'm never in one city long enough. Don't ask me to stay.' Pushing harder shuts her down and marks vq_pushed_away; backing off gracefully earns a trust spike ('You didn't push. That's… new.'); sharing vulnerability first lands a tender beat. Every path completes vq_push_done."
+character_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+scene_id: "00000000-0000-0000-0000-000000000000"
+dialogue_scope: character
+start_node_id: vq_push_start
+
+nodes:
+  vq_push_start:
+    id: vq_push_start
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "Okay, this is officially my favorite terrible lounge wine. Don't tell the crew bar I said that. ...What? You've got a face on. The thinking kind of face. Say it."
+    thought: "(Expression: happy. She is as relaxed as she gets in a fixed location, which is to say: not very, but she hasn't checked the departures board once tonight.)"
+    visual:
+      expression: happy
+      position: right
+      transition: fade
+    choices:
+      - id: push_ask
+        text: "'What are we, Valentina? Could this be something?'"
+        next_node_id: vq_push_wall
+        time_block_cost:
+          amount: 1
+          description: "A serious conversation with Valentina"
+
+  vq_push_wall:
+    id: vq_push_wall
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "...There it is. Valentina, look at me. I'm never in one city long enough to be a 'something.' Three days here, four there. Don't ask me to stay — you won't like how that goes."
+    thought: "(Expression: afraid. The wall goes up before she has even decided to raise it — faster than thought, learned somewhere with envelopes on the table. Underneath the warning there is a question she can't ask: please make staying feel possible.)"
+    visual:
+      expression: afraid
+    choices:
+      - id: wall_push_harder
+        text: "'Stop flying away from every good thing. Stay. Try.'"
+        next_node_id: vq_push_harder
+        relationship_change:
+          stat: romance
+          amount: -10
+      - id: wall_back_off
+        text: "'Then don't stay. Forget I boxed it into words.'"
+        next_node_id: vq_push_space
+      - id: wall_vulnerable_first
+        text: "'I don't do 'somethings' either. Places, people — I keep an exit row seat too.'"
+        next_node_id: vq_push_vulnerable
+        relationship_change:
+          stat: romance
+          amount: 8
+
+  # --- Push harder: shutdown ---
+  vq_push_harder:
+    id: vq_push_harder
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "Try? You think I haven't— no. No, you don't get to stand in my layover and narrate my life back at me like a boarding announcement. You've known me for three conversations. You know nothing about why I fly."
+    thought: "(Expression: angry. The volume isn't really about him. It's about every man who stood in a doorway her mother couldn't leave and called it love. She knows the tone coming out of her mouth. It isn't hers.)"
+    visual:
+      expression: angry
+    choices:
+      - id: harder_continue
+        text: "'...I'm sorry. That wasn't fair.'"
+        next_node_id: vq_push_harder_end
+
+  vq_push_harder_end:
+    id: vq_push_harder_end
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "No. It wasn't. ...Finish your wine somewhere else tonight, guapo. And don't make me a project. Everyone who stays always wants to fix the leaving. Nobody asks why it was built."
+    thought: "(Expression: sad. The door didn't just close — it locked from the inside, and she did the locking, and some part of her watched herself do it with something like grief. He pushed. People who push get exits. That's the rule.)"
+    visual:
+      expression: sad
+    is_end: true
+    effects:
+      flag_set:
+        vq_push_done: true
+        vq_pushed_away: true
+      state_set:
+        vq_arc: wall_up
+        last_vq_encounter_at: NOW
+      stat_set:
+        vq_trust: -5
+
+  # --- Back off gracefully: trust spike ---
+  vq_push_space:
+    id: vq_push_space
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "...You're letting it go? Just like that? Huh."
+    thought: "(Expression: shocked. She had the next three moves of the argument already loaded. Now they have nowhere to go, and neither of them is bleeding. She doesn't have a script for this outcome. Nobody has ever taken the exit row seat next to hers before.)"
+    visual:
+      expression: shocked
+    choices:
+      - id: space_continue
+        text: "'I'd rather have you at whatever altitude you choose than not at all.'"
+        next_node_id: vq_push_space_end
+
+  vq_push_space_end:
+    id: vq_push_space_end
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "You didn't push. That's... new. Do you understand how new that is? Men ask me to stay or ask me to explain. You asked me for nothing and refilled my glass. Sit closer. Since we're being reckless about boxes left unopened."
+    thought: "(Expression: tender. The wall is still standing, but she just invited him to lean against it. For a woman whose entire romantic doctrine is leave-first-or-be-left, an unpunished question is practically a marriage proposal.)"
+    visual:
+      expression: tender
+    is_end: true
+    effects:
+      flag_set:
+        vq_push_done: true
+        vq_gave_space: true
+      state_set:
+        vq_arc: wall_up
+        last_vq_encounter_at: NOW
+      stat_set:
+        vq_trust: 20
+
+  # --- Share your own vulnerability first ---
+  vq_push_vulnerable:
+    id: vq_push_vulnerable
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "...Say that again. The exit row thing. Hah. Two flight risks in one terrible lounge. What a pair we'd— "
+    thought: "(Expression: surprised. He answered her warning by handing her his own wound instead of arguing with hers. She almost finishes the sentence 'what a pair we'd make' and swallows it, because finishing it would mean wanting it.)"
+    visual:
+      expression: surprised
+    choices:
+      - id: vulnerable_continue
+        text: "'I'm not asking you to land. Just to taxi past me sometimes.'"
+        next_node_id: vq_push_vulnerable_end
+
+  vq_push_vulnerable_end:
+    id: vq_push_vulnerable_end
+    type: character
+    speaker_id: 670eea6f-3983-4d5a-8195-b08be6c81661
+    text: "'Taxi past me.' Okay. That's... okay. I can do taxiing. Tonight I even like it. Ask me again someday when I'm braver — not tomorrow. Someday."
+    thought: "(Expression: tender. She gave him a someday, which from her is a longer commitment than most people's forevers. She keeps her hand near his on the bar top without quite touching it, and counts it as touching.)"
+    visual:
+      expression: tender
+    is_end: true
+    effects:
+      flag_set:
+        vq_push_done: true
+      state_set:
+        vq_arc: wall_up
+        last_vq_encounter_at: NOW
+      stat_set:
+        vq_trust: 12
+
+metadata:
+  version: "1.0"
+  required_flags:
+    vq_layover_done: true
+  # Completed act hides itself so the resolver advances to Act 4.
+  hidden_if:
+    vq_push_done: true
+  tags:
+    - "valentina_quan"
+    - "act3"
+    - "the_wall"
+  notes: |
+    Act 3 branches on the player's response to her pull-back instinct.
+    Pushing harder sets vq_pushed_away (locks out the Grounded ending);
+    backing off sets vq_gave_space (required for Grounded); sharing
+    vulnerability first is the balanced middle. All paths set vq_push_done.
