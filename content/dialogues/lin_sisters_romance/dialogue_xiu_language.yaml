@@ -63,15 +63,25 @@ nodes:
       - id: "playful_translate"
         text: "I don't believe you. I'm going to run that through the translator app."
         next_node_id: "e6666666-4444-5555-6666-777777777777"
-        relationship_change:
-          stat: "romance"
-          amount: 2
+        # Mid-arc romance: advance only after genuine warmth.
+        required_relationship:
+          friendship: "gte:15"
+        effects:
+          relationship_effect:
+            romance: 2
+          state_set:
+            last_lin_xiu_encounter_at: NOW
       - id: "playful_accept"
         text: "Then I guess I'm happy to be your favorite annoyance."
         next_node_id: "e7777777-4444-5555-6666-777777777777"
-        relationship_change:
-          stat: "romance"
-          amount: 2
+        # Mid-arc romance: advance only after genuine warmth.
+        required_relationship:
+          friendship: "gte:15"
+        effects:
+          relationship_effect:
+            romance: 2
+          state_set:
+            last_lin_xiu_encounter_at: NOW
 
   e6666666-4444-5555-6666-777777777777:
     id: "e6666666-4444-5555-6666-777777777777"

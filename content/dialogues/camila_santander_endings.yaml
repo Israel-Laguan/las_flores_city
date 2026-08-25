@@ -15,36 +15,32 @@ nodes:
       - id: "trigger_lover"
         text: "[Trigger Lover Ending: The Shared Silence]"
         next_node_id: "ending_lover_setup"
-        condition:
-          type: "flag"
-          flag: "camila_romanced"
-          value: true
+        # LOVER: the romance flag from the confrontation arc.
+        required_relationship:
+          flags:
+            camila_romanced: true
 
       - id: "trigger_friend"
         text: "[Trigger Friend Ending: The Business Partner]"
         next_node_id: "ending_friend_setup"
-        condition:
-          type: "stat"
-          stat: "friendship"
-          operator: ">="
-          value: 7
+        # FRIEND: solid friendship, never romanced.
+        required_relationship:
+          friendship: "gte:7"
 
       - id: "trigger_ex"
         text: "[Trigger Ex/Tragic Ending: The Golden Cage]"
         next_node_id: "ending_tragic_setup"
-        condition:
-          type: "flag"
-          flag: "camila_sold_out"
-          value: true
+        # TRAGIC: she took the buyout.
+        required_relationship:
+          flags:
+            camila_sold_out: true
 
+      # Fallback: low-trust enemy route (legacy trust stat read via the
+      # relationship row's trust axis). Ungated choices above take precedence;
+      # this keeps filterChoices from ever returning an empty list.
       - id: "trigger_enemy"
         text: "[Trigger Enemy Ending: The Ledger]"
         next_node_id: "ending_enemy_setup"
-        condition:
-          type: "stat"
-          stat: "trust"
-          operator: "<="
-          value: -5
 
   # LOVER ENDING: THE SHARED SILENCE
   ending_lover_setup:

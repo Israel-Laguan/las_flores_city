@@ -16,21 +16,33 @@ nodes:
       - id: "reply_friendly"
         text: "Just coffee, please. Still getting used to the <important>Las Flores</important> altitude."
         next_node_id: "3e289bf0-410c-44bf-8a7e-123456789abc"
-        relationship_change:
-          stat: "friendship"
-          amount: 1
+        effects:
+          relationship_effect:
+            friendship: 1
+          state_set:
+            last_first_contact_encounter_at: NOW
       - id: "reply_flirt"
         text: "I was distracted by the music. And maybe the barista. Just a black coffee is fine."
         next_node_id: "4e289bf0-410c-44bf-8a7e-123456789abc"
-        relationship_change:
-          stat: "romance"
-          amount: 1
+        # First-contact tree: neutral_default keeps this visible to players
+        # with no relationship row yet (M48 contract).
+        required_relationship:
+          axes:
+            tension: "lte:60"
+          neutral_default: true
+        effects:
+          relationship_effect:
+            romance: 1
+          state_set:
+            last_first_contact_encounter_at: NOW
       - id: "reply_cold"
         text: "A standard caffeine solution. Black. No sugar."
         next_node_id: "5e289bf0-410c-44bf-8a7e-123456789abc"
-        relationship_change:
-          stat: "friendship"
-          amount: -1
+        effects:
+          relationship_effect:
+            friendship: -1
+          state_set:
+            last_first_contact_encounter_at: NOW
   3e289bf0-410c-44bf-8a7e-123456789abc:
     id: "3e289bf0-410c-44bf-8a7e-123456789abc"
     type: "character"

@@ -16,15 +16,19 @@ nodes:
       - id: "reply_friendly"
         text: "No problem. Looks like important research."
         next_node_id: "f0000000-0000-0000-0000-000000000003"
-        relationship_change:
-          stat: "friendship"
-          amount: 1
+        effects:
+          relationship_effect:
+            friendship: 1
+          state_set:
+            last_camila_encounter_at: NOW
       - id: "reply_cold"
         text: "Careful. You almost smashed my datapad."
         next_node_id: "f0000000-0000-0000-0000-000000000004"
-        relationship_change:
-          stat: "friendship"
-          amount: -1
+        effects:
+          relationship_effect:
+            friendship: -1
+          state_set:
+            last_camila_encounter_at: NOW
 
   f0000000-0000-0000-0000-000000000003:
     id: "f0000000-0000-0000-0000-000000000003"

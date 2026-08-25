@@ -16,15 +16,19 @@ nodes:
       - id: "sympathize_art"
         text: "I actually saw some of your digital pieces. The rawness... it feels like someone screaming for help."
         next_node_id: "b8f5a111-e29b-41d4-a716-446655440003"
-        relationship_change:
-          stat: "friendship"
-          amount: 5
+        effects:
+          relationship_effect:
+            friendship: 5
+          state_set:
+            last_isabella_encounter_at: NOW
       - id: "mention_sofia"
         text: "Your sister Sofia sent me. She wanted to know how you, Ariana, and your dad are doing."
         next_node_id: "b8f5a111-e29b-41d4-a716-446655440004"
-        relationship_change:
-          stat: "friendship"
-          amount: -5
+        effects:
+          relationship_effect:
+            friendship: -5
+          state_set:
+            last_isabella_encounter_at: NOW
 
   b8f5a111-e29b-41d4-a716-446655440003:
     id: "b8f5a111-e29b-41d4-a716-446655440003"

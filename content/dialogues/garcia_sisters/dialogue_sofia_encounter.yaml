@@ -16,15 +16,19 @@ nodes:
       - id: "face_direct"
         text: "[Face her directly and speak clearly] Hello, Sofia. I was hoping we could talk."
         next_node_id: "b8f5a111-e29b-41d4-a716-446655440013"
-        relationship_change:
-          stat: "friendship"
-          amount: 5
+        effects:
+          relationship_effect:
+            friendship: 5
+          state_set:
+            last_sofia_encounter_at: NOW
       - id: "look_away"
         text: "[Look around the busy street while talking] Hey, I need some information."
         next_node_id: "b8f5a111-e29b-41d4-a716-446655440014"
-        relationship_change:
-          stat: "friendship"
-          amount: -5
+        effects:
+          relationship_effect:
+            friendship: -5
+          state_set:
+            last_sofia_encounter_at: NOW
 
   b8f5a111-e29b-41d4-a716-446655440014:
     id: "b8f5a111-e29b-41d4-a716-446655440014"

@@ -129,9 +129,30 @@ rebuilt/recreated healthy, all eight YAMLs re-migrated via checksum change
 (59 trees → 392 chunks, 0 failed). Conversion decisions recorded in
 `content/dialogues/layla_relationship/AUDIT.md`.
 
-This milestone stays **open** — Phase 6 arc batches remain pending (Layla/Wen,
-Lin sisters, Ana Villanueva, remaining characters) plus the M47 proper intake
-stress run (Scenarios A–E).
+**Phase 6, batches 4–6 — Lin sisters, Ana Villanueva, remaining characters
+(2026-08-25):** converted the last 26 legacy `relationship_change` effects
+across `lin_sisters_test`, `lin_sisters_encounter`, `lin_sisters_parents`,
+`lin_sisters_romance`, all three `ana_villanueva_relationship` trees,
+both `garcia_sisters` encounters, `dialogue_first_contact`,
+`welcome_dialogue`, `camila_intro`, and `first_contact_barista` to choice-level
+`effects.relationship_effect` + per-slug encounter bookkeeping
+(`last_lin_mei/xiu_encounter_at`, `last_ana_encounter_at`,
+`last_isabella/sofia_encounter_at`, `last_first_contact_encounter_at`,
+`last_welcome_encounter_at`, `last_barista_encounter_at`). Positive-romance
+choices gained gates: first-contact trees use the neutral_default tension
+pattern (`reply_flirt_xiu`, `reply_flirt`), mid-arc romance uses friendship
+thresholds (`mei_cultural_reaction` gte:10, `playful_translate/accept`
+gte:15, `confront_flaw` gte:20). The dead condition grammar in
+`camila_santander_endings` (ending hub) was rewritten to supported flag+axis
+gates with an ungated enemy fallback. With these batches **no
+`relationship_change` or legacy `condition:` grammar remains anywhere in
+content**; `validate:content` is clean of relationship warnings (only the 7
+tracked asset-path warnings remain). Verification green: unit+smoke 101
+suites / 1116 tests cache-free, server lint/build clean, containers rebuilt/
+recreated healthy, 13 YAMLs re-migrated via checksum change with 0 failures.
+
+This milestone stays **open** — the M47 proper intake stress run
+(Scenarios A–E with measurements) remains.
 
 
 ## Goal

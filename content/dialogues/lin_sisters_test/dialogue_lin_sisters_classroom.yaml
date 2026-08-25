@@ -58,9 +58,11 @@ nodes:
       - id: "hostile_freeze"
         text: "[Leave them alone]"
         next_node_id: "c7777777-3333-4444-5555-666666666666"
-        relationship_change:
-          stat: "friendship"
-          amount: -2
+        effects:
+          relationship_effect:
+            friendship: -2
+          state_set:
+            last_lin_mei_encounter_at: NOW
 
   c7777777-3333-4444-5555-666666666666:
     id: "c7777777-3333-4444-5555-666666666666"
