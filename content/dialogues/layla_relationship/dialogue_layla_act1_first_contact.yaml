@@ -16,10 +16,11 @@ nodes:
       position: right
       transition: fade
     effects:
-      stat_set:
-        layla_trust: -10
-        layla_alignment: -20
-        layla_tension: 20
+      relationship_effect:
+        axes:
+          trust: -10
+          alignment: -20
+          tension: 20
     choices:
       - id: act1_flirt
         text: "Maybe I was just watching you."
@@ -54,16 +55,22 @@ nodes:
         text: "Give me your number, then."
         next_node_id: layla_act1_number
         effects:
-          stat_set:
-            layla_familiarity: 8
-            layla_trust: 6
+          relationship_effect:
+            axes:
+              familiarity: 8
+              trust: 6
+          state_set:
+            last_layla_encounter_at: NOW
       - id: flirt_tease
         text: "You're blushing. I'll take that as a yes."
         next_node_id: layla_act1_number
         effects:
-          stat_set:
-            layla_familiarity: 6
-            layla_alignment: 5
+          relationship_effect:
+            axes:
+              familiarity: 6
+              alignment: 5
+          state_set:
+            last_layla_encounter_at: NOW
 
   layla_act1_neutral_response:
     id: layla_act1_neutral_response
@@ -76,16 +83,22 @@ nodes:
         text: "Be here for what, exactly?"
         next_node_id: layla_act1_number
         effects:
-          stat_set:
-            layla_familiarity: 6
-            layla_trust: 4
+          relationship_effect:
+            axes:
+              familiarity: 6
+              trust: 4
+          state_set:
+            last_layla_encounter_at: NOW
       - id: neutral_number
         text: "We should talk more. Number?"
         next_node_id: layla_act1_number
         effects:
-          stat_set:
-            layla_familiarity: 8
+          relationship_effect:
+            axes:
+              familiarity: 8
 
+          state_set:
+            last_layla_encounter_at: NOW
   layla_act1_distant_response:
     id: layla_act1_distant_response
     type: character
@@ -100,8 +113,9 @@ nodes:
       state_set:
         layla_act: "1_incomplete"
         last_layla_encounter_at: NOW
-      stat_set:
-        layla_familiarity: -3
+      relationship_effect:
+        axes:
+          familiarity: -3
 
   layla_act1_number:
     id: layla_act1_number
@@ -114,16 +128,22 @@ nodes:
         text: "'R' works. Send me something later?"
         next_node_id: layla_act1_offer
         effects:
-          stat_set:
-            layla_trust: 8
-            layla_familiarity: 5
+          relationship_effect:
+            axes:
+              trust: 8
+              familiarity: 5
+          state_set:
+            last_layla_encounter_at: NOW
       - id: number_ask
         text: "Your mom checks your phone? How old are you?"
         next_node_id: layla_act1_offer
         effects:
-          stat_set:
-            layla_familiarity: 3
-            layla_tension: 5
+          relationship_effect:
+            axes:
+              familiarity: 3
+              tension: 5
+          state_set:
+            last_layla_encounter_at: NOW
 
   layla_act1_offer:
     id: layla_act1_offer
@@ -139,25 +159,34 @@ nodes:
         text: "Yeah. Between us, then."
         next_node_id: layla_act1_yes
         effects:
-          stat_set:
-            layla_trust: 15
-            layla_familiarity: 12
-            layla_alignment: 15
+          relationship_effect:
+            axes:
+              trust: 15
+              familiarity: 12
+              alignment: 15
+          state_set:
+            last_layla_encounter_at: NOW
       - id: offer_careful
         text: "I like you, Layla. But let's not name it yet, okay?"
         next_node_id: layla_act1_careful
         effects:
-          stat_set:
-            layla_trust: 10
-            layla_familiarity: 8
-            layla_tension: 6
+          relationship_effect:
+            axes:
+              trust: 10
+              familiarity: 8
+              tension: 6
+          state_set:
+            last_layla_encounter_at: NOW
       - id: offer_no
         text: "I don't think I can be that for you."
         next_node_id: layla_act1_no
         effects:
-          stat_set:
-            layla_trust: -5
-            layla_tension: 15
+          relationship_effect:
+            axes:
+              trust: -5
+              tension: 15
+          state_set:
+            last_layla_encounter_at: NOW
 
   layla_act1_yes:
     id: layla_act1_yes
@@ -178,8 +207,9 @@ nodes:
         layla_act: "1_done"
         layla_path: "girlfriend"
         last_layla_encounter_at: NOW
-      stat_set:
-        layla_visibility: 5
+      relationship_effect:
+        axes:
+          visibility: 5
 
   layla_act1_careful:
     id: layla_act1_careful
@@ -197,8 +227,9 @@ nodes:
         layla_act: "1_done"
         layla_path: "undefined"
         last_layla_encounter_at: NOW
-      stat_set:
-        layla_visibility: 5
+      relationship_effect:
+        axes:
+          visibility: 5
 
   layla_act1_no:
     id: layla_act1_no
@@ -215,8 +246,9 @@ nodes:
         layla_act: "1_done"
         layla_path: "friend"
         last_layla_encounter_at: NOW
-      stat_set:
-        layla_familiarity: 4
+      relationship_effect:
+        axes:
+          familiarity: 4
 
 metadata:
   version: "1.1"

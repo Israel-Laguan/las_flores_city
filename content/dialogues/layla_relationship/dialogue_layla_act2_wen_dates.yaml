@@ -26,8 +26,11 @@ nodes:
           amount: 1
           description: "Hanging out with Layla and Wen"
         effects:
-          stat_set:
-            layla_familiarity: 6
+          relationship_effect:
+            axes:
+              familiarity: 6
+          state_set:
+            last_layla_encounter_at: NOW
       - id: act2_proud
         text: "Partner in crime. I like how that sounds."
         next_node_id: layla_act2_wen_intro
@@ -35,9 +38,12 @@ nodes:
           amount: 1
           description: "Hanging out with Layla and Wen"
         effects:
-          stat_set:
-            layla_trust: 8
-            layla_familiarity: 6
+          relationship_effect:
+            axes:
+              trust: 8
+              familiarity: 6
+          state_set:
+            last_layla_encounter_at: NOW
 
   layla_act2_wen_intro:
     id: layla_act2_wen_intro
@@ -50,14 +56,22 @@ nodes:
         text: "The secret part is kind of exciting."
         next_node_id: layla_act2_date_trouble
         effects:
-          stat_set:
-            layla_alignment: 6
+          relationship_effect:
+            target_character_id: d9927cf6-cc6c-42d3-b39c-023e6252b453
+            axes:
+              alignment: 6
+          state_set:
+            last_layla_encounter_at: NOW
       - id: wen_caution
         text: "I just don't want her to get in trouble."
         next_node_id: layla_act2_date_trouble
         effects:
-          stat_set:
-            layla_trust: 8
+          relationship_effect:
+            target_character_id: d9927cf6-cc6c-42d3-b39c-023e6252b453
+            axes:
+              trust: 8
+          state_set:
+            last_layla_encounter_at: NOW
 
   layla_act2_date_trouble:
     id: layla_act2_date_trouble
@@ -73,24 +87,33 @@ nodes:
         text: "We'll do dates where no one knows you. Quiet places."
         next_node_id: layla_act2_quiet_date
         effects:
-          stat_set:
-            layla_trust: 12
-            layla_familiarity: 8
-            layla_alignment: 8
+          relationship_effect:
+            axes:
+              trust: 12
+              familiarity: 8
+              alignment: 8
+          state_set:
+            last_layla_encounter_at: NOW
       - id: date_honest
         text: "It's not a normal dating thing, Layla. It can't be."
         next_node_id: layla_act2_quiet_date
         effects:
-          stat_set:
-            layla_trust: 10
-            layla_tension: 6
+          relationship_effect:
+            axes:
+              trust: 10
+              tension: 6
+          state_set:
+            last_layla_encounter_at: NOW
       - id: date_push
         text: "Screw them. Hold my hand anyway."
         next_node_id: layla_act2_public_risk
         effects:
-          stat_set:
-            layla_tension: 16
-            layla_alignment: 4
+          relationship_effect:
+            axes:
+              tension: 16
+              alignment: 4
+          state_set:
+            last_layla_encounter_at: NOW
 
   layla_act2_quiet_date:
     id: layla_act2_quiet_date
@@ -106,9 +129,12 @@ nodes:
         text: "Enough for now. We'll figure the rest out."
         next_node_id: layla_act2_wen_push
         effects:
-          stat_set:
-            layla_trust: 8
-            layla_familiarity: 5
+          relationship_effect:
+            axes:
+              trust: 8
+              familiarity: 5
+          state_set:
+            last_layla_encounter_at: NOW
 
   layla_act2_wen_push:
     id: layla_act2_wen_push
@@ -121,16 +147,24 @@ nodes:
         text: "She's right. One block won't hurt."
         next_node_id: layla_act2_bold_yes
         effects:
-          stat_set:
-            layla_tension: 8
-            layla_alignment: 6
+          relationship_effect:
+            target_character_id: d9927cf6-cc6c-42d3-b39c-023e6252b453
+            axes:
+              tension: 8
+              alignment: 6
+          state_set:
+            last_layla_encounter_at: NOW
       - id: wen_goad_no
         text: "Wen, don't push her into something stupid."
         next_node_id: layla_act2_bold_no
         effects:
-          stat_set:
-            layla_trust: 10
-            layla_tension: -4
+          relationship_effect:
+            target_character_id: d9927cf6-cc6c-42d3-b39c-023e6252b453
+            axes:
+              trust: 10
+              tension: -4
+          state_set:
+            last_layla_encounter_at: NOW
 
   layla_act2_bold_yes:
     id: layla_act2_bold_yes
@@ -149,9 +183,10 @@ nodes:
       state_set:
         layla_act: "2_done"
         last_layla_encounter_at: NOW
-      stat_set:
-        layla_familiarity: 8
-        layla_tension: 6
+      relationship_effect:
+        axes:
+          familiarity: 8
+          tension: 6
 
   layla_act2_bold_no:
     id: layla_act2_bold_no
@@ -169,9 +204,10 @@ nodes:
       state_set:
         layla_act: "2_done"
         last_layla_encounter_at: NOW
-      stat_set:
-        layla_familiarity: 6
-        layla_trust: 6
+      relationship_effect:
+        axes:
+          familiarity: 6
+          trust: 6
 
   layla_act2_public_risk:
     id: layla_act2_public_risk
@@ -189,9 +225,10 @@ nodes:
       state_set:
         layla_act: "2_done"
         last_layla_encounter_at: NOW
-      stat_set:
-        layla_tension: 14
-        layla_familiarity: 5
+      relationship_effect:
+        axes:
+          tension: 14
+          familiarity: 5
 
 metadata:
   version: "1.1"

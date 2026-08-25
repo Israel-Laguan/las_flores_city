@@ -43,16 +43,24 @@ nodes:
         text: "I can do that. Tell her I'll text first."
         next_node_id: wen_deal
         effects:
-          stat_set:
-            layla_trust: 6
-            layla_familiarity: 4
-            layla_alignment: 6
+          relationship_effect:
+            target_character_id: d9927cf6-cc6c-42d3-b39c-023e6252b453
+            axes:
+              trust: 6
+              familiarity: 4
+              alignment: 6
+          state_set:
+            last_layla_encounter_at: NOW
       - id: wen_question
         text: "Why doesn't she just ask for what she wants?"
         next_node_id: wen_explain
         effects:
-          stat_set:
-            layla_familiarity: 3
+          relationship_effect:
+            target_character_id: d9927cf6-cc6c-42d3-b39c-023e6252b453
+            axes:
+              familiarity: 3
+          state_set:
+            last_layla_encounter_at: NOW
 
   wen_defend:
     id: wen_defend
@@ -65,16 +73,24 @@ nodes:
         text: "Okay. I'll reach out to her."
         next_node_id: wen_deal
         effects:
-          stat_set:
-            layla_trust: 8
-            layla_familiarity: 4
+          relationship_effect:
+            target_character_id: d9927cf6-cc6c-42d3-b39c-023e6252b453
+            axes:
+              trust: 8
+              familiarity: 4
+          state_set:
+            last_layla_encounter_at: NOW
       - id: wen_push_back
         text: "She should learn to ask. I'm not her dad."
         next_node_id: wen_warn
         effects:
-          stat_set:
-            layla_tension: 8
-            layla_alignment: -4
+          relationship_effect:
+            target_character_id: d9927cf6-cc6c-42d3-b39c-023e6252b453
+            axes:
+              tension: 8
+              alignment: -4
+          state_set:
+            last_layla_encounter_at: NOW
 
   wen_explain:
     id: wen_explain
@@ -87,10 +103,14 @@ nodes:
         text: "That makes sense. I'll be the bold one."
         next_node_id: wen_deal
         effects:
-          stat_set:
-            layla_trust: 10
-            layla_familiarity: 5
-            layla_alignment: 8
+          relationship_effect:
+            target_character_id: d9927cf6-cc6c-42d3-b39c-023e6252b453
+            axes:
+              trust: 10
+              familiarity: 5
+              alignment: 8
+          state_set:
+            last_layla_encounter_at: NOW
 
   wen_deal:
     id: wen_deal
@@ -109,8 +129,10 @@ nodes:
       state_set:
         last_layla_encounter_at: NOW
         last_wen_encounter_at: NOW
-      stat_set:
-        layla_alignment: 5
+      relationship_effect:
+        target_character_id: d9927cf6-cc6c-42d3-b39c-023e6252b453
+        axes:
+          alignment: 5
 
   wen_warn:
     id: wen_warn
@@ -127,8 +149,10 @@ nodes:
         wen_intermediary_warned: true
       state_set:
         last_wen_encounter_at: NOW
-      stat_set:
-        layla_tension: 6
+      relationship_effect:
+        target_character_id: d9927cf6-cc6c-42d3-b39c-023e6252b453
+        axes:
+          tension: 6
 
 metadata:
   version: "1.0"

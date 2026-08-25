@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { zodUuidOptional } from './uuid.js';
 
 export const RelationshipStatusSchema = z.enum([
   'STRANGER', 'ACQUAINTANCE', 'CONFIDANT', 'ROMANTIC', 'PARTNER', 'DISTANCED', 'ENDED',
@@ -16,6 +17,10 @@ export const RelationshipAxesSchema = z.object({
 export type RelationshipAxes = z.infer<typeof RelationshipAxesSchema>;
 
 export const RelationshipDeltaSchema = z.object({
+  // Explicit relationship target override. The speaking character is the
+  // default target; cross-character writes (e.g. Wen's trees mutating
+  // Layla's row) set this to the target character's UUID.
+  target_character_id: zodUuidOptional(),
   axes: z.object({
     trust: z.number().int().optional(), familiarity: z.number().int().optional(),
     alignment: z.number().int().optional(), tension: z.number().int().optional(),

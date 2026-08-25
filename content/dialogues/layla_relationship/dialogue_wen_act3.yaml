@@ -25,25 +25,28 @@ nodes:
       - id: branch_distant
         text: "[Never engaged]"
         next_node_id: wen_act3_distant_party
-        condition:
-          flag: wen_dare_refused
-          NOT:
-            flag: wen_first_kiss
-        hidden: true
+        # DISTANT track: dare refused and the player never kissed her.
+        required_relationship:
+          flags:
+            wen_dare_refused: true
+        hidden_if_relationship:
+          flags:
+            wen_first_kiss: true
 
       - id: branch_layla_enemy
         text: "[Layla lovers + manipulation found]"
         next_node_id: wen_act3_enemy_open
-        condition:
-          flag: layla_ending_lovers
-          AND:
-            flag: wen_layla_manipulation_seed
-        hidden: true
+        # ENEMY track: Layla ended as LOVERS while the manipulation seed exists.
+        required_relationship:
+          flags:
+            layla_ending_lovers: true
+            wen_layla_manipulation_seed: true
 
+      # Fallback: any other engaged path. Ungated so filterChoices can
+      # never return an empty list on the entry node.
       - id: branch_engaged
         text: "[Engaged with Wen]"
         next_node_id: wen_act3_open
-        hidden: true
 
   # ============================================
   # MAIN ACT 3 OPENING — The Non-Marriage Reveal
@@ -66,8 +69,11 @@ nodes:
         text: "Where does this fit in that plan?"
         next_node_id: wen_act3_no_future_reveal
         effects:
-          stat_set:
-            wen_zhao_trust: 5
+          relationship_effect:
+            axes:
+              trust: 5
+          state_set:
+            last_wen_encounter_at: NOW
       - id: open_let_go
         text: "Sounds like a full life."
         next_node_id: wen_act3_no_future_unchallenged
@@ -90,9 +96,12 @@ nodes:
         effects:
           flag_set:
             wen_future_confronted: true
-          stat_set:
-            wen_zhao_trust: 15
-            wen_zhao_tension: 10
+          relationship_effect:
+            axes:
+              trust: 15
+              tension: 10
+          state_set:
+            last_wen_encounter_at: NOW
       - id: reveal_absorb
         text: "Good memory to have, I guess."
         next_node_id: wen_act3_father_scene
@@ -123,15 +132,21 @@ nodes:
         text: "You can't even finish the sentence, Wen."
         next_node_id: wen_act3_future_reckoning
         effects:
-          stat_set:
-            wen_zhao_trust: 10
-            wen_zhao_tension: 15
+          relationship_effect:
+            axes:
+              trust: 10
+              tension: 15
+          state_set:
+            last_wen_encounter_at: NOW
       - id: confront_gentle
         text: "You don't have to figure it out right now."
         next_node_id: wen_act3_father_scene
         effects:
-          stat_set:
-            wen_zhao_trust: 8
+          relationship_effect:
+            axes:
+              trust: 8
+          state_set:
+            last_wen_encounter_at: NOW
 
   wen_act3_future_reckoning:
     id: wen_act3_future_reckoning
@@ -201,15 +216,21 @@ nodes:
         text: "I wasn't going to say any of that. I just wanted to know if you're okay."
         next_node_id: wen_act3_father_disarmed
         effects:
-          stat_set:
-            wen_zhao_trust: 20
+          relationship_effect:
+            axes:
+              trust: 20
+          state_set:
+            last_wen_encounter_at: NOW
       - id: father_push
         text: "Then what IS the movie for, Wen? What does it change if he still owns you?"
         next_node_id: wen_act3_father_cracked
         effects:
-          stat_set:
-            wen_zhao_trust: 10
-            wen_zhao_tension: 20
+          relationship_effect:
+            axes:
+              trust: 10
+              tension: 20
+          state_set:
+            last_wen_encounter_at: NOW
 
   wen_act3_father_disarmed:
     id: wen_act3_father_disarmed
@@ -243,8 +264,9 @@ nodes:
       - id: layla_confront
         text: "[Bring up Layla. The manipulation. What she actually said.]"
         next_node_id: wen_act3_layla_confronted
-        condition:
-          flag: wen_layla_manipulation_seed
+        required_relationship:
+          flags:
+            wen_layla_manipulation_seed: true
         effects:
           flag_set:
             wen_manipulation_confronted: true
@@ -266,16 +288,22 @@ nodes:
         text: "She said she wanted me to find someone who 'really goes for it.' You gave her that line, Wen. You led her there."
         next_node_id: wen_act3_layla_caught
         effects:
-          stat_set:
-            wen_zhao_tension: 20
-            wen_zhao_trust: -5
+          relationship_effect:
+            axes:
+              tension: 20
+              trust: -5
+          state_set:
+            last_wen_encounter_at: NOW
       - id: layla_softer
         text: "You edited what she said. You know you did."
         next_node_id: wen_act3_layla_caught
         effects:
-          stat_set:
-            wen_zhao_tension: 15
-            wen_zhao_trust: 5
+          relationship_effect:
+            axes:
+              tension: 15
+              trust: 5
+          state_set:
+            last_wen_encounter_at: NOW
 
   wen_act3_layla_caught:
     id: wen_act3_layla_caught
@@ -290,22 +318,31 @@ nodes:
         text: "That's not helping. That's using her."
         next_node_id: wen_act3_layla_reckoning
         effects:
-          stat_set:
-            wen_zhao_tension: 20
+          relationship_effect:
+            axes:
+              tension: 20
+          state_set:
+            last_wen_encounter_at: NOW
       - id: layla_name_pattern
         text: "You do this with everyone. You edit the scene until you're the lead."
         next_node_id: wen_act3_layla_reckoning
         effects:
-          stat_set:
-            wen_zhao_tension: 15
-            wen_zhao_trust: 10
+          relationship_effect:
+            axes:
+              tension: 15
+              trust: 10
+          state_set:
+            last_wen_encounter_at: NOW
       - id: layla_forgive
         text: "I know. But I also know you thought you were helping."
         next_node_id: wen_act3_layla_forgiven
         effects:
-          stat_set:
-            wen_zhao_trust: 20
-            wen_zhao_tension: -5
+          relationship_effect:
+            axes:
+              trust: 20
+              tension: -5
+          state_set:
+            last_wen_encounter_at: NOW
 
   wen_act3_layla_reckoning:
     id: wen_act3_layla_reckoning
@@ -338,34 +375,37 @@ nodes:
       - id: end_lover
         text: "[Toward Lover]"
         next_node_id: wen_ending_lover_start
-        condition:
-          flag: wen_post_intimate_honest
-          AND:
-            flag: wen_manipulation_confronted
-        hidden: true
+        # LOVER: post-intimate honesty + manipulation confronted.
+        required_relationship:
+          flags:
+            wen_post_intimate_honest: true
+            wen_manipulation_confronted: true
 
       - id: end_tragic
         text: "[Toward Tragic]"
         next_node_id: wen_ending_tragic_start
-        condition:
-          flag: wen_intimate_scene
-          AND:
-            flag: wen_post_intimate_cool
-        hidden: true
+        # TRAGIC: intimate scene happened but stayed cool afterwards.
+        required_relationship:
+          flags:
+            wen_intimate_scene: true
+            wen_post_intimate_cool: true
 
       - id: end_friend
         text: "[Toward Friend]"
         next_node_id: wen_ending_friend_start
-        condition:
-          flag: wen_manipulation_confronted
-          NOT:
-            flag: wen_intimate_scene
-        hidden: true
+        # FRIEND: confrontation happened without an intimate scene.
+        required_relationship:
+          flags:
+            wen_manipulation_confronted: true
+        hidden_if_relationship:
+          flags:
+            wen_intimate_scene: true
 
+      # Fallback if no gated ending matches. Ungated so filterChoices can
+      # never return an empty list on the entry node.
       - id: end_default
         text: "[Continue]"
         next_node_id: wen_ending_tragic_start
-        hidden: true
 
   # ============================================
   # ENDING 1 — 💖 LOVER: "The Real Sequel"
@@ -433,9 +473,11 @@ nodes:
       state_set:
         wen_path: "lovers"
         last_wen_encounter_at: NOW
+      relationship_effect:
+        axes:
+          trust: 30
       stat_set:
         wen_thrill: 20
-        wen_zhao_trust: 30
 
   # ============================================
   # ENDING 2 — 🤝 FRIEND: "The Real Accomplice"
@@ -483,8 +525,9 @@ nodes:
       state_set:
         wen_path: "friend"
         last_wen_encounter_at: NOW
-      stat_set:
-        wen_zhao_trust: 25
+      relationship_effect:
+        axes:
+          trust: 25
 
   # ============================================
   # ENDING 3 — 💔 TRAGIC: "The Perfect Daughter"
@@ -539,9 +582,11 @@ nodes:
       state_set:
         wen_path: "tragic"
         last_wen_encounter_at: NOW
+      relationship_effect:
+        axes:
+          trust: -10
       stat_set:
         wen_thrill: -20
-        wen_zhao_trust: -10
 
   # ============================================
   # ENDING 4 — 🔥 ENEMY: "The Director"
@@ -561,14 +606,20 @@ nodes:
         text: "She deserved to know."
         next_node_id: wen_act3_enemy_betrayal
         effects:
-          stat_set:
-            wen_zhao_tension: 30
+          relationship_effect:
+            axes:
+              tension: 30
+          state_set:
+            last_wen_encounter_at: NOW
       - id: enemy_justify
         text: "You used her. I wasn't going to pretend I didn't see it."
         next_node_id: wen_act3_enemy_betrayal
         effects:
-          stat_set:
-            wen_zhao_tension: 25
+          relationship_effect:
+            axes:
+              tension: 25
+          state_set:
+            last_wen_encounter_at: NOW
 
   wen_act3_enemy_betrayal:
     id: wen_act3_enemy_betrayal
@@ -620,10 +671,14 @@ nodes:
       state_set:
         wen_path: "enemy"
         last_wen_encounter_at: NOW
-      stat_set:
-        wen_zhao_tension: 40
-        wen_zhao_trust: -30
-        layla_tension: 30
+      # Wen's own row takes the full betrayal delta. The cross-character
+      # Layla tension spike is applied by Layla's fallout scene, keyed on
+      # layla_community_tipped (a single relationship_effect can target
+      # only one row).
+      relationship_effect:
+        axes:
+          tension: 40
+          trust: -30
 
   # ============================================
   # ENDING 5 — 🌫️ DISTANT: "The Movie Extra"

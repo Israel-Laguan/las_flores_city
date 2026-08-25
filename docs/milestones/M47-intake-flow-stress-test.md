@@ -106,6 +106,29 @@ sequence green: `validate:content` clean of relationship warnings, unit+smoke
 101 suites / 1116 tests cache-free, server lint/build clean, containers rebuilt/
 recreated healthy, all six edited YAMLs re-migrated via checksum change.
 
+**Phase 6, third batch — Layla/Wen (2026-08-25):** full conversion of the
+8-tree arc. All `layla_*` / `wen_zhao_*` player-stats (~103 refs) migrated to
+canonical `relationship_effect.axes` writes with per-slug encounter
+bookkeeping; `wen_thrill` deliberately kept as a player stat (mood, not a
+relationship axis). The dead legacy `condition:`/`AND`/`OR`/`NOT` + `hidden:`
+router grammar — never evaluated at runtime because it is not part of
+`DialogueChoiceSchema` and `filterChoices` never reads it — was replaced with
+supported `required_relationship` / `hidden_if_relationship` flag+axis gates
+across `layla_act3_branch`, `wen_act3_branch`, `wen_act3_endings_branch`,
+`wen_act3_layla_surface`, and `wen_aftermath_branch`, each keeping one ungated
+fallback so filterChoices can never return an empty list. Cross-character
+writes (Wen's trees mutating Layla's row) now use the new optional
+`relationship_effect.target_character_id`, honored by `applyRelationshipEffect`
+(shared schema field + override in dialogue-helpers.ts); covered by new
+integration test `server/tests/integration/crossTargetRelationship.test.ts`.
+The enemy ending's cross-target `layla_tension: 30` write moved to Layla's
+fallout scene keyed on `layla_community_tipped` (one effect targets one row).
+Verification green: `validate:content` clean of relationship warnings, unit+
+smoke 101 suites / 1116 tests cache-free, server lint/build clean, containers
+rebuilt/recreated healthy, all eight YAMLs re-migrated via checksum change
+(59 trees → 392 chunks, 0 failed). Conversion decisions recorded in
+`content/dialogues/layla_relationship/AUDIT.md`.
+
 This milestone stays **open** — Phase 6 arc batches remain pending (Layla/Wen,
 Lin sisters, Ana Villanueva, remaining characters) plus the M47 proper intake
 stress run (Scenarios A–E).

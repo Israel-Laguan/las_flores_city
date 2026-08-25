@@ -40,9 +40,13 @@ nodes:
         effects:
           flag_set:
             wen_dare_accepted: true
+          relationship_effect:
+            axes:
+              tension: 10
+          state_set:
+            last_wen_encounter_at: NOW
           stat_set:
             wen_thrill: 15
-            wen_zhao_tension: 10
       - id: dare_kiss_first
         text: "[Pull her in and kiss her before she can say another word.]"
         next_node_id: wen_act2_kiss_first
@@ -53,9 +57,13 @@ nodes:
           flag_set:
             wen_dare_accepted: true
             wen_first_kiss: true
+          relationship_effect:
+            axes:
+              tension: 15
+          state_set:
+            last_wen_encounter_at: NOW
           stat_set:
             wen_thrill: 20
-            wen_zhao_tension: 15
       - id: dare_no
         text: "Not tonight, Wen."
         next_node_id: wen_act2_dare_refused
@@ -82,8 +90,12 @@ nodes:
         text: "[Don't let her deflect. Hold the moment.]"
         next_node_id: wen_act2_kiss_lingers
         effects:
+          relationship_effect:
+            axes:
+              trust: 10
+          state_set:
+            last_wen_encounter_at: NOW
           stat_set:
-            wen_zhao_trust: 10
             wen_thrill: 10
       - id: kiss_release
         text: "[Pull back. Let her have the room.]"
@@ -105,9 +117,13 @@ nodes:
         text: "Roof first. Then we revisit."
         next_node_id: wen_act2_dare_accepted
         effects:
+          relationship_effect:
+            axes:
+              tension: 8
+          state_set:
+            last_wen_encounter_at: NOW
           stat_set:
             wen_thrill: 10
-            wen_zhao_tension: 8
 
   # ============================================
   # DARE ACCEPTED — The Roof Scene
@@ -133,9 +149,13 @@ nodes:
         effects:
           flag_set:
             wen_public_touch: true
+          relationship_effect:
+            axes:
+              tension: 8
+          state_set:
+            last_wen_encounter_at: NOW
           stat_set:
             wen_thrill: 10
-            wen_zhao_tension: 8
 
   wen_act2_rooftop:
     id: wen_act2_rooftop
@@ -151,18 +171,25 @@ nodes:
         text: "You always perform, even when there's no audience."
         next_node_id: wen_act2_rooftop_crack
         effects:
-          stat_set:
-            wen_zhao_trust: 8
-            wen_zhao_tension: 5
+          relationship_effect:
+            axes:
+              trust: 8
+              tension: 5
+          state_set:
+            last_wen_encounter_at: NOW
       - id: rooftop_kiss_now
         text: "[Kiss her. Here. Under the city lights.]"
         next_node_id: wen_act2_rooftop_kiss
         effects:
           flag_set:
             wen_first_kiss: true
+          relationship_effect:
+            axes:
+              tension: 15
+          state_set:
+            last_wen_encounter_at: NOW
           stat_set:
             wen_thrill: 20
-            wen_zhao_tension: 15
 
   wen_act2_rooftop_crack:
     id: wen_act2_rooftop_crack
@@ -179,16 +206,23 @@ nodes:
         effects:
           flag_set:
             wen_first_kiss: true
+          relationship_effect:
+            axes:
+              tension: 15
+              trust: 10
+          state_set:
+            last_wen_encounter_at: NOW
           stat_set:
             wen_thrill: 20
-            wen_zhao_tension: 15
-            wen_zhao_trust: 10
       - id: crack_back_off
         text: "Sorry. Forget I said it."
         next_node_id: wen_act2_costume_pivot
         effects:
-          stat_set:
-            wen_zhao_tension: -5
+          relationship_effect:
+            axes:
+              tension: -5
+          state_set:
+            last_wen_encounter_at: NOW
 
   wen_act2_rooftop_kiss:
     id: wen_act2_rooftop_kiss
@@ -203,9 +237,13 @@ nodes:
         text: "[Stay. Let the scene write itself.]"
         next_node_id: wen_act2_escalation
         effects:
+          relationship_effect:
+            axes:
+              tension: 10
+          state_set:
+            last_wen_encounter_at: NOW
           stat_set:
             wen_thrill: 15
-            wen_zhao_tension: 10
       - id: kiss_pull
         text: "[Pull back slowly. Keep something in reserve.]"
         next_node_id: wen_act2_costume_pivot
@@ -234,16 +272,24 @@ nodes:
         effects:
           flag_set:
             wen_intimate_scene: true
+          relationship_effect:
+            axes:
+              tension: 20
+          state_set:
+            last_wen_encounter_at: NOW
           stat_set:
             wen_thrill: 30
-            wen_zhao_tension: 20
       - id: escalation_no
         text: "Not tonight, Wen."
         next_node_id: wen_act2_costume_pivot
         effects:
+          relationship_effect:
+            axes:
+              tension: 5
+          state_set:
+            last_wen_encounter_at: NOW
           stat_set:
             wen_thrill: -5
-            wen_zhao_tension: 5
 
   wen_act2_nsfw_cutaway:
     id: wen_act2_nsfw_cutaway
@@ -267,8 +313,11 @@ nodes:
         effects:
           flag_set:
             wen_post_intimate_honest: true
-          stat_set:
-            wen_zhao_trust: 15
+          relationship_effect:
+            axes:
+              trust: 15
+          state_set:
+            last_wen_encounter_at: NOW
       - id: aftermath_cool
         text: "[Say nothing. Give her the silence she's building.]"
         next_node_id: wen_act2_aftermath_cool
@@ -291,16 +340,23 @@ nodes:
         text: "Then let's just... not write it. Stay in the scene."
         next_node_id: wen_act2_post_tender
         effects:
+          relationship_effect:
+            axes:
+              trust: 10
+          state_set:
+            last_wen_encounter_at: NOW
           stat_set:
-            wen_zhao_trust: 10
             wen_thrill: 5
       - id: honest_name_it
         text: "I think you might actually want something real, Wen."
         next_node_id: wen_act2_post_confronted
         effects:
-          stat_set:
-            wen_zhao_trust: 20
-            wen_zhao_tension: -10
+          relationship_effect:
+            axes:
+              trust: 20
+              tension: -10
+          state_set:
+            last_wen_encounter_at: NOW
 
   wen_act2_aftermath_cool:
     id: wen_act2_aftermath_cool
@@ -372,15 +428,21 @@ nodes:
         text: "Just got here. Nice blouse."
         next_node_id: wen_act2_costume_defused
         effects:
-          stat_set:
-            wen_zhao_trust: 10
+          relationship_effect:
+            axes:
+              trust: 10
+          state_set:
+            last_wen_encounter_at: NOW
       - id: costume_tease
         text: "Long enough to see the other Wen."
         next_node_id: wen_act2_costume_confronted
         effects:
-          stat_set:
-            wen_zhao_tension: 10
-            wen_zhao_trust: -5
+          relationship_effect:
+            axes:
+              tension: 10
+              trust: -5
+          state_set:
+            last_wen_encounter_at: NOW
 
   wen_act2_costume_defused:
     id: wen_act2_costume_defused

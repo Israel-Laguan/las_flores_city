@@ -152,7 +152,10 @@ export async function applyRelationshipEffect(
   markInteraction = true
 ): Promise<void> {
   if (!characterId || !effect) return;
-  await applyRelationshipDelta(client, userId, characterId, effect, { markInteraction });
+  // Cross-character writes (e.g. Wen's trees mutating Layla's row) override
+  // the speaking-character default via the delta's target_character_id.
+  const targetId = effect.target_character_id ?? characterId;
+  await applyRelationshipDelta(client, userId, targetId, effect, { markInteraction });
 }
 
 /* eslint-disable max-lines -- dialogue route helpers are cohesively grouped in one module */
