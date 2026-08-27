@@ -242,29 +242,19 @@ export async function resolveDialogueTree(
     }
   }
 
-  // M48: preload the speaker's relationship state once so the
-  // metadata-level relationship gates below can be evaluated without
-  // an extra round-trip per candidate tree. Also collect any
-  // target_character_id from metadata gates.
-  let relStateByTarget: RelationshipStateByTarget = {};
-  if (userId) {
-    const targetIds = new Set<string>();
-    if (characterId) targetIds.add(characterId);
-    
-    // Collect target_character_id from metadata relationship gates.
-    // metadata can contain required_relationship / hidden_if_relationship
-    // with target_character_id overrides (e.g., a tree about character A
-    // can have metadata gates checking character B's relationship state).
-    const metadataRequiredTarget = data?.metadata?.required_relationship?.target_character_id;
-    const metadataHiddenTarget = data?.metadata?.hidden_if_relationship?.target_character_id;
-    if (metadataRequiredTarget) targetIds.add(metadataRequiredTarget);
-    if (metadataHiddenTarget) targetIds.add(metadataHiddenTarget);
-    
-    await Promise.all([...targetIds].map(async (targetId) => {
-      const snap = await getRelationshipForFilter(userId, targetId);
-      relStateByTarget[targetId] = snapshotToConditionState(snap);
-    }));
-  }
+  // M48: lazily populate relationship state per target character so
+  // metadata-level relationship gates can be evaluated. A tree about
+  // character A can carry metadata gates checking character B's
+  // relationship state via target_character_id overrides, so we seed
+  // with the speaker and then augment with any metadata targets as we
+  // iterate candidate trees.
+  const relStateByTarget: RelationshipStateByTarget = {};
+  const ensureRelState = async (targetId: string) => {
+    if (!userId || !targetId || relStateByTarget[targetId]) return;
+    const snap = await getRelationshipForFilter(userId, targetId);
+    relStateByTarget[targetId] = snapshotToConditionState(snap);
+  };
+  if (characterId) await ensureRelState(characterId);
 
   // Fetch all scene-scoped candidates first (no LIMIT 1), then
   // evaluate gates in Node so an ineligible LIMIT-1 row cannot
@@ -291,6 +281,9 @@ export async function resolveDialogueTree(
       (n: any) => n && n.speaker_id === characterId
     );
     if (!hasSpeaker) continue;
+    const metaTarget = tree.metadata?.required_relationship?.target_character_id
+      ?? tree.metadata?.hidden_if_relationship?.target_character_id;
+    if (metaTarget) await ensureRelState(metaTarget);
     if (
       isStoryBeatAllowed(tree.metadata?.required_story_beat, storyBeat) &&
       metadataConditionsPass(tree.metadata, playerCondition, relStateByTarget, characterId)
@@ -327,6 +320,9 @@ export async function resolveDialogueTree(
     const startNode = tree.nodes[tree.start_node_id];
     const startMatch = startNode && startNode.speaker_id === characterId;
     if (!(startMatch || (character_id == null && scene_id === sceneId && hasSpeaker))) continue;
+    const metaTarget = tree.metadata?.required_relationship?.target_character_id
+      ?? tree.metadata?.hidden_if_relationship?.target_character_id;
+    if (metaTarget) await ensureRelState(metaTarget);
     if (
       !isStoryBeatAllowed(tree.metadata?.required_story_beat, storyBeat) ||
       !metadataConditionsPass(tree.metadata, playerCondition, relStateByTarget, characterId)
