@@ -33,6 +33,8 @@ nodes:
         effects:
           relationship_effect:
             friendship: 2
+          state_set:
+            last_marco_encounter_at: NOW
       - id: ask_about_drive
         text: What's that flashing drive behind the counter?
         next_node_id: n0000000-e29b-41d4-a716-446655440001

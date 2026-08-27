@@ -270,11 +270,11 @@ nodes:
           amount: 1
           description: "Leaving with Wen"
         effects:
-          flag_set:
-            wen_intimate_scene: true
           relationship_effect:
             axes:
               tension: 20
+            flags:
+              wen_intimate_scene: true
           state_set:
             last_wen_encounter_at: NOW
           stat_set:
@@ -311,19 +311,22 @@ nodes:
         text: "Hey. You okay?"
         next_node_id: wen_act2_aftermath_honest
         effects:
-          flag_set:
-            wen_post_intimate_honest: true
           relationship_effect:
             axes:
               trust: 15
+            flags:
+              wen_post_intimate_honest: true
           state_set:
             last_wen_encounter_at: NOW
       - id: aftermath_cool
         text: "[Say nothing. Give her the silence she's building.]"
         next_node_id: wen_act2_aftermath_cool
         effects:
-          flag_set:
-            wen_post_intimate_cool: true
+          relationship_effect:
+            flags:
+              wen_post_intimate_cool: true
+          state_set:
+            last_wen_encounter_at: NOW
           stat_set:
             wen_thrill: 10
 
@@ -478,11 +481,13 @@ nodes:
     is_end: true
     effects:
       flag_set:
-        wen_layla_manipulation_seed: true
         wen_act2_done: true
       state_set:
         wen_act: "2_done"
         last_wen_encounter_at: NOW
+      relationship_effect:
+        flags:
+          wen_layla_manipulation_seed: true
       stat_set:
         wen_thrill: 5
 

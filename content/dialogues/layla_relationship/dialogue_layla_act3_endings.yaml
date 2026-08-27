@@ -82,12 +82,23 @@ nodes:
           state_set:
             last_layla_encounter_at: NOW
 
-      # Fallback if no gated branch matches (LOVERS default when trust is
-      # high without the intermediary flag). Ungated so filterChoices can
-      # never return an empty list on the entry node.
+      # LOVERS default: high trust + alignment but no intermediary used.
       - id: branch_default
-        text: "[Continue]"
+        text: "[Continue to Lovers check]"
         next_node_id: layla_act3_loyalty_check
+        required_relationship:
+          axes:
+            trust: "gte:50"
+            alignment: "gte:40"
+        hidden_if_relationship:
+          flags:
+            layla_wen_intermediary_used: true
+
+      # Neutral fallback: always available to ensure filterChoices never
+      # returns an empty list on the entry node.
+      - id: branch_fallback
+        text: "[Continue]"
+        next_node_id: layla_act3_friendship_check
 
   # ============================================
   # ENDING 1: LOVERS (Discovery of Real Closeness)

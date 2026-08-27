@@ -23,6 +23,9 @@ nodes:
       - id: branch_single
         text: "[Layla is Single]"
         next_node_id: wen_aftermath_single_start
+        hidden_if_relationship:
+          flags:
+            layla_ending_lovers: true
 
   # ============================================
   # LOVERS BRANCH: The Conspirator

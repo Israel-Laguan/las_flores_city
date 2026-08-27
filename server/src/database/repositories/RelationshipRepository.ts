@@ -41,10 +41,16 @@ export async function applyRelationshipDelta(
   const currentDay = options.currentDay ?? dayResult.rows[0]?.current_day ?? null;
   const axes = delta.axes ?? {};
   const params: unknown[] = [userId, characterId, delta.friendship ?? 0, delta.romance ?? 0];
-  const axisParam = (axis: Axis): string => {
+  
+  // Pre-push all axis values and capture their parameter references so we can
+  // use the raw (unclamped) deltas in the ON CONFLICT clause. The VALUES clause
+  // still applies clamping for INSERT, but the parameter itself holds the raw delta.
+  const axisParams = {} as Record<Axis, string>;
+  for (const axis of AXES) {
     params.push(axes[axis] ?? 0);
-    return `$${params.length}`;
-  };
+    axisParams[axis] = `$${params.length}`;
+  }
+  
   params.push(delta.bond ?? 0, delta.vibe ?? 0, delta.status ?? null);
   const bondParam = `$${params.length - 2}`;
   const vibeParam = `$${params.length - 1}`;
@@ -68,12 +74,12 @@ export async function applyRelationshipDelta(
        $1, $2,
        GREATEST(0, LEAST(100, ${friendshipParam})),
        GREATEST(0, LEAST(100, ${romanceParam})),
-       GREATEST(-100, LEAST(100, ${axisParam('trust')})),
-       GREATEST(0, LEAST(100, ${axisParam('familiarity')})),
-       GREATEST(-100, LEAST(100, ${axisParam('alignment')})),
-       GREATEST(0, LEAST(100, ${axisParam('tension')})),
-       GREATEST(-100, LEAST(100, ${axisParam('debt')})),
-       GREATEST(0, LEAST(100, ${axisParam('visibility')})),
+       GREATEST(-100, LEAST(100, ${axisParams.trust})),
+       GREATEST(0, LEAST(100, ${axisParams.familiarity})),
+       GREATEST(-100, LEAST(100, ${axisParams.alignment})),
+       GREATEST(0, LEAST(100, ${axisParams.tension})),
+       GREATEST(-100, LEAST(100, ${axisParams.debt})),
+       GREATEST(0, LEAST(100, ${axisParams.visibility})),
        GREATEST(0, LEAST(100, ${bondParam})),
        GREATEST(-100, LEAST(100, ${vibeParam})),
        COALESCE(${statusParam}, 'STRANGER'),
@@ -81,20 +87,20 @@ export async function applyRelationshipDelta(
        ${memoryParam}::jsonb, ${flagsParam}::jsonb
      )
      ON CONFLICT (user_id, character_id) DO UPDATE SET
-       friendship_level = GREATEST(0, LEAST(100, user_relationships.friendship_level + EXCLUDED.friendship_level)),
-       romance_level = GREATEST(0, LEAST(100, user_relationships.romance_level + EXCLUDED.romance_level)),
-       trust = GREATEST(-100, LEAST(100, user_relationships.trust + EXCLUDED.trust)),
-       familiarity = GREATEST(0, LEAST(100, user_relationships.familiarity + EXCLUDED.familiarity)),
-       alignment = GREATEST(-100, LEAST(100, user_relationships.alignment + EXCLUDED.alignment)),
-       tension = GREATEST(0, LEAST(100, user_relationships.tension + EXCLUDED.tension)),
-       debt = GREATEST(-100, LEAST(100, user_relationships.debt + EXCLUDED.debt)),
-       visibility = GREATEST(0, LEAST(100, user_relationships.visibility + EXCLUDED.visibility)),
-       bond_level = GREATEST(0, LEAST(100, user_relationships.bond_level + EXCLUDED.bond_level)),
-       daily_vibe = GREATEST(-100, LEAST(100, user_relationships.daily_vibe + EXCLUDED.daily_vibe)),
+       friendship_level = GREATEST(0, LEAST(100, user_relationships.friendship_level + ${friendshipParam})),
+       romance_level = GREATEST(0, LEAST(100, user_relationships.romance_level + ${romanceParam})),
+       trust = GREATEST(-100, LEAST(100, user_relationships.trust + ${axisParams.trust})),
+       familiarity = GREATEST(0, LEAST(100, user_relationships.familiarity + ${axisParams.familiarity})),
+       alignment = GREATEST(-100, LEAST(100, user_relationships.alignment + ${axisParams.alignment})),
+       tension = GREATEST(0, LEAST(100, user_relationships.tension + ${axisParams.tension})),
+       debt = GREATEST(-100, LEAST(100, user_relationships.debt + ${axisParams.debt})),
+       visibility = GREATEST(0, LEAST(100, user_relationships.visibility + ${axisParams.visibility})),
+       bond_level = GREATEST(0, LEAST(100, user_relationships.bond_level + ${bondParam})),
+       daily_vibe = GREATEST(-100, LEAST(100, user_relationships.daily_vibe + ${vibeParam})),
        status = COALESCE(${statusParam}, user_relationships.status),
        ${interactionDaySql}
-       memory = user_relationships.memory || EXCLUDED.memory,
-       flags = user_relationships.flags || EXCLUDED.flags,
+       memory = user_relationships.memory || ${memoryParam}::jsonb,
+       flags = user_relationships.flags || ${flagsParam}::jsonb,
        updated_at = NOW()`,
     params
   );

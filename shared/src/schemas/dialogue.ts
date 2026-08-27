@@ -86,6 +86,7 @@ export const RelationshipGateSchema = z
         debt: NumericComparisonSchema.optional(),
         visibility: NumericComparisonSchema.optional(),
       })
+      .strict()
       .optional(),
     bond: NumericComparisonSchema.optional(),
     vibe: NumericComparisonSchema.optional(),

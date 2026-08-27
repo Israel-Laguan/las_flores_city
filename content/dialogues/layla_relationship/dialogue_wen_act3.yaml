@@ -37,9 +37,10 @@ nodes:
         text: "[Layla lovers + manipulation found]"
         next_node_id: wen_act3_enemy_open
         # ENEMY track: Layla ended as LOVERS while the manipulation seed exists.
+        required_flags:
+          layla_ending_lovers: true
         required_relationship:
           flags:
-            layla_ending_lovers: true
             wen_layla_manipulation_seed: true
 
       # Fallback: any other engaged path. Ungated so filterChoices can
@@ -268,8 +269,11 @@ nodes:
           flags:
             wen_layla_manipulation_seed: true
         effects:
-          flag_set:
-            wen_manipulation_confronted: true
+          relationship_effect:
+            flags:
+              wen_manipulation_confronted: true
+          state_set:
+            last_wen_encounter_at: NOW
       - id: layla_skip
         text: "[Leave it. Move toward an ending without the confrontation.]"
         next_node_id: wen_act3_endings_branch

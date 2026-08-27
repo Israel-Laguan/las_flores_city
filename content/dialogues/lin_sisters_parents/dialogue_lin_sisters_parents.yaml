@@ -37,7 +37,7 @@ nodes:
           relationship_effect:
             friendship: 2
           state_set:
-            last_lin_mei_encounter_at: NOW
+            last_lin_xiu_encounter_at: NOW
 
   d5555555-4444-5555-6666-777777777777:
     id: "d5555555-4444-5555-6666-777777777777"

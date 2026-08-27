@@ -550,6 +550,12 @@ export class GraphIntakeService {
     rawDeltas: unknown[],
     rawEdges: unknown[],
   ): Promise<CreatePlanFromDescriptionResult> {
+    if (!description || description.trim().length === 0) {
+      throw new GraphIntakeValidationError(
+        'Description is required and must be a non-empty string',
+      );
+    }
+
     if (!isNeo4jEnabled()) {
       throw new GraphIntakeDisabledError('Neo4j authoring graph is disabled — cannot create graph-based plan. Enable NEO4J_ENABLED first.');
     }

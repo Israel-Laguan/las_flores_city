@@ -291,11 +291,21 @@ export async function applyChoiceFilters(
 
   // M48: load the thread character's relationship state once and
   // evaluate relationship/posture gates (mirrors filterChoices).
-  let relStateByTarget: RelationshipStateByTarget = {};
-  if (characterId) {
-    const snap = await getRelationshipForFilter(userId, characterId);
-    relStateByTarget = { [characterId]: snapshotToConditionState(snap) };
+  // Collect all targets: default characterId + any target_character_id from gates.
+  const targetIds = new Set<string>();
+  if (characterId) targetIds.add(characterId);
+  for (const choice of rawChoices) {
+    const requiredTarget = choice?.required_relationship?.target_character_id;
+    const hiddenTarget = choice?.hidden_if_relationship?.target_character_id;
+    if (requiredTarget) targetIds.add(requiredTarget);
+    if (hiddenTarget) targetIds.add(hiddenTarget);
   }
+
+  const relStateByTarget: RelationshipStateByTarget = {};
+  await Promise.all([...targetIds].map(async (targetId) => {
+    const snap = await getRelationshipForFilter(userId, targetId);
+    relStateByTarget[targetId] = snapshotToConditionState(snap);
+  }));
 
   return rawChoices.filter(
     (choice: any) =>

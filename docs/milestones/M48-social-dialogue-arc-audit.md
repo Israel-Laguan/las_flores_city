@@ -1,6 +1,6 @@
 # M48 - Social Dialogue and Relationship Arc Audit
 
-> **Status:** Evidence Complete — Phases 1–6 complete (2026-08-24 to 2026-08-25); exit-decision review pending
+> **Status:** Complete — Phases 1–6 complete (2026-08-24 to 2026-08-25); exit-decision review complete
 > **Owner:** narrative systems effort
 > **Source:** `docs/relationship_template.md`, `docs/ARCHITECTURE_SEPARATION_ANALYSIS.md`,
 > the canonical `user_relationships` pilot, and the Valentina Quan relationship content

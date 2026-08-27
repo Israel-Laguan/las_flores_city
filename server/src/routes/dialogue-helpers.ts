@@ -151,10 +151,11 @@ export async function applyRelationshipEffect(
   effect: any,
   markInteraction = true
 ): Promise<void> {
-  if (!characterId || !effect) return;
+  if (!effect) return;
   // Cross-character writes (e.g. Wen's trees mutating Layla's row) override
   // the speaking-character default via the delta's target_character_id.
   const targetId = effect.target_character_id ?? characterId;
+  if (!targetId) return;
   await applyRelationshipDelta(client, userId, targetId, effect, { markInteraction });
 }
 
@@ -243,11 +244,26 @@ export async function resolveDialogueTree(
 
   // M48: preload the speaker's relationship state once so the
   // metadata-level relationship gates below can be evaluated without
-  // an extra round-trip per candidate tree.
+  // an extra round-trip per candidate tree. Also collect any
+  // target_character_id from metadata gates.
   let relStateByTarget: RelationshipStateByTarget = {};
-  if (userId && characterId) {
-    const snap = await getRelationshipForFilter(userId, characterId);
-    relStateByTarget = { [characterId]: snapshotToConditionState(snap) };
+  if (userId) {
+    const targetIds = new Set<string>();
+    if (characterId) targetIds.add(characterId);
+    
+    // Collect target_character_id from metadata relationship gates.
+    // metadata can contain required_relationship / hidden_if_relationship
+    // with target_character_id overrides (e.g., a tree about character A
+    // can have metadata gates checking character B's relationship state).
+    const metadataRequiredTarget = data?.metadata?.required_relationship?.target_character_id;
+    const metadataHiddenTarget = data?.metadata?.hidden_if_relationship?.target_character_id;
+    if (metadataRequiredTarget) targetIds.add(metadataRequiredTarget);
+    if (metadataHiddenTarget) targetIds.add(metadataHiddenTarget);
+    
+    await Promise.all([...targetIds].map(async (targetId) => {
+      const snap = await getRelationshipForFilter(userId, targetId);
+      relStateByTarget[targetId] = snapshotToConditionState(snap);
+    }));
   }
 
   // Fetch all scene-scoped candidates first (no LIMIT 1), then

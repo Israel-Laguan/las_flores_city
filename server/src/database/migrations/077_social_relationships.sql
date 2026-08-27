@@ -37,7 +37,8 @@ BEGIN
     familiarity, visibility, trust, tension, bond_level,
     last_interaction_day
   )
-  SELECT p_user_id, p_character_id,
+  SELECT 
+    p_user_id, p_character_id,
     GREATEST(0, LEAST(100, p_friendship_delta)),
     GREATEST(0, LEAST(100, p_romance_delta)),
     GREATEST(0, LEAST(100, p_friendship_delta)),
@@ -46,16 +47,17 @@ BEGIN
     GREATEST(0, LEAST(100, p_romance_delta / 2)),
     GREATEST(0, LEAST(100, p_friendship_delta + p_romance_delta)),
     ps.current_day
-  FROM player_states ps WHERE ps.user_id = p_user_id
+  FROM (SELECT p_user_id AS user_id) u
+  LEFT JOIN player_states ps ON ps.user_id = u.user_id
   ON CONFLICT (user_id, character_id) DO UPDATE SET
-    friendship_level = GREATEST(0, LEAST(100, user_relationships.friendship_level + EXCLUDED.friendship_level)),
-    romance_level = GREATEST(0, LEAST(100, user_relationships.romance_level + EXCLUDED.romance_level)),
-    familiarity = GREATEST(0, LEAST(100, user_relationships.familiarity + EXCLUDED.familiarity)),
-    visibility = GREATEST(0, LEAST(100, user_relationships.visibility + EXCLUDED.visibility)),
-    trust = GREATEST(-100, LEAST(100, user_relationships.trust + EXCLUDED.trust)),
-    tension = GREATEST(0, LEAST(100, user_relationships.tension + EXCLUDED.tension)),
-    bond_level = GREATEST(0, LEAST(100, user_relationships.bond_level + EXCLUDED.bond_level)),
-    last_interaction_day = EXCLUDED.last_interaction_day,
+    friendship_level = GREATEST(0, LEAST(100, user_relationships.friendship_level + p_friendship_delta)),
+    romance_level = GREATEST(0, LEAST(100, user_relationships.romance_level + p_romance_delta)),
+    familiarity = GREATEST(0, LEAST(100, user_relationships.familiarity + p_friendship_delta)),
+    visibility = GREATEST(0, LEAST(100, user_relationships.visibility + (p_friendship_delta + p_romance_delta))),
+    trust = GREATEST(-100, LEAST(100, user_relationships.trust + (p_friendship_delta / 2))),
+    tension = GREATEST(0, LEAST(100, user_relationships.tension + (p_romance_delta / 2))),
+    bond_level = GREATEST(0, LEAST(100, user_relationships.bond_level + (p_friendship_delta + p_romance_delta))),
+    last_interaction_day = CASE WHEN p_friendship_delta = 0 AND p_romance_delta = 0 THEN user_relationships.last_interaction_day ELSE ps.current_day END,
     updated_at = NOW();
 END;
 $$ LANGUAGE plpgsql;

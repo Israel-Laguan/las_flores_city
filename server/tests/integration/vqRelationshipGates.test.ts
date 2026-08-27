@@ -5,6 +5,7 @@ import {
   relationshipPassesFilters,
   derivePosture,
 } from '@las-flores/shared';
+import { filterChoices } from '../../src/routes/dialogue-helpers';
 import fs from 'fs';
 import path from 'path';
 import * as yaml from 'js-yaml';
@@ -156,12 +157,16 @@ describe('Valentina endings gate matrix (real YAML)', () => {
     await seedRelationship({
       trust: 50, familiarity: 60, tension: 10, daily_vibe: 20, romance_level: 30, status: 'CONFIDANT',
     });
-    const state = await loadConditionState();
-    const map = { [VQ_CHARACTER_ID]: state };
     const tree = endings();
-
-    expect(relationshipPassesFilters(choiceById(tree, 'vq_endings_start', 'branch_grounded'), map, VQ_CHARACTER_ID)).toBe(true);
-    expect(relationshipPassesFilters(choiceById(tree, 'vq_endings_start', 'branch_friends'), map, VQ_CHARACTER_ID)).toBe(true);
+    const startNode = tree.nodes[tree.start_node_id];
+    
+    // Use the production filterChoices path which tests both player-state
+    // flags (vq_gave_space) and relationship gates (trust/familiarity/romance).
+    const filtered = await filterChoices(startNode.choices, TEST_USER_ID, VQ_CHARACTER_ID);
+    const filteredIds = filtered.map((c: any) => c.id);
+    
+    expect(filteredIds).toContain('branch_grounded');
+    expect(filteredIds).toContain('branch_friends');
   });
 
   test('scenario 2: low trust / high romance → Grounded+Departed hidden, Friends shown', async () => {
@@ -172,13 +177,15 @@ describe('Valentina endings gate matrix (real YAML)', () => {
     await seedRelationship({
       trust: 10, familiarity: 40, tension: 20, daily_vibe: 10, romance_level: 35, status: 'ACQUAINTANCE',
     });
-    const state = await loadConditionState();
-    const map = { [VQ_CHARACTER_ID]: state };
     const tree = endings();
-
-    expect(relationshipPassesFilters(choiceById(tree, 'vq_endings_start', 'branch_grounded'), map, VQ_CHARACTER_ID)).toBe(false);
-    expect(relationshipPassesFilters(choiceById(tree, 'vq_endings_start', 'branch_departed'), map, VQ_CHARACTER_ID)).toBe(false);
-    expect(relationshipPassesFilters(choiceById(tree, 'vq_endings_start', 'branch_friends'), map, VQ_CHARACTER_ID)).toBe(true);
+    const startNode = tree.nodes[tree.start_node_id];
+    
+    const filtered = await filterChoices(startNode.choices, TEST_USER_ID, VQ_CHARACTER_ID);
+    const filteredIds = filtered.map((c: any) => c.id);
+    
+    expect(filteredIds).not.toContain('branch_grounded');
+    expect(filteredIds).not.toContain('branch_departed');
+    expect(filteredIds).toContain('branch_friends');
 
     // No contradictory "you pushed her away" on a non-pushed playthrough:
     // branch_shut_out requires the vq_pushed_away player flag, which is unset.
@@ -189,15 +196,19 @@ describe('Valentina endings gate matrix (real YAML)', () => {
   test('scenario 3: high tension / low familiarity → GUARDED posture, breakthrough gated out', async () => {
     await seedRelationship({ trust: 12, familiarity: 15, tension: 65 });
     const state = await loadConditionState();
-    const map = { [VQ_CHARACTER_ID]: state };
 
     expect(derivePosture(state)).toBe('GUARDED');
 
     const father = loadDialogueYaml('dialogues/valentina_quan_relationship/dialogue_vq_father.yaml');
-    // tuition_pattern (the breakthrough reveal) requires trust gte:20.
-    expect(relationshipPassesFilters(choiceById(father, 'vq_father_tuition', 'tuition_pattern'), map, VQ_CHARACTER_ID)).toBe(false);
+    // Use the production filterChoices path to test both posture derivation
+    // and relationship gates (tuition_pattern requires trust gte:20).
+    const filtered = await filterChoices(father.nodes['vq_father_tuition'].choices, TEST_USER_ID, VQ_CHARACTER_ID);
+    const filteredIds = filtered.map((c: any) => c.id);
+    
+    // tuition_pattern (the breakthrough reveal) requires trust gte:20 → hidden.
+    expect(filteredIds).not.toContain('tuition_pattern');
     // Safe alternatives stay available.
-    expect(relationshipPassesFilters(choiceById(father, 'vq_father_tuition', 'tuition_quiet'), map, VQ_CHARACTER_ID)).toBe(true);
+    expect(filteredIds).toContain('tuition_quiet');
   });
 
   test('scenario 4: high familiarity / low alignment → CONFRONTATIONAL posture derived', async () => {
@@ -213,21 +224,24 @@ describe('Valentina endings gate matrix (real YAML)', () => {
     );
     // Neglected: earned gates pass, but vibe has decayed far negative.
     await seedRelationship({ trust: 55, familiarity: 60, tension: 15, romance_level: 30, daily_vibe: -45 });
-    let state = await loadConditionState();
-    let map = { [VQ_CHARACTER_ID]: state };
     const tree = endings();
 
+    // Use the production filterChoices path which tests vibe-based gates
+    // (daily_vibe thresholds) alongside relationship gates.
+    let filtered = await filterChoices(tree.nodes['vq_endings_start'].choices, TEST_USER_ID, VQ_CHARACTER_ID);
+    let filteredIds = filtered.map((c: any) => c.id);
+    
     // Romantic branches are paced out; the pacing option appears.
-    expect(relationshipPassesFilters(choiceById(tree, 'vq_endings_start', 'branch_grounded'), map, VQ_CHARACTER_ID)).toBe(false);
-    expect(relationshipPassesFilters(choiceById(tree, 'vq_endings_start', 'branch_pacing'), map, VQ_CHARACTER_ID)).toBe(true);
-    expect(relationshipPassesFilters(choiceById(tree, 'vq_endings_start', 'branch_friends'), map, VQ_CHARACTER_ID)).toBe(true);
+    expect(filteredIds).not.toContain('branch_grounded');
+    expect(filteredIds).toContain('branch_pacing');
+    expect(filteredIds).toContain('branch_friends');
 
     // Re-engagement restores vibe → pacing hides, Grounded returns.
     await seedRelationship({ trust: 55, familiarity: 60, tension: 15, romance_level: 30, daily_vibe: 25 });
-    state = await loadConditionState();
-    map = { [VQ_CHARACTER_ID]: state };
-    expect(relationshipPassesFilters(choiceById(tree, 'vq_endings_start', 'branch_pacing'), map, VQ_CHARACTER_ID)).toBe(false);
-    expect(relationshipPassesFilters(choiceById(tree, 'vq_endings_start', 'branch_grounded'), map, VQ_CHARACTER_ID)).toBe(true);
+    filtered = await filterChoices(tree.nodes['vq_endings_start'].choices, TEST_USER_ID, VQ_CHARACTER_ID);
+    filteredIds = filtered.map((c: any) => c.id);
+    expect(filteredIds).not.toContain('branch_pacing');
+    expect(filteredIds).toContain('branch_grounded');
   });
 
   test('scenario 6: pushed-away save reaches Shut-out; warm trust hides it', async () => {
@@ -237,18 +251,21 @@ describe('Valentina endings gate matrix (real YAML)', () => {
       [TEST_USER_ID]
     );
     await seedRelationship({ trust: 5, familiarity: 30, tension: 40 });
-    let state = await loadConditionState();
-    let map = { [VQ_CHARACTER_ID]: state };
     const tree = endings();
 
-    expect(relationshipPassesFilters(choiceById(tree, 'vq_endings_start', 'branch_shut_out'), map, VQ_CHARACTER_ID)).toBe(true);
-    expect(relationshipPassesFilters(choiceById(tree, 'vq_endings_start', 'branch_friends'), map, VQ_CHARACTER_ID)).toBe(true);
+    // Use the production filterChoices path which tests both
+    // player-state flags (vq_pushed_away) and relationship gates (trust).
+    let filtered = await filterChoices(tree.nodes['vq_endings_start'].choices, TEST_USER_ID, VQ_CHARACTER_ID);
+    let filteredIds = filtered.map((c: any) => c.id);
+    
+    expect(filteredIds).toContain('branch_shut_out');
+    expect(filteredIds).toContain('branch_friends');
 
     // Warm relationship after re-engagement → shut-out is hidden by trust gte:20.
     await seedRelationship({ trust: 45, familiarity: 60, tension: 10 });
-    state = await loadConditionState();
-    map = { [VQ_CHARACTER_ID]: state };
-    expect(relationshipPassesFilters(choiceById(tree, 'vq_endings_start', 'branch_shut_out'), map, VQ_CHARACTER_ID)).toBe(false);
+    filtered = await filterChoices(tree.nodes['vq_endings_start'].choices, TEST_USER_ID, VQ_CHARACTER_ID);
+    filteredIds = filtered.map((c: any) => c.id);
+    expect(filteredIds).not.toContain('branch_shut_out');
   });
 
   test('scenario 7: romantic success — Grounded needs trust AND romance; status→ROMANTIC effect present', async () => {
@@ -257,11 +274,12 @@ describe('Valentina endings gate matrix (real YAML)', () => {
       [TEST_USER_ID]
     );
     await seedRelationship({ trust: 50, familiarity: 60, tension: 10, romance_level: 30, daily_vibe: 20 });
-    const state = await loadConditionState();
-    const map = { [VQ_CHARACTER_ID]: state };
     const tree = endings();
 
-    expect(relationshipPassesFilters(choiceById(tree, 'vq_endings_start', 'branch_grounded'), map, VQ_CHARACTER_ID)).toBe(true);
+    // Use the production filterChoices path which tests the full relationship gate.
+    let filtered = await filterChoices(tree.nodes['vq_endings_start'].choices, TEST_USER_ID, VQ_CHARACTER_ID);
+    let filteredIds = filtered.map((c: any) => c.id);
+    expect(filteredIds).toContain('branch_grounded');
 
     // The grounded accept choice carries the canonical ROMANTIC transition.
     const groundedAccept = choiceById(tree, 'vq_end_grounded_try', 'grounded_accept');
@@ -271,10 +289,9 @@ describe('Valentina endings gate matrix (real YAML)', () => {
 
     // Trust alone without enough romance fails the gate.
     await seedRelationship({ trust: 50, familiarity: 60, tension: 10, romance_level: 10, daily_vibe: 20 });
-    const lowRomance = await loadConditionState();
-    expect(
-      relationshipPassesFilters(choiceById(tree, 'vq_endings_start', 'branch_grounded'), { [VQ_CHARACTER_ID]: lowRomance }, VQ_CHARACTER_ID)
-    ).toBe(false);
+    filtered = await filterChoices(tree.nodes['vq_endings_start'].choices, TEST_USER_ID, VQ_CHARACTER_ID);
+    filteredIds = filtered.map((c: any) => c.id);
+    expect(filteredIds).not.toContain('branch_grounded');
   });
 });
 

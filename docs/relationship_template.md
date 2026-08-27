@@ -354,19 +354,19 @@ effects:
 ### Posture vocabulary (derivePosture — centralized thresholds in `POSTURE_THRESHOLDS`)
 | Posture | Trigger |
 |---|---|
-| `WARM` | ROMANTIC/PARTNER with healthy axes; or trust≥50 & familiarity≥50 & tension<40 |
+| `WARM` | ROMANTIC/PARTNER with healthy axes; or trust≥40 & familiarity≥50 & tension<40 |
 | `CURIOUS` | default |
 | `GUARDED` | tension≥60 & familiarity<30; or trust≥30 & familiarity≥20 & tension≥40 |
 | `VOLATILE_ROMANCE` | ROMANTIC/PARTNER with trust<30 & tension≥50 |
-| `DISTANT` | status DISTANCED; or trust<20 & familiarity<20; or missing row |
+| `DISTANT` | status DISTANCED; or trust<20 & familiarity<30; or missing row |
 | `CONFRONTATIONAL` | tension≥60 & alignment<-20 |
 | `RECONCILIATORY` | reserved |
 | `BROKEN` | status ENDED |
 
 ### Fallback rule (mandatory)
 An entry node must always retain **≥1 choice with no `required_relationship` /
-`hidden_if_relationship`** so `filterChoices` can never return an empty list
-(fail-closed). The ungated option is the default fallback (Valentina's
+`hidden_if_relationship` / `required_posture` / `hidden_if_posture`** so
+`filterChoices` can never return an empty list (fail-closed). The ungated option is the default fallback (Valentina's
 `branch_friends` is always available; `branch_pacing` covers low-vibe re-engagement).
 
 ### Audit checklist (per character conversion)

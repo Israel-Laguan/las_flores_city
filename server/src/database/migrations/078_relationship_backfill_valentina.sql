@@ -11,11 +11,15 @@ INSERT INTO user_relationships (user_id, character_id, trust, status, updated_at
 SELECT
   user_id,
   '670eea6f-3983-4d5a-8195-b08be6c81661'::uuid,
-  GREATEST(-100, LEAST(100, COALESCE((stats ->> 'vq_trust')::int, 0))),
+  GREATEST(-100, LEAST(100, COALESCE(
+    CASE 
+      WHEN (stats ->> 'vq_trust') ~ '^\\d+$' THEN (stats ->> 'vq_trust')::int
+      ELSE NULL
+    END, 0
+  ))),
   'STRANGER',
   NOW()
 FROM player_states
 WHERE stats ? 'vq_trust'
 ON CONFLICT (user_id, character_id) DO UPDATE
-  SET trust = EXCLUDED.trust,
-      updated_at = NOW();
+  SET updated_at = NOW();

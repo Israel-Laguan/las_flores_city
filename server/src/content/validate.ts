@@ -142,8 +142,10 @@ function validateRelationshipGates(
         );
       }
 
-      const relEffect = choice?.effects?.relationship_effect ?? choice?.relationship_effect;
-      if (relEffect && relEffect !== true) {
+      // Check both choice-level and node-level relationship_effect
+      const choiceRelEffect = choice?.effects?.relationship_effect ?? choice?.relationship_effect;
+      const nodeRelEffect = node?.effects?.relationship_effect;
+      if (choiceRelEffect && choiceRelEffect !== true) {
         const stateSet = choice?.effects?.state_set ?? node?.effects?.state_set ?? {};
         const hasEncounterBookkeeping = Object.keys(stateSet ?? {}).some((k) =>
           k.startsWith('last_') && k.endsWith('_encounter_at')
@@ -155,17 +157,31 @@ function validateRelationshipGates(
           );
         }
       }
+      if (nodeRelEffect && nodeRelEffect !== true) {
+        const stateSet = choice?.effects?.state_set ?? node?.effects?.state_set ?? {};
+        const hasEncounterBookkeeping = Object.keys(stateSet ?? {}).some((k) =>
+          k.startsWith('last_') && k.endsWith('_encounter_at')
+        );
+        if (!hasEncounterBookkeeping) {
+          warnings.push(
+            `${filePath}: node "${nodeId}" writes a relationship_effect at node level ` +
+            `but omits last_<slug>_encounter_at bookkeeping in state_set.`
+          );
+        }
+      }
     }
 
     // Entry-node empty-list guard (only the tree's start node).
+    // Check for relationship gates (required_relationship, hidden_if_relationship)
+    // and posture gates (required_posture, hidden_if_posture).
     if (nodeId === startNodeId && choices.length > 0) {
       const allGated = choices.every(
-        (c) => c?.required_relationship || c?.hidden_if_relationship
+        (c) => c?.required_relationship || c?.hidden_if_relationship || c?.required_posture || c?.hidden_if_posture
       );
       if (allGated) {
         warnings.push(
           `${filePath}: entry node "${nodeId}" has a required_relationship/hidden_if_relationship ` +
-          `on EVERY choice — filterChoices may return an empty list (fail-closed). Keep at least ` +
+          `or required_posture/hidden_if_posture on EVERY choice — filterChoices may return an empty list (fail-closed). Keep at least ` +
           `one ungated fallback.`
         );
       }
