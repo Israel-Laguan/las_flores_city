@@ -23,6 +23,8 @@ import {
   type ContentPlanItem,
   type ContentLink,
   type ChatMessage,
+  GraphDeltaSchema,
+  GraphDeltaEdgeSchema,
   type GraphDelta,
   type GraphDeltaEdge,
   findEdgeMapping,
@@ -475,7 +477,7 @@ async function synthesizePlanFromDeltas(
   return {
     id: planId,
     description,
-    status: 'draft',
+    status: 'proposed',
     items,
     links,
     _meta: {
@@ -489,7 +491,7 @@ export class GraphIntakeService {
    * Create a new content plan from a natural language description using the
    * graph-based authoring path. This:
    *   1. Calls chatPropose to generate structured GraphDelta[] + GraphDeltaEdge[]
-   *   2. Creates a content_plans row with status='draft'
+    *   2. Creates a content_plans row with status='proposed'
    *   3. Writes all deltas and edges to Neo4j (the authoring canvas)
    *   4. Returns the planId + counts
    *
@@ -533,6 +535,66 @@ export class GraphIntakeService {
       context,
     );
 
+    return this.persistPlanWithDeltas(planId, description, deltas, deltaEdges, usage);
+  }
+
+  /**
+   * M47 stress-test injection path: persist a plan from caller-supplied
+   * deltas/edges, bypassing chatPropose entirely. Only reachable from the
+   * test-only route guard (NODE_ENV !== 'production'); the route never exposes
+   * this in production. Deltas are re-tagged with a fresh planId and schema-
+   * validated before the normal persistence flow runs.
+   */
+  async createPlanFromInjectedDeltas(
+    description: string,
+    rawDeltas: unknown[],
+    rawEdges: unknown[],
+  ): Promise<CreatePlanFromDescriptionResult> {
+    if (!isNeo4jEnabled()) {
+      throw new GraphIntakeDisabledError('Neo4j authoring graph is disabled — cannot create graph-based plan. Enable NEO4J_ENABLED first.');
+    }
+
+    const planId = uuidv4();
+    const now = new Date().toISOString();
+
+    const deltas = rawDeltas.map((d) => {
+      const parsed = GraphDeltaSchema.safeParse({
+        ...(typeof d === 'object' && d !== null ? d : {}),
+        planId,
+        createdAt: now,
+      });
+      if (!parsed.success) {
+        throw new GraphIntakeValidationError(
+          `Injected delta failed schema validation: ${parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; ')}`,
+        );
+      }
+      return parsed.data;
+    });
+    const deltaEdges = rawEdges.map((e) => {
+      const parsed = GraphDeltaEdgeSchema.safeParse({
+        ...(typeof e === 'object' && e !== null ? e : {}),
+        planId,
+      });
+      if (!parsed.success) {
+        throw new GraphIntakeValidationError(
+          `Injected edge failed schema validation: ${parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; ')}`,
+        );
+      }
+      return parsed.data;
+    });
+
+    return this.persistPlanWithDeltas(planId, description, deltas, deltaEdges, null);
+  }
+
+  /** Shared post-proposal persistence flow (OLTP row + Neo4j transaction). */
+  private async persistPlanWithDeltas(
+    planId: string,
+    description: string,
+    deltas: GraphDelta[],
+    deltaEdges: GraphDeltaEdge[],
+    usage: LLMUsage | null,
+  ): Promise<CreatePlanFromDescriptionResult> {
+    const timestamp = new Date().toISOString();
     // Step 4: Validate we got deltas back
     if (!deltas || deltas.length === 0) {
       throw new GraphIntakeValidationError('chatPropose returned no deltas for the description');
@@ -542,11 +604,12 @@ export class GraphIntakeService {
       throw new GraphIntakeValidationError(`Cannot synthesize a plan item from a DELETE delta for [${deleteDelta.nodeType}:${deleteDelta.nodeId}] — delete materialization is not supported by the legacy plan contract. Remove the tombstone before approving.`);
     }
 
-    // Step 5: Create the plan row in OLTP. plan_json is synthesized from the
+    // Create the plan row in OLTP. plan_json is synthesized from the
     // deltas/edges so every legacy/preview consumer (which parses plan_json
     // directly, e.g. StoryBuilderOrchestrator.stagePlan, StoryBuilderSolidify,
     // StoryBuilderMigration, AssetPublishService) receives a valid ContentPlan
     // instead of an empty object that fails ContentPlanSchema.parse.
+    const context = await this.gatherContext();
     const synthesizedPlan = await synthesizePlanFromDeltas(planId, description, deltas, deltaEdges, context);
     // Reject a schema-invalid plan before it is persisted. The synthesized
     // snapshot is what every legacy/preview consumer parses; persisting an
@@ -560,8 +623,8 @@ export class GraphIntakeService {
       );
     }
     await queryOLTP(
-      `INSERT INTO content_plans (id, description, status, plan_json, created_at, updated_at)
-       VALUES ($1, $2, 'draft', $3::jsonb, $4, $4)`,
+       `INSERT INTO content_plans (id, description, status, plan_json, created_at, updated_at)
+        VALUES ($1, $2, 'proposed', $3::jsonb, $4, $4)`,
       [planId, description, parsedPlan.data, timestamp],
     );
 
@@ -590,7 +653,7 @@ export class GraphIntakeService {
         }
       });
     } catch (graphErr) {
-      // Clean up the orphaned OLTP plan row so we never leave a 'draft' plan
+      // Clean up the orphaned OLTP plan row so we never leave a 'proposed' plan
       // with no corresponding graph deltas.
       try {
         await queryOLTP('DELETE FROM content_plans WHERE id = $1', [planId]);

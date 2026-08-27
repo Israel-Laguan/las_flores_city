@@ -201,7 +201,7 @@ describe('GraphIntakeService — unit tests (Neo4j mocked)', () => {
         'Test description',
         expect.objectContaining({
           id: TEST_PLAN_ID,
-          status: 'draft',
+          status: 'proposed',
           items: expect.any(Array),
         }),
         expect.any(String),
