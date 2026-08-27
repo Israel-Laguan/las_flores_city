@@ -143,6 +143,26 @@ The LLM pre-fill step calls `ContentPlanService.gatherContext()`, which must mat
 
 See `docs/STORY_BUILDER_DESIGN.md` §6 for unresolved design questions and §4.4 for future extensions.
 
+### Historical intake exercise (2026-08-27)
+
+A one-time stress exercise of the graph-intake and solidify flow was run against the Podman
+development stack in late August 2026. It used deterministic fixtures across baseline,
+burst, sustained, recovery, and review scenarios. The observed results were:
+
+- The complete flow reached terminal states with no lost jobs or duplicate commits/publishes.
+- Sustained intake drained fully: 60 submissions, 60 terminal jobs, and less than 10 seconds
+  to drain after submissions stopped.
+- Burst solidification completed for every plan at 1, 5, 10, and 25 concurrent submissions.
+- A worker interruption resumed from durable `job_runs` state without a second commit.
+- The existing `needs_review` surface handled conflict proposals without mutating canon before
+  approval; five synthetic plans completed review/commit with no manual database repair.
+- The exercise found no coordination gap requiring a task graph or swarm. The current
+  `content_plans` / `job_runs` model remains the appropriate architecture for this workload.
+
+This was a historical workflow check, not an ongoing benchmark or capacity guarantee. Host and
+dependency resource telemetry (pool wait, RSS, Redis/MinIO latency and errors, CPU, swap, and
+uptime) was not collected, so these results must not be used as resource-capacity limits.
+
 ---
 
 ## Path C: Lore + asset generation

@@ -1,14 +1,14 @@
 # M48 - Social Dialogue and Relationship Arc Audit
 
-> **Status:** In Progress — Phases 1–5 complete (2026-08-24); Phase 6 arc batches pending
+> **Status:** Evidence Complete — Phases 1–6 complete (2026-08-24 to 2026-08-25); exit-decision review pending
 > **Owner:** narrative systems effort
 > **Source:** `docs/relationship_template.md`, `docs/ARCHITECTURE_SEPARATION_ANALYSIS.md`,
 > the canonical `user_relationships` pilot, and the Valentina Quan relationship content
 
-## Implementation Status (2026-08-24)
+## Implementation Status (2026-08-24 to 2026-08-25)
 
 Phases 1–5 are implemented, tested, and deployed to the dev stack. Phase 6 (generalization
-to the remaining arc groups) has not started.
+to the remaining arc groups) is complete across six batches.
 
 **Delivered:**
 
@@ -41,14 +41,37 @@ to the remaining arc groups) has not started.
 - Server lint/build clean; intake-worker restarted (migration recorded in `schema_migrations`);
   game-server healthy via in-container `wget`.
 
+**Phase 6 completion summary (2026-08-24 to 2026-08-25):**
+
+- **Batch 1 (VQ, 2026-08-24):** gates + encounter bookkeeping added to `flirt_play`,
+  `observant_coffee`, `wall_back_off`, `wall_vulnerable_first`, `grounded_accept`;
+  `wall_push_harder` keeps its negative delta ungated. Audit:
+  `content/dialogues/valentina_quan_relationship/AUDIT.md`.
+- **Batch 2 (Camila Santander, 2026-08-24):** all 13 legacy `relationship_change` effects
+  across 6 trees converted to `effects.relationship_effect` + `last_camila_encounter_at`
+  bookkeeping. Positive-romance confrontation choices gained `required_relationship`
+  gates.
+- **Batch 3 (Layla/Wen, 2026-08-25):** full 8-tree arc conversion; dead `condition:` router
+  grammar replaced with supported flag+axis gates; cross-target writes via
+  `relationship_effect.target_character_id`; covered by
+  `server/tests/integration/crossTargetRelationship.test.ts`. Audit:
+  `content/dialogues/layla_relationship/AUDIT.md`.
+- **Batches 4–6 (Lin sisters, Ana Villanueva, remaining characters, 2026-08-25):** last 26
+  legacy `relationship_change` effects converted across 13 trees; positive-romance choices
+  gained friendship/ tension gates; dead condition grammar in `camila_santander_endings`
+  rewritten to supported gates. With these batches **no `relationship_change` or legacy
+  `condition:` grammar remains anywhere in content**.
+
+Posture threshold tuning applied after the 7-scenario API-driven playtest
+(`shared/src/relationshipPostures.ts`); all 10 playtest vectors verified with no
+regressions. `validate:content` is clean of relationship warnings (only tracked
+asset-path warnings remain).
+
 **Remaining for closure:**
 
-- Phase 6 batches 2–6 (Camila Santander → Layla/Wen → Lin sisters → Ana Villanueva →
-  remaining `relationship_change` content), each with audit report + converted content +
-  validation + ≥1 incompatible-state integration scenario.
-- Posture threshold tuning after a manual 7-scenario playtest (`POSTURE_THRESHOLDS`
-  first-draft constants).
-- Exit-decision review (posture vocabulary sufficiency, fallback authoring cost).
+- Exit-decision review (posture vocabulary sufficiency, explicit axis gate authoring
+  clarity, fallback authoring cost, additional relationship fields, date framework
+  readiness, safe migration path for future arcs).
 
 ## Goal
 
@@ -300,3 +323,38 @@ At the end of M48, decide whether:
 - additional database fields or derived relationship values are needed;
 - the full date framework should proceed;
 - the next arc group can be migrated safely.
+
+### Exit-decision review (2026-08-26)
+
+**Posture vocabulary:** sufficient. The eight-posture model (`WARM`, `CURIOUS`, `GUARDED`,
+`VOLATILE_ROMANCE`, `DISTANT`, `CONFRONTATIONAL`, `RECONCILIATORY`, `BROKEN`) plus the
+tuned `POSTURE_THRESHOLDS` covered all 10 playtest vectors without requiring additional
+postures. Content authors target postures, not raw axis combinations.
+
+**Explicit axis gates:** understandable. The `required_relationship` / `hidden_if_relationship`
+contract uses the same `gte`/`lte`/`gt`/`lt`/`eq`/`ne` grammar as `required_stats`. The
+story-processing skill and `docs/relationship_template.md` document the contract; content
+authors used it correctly across 26+ converted effects without runtime schema errors.
+
+**Fallback authoring cost:** acceptable. Every converted tree retains at least one ungated
+fallback choice so `filterChoices` never returns an empty list. The Layla/Wen conversion
+showed that existing neutral fallbacks can be preserved rather than rewritten, keeping
+authoring cost bounded.
+
+**Additional database fields:** not needed. The existing six axes (`trust`, `familiarity`,
+`alignment`, `tension`, `debt`, `visibility`) plus `bond`, `vibe`, `status`, `memory`, and
+`flags` on `user_relationships` are sufficient. No new columns were added during Phase 6.
+
+**Date framework:** deferred. M48’s scope is relationship-gate consistency, not date-slot
+allocation. The encounter bookkeeping fields (`last_*_encounter_at`) provide the pacing
+primitives the date framework would need, but no date-slot schema or runtime was introduced.
+
+**Safe migration path for future arcs:** yes. The Phase 6 batches established a repeatable
+checklist: convert `relationship_change` → `relationship_effect`, add per-slug encounter
+bookkeeping, gate positive-romance choices, keep one ungated fallback, run
+`validate:content`, and record audit decisions in `content/dialogues/<slug>/AUDIT.md`.
+No schema changes are required for additional arcs.
+
+**M48 verdict:** Complete. The posture vocabulary, gate contract, and migration checklist are
+sufficient for ongoing relationship-arc content. Future arcs can follow the Phase 6 checklist
+without additional infrastructure work.
