@@ -77,3 +77,22 @@ Before drafting YAML, use your tools (like `grep_search`) against the `content/`
     - Present the validated YAML changes to the user for final approval.
     - Remind the user that the story is now safely in "Dev Mode" (the repository).
     - Inform the user they can deploy the story via the Admin Panel's "Content Migration" feature when ready.
+
+### M48 Relationship-Gate Conflict Checks
+
+When authoring/reviewing dialogue with relationship gates (`required_relationship`,
+`hidden_if_relationship`, `required_posture`, `hidden_if_posture`), verify:
+
+- **No romance-without-gate**: a `relationship_effect.romance` delta must sit behind a
+  `required_relationship` (or `hidden_if_relationship`) gate, so a low-trust re-engagement
+  playthrough can never reach a romantic beat it didn't earn.
+- **No empty-list risk**: every entry node keeps ≥1 choice with no relationship gate or posture gate,
+  so `filterChoices` (fail-closed) can never return zero choices.
+- **Contradiction guard**: a `hidden_if_relationship: { axes: { trust: "gte:N" } }` on an ending
+  (e.g. Shut Out) must not be the *only* option when trust is actually high — pair it with an
+  ungated fallback (Friends) or a posture gate.
+- **Axis grammar**: comparisons use `gte:/lte:/gt:/lt:/eq:/ne:`; posture values come from the
+  `PostureSchema` enum. Keep thresholds in `POSTURE_THRESHOLDS` (shared), never duplicated in YAML.
+- **neutral_default** evaluates against a STRANGER/zero baseline (not fail-open). A gate such
+  as `trust: "gte:40"` still fails against this baseline; it is intentional only (e.g. first-time
+  guarded version) and must not be used to paper over a missing relationship row elsewhere.

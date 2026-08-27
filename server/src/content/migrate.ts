@@ -116,12 +116,21 @@ async function areContentReferencesPresent(contentType: ContentType, data: Recor
 
 async function shouldSkipMigration(filePath: string, contentDir: string, checksum: string): Promise<boolean> {
   const relativePath = path.relative(contentDir, filePath);
-  const result = await queryOLTP(
-    'SELECT id FROM migration_log WHERE (file_path = $1 OR file_path = $2 OR file_checksum = $3) LIMIT 1',
-    [filePath, relativePath, checksum]
+  // M48 fix: compare the stored checksum against the file's CURRENT
+  // checksum. The previous query matched on path OR checksum but never
+  // compared them, so any edited file whose row already existed was
+  // permanently skipped — YAML changes never re-published to the CDN.
+  const result = await queryOLTP<{ id: string; file_checksum: string }>(
+    'SELECT id, file_checksum FROM migration_log WHERE (file_path = $1 OR file_path = $2) ORDER BY applied_at DESC LIMIT 1',
+    [filePath, relativePath]
   );
 
   if (result.rows.length === 0) {
+    return false;
+  }
+
+  if (result.rows[0].file_checksum !== checksum) {
+    console.log(`🔁 Checksum changed: ${relativePath} — reprocessing`);
     return false;
   }
 

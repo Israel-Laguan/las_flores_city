@@ -105,7 +105,7 @@ async function handleIntraChunkChoice(
   const nextNodeId = matchedChoice.next_node_id;
   const nextNode = chunkNodes[nextNodeId] ?? null;
   const isEnd = !nextNode || (nextNode as any).is_end === true || (!(nextNode as any).choices || (nextNode as any).choices.length === 0);
-  const nextChoices = isEnd ? [] : await filterChoices((nextNode as any)?.choices || [], userId);
+  const nextChoices = isEnd ? [] : await filterChoices((nextNode as any)?.choices || [], userId, (nextNode as any)?.speaker_id);
   const tbCursor = await PlayerStateRepository.getDialogueCursor(userId);
 
   emitIntraChunkTelemetry(userId, dialogueId, choiceId, currentChunkId, choiceResult);
@@ -280,7 +280,7 @@ async function handleChunkBoundaryChoice(
   );
 
   const isEnd = !nextNode || nextNode.is_end === true || (!nextNode?.choices || nextNode.choices.length === 0);
-  const nextChoices = isEnd ? [] : await filterChoices(nextNode?.choices || [], userId);
+  const nextChoices = isEnd ? [] : await filterChoices(nextNode?.choices || [], userId, nextNode?.speaker_id);
   const tbCursor = await PlayerStateRepository.getDialogueCursor(userId);
 
   const mysterySolveStatus = buildMysterySolveStatus(validationResult.breakthroughStatus);

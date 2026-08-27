@@ -27,21 +27,30 @@ nodes:
       - id: "agree_cold"
         text: "You're right. Beto knew the risks. Let's take the servers."
         next_node_id: "c1110000-0000-0000-0000-000000000023"
-        relationship_change:
-          stat: "friendship"
-          amount: 5
+        effects:
+          relationship_effect:
+            friendship: 5
+          state_set:
+            last_ana_encounter_at: NOW
       - id: "angry_reject"
         text: "You're a monster, Ana. I'm going to the docks. You can rot."
         next_node_id: "c1110000-0000-0000-0000-000000000024"
-        relationship_change:
-          stat: "friendship"
-          amount: -10
+        effects:
+          relationship_effect:
+            friendship: -10
+          state_set:
+            last_ana_encounter_at: NOW
       - id: "confront_flaw"
         text: "Stop doing that. Stop treating people like math problems because you're terrified of losing them. We can hit the servers after we get him out."
         next_node_id: "c1110000-0000-0000-0000-000000000025"
-        relationship_change:
-          stat: "romance"
-          amount: 1
+        # Mid-arc romance: advance only after genuine warmth.
+        required_relationship:
+          friendship: "gte:20"
+        effects:
+          relationship_effect:
+            romance: 1
+          state_set:
+            last_ana_encounter_at: NOW
 
   c1110000-0000-0000-0000-000000000023:
     id: "c1110000-0000-0000-0000-000000000023"

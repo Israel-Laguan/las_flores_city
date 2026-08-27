@@ -1,10 +1,25 @@
 import express from 'express';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import type { AuthRequest } from '../middleware/auth.js';
 import { ChatMessageSchema, type ChatMessage } from '@las-flores/shared';
 import { graphIntakeService, GraphIntakeDisabledError, GraphIntakeValidationError } from '../services/GraphIntakeService.js';
 import { isNeo4jEnabled } from '../services/Neo4jClient.js';
 
 export const adminStoryBuilderGraphIntakeRouter = express.Router();
+
+/** M47 stress-test: resolve the fixtures directory (env override first). */
+function resolveFixturePath(fixtureId: string): string {
+  if (!/^[a-zA-Z0-9_-]+$/.test(fixtureId)) {
+    throw new GraphIntakeValidationError('fixture id must match [a-zA-Z0-9_-]+');
+  }
+  const candidates = [
+    process.env.INTAKE_STRESS_FIXTURES_DIR,
+    path.resolve(process.cwd(), 'tests/intake-stress/fixtures'),
+    path.resolve(process.cwd(), 'server/tests/intake-stress/fixtures'),
+  ].filter((p): p is string => typeof p === 'string' && p.length > 0);
+  return path.join(candidates[0], `${fixtureId}.json`);
+}
 
 // POST /admin/story-builder/plans/graph-intake — Create a new graph-based plan from a description
 adminStoryBuilderGraphIntakeRouter.post('/plans/graph-intake', async (req: AuthRequest, res) => {
@@ -20,6 +35,53 @@ adminStoryBuilderGraphIntakeRouter.post('/plans/graph-intake', async (req: AuthR
     }
 
     const { description, messages } = req.body ?? {};
+
+    // M47 stress-test replay: `?fixture=<id>` (or X-Test-Fixture header) bypasses
+    // the LLM and injects a committed GraphDelta[] fixture. Never active in
+    // production.
+    const fixtureId = (req.query.fixture as string | undefined) ?? req.header('X-Test-Fixture');
+    if (fixtureId !== undefined) {
+      if (process.env.NODE_ENV === 'production') {
+        res.status(403).json({
+          success: false,
+          error: 'Fixture injection is not available in production',
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+      const startedAt = Date.now();
+      let raw: string;
+      try {
+        raw = await fs.readFile(resolveFixturePath(fixtureId), 'utf-8');
+      } catch {
+        res.status(404).json({
+          success: false,
+          error: `Fixture not found: ${fixtureId}`,
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+      let fixture: any;
+      try {
+        fixture = JSON.parse(raw);
+      } catch (err: any) {
+        res.status(400).json({ success: false, error: `Invalid fixture JSON: ${err.message}`, timestamp: new Date().toISOString() });
+        return;
+      }
+      const result = await graphIntakeService.createPlanFromInjectedDeltas(
+        typeof description === 'string' && description.trim().length > 0
+          ? description
+          : String(fixture.description ?? `[M47 fixture] ${fixtureId}`),
+        Array.isArray(fixture.deltas) ? fixture.deltas : [],
+        Array.isArray(fixture.edges) ? fixture.edges : [],
+      );
+      res.json({
+        success: true,
+        data: { ...result, injectionMs: Date.now() - startedAt, fixture: fixtureId },
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
 
     if (!description || typeof description !== 'string' || description.trim().length === 0) {
       res.status(400).json({

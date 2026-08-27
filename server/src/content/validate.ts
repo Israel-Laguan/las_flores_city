@@ -103,6 +103,92 @@ async function validateDialogueTreeBeatSlugs(filePath: string, data: any, errors
   }
 }
 
+/**
+ * M48 relationship-gate authoring checks (warnings, not hard errors).
+ *  - romance raised without a `required_relationship` gate is a
+ *    romance-without-gate risk (the romantic beat can surprise a player
+ *    who never earned the relationship);
+ *  - an entry node whose every choice carries a relationship gate can
+ *    yield an empty choice list at filter time (fail-closed) — at least
+ *    one ungated fallback must always remain;
+ *  - a node that writes a `relationship_effect` but omits the
+ *    `last_<slug>_encounter_at` bookkeeping loses re-engagement tracking.
+ */
+function validateRelationshipGates(
+  filePath: string,
+  data: any,
+  warnings: string[]
+) {
+  const nodes = data?.nodes ?? {};
+  const startNodeId = data?.start_node_id;
+
+  for (const [nodeId, node] of Object.entries(nodes as Record<string, any>)) {
+    const choices: any[] = node?.choices ?? [];
+
+    for (const choice of choices) {
+      const romanceDelta = choice?.effects?.relationship_effect?.romance
+        ?? choice?.relationship_effect?.romance;
+      const hasRequiredRel = !!choice?.required_relationship;
+      const hasHiddenRel = !!choice?.hidden_if_relationship;
+      if (
+        typeof romanceDelta === 'number' &&
+        romanceDelta > 0 &&
+        !hasRequiredRel &&
+        !hasHiddenRel
+      ) {
+        warnings.push(
+          `${filePath}: choice "${choice?.id}" on node "${nodeId}" raises romance (${romanceDelta}) ` +
+          `without a required_relationship / hidden_if_relationship gate — romance-without-gate risk.`
+        );
+      }
+
+      // Check both choice-level and node-level relationship_effect
+      const choiceRelEffect = choice?.effects?.relationship_effect ?? choice?.relationship_effect;
+      const nodeRelEffect = node?.effects?.relationship_effect;
+      if (choiceRelEffect && choiceRelEffect !== true) {
+        const stateSet = choice?.effects?.state_set ?? node?.effects?.state_set ?? {};
+        const hasEncounterBookkeeping = Object.keys(stateSet ?? {}).some((k) =>
+          k.startsWith('last_') && k.endsWith('_encounter_at')
+        );
+        if (!hasEncounterBookkeeping) {
+          warnings.push(
+            `${filePath}: node "${nodeId}" (choice "${choice?.id}") writes a relationship_effect ` +
+            `but omits last_<slug>_encounter_at bookkeeping in state_set.`
+          );
+        }
+      }
+      if (nodeRelEffect && nodeRelEffect !== true) {
+        const stateSet = choice?.effects?.state_set ?? node?.effects?.state_set ?? {};
+        const hasEncounterBookkeeping = Object.keys(stateSet ?? {}).some((k) =>
+          k.startsWith('last_') && k.endsWith('_encounter_at')
+        );
+        if (!hasEncounterBookkeeping) {
+          warnings.push(
+            `${filePath}: node "${nodeId}" writes a relationship_effect at node level ` +
+            `but omits last_<slug>_encounter_at bookkeeping in state_set.`
+          );
+        }
+      }
+    }
+
+    // Entry-node empty-list guard (only the tree's start node).
+    // Check for relationship gates (required_relationship, hidden_if_relationship)
+    // and posture gates (required_posture, hidden_if_posture).
+    if (nodeId === startNodeId && choices.length > 0) {
+      const allGated = choices.every(
+        (c) => c?.required_relationship || c?.hidden_if_relationship || c?.required_posture || c?.hidden_if_posture
+      );
+      if (allGated) {
+        warnings.push(
+          `${filePath}: entry node "${nodeId}" has a required_relationship/hidden_if_relationship ` +
+          `or required_posture/hidden_if_posture on EVERY choice — filterChoices may return an empty list (fail-closed). Keep at least ` +
+          `one ungated fallback.`
+        );
+      }
+    }
+  }
+}
+
 export async function validateYAMLFile(filePath: string, schemaOnly: boolean = false): Promise<ValidationResult> {
   const errors: ValidationError[] = [];
   const warnings: string[] = [];
@@ -138,10 +224,11 @@ export async function validateYAMLFile(filePath: string, schemaOnly: boolean = f
     if (!schemaOnly) {
       const hasSchemaErrors = validationResult.errors.some(e => e.severity === 'error');
       if (!hasSchemaErrors) {
-        if (contentType === 'dialogue') {
-          await validateDialogueBeatSlugs(filePath, data, errors);
-          await validateDialogueTreeBeatSlugs(filePath, data, errors);
-        } else if (contentType === 'scene') {
+      if (contentType === 'dialogue') {
+        await validateDialogueBeatSlugs(filePath, data, errors);
+        await validateDialogueTreeBeatSlugs(filePath, data, errors);
+        validateRelationshipGates(filePath, data, warnings);
+      } else if (contentType === 'scene') {
           await validateSceneBeatSlugs(filePath, data, errors);
         }
       }

@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
 import type { PoolClient } from 'pg';
 import { withOLTPTransaction, queryOLAP } from '@las-flores/infra';
-import { processRelationshipChange } from './dialogue-helpers.js';
+import { applyRelationshipEffect, processRelationshipChange } from './dialogue-helpers.js';
 import { THREAD_BASE_SELECT, ThreadRow, applyChoiceFilters } from './comms.js';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
 import type { SMSMessage } from '../../../shared/src/types/sms.js';
@@ -88,7 +88,7 @@ async function findChosenChoice(
 ): Promise<ChoiceResult> {
   const currentNode = tree.nodes[thread.current_node_id!];
   const rawChoices: any[] = currentNode.choices ?? [];
-  const allowed = await applyChoiceFilters(rawChoices, userId);
+  const allowed = await applyChoiceFilters(rawChoices, userId, thread.character_id);
   const chosen = allowed.find((c: any) => c.id === choiceId);
   if (!chosen) {
     return { error: makeError(404, 'choice_not_available'), chosen: null };
@@ -238,9 +238,24 @@ export async function performReplyTransaction(
         chosen.relationship_change.amount
       );
     }
+    await applyRelationshipEffect(
+      client,
+      userId,
+      characterId,
+      chosen.effects?.relationship_effect,
+      !chosen.relationship_change
+    );
 
     const now = new Date().toISOString();
     const stateUpdate = buildReplyStateUpdate(thread, chosen, tree, now);
+
+    await applyRelationshipEffect(
+      client,
+      userId,
+      characterId,
+      stateUpdate.nextNode?.effects?.relationship_effect,
+      true
+    );
 
     await persistUpdatedThread(
       client,

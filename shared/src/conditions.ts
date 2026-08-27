@@ -15,6 +15,11 @@
 // (missing stat is treated as 0, so "gt:0" fails until earned).
 // ============================================================
 
+import {
+  relationshipPassesFilters,
+  type RelationshipStateByTarget,
+} from './relationshipGates.js';
+
 export interface PlayerConditionState {
   flags: Record<string, boolean>;
   state: Record<string, string>;
@@ -153,7 +158,9 @@ export function choicePassesFilters(
  */
 export function metadataConditionsPass(
   metadata: Record<string, any> | undefined,
-  player: PlayerConditionState
+  player: PlayerConditionState,
+  relStateByTarget?: RelationshipStateByTarget,
+  defaultTargetId?: string
 ): boolean {
   if (!metadata) return true;
   if (!requiredPasses(metadata.required_flags, player.flags, 'flags')) return false;
@@ -164,5 +171,12 @@ export function metadataConditionsPass(
   if (hiddenMatches(metadata.hidden_if, player.flags, 'flags')) return false;
   if (hiddenMatches(metadata.hidden_if_state, player.state, 'state')) return false;
   if (hiddenMatches(metadata.hidden_if_stats, player.stats, 'stats')) return false;
+  // M48 relationship gates on tree metadata (read dynamically; extra keys
+  // on metadata are ignored by relationshipPassesFilters).
+  if (relStateByTarget && defaultTargetId) {
+    if (!relationshipPassesFilters(metadata as any, relStateByTarget, defaultTargetId)) {
+      return false;
+    }
+  }
   return true;
 }

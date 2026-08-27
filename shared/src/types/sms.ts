@@ -1,5 +1,21 @@
 export type SMSAuthor = 'npc' | 'player';
 
+export interface RelationshipSummary {
+  friendshipLevel: number;
+  romanceLevel: number;
+  bondLevel: number;
+  dailyVibe: number;
+  status: string;
+  axes: {
+    trust: number;
+    familiarity: number;
+    alignment: number;
+    tension: number;
+    debt: number;
+    visibility: number;
+  };
+}
+
 export interface SMSMessage {
   id: string;
   author: SMSAuthor;
@@ -20,6 +36,7 @@ export interface SMSThreadPreview {
   lastNpcMessageAt: string | null;
   friendshipLevel: number;
   romanceLevel: number;
+  relationship?: RelationshipSummary;
   unread: boolean;
 }
 
@@ -55,6 +72,7 @@ export interface SMSThreadDetail {
   choices: SMSThreadChoice[];
   friendshipLevel: number;
   romanceLevel: number;
+  relationship?: RelationshipSummary;
   unread: boolean;
 }
 

@@ -91,8 +91,9 @@ nodes:
     visual:
       expression: happy
     effects:
-      stat_set:
-        vq_trust: 5
+      relationship_effect:
+        axes:
+          trust: 5
     choices:
       - id: tease_to_phone
         text: "'If you say so.'"
@@ -107,8 +108,10 @@ nodes:
     visual:
       expression: vulnerable
     effects:
-      stat_set:
-        vq_trust: 15
+      relationship_effect:
+        axes:
+          trust: 15
+        romance: 3
     choices:
       - id: empathize_to_phone
         text: "'Thank you for telling me the true version.'"
@@ -123,8 +126,9 @@ nodes:
     visual:
       expression: focused
     effects:
-      stat_set:
-        vq_trust: 8
+      relationship_effect:
+        axes:
+          trust: 8
     choices:
       - id: why_to_phone
         text: "'Same result on paper. Sure.'"
@@ -151,8 +155,9 @@ nodes:
     visual:
       expression: vulnerable
     effects:
-      stat_set:
-        vq_trust: 8
+      relationship_effect:
+        axes:
+          trust: 8
     choices:
       - id: mother_to_end
         text: "'You don't have to carry it alone. That's all I'll say.'"
@@ -167,8 +172,10 @@ nodes:
     visual:
       expression: tender
     effects:
-      stat_set:
-        vq_trust: 5
+      relationship_effect:
+        axes:
+          trust: 5
+        romance: 2
     choices:
       - id: space_to_end
         text: "'The long version sounds worth the wait.'"
@@ -189,8 +196,9 @@ nodes:
       state_set:
         vq_arc: flirtation
         last_vq_encounter_at: NOW
-      stat_set:
-        vq_trust: 5
+      relationship_effect:
+        axes:
+          trust: 5
 
 metadata:
   version: "1.0"

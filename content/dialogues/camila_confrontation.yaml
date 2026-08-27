@@ -25,9 +25,14 @@ nodes:
       - id: "confront_call_it"
         text: "You didn't even tell them my name."
         next_node_id: "f0000000-0000-0000-0000-000000000064"
-        relationship_change:
-          stat: "romance"
-          amount: 1
+        # Mid-arc romance: only advance once Camila has warmed to the player.
+        required_relationship:
+          friendship: "gte:5"
+        effects:
+          relationship_effect:
+            romance: 1
+          state_set:
+            last_camila_encounter_at: NOW
 
   f0000000-0000-0000-0000-000000000063:
     id: "f0000000-0000-0000-0000-000000000063"
@@ -72,15 +77,21 @@ nodes:
       - id: "confront_its_for_you"
         text: "It's for you. Not just the cause."
         next_node_id: "f0000000-0000-0000-0000-000000000067"
-        relationship_change:
-          stat: "romance"
-          amount: 2
+        required_relationship:
+          friendship: "gte:5"
+        effects:
+          relationship_effect:
+            romance: 2
+          state_set:
+            last_camila_encounter_at: NOW
       - id: "confront_shouldnt_be"
         text: "You're right. Maybe it shouldn't be."
         next_node_id: "f0000000-0000-0000-0000-000000000068"
-        relationship_change:
-          stat: "romance"
-          amount: -1
+        effects:
+          relationship_effect:
+            romance: -1
+          state_set:
+            last_camila_encounter_at: NOW
 
   f0000000-0000-0000-0000-000000000067:
     id: "f0000000-0000-0000-0000-000000000067"

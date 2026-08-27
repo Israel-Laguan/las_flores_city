@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { zodUuid, zodUuidOptional } from './uuid.js';
+import { RelationshipDeltaSchema, RelationshipStatusSchema } from './relationship.js';
 
 export const DialogueNodeTypeSchema = z.enum([
   'narrator',
@@ -40,6 +41,66 @@ export const NumericComparisonSchema = z
 
 export type NumericComparison = z.infer<typeof NumericComparisonSchema>;
 
+// ============================================================
+// Relationship gate contract (M48)
+//
+// A relationship gate evaluates against the target character's
+// canonical `user_relationships` row (axes / bond / vibe /
+// romance / friendship / status / flags / memory). It runs
+// *alongside* the legacy player-state `required_stats` gates so
+// existing arcs keep working while new content migrates.
+//
+// Fail-closed by default: a `required_relationship` gate with no
+// relationship row hides the choice, and a `hidden_if_relationship`
+// gate with no row never matches. Opt-in `neutral_default: true`
+// evaluates against a STRANGER / zero baseline instead.
+// ============================================================
+
+export const RelationshipAxis = z.enum(['trust', 'familiarity', 'alignment', 'tension', 'debt', 'visibility']);
+
+export type RelationshipAxisEnum = z.infer<typeof RelationshipAxis>;
+
+export const PostureSchema = z.enum([
+  'WARM',
+  'CURIOUS',
+  'GUARDED',
+  'VOLATILE_ROMANCE',
+  'DISTANT',
+  'CONFRONTATIONAL',
+  'RECONCILIATORY',
+  'BROKEN',
+]);
+
+export type Posture = z.infer<typeof PostureSchema>;
+
+// Evaluated against the target character's user_relationships row.
+export const RelationshipGateSchema = z
+  .object({
+    target_character_id: zodUuidOptional(),
+    axes: z
+      .object({
+        trust: NumericComparisonSchema.optional(),
+        familiarity: NumericComparisonSchema.optional(),
+        alignment: NumericComparisonSchema.optional(),
+        tension: NumericComparisonSchema.optional(),
+        debt: NumericComparisonSchema.optional(),
+        visibility: NumericComparisonSchema.optional(),
+      })
+      .strict()
+      .optional(),
+    bond: NumericComparisonSchema.optional(),
+    vibe: NumericComparisonSchema.optional(),
+    romance: NumericComparisonSchema.optional(),
+    friendship: NumericComparisonSchema.optional(),
+    status: RelationshipStatusSchema.optional(),
+    flags: z.record(z.string(), z.boolean()).optional(),
+    memory: z.record(z.string(), NumericComparisonSchema).optional(),
+    neutral_default: z.boolean().default(false),
+  })
+  .strict();
+
+export type RelationshipGate = z.infer<typeof RelationshipGateSchema>;
+
 // Strict effects schema: reject undocumented properties during content
 // migration so YAML authors get feedback immediately.
 // Defined before DialogueChoiceSchema because choices can carry their own
@@ -70,6 +131,9 @@ export const EffectsSchema = z.object({
     })
     .optional(),
   grant_item: zodUuidOptional(),
+  // Canonical player-character relationship mutation. The speaking character
+  // is the target when this is attached to a dialogue node or choice.
+  relationship_effect: RelationshipDeltaSchema.optional(),
 }).strict();
 
 export type Effects = z.infer<typeof EffectsSchema>;
@@ -96,6 +160,12 @@ export const DialogueChoiceSchema = z.object({
   // Numeric stat gates (op:number comparison, e.g. "gt:50").
   required_stats: z.record(z.string(), NumericComparisonSchema).optional(),
   hidden_if_stats: z.record(z.string(), NumericComparisonSchema).optional(),
+  // M48 relationship gates: evaluated against the target character's
+  // canonical user_relationships row (see shared/src/relationshipGates.ts).
+  required_relationship: RelationshipGateSchema.optional(),
+  hidden_if_relationship: RelationshipGateSchema.optional(),
+  required_posture: PostureSchema.optional(),
+  hidden_if_posture: PostureSchema.optional(),
   // Meta-plot finale alignment directive. When set,
   // /dialogue/choose flips the user into this faction (and emits
   // an `alignment_locked` OLAP event). Authors should only attach

@@ -9,6 +9,8 @@ export {
   NumericComparisonSchema,
   DialogueTreeSchema,
   DialogueOverlaySchema,
+  RelationshipAxis,
+  RelationshipGateSchema,
 } from './schemas/dialogue.js';
 export type {
   DialogueChoice,
@@ -20,7 +22,39 @@ export type {
   NumericComparison,
   DialogueTree,
   DialogueOverlay,
+  RelationshipAxisEnum,
+  RelationshipGate,
 } from './schemas/dialogue.js';
+
+export {
+  RelationshipStatusSchema,
+  RelationshipAxesSchema,
+  RelationshipDeltaSchema,
+  RelationshipSnapshotSchema,
+} from './schemas/relationship.js';
+export type {
+  RelationshipStatus,
+  RelationshipAxes,
+  RelationshipDelta,
+  RelationshipSnapshot,
+} from './schemas/relationship.js';
+
+// M48 relationship gates + postures (pure evaluators, server-importable).
+export {
+  relationshipPassesFilters,
+} from './relationshipGates.js';
+export type {
+  RelationshipConditionState,
+  RelationshipStateByTarget,
+  RelationshipGatedChoice,
+} from './relationshipGates.js';
+export {
+  derivePosture,
+  POSTURE_THRESHOLDS,
+  POSTURES,
+  PostureSchema,
+} from './relationshipPostures.js';
+export type { Posture } from './relationshipPostures.js';
 
 export { TimeBlockSchema, TimeBlockCostSchema } from './schemas/timeblock.js';
 export type { TimeBlock, TimeBlockCost } from './schemas/timeblock.js';

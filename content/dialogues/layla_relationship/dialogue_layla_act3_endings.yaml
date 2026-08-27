@@ -19,73 +19,86 @@ nodes:
       - id: branch_loyal
         text: "[Continued building trust and connection]"
         next_node_id: layla_act3_loyalty_check
-        condition:
-          flag: layla_wen_intermediary_used
-          stat: layla_trust
-          operator: ">="
-          value: 50
-          AND:
-            stat: layla_alignment
-            operator: ">="
-            value: 40
-        hidden: true
+        # LOVERS track: intermediary used + high trust AND alignment.
+        required_relationship:
+          flags:
+            layla_wen_intermediary_used: true
+          axes:
+            trust: "gte:50"
+            alignment: "gte:40"
         effects:
-          stat_set:
-            layla_visibility: 5
+          relationship_effect:
+            axes:
+              visibility: 5
+          state_set:
+            last_layla_encounter_at: NOW
 
       - id: branch_cautious
         text: "[Kept things light, avoided depth]"
         next_node_id: layla_act3_friendship_check
-        condition:
-          stat: layla_familiarity
-          operator: ">="
-          value: 30
-          AND:
-            stat: layla_trust
-            operator: "<"
-            value: 30
-        hidden: true
+        # FRIENDS track: familiar but low trust.
+        required_relationship:
+          axes:
+            familiarity: "gte:30"
+            trust: "lt:30"
         effects:
-          stat_set:
-            layla_visibility: 5
+          relationship_effect:
+            axes:
+              visibility: 5
+          state_set:
+            last_layla_encounter_at: NOW
 
       - id: branch_resistant
         text: "[Pushed too hard, she pulled away]"
         next_node_id: layla_act3_breakup_check
-        condition:
-          stat: layla_tension
-          operator: ">="
-          value: 40
-          AND:
-            stat: layla_trust
-            operator: "<"
-            value: 20
-        hidden: true
+        # BREAKUP track: high tension, low trust.
+        required_relationship:
+          axes:
+            tension: "gte:40"
+            trust: "lt:20"
         effects:
-          stat_set:
-            layla_visibility: 5
+          relationship_effect:
+            axes:
+              visibility: 5
+          state_set:
+            last_layla_encounter_at: NOW
 
       - id: branch_avoidant
         text: "[Never really connected]"
         next_node_id: layla_act3_stagnant_check
-        condition:
-          flag: layla_first_contact_made
-          NOT:
-            flag: layla_girlfriend
-          OR:
-            stat: layla_familiarity
-            operator: "<"
-            value: 20
-        hidden: true
+        # STAGNANT track: contact made, never became girlfriend, minimal depth.
+        required_relationship:
+          flags:
+            layla_first_contact_made: true
+          axes:
+            familiarity: "lt:20"
+        hidden_if_relationship:
+          flags:
+            layla_girlfriend: true
         effects:
-          stat_set:
-            layla_visibility: 5
+          relationship_effect:
+            axes:
+              visibility: 5
+          state_set:
+            last_layla_encounter_at: NOW
 
-      # Fallback if no conditions met
+      # LOVERS default: high trust + alignment but no intermediary used.
       - id: branch_default
-        text: "[Continue]"
+        text: "[Continue to Lovers check]"
         next_node_id: layla_act3_loyalty_check
-        hidden: true
+        required_relationship:
+          axes:
+            trust: "gte:50"
+            alignment: "gte:40"
+        hidden_if_relationship:
+          flags:
+            layla_wen_intermediary_used: true
+
+      # Neutral fallback: always available to ensure filterChoices never
+      # returns an empty list on the entry node.
+      - id: branch_fallback
+        text: "[Continue]"
+        next_node_id: layla_act3_friendship_check
 
   # ============================================
   # ENDING 1: LOVERS (Discovery of Real Closeness)
@@ -95,8 +108,9 @@ nodes:
     type: system
     text: ""
     effects:
-      stat_set:
-        layla_visibility: 5
+      relationship_effect:
+        axes:
+          visibility: 5
     next_node_id: layla_ending_lovers_start
 
   layla_ending_lovers_start:
@@ -114,8 +128,11 @@ nodes:
         text: "About what?"
         next_node_id: layla_ending_lovers_confession
         effects:
-          stat_set:
-            layla_trust: 10
+          relationship_effect:
+            axes:
+              trust: 10
+          state_set:
+            last_layla_encounter_at: NOW
 
   layla_ending_lovers_confession:
     id: layla_ending_lovers_confession
@@ -130,8 +147,11 @@ nodes:
         text: "And how do you feel?"
         next_node_id: layla_ending_lovers_realization
         effects:
-          stat_set:
-            layla_alignment: 15
+          relationship_effect:
+            axes:
+              alignment: 15
+          state_set:
+            last_layla_encounter_at: NOW
 
   layla_ending_lovers_realization:
     id: layla_ending_lovers_realization
@@ -146,9 +166,12 @@ nodes:
         text: "I want that too. All of it."
         next_node_id: layla_ending_lovers_resolved
         effects:
-          stat_set:
-            layla_trust: 20
-            layla_alignment: 20
+          relationship_effect:
+            axes:
+              trust: 20
+              alignment: 20
+          state_set:
+            last_layla_encounter_at: NOW
 
   layla_ending_lovers_resolved:
     id: layla_ending_lovers_resolved
@@ -167,10 +190,11 @@ nodes:
         layla_act: "3_done"
         layla_path: "lovers"
         last_layla_encounter_at: NOW
-      stat_set:
-        layla_visibility: 10
-        layla_trust: 30
-        layla_alignment: 30
+      relationship_effect:
+        axes:
+          visibility: 10
+          trust: 30
+          alignment: 30
 
   # ============================================
   # ENDING 2: FRIENDS (Emotional Retreat)
@@ -180,8 +204,9 @@ nodes:
     type: system
     text: ""
     effects:
-      stat_set:
-        layla_visibility: 5
+      relationship_effect:
+        axes:
+          visibility: 5
     next_node_id: layla_ending_friends_start
 
   layla_ending_friends_start:
@@ -198,8 +223,11 @@ nodes:
         text: "Of course. What's wrong?"
         next_node_id: layla_ending_friends_truth
         effects:
-          stat_set:
-            layla_familiarity: 8
+          relationship_effect:
+            axes:
+              familiarity: 8
+          state_set:
+            last_layla_encounter_at: NOW
 
   layla_ending_friends_truth:
     id: layla_ending_friends_truth
@@ -214,8 +242,11 @@ nodes:
         text: "It's a lot. I get it."
         next_node_id: layla_ending_friends_decision
         effects:
-          stat_set:
-            layla_trust: 8
+          relationship_effect:
+            axes:
+              trust: 8
+          state_set:
+            last_layla_encounter_at: NOW
 
   layla_ending_friends_decision:
     id: layla_ending_friends_decision
@@ -230,8 +261,11 @@ nodes:
         text: "Friends. Yeah, we can do that."
         next_node_id: layla_ending_friends_resolved
         effects:
-          stat_set:
-            layla_trust: 10
+          relationship_effect:
+            axes:
+              trust: 10
+          state_set:
+            last_layla_encounter_at: NOW
 
   layla_ending_friends_resolved:
     id: layla_ending_friends_resolved
@@ -250,9 +284,10 @@ nodes:
         layla_act: "3_done"
         layla_path: "friends"
         last_layla_encounter_at: NOW
-      stat_set:
-        layla_visibility: 8
-        layla_familiarity: 15
+      relationship_effect:
+        axes:
+          visibility: 8
+          familiarity: 15
 
   # ============================================
   # ENDING 3: BREAKUP (Experiment Fails)
@@ -262,8 +297,9 @@ nodes:
     type: system
     text: ""
     effects:
-      stat_set:
-        layla_visibility: 5
+      relationship_effect:
+        axes:
+          visibility: 5
     next_node_id: layla_ending_breakup_start
 
   layla_ending_breakup_start:
@@ -280,8 +316,11 @@ nodes:
         text: "Can't do what?"
         next_node_id: layla_ending_breakup_reason
         effects:
-          stat_set:
-            layla_tension: 10
+          relationship_effect:
+            axes:
+              tension: 10
+          state_set:
+            last_layla_encounter_at: NOW
 
   layla_ending_breakup_reason:
     id: layla_ending_breakup_reason
@@ -296,8 +335,11 @@ nodes:
         text: "We can figure it out. Together."
         next_node_id: layla_ending_breakup_plea
         effects:
-          stat_set:
-            layla_tension: 8
+          relationship_effect:
+            axes:
+              tension: 8
+          state_set:
+            last_layla_encounter_at: NOW
 
   layla_ending_breakup_plea:
     id: layla_ending_breakup_plea
@@ -312,8 +354,11 @@ nodes:
         text: "I get it. Take care of yourself, Layla."
         next_node_id: layla_ending_breakup_resolved
         effects:
-          stat_set:
-            layla_familiarity: 5
+          relationship_effect:
+            axes:
+              familiarity: 5
+          state_set:
+            last_layla_encounter_at: NOW
 
   layla_ending_breakup_resolved:
     id: layla_ending_breakup_resolved
@@ -332,9 +377,10 @@ nodes:
         layla_act: "3_done"
         layla_path: "breakup"
         last_layla_encounter_at: NOW
-      stat_set:
-        layla_visibility: 3
-        layla_trust: -10
+      relationship_effect:
+        axes:
+          visibility: 3
+          trust: -10
 
   # ============================================
   # ENDING 4: STAGNANT (Awkward, Never Advanced)
@@ -344,8 +390,9 @@ nodes:
     type: system
     text: ""
     effects:
-      stat_set:
-        layla_visibility: 5
+      relationship_effect:
+        axes:
+          visibility: 5
     next_node_id: layla_ending_stagnant_start
 
   layla_ending_stagnant_start:
@@ -362,8 +409,11 @@ nodes:
         text: "So?"
         next_node_id: layla_ending_stagnant_awkward
         effects:
-          stat_set:
-            layla_familiarity: 3
+          relationship_effect:
+            axes:
+              familiarity: 3
+          state_set:
+            last_layla_encounter_at: NOW
 
   layla_ending_stagnant_awkward:
     id: layla_ending_stagnant_awkward
@@ -378,8 +428,11 @@ nodes:
         text: "Why'd you ask me then?"
         next_node_id: layla_ending_stagnant_truth
         effects:
-          stat_set:
-            layla_tension: 8
+          relationship_effect:
+            axes:
+              tension: 8
+          state_set:
+            last_layla_encounter_at: NOW
 
   layla_ending_stagnant_truth:
     id: layla_ending_stagnant_truth
@@ -394,8 +447,11 @@ nodes:
         text: "Yeah. It is awkward."
         next_node_id: layla_ending_stagnant_resolved
         effects:
-          stat_set:
-            layla_familiarity: 2
+          relationship_effect:
+            axes:
+              familiarity: 2
+          state_set:
+            last_layla_encounter_at: NOW
 
   layla_ending_stagnant_resolved:
     id: layla_ending_stagnant_resolved
@@ -414,9 +470,10 @@ nodes:
         layla_act: "3_done"
         layla_path: "stagnant"
         last_layla_encounter_at: NOW
-      stat_set:
-        layla_visibility: 2
-        layla_familiarity: -2
+      relationship_effect:
+        axes:
+          visibility: 2
+          familiarity: -2
 
 metadata:
   version: "1.1"

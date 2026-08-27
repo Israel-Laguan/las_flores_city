@@ -137,7 +137,7 @@ async function handleStartFallback(userId: string, dialogue: any, res: any) {
     );
   });
 
-  const availableChoices = await filterChoices(rootNode.choices || [], userId);
+  const availableChoices = await filterChoices(rootNode.choices || [], userId, rootNode.speaker_id);
   const isEnd = rootNode.is_end === true || (!rootNode.choices || rootNode.choices.length === 0);
 
   const chunkPayload: ChunkPayload = {
@@ -209,7 +209,7 @@ async function handleStartChunk(userId: string, dialogue: any, startChunkId: str
     );
   });
 
-  const availableChoices = await filterChoices(rootNode.choices || [], userId);
+  const availableChoices = await filterChoices(rootNode.choices || [], userId, rootNode.speaker_id);
   const isEnd = rootNode.is_end === true || (!rootNode.choices || rootNode.choices.length === 0);
   const tbCursor = await PlayerStateRepository.getDialogueCursor(userId);
 

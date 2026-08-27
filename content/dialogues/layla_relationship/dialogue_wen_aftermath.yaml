@@ -14,14 +14,18 @@ nodes:
       - id: branch_lovers
         text: "[Layla is Lover]"
         next_node_id: wen_aftermath_lovers_start
-        condition:
-          flag: layla_ending_lovers
-        hidden: true
+        required_relationship:
+          flags:
+            layla_ending_lovers: true
 
+      # Fallback: Layla not LOVERS -> opportunist branch. Ungated so
+      # filterChoices can never return an empty list on the entry node.
       - id: branch_single
         text: "[Layla is Single]"
         next_node_id: wen_aftermath_single_start
-        hidden: true
+        hidden_if_relationship:
+          flags:
+            layla_ending_lovers: true
 
   # ============================================
   # LOVERS BRANCH: The Conspirator
@@ -40,14 +44,20 @@ nodes:
         text: "We chose each other, Wen."
         next_node_id: wen_aftermath_lovers_plan
         effects:
-          stat_set:
-            wen_zhao_trust: 5
+          relationship_effect:
+            axes:
+              trust: 5
+          state_set:
+            last_wen_encounter_at: NOW
       - id: lovers_proud
         text: "Was there ever any doubt?"
         next_node_id: wen_aftermath_lovers_plan
         effects:
-          stat_set:
-            wen_zhao_tension: 5
+          relationship_effect:
+            axes:
+              tension: 5
+          state_set:
+            last_wen_encounter_at: NOW
 
   wen_aftermath_lovers_plan:
     id: wen_aftermath_lovers_plan
@@ -62,14 +72,20 @@ nodes:
         text: "We appreciate it, Wen. Truly."
         next_node_id: wen_aftermath_lovers_resolved
         effects:
-          stat_set:
-            wen_zhao_trust: 10
+          relationship_effect:
+            axes:
+              trust: 10
+          state_set:
+            last_wen_encounter_at: NOW
       - id: lovers_wary
         text: "Just don't push her into anything stupid."
         next_node_id: wen_aftermath_lovers_resolved
         effects:
-          stat_set:
-            wen_zhao_tension: 5
+          relationship_effect:
+            axes:
+              tension: 5
+          state_set:
+            last_wen_encounter_at: NOW
 
   wen_aftermath_lovers_resolved:
     id: wen_aftermath_lovers_resolved
@@ -103,14 +119,20 @@ nodes:
         text: "It was mutual. It just didn't work out."
         next_node_id: wen_aftermath_single_flirt
         effects:
-          stat_set:
-            wen_zhao_trust: 5
+          relationship_effect:
+            axes:
+              trust: 5
+          state_set:
+            last_wen_encounter_at: NOW
       - id: single_agree
         text: "Yeah, she wasn't ready."
         next_node_id: wen_aftermath_single_flirt
         effects:
-          stat_set:
-            wen_zhao_alignment: 5
+          relationship_effect:
+            axes:
+              alignment: 5
+          state_set:
+            last_wen_encounter_at: NOW
 
   wen_aftermath_single_flirt:
     id: wen_aftermath_single_flirt
@@ -125,16 +147,22 @@ nodes:
         text: "Is that right? And what do you want?"
         next_node_id: wen_aftermath_single_hooked
         effects:
-          stat_set:
-            wen_zhao_tension: 10
-            wen_zhao_alignment: 10
+          relationship_effect:
+            axes:
+              tension: 10
+              alignment: 10
+          state_set:
+            last_wen_encounter_at: NOW
       - id: single_reject
         text: "Wen, she's your friend. Let's not."
         next_node_id: wen_aftermath_single_rejected
         effects:
-          stat_set:
-            wen_zhao_trust: -5
-            wen_zhao_tension: 5
+          relationship_effect:
+            axes:
+              trust: -5
+              tension: 5
+          state_set:
+            last_wen_encounter_at: NOW
 
   wen_aftermath_single_hooked:
     id: wen_aftermath_single_hooked

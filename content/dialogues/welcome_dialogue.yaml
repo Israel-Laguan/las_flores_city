@@ -94,9 +94,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Learning about the city"
-        relationship_change:
-          stat: friendship
-          amount: 1
+        effects:
+          relationship_effect:
+            friendship: 1
+          state_set:
+            last_welcome_encounter_at: NOW
+            welcome: NOW
 
   feed_intro:
     id: "feed_intro"
@@ -130,9 +133,12 @@ nodes:
       - id: "thank_guard"
         text: "Thanks for the heads up."
         next_node_id: "guard_farewell"
-        relationship_change:
-          stat: friendship
-          amount: 2
+        effects:
+          relationship_effect:
+            friendship: 2
+          state_set:
+            last_welcome_encounter_at: NOW
+            welcome: NOW
 
   guard_farewell:
     id: "guard_farewell"

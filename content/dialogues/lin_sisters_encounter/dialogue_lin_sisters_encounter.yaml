@@ -36,15 +36,25 @@ nodes:
       - id: "reply_friendly_end"
         text: "Talented work, Lin Xiu. Nice to meet you both. I'll leave you to your studies."
         next_node_id: "c3333333-2222-3333-4444-555555555555"
-        relationship_change:
-          stat: "friendship"
-          amount: 2
+        effects:
+          relationship_effect:
+            friendship: 2
+          state_set:
+            last_lin_xiu_encounter_at: NOW
       - id: "reply_flirt_xiu"
         text: "Talented, smart, and gorgeous. Are you single, Lin Xiu?"
         next_node_id: "d4444444-2222-3333-4444-555555555555"
-        relationship_change:
-          stat: "romance"
-          amount: 1
+        # First-contact tree: neutral_default keeps this visible to players
+        # with no relationship row yet (M48 contract).
+        required_relationship:
+          axes:
+            tension: "lte:60"
+          neutral_default: true
+        effects:
+          relationship_effect:
+            romance: 1
+          state_set:
+            last_lin_xiu_encounter_at: NOW
 
   c3333333-2222-3333-4444-555555555555:
     id: "c3333333-2222-3333-4444-555555555555"
@@ -89,15 +99,19 @@ nodes:
       - id: "imperial_apology"
         text: "My mistake. I respect the real hustle—the port is what keeps this city alive anyway."
         next_node_id: "i9999999-2222-3333-4444-555555555555"
-        relationship_change:
-          stat: "friendship"
-          amount: 2
+        effects:
+          relationship_effect:
+            friendship: 2
+          state_set:
+            last_lin_mei_encounter_at: NOW
       - id: "imperial_dismissive"
         text: "Just trying to pay a compliment. No need to be so defensive."
         next_node_id: "j0000000-2222-3333-4444-555555555555"
-        relationship_change:
-          stat: "friendship"
-          amount: -1
+        effects:
+          relationship_effect:
+            friendship: -1
+          state_set:
+            last_lin_mei_encounter_at: NOW
 
   i9999999-2222-3333-4444-555555555555:
     id: "i9999999-2222-3333-4444-555555555555"
@@ -131,9 +145,11 @@ nodes:
       - id: "hostile_end"
         text: "[Leave them alone]"
         next_node_id: "g7777777-2222-3333-4444-555555555555"
-        relationship_change:
-          stat: "friendship"
-          amount: -2
+        effects:
+          relationship_effect:
+            friendship: -2
+          state_set:
+            last_lin_mei_encounter_at: NOW
 
   g7777777-2222-3333-4444-555555555555:
     id: "g7777777-2222-3333-4444-555555555555"

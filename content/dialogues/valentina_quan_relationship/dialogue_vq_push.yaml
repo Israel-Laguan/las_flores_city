@@ -37,18 +37,35 @@ nodes:
       - id: wall_push_harder
         text: "'Stop flying away from every good thing. Stay. Try.'"
         next_node_id: vq_push_harder
-        relationship_change:
-          stat: romance
-          amount: -10
+        effects:
+          relationship_effect:
+            romance: -10
+          state_set:
+            last_vq_encounter_at: NOW
       - id: wall_back_off
         text: "'Then don't stay. Forget I boxed it into words.'"
         next_node_id: vq_push_space
+        # neutral_default keeps this fallback visible with no relationship row.
+        required_relationship:
+          axes:
+            tension: "lte:90"
+          neutral_default: true
+        effects:
+          relationship_effect:
+            romance: 5
+          state_set:
+            last_vq_encounter_at: NOW
       - id: wall_vulnerable_first
         text: "'I don't do 'somethings' either. Places, people — I keep an exit row seat too.'"
         next_node_id: vq_push_vulnerable
-        relationship_change:
-          stat: romance
-          amount: 8
+        required_relationship:
+          axes:
+            trust: "gte:15"
+        effects:
+          relationship_effect:
+            romance: 8
+          state_set:
+            last_vq_encounter_at: NOW
 
   # --- Push harder: shutdown ---
   vq_push_harder:
@@ -80,8 +97,9 @@ nodes:
       state_set:
         vq_arc: wall_up
         last_vq_encounter_at: NOW
-      stat_set:
-        vq_trust: -5
+      relationship_effect:
+        axes:
+          trust: -5
 
   # --- Back off gracefully: trust spike ---
   vq_push_space:
@@ -113,8 +131,9 @@ nodes:
       state_set:
         vq_arc: wall_up
         last_vq_encounter_at: NOW
-      stat_set:
-        vq_trust: 20
+      relationship_effect:
+        axes:
+          trust: 20
 
   # --- Share your own vulnerability first ---
   vq_push_vulnerable:
@@ -145,8 +164,9 @@ nodes:
       state_set:
         vq_arc: wall_up
         last_vq_encounter_at: NOW
-      stat_set:
-        vq_trust: 12
+      relationship_effect:
+        axes:
+          trust: 12
 
 metadata:
   version: "1.0"

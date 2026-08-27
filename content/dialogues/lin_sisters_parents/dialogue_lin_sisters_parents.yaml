@@ -33,9 +33,11 @@ nodes:
       - id: "xiu_pragmatic_reaction"
         text: "[Listen to Xiu]"
         next_node_id: "d5555555-4444-5555-6666-777777777777"
-        relationship_change:
-          stat: "friendship"
-          amount: 2
+        effects:
+          relationship_effect:
+            friendship: 2
+          state_set:
+            last_lin_xiu_encounter_at: NOW
 
   d5555555-4444-5555-6666-777777777777:
     id: "d5555555-4444-5555-6666-777777777777"
@@ -58,9 +60,14 @@ nodes:
       - id: "mei_cultural_reaction"
         text: "[Listen to Mei]"
         next_node_id: "d6666666-4444-5555-6666-777777777777"
-        relationship_change:
-          stat: "romance"
-          amount: 2
+        # Mid-arc romance: advance only after genuine warmth.
+        required_relationship:
+          friendship: "gte:10"
+        effects:
+          relationship_effect:
+            romance: 2
+          state_set:
+            last_lin_mei_encounter_at: NOW
 
   d6666666-4444-5555-6666-777777777777:
     id: "d6666666-4444-5555-6666-777777777777"
@@ -94,9 +101,11 @@ nodes:
       - id: "mei_final_word"
         text: "[Listen to Mei's response]"
         next_node_id: "d8888888-4444-5555-6666-777777777777"
-        relationship_change:
-          stat: "friendship"
-          amount: -1
+        effects:
+          relationship_effect:
+            friendship: -1
+          state_set:
+            last_lin_mei_encounter_at: NOW
 
   d8888888-4444-5555-6666-777777777777:
     id: "d8888888-4444-5555-6666-777777777777"

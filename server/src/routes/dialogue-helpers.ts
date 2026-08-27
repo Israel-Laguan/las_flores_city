@@ -5,9 +5,70 @@ import {
   type BreakthroughResult,
 } from './dialogue-breakthrough-helpers.js';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
-import type { DialogueChoice, PlayerConditionState } from '@las-flores/shared';
-import { choicePassesFilters, metadataConditionsPass } from '@las-flores/shared';
+import {
+  applyLegacyRelationshipChange,
+  applyRelationshipDelta,
+  getRelationshipForFilter,
+} from '../database/repositories/RelationshipRepository.js';
+import type {
+  DialogueChoice,
+  PlayerConditionState,
+  RelationshipConditionState,
+  RelationshipStateByTarget,
+  RelationshipSnapshot,
+} from '@las-flores/shared';
+import {
+  choicePassesFilters,
+  metadataConditionsPass,
+  relationshipPassesFilters,
+} from '@las-flores/shared';
 import { fetchNodesFromContentUrl } from '../services/contentFetch.js';
+
+/** Map a canonical relationship snapshot into the gate evaluator's shape. */
+export function snapshotToConditionState(
+  snapshot: RelationshipSnapshot | null
+): RelationshipConditionState | null {
+  if (!snapshot) return null;
+  return {
+    axes: { ...snapshot.axes },
+    bond: snapshot.bondLevel,
+    vibe: snapshot.dailyVibe,
+    romance: snapshot.romanceLevel,
+    friendship: snapshot.friendshipLevel,
+    status: snapshot.status,
+    flags: snapshot.flags ?? {},
+    memory: snapshot.memory ?? {},
+  };
+}
+
+/**
+ * Build a per-target `{ characterId: RelationshipConditionState | null }` map
+ * for all targets referenced by the choices (default target + any gate
+ * `target_character_id` overrides), issuing one read-only pool query per
+ * distinct target. Mirrors how `filterChoices` keeps all relationship I/O
+ * in a single batch so per-choice gates never issue N+1 queries.
+ */
+async function buildRelationshipStateMap(
+  userId: string,
+  defaultTargetId: string,
+  choices: any[]
+): Promise<RelationshipStateByTarget> {
+  const ids = new Set<string>([defaultTargetId]);
+  for (const choice of choices ?? []) {
+    const req = choice?.required_relationship?.target_character_id;
+    const hid = choice?.hidden_if_relationship?.target_character_id;
+    if (req) ids.add(req);
+    if (hid) ids.add(hid);
+  }
+  const map: RelationshipStateByTarget = {};
+  await Promise.all(
+    [...ids].map(async (id) => {
+      const snap = await getRelationshipForFilter(userId, id);
+      map[id] = snapshotToConditionState(snap);
+    })
+  );
+  return map;
+}
 
 /**
  * M32/M23: load a dialogue tree's row (without the dropped `nodes` JSONB
@@ -80,6 +141,22 @@ export async function applyEffects(
   if (effects.story_beat) {
     await PlayerStateRepository.setStoryBeat(client, userId, effects.story_beat);
   }
+}
+
+/** Apply a canonical relationship effect to the node's speaking character. */
+export async function applyRelationshipEffect(
+  client: any,
+  userId: string,
+  characterId: string | undefined,
+  effect: any,
+  markInteraction = true
+): Promise<void> {
+  if (!effect) return;
+  // Cross-character writes (e.g. Wen's trees mutating Layla's row) override
+  // the speaking-character default via the delta's target_character_id.
+  const targetId = effect.target_character_id ?? characterId;
+  if (!targetId) return;
+  await applyRelationshipDelta(client, userId, targetId, effect, { markInteraction });
 }
 
 /* eslint-disable max-lines -- dialogue route helpers are cohesively grouped in one module */
@@ -165,6 +242,20 @@ export async function resolveDialogueTree(
     }
   }
 
+  // M48: lazily populate relationship state per target character so
+  // metadata-level relationship gates can be evaluated. A tree about
+  // character A can carry metadata gates checking character B's
+  // relationship state via target_character_id overrides, so we seed
+  // with the speaker and then augment with any metadata targets as we
+  // iterate candidate trees.
+  const relStateByTarget: RelationshipStateByTarget = {};
+  const ensureRelState = async (targetId: string) => {
+    if (!userId || !targetId || relStateByTarget[targetId]) return;
+    const snap = await getRelationshipForFilter(userId, targetId);
+    relStateByTarget[targetId] = snapshotToConditionState(snap);
+  };
+  if (characterId) await ensureRelState(characterId);
+
   // Fetch all scene-scoped candidates first (no LIMIT 1), then
   // evaluate gates in Node so an ineligible LIMIT-1 row cannot
   // prevent an eligible alternative from being considered.
@@ -190,9 +281,12 @@ export async function resolveDialogueTree(
       (n: any) => n && n.speaker_id === characterId
     );
     if (!hasSpeaker) continue;
+    const metaTarget = tree.metadata?.required_relationship?.target_character_id
+      ?? tree.metadata?.hidden_if_relationship?.target_character_id;
+    if (metaTarget) await ensureRelState(metaTarget);
     if (
       isStoryBeatAllowed(tree.metadata?.required_story_beat, storyBeat) &&
-      metadataConditionsPass(tree.metadata, playerCondition)
+      metadataConditionsPass(tree.metadata, playerCondition, relStateByTarget, characterId)
     ) {
       return tree;
     }
@@ -226,9 +320,12 @@ export async function resolveDialogueTree(
     const startNode = tree.nodes[tree.start_node_id];
     const startMatch = startNode && startNode.speaker_id === characterId;
     if (!(startMatch || (character_id == null && scene_id === sceneId && hasSpeaker))) continue;
+    const metaTarget = tree.metadata?.required_relationship?.target_character_id
+      ?? tree.metadata?.hidden_if_relationship?.target_character_id;
+    if (metaTarget) await ensureRelState(metaTarget);
     if (
       !isStoryBeatAllowed(tree.metadata?.required_story_beat, storyBeat) ||
-      !metadataConditionsPass(tree.metadata, playerCondition)
+      !metadataConditionsPass(tree.metadata, playerCondition, relStateByTarget, characterId)
     ) {
       continue;
     }
@@ -237,7 +334,12 @@ export async function resolveDialogueTree(
   return null;
 }
 
-export async function filterChoices(choices: any[], userId: string) {
+export async function filterChoices(
+  choices: any[],
+  userId: string,
+  relationshipTargetId?: string,
+  relStateCache?: RelationshipStateByTarget
+) {
   if (!choices || choices.length === 0) return [];
 
   const player = await PlayerStateRepository.getForChoiceFilter(userId);
@@ -255,7 +357,17 @@ export async function filterChoices(choices: any[], userId: string) {
     timeBlocks: player.time_blocks || 0,
   };
 
-  return choices.filter((choice: any) => choicePassesFilters(choice, playerState));
+  // M48: load the target character's relationship state once (read-only
+  // pool query) and evaluate the new relationship/posture gates against it.
+  const relStateByTarget: any =
+    relStateCache ??
+    (relationshipTargetId ? await buildRelationshipStateMap(userId, relationshipTargetId, choices) : {});
+
+  return choices.filter(
+    (choice: any) =>
+      choicePassesFilters(choice, playerState) &&
+      relationshipPassesFilters(choice, relStateByTarget, relationshipTargetId)
+  );
 }
 
 /**
@@ -286,13 +398,7 @@ export async function processRelationshipChange(
   stat: string,
   amount: number
 ): Promise<void> {
-  const friendshipDelta = stat === 'friendship' ? amount : 0;
-  const romanceDelta = stat === 'romance' ? amount : 0;
-
-  await client.query(
-    'SELECT upsert_user_relationship($1, $2, $3, $4)',
-    [userId, speakerId, friendshipDelta, romanceDelta]
-  );
+  await applyLegacyRelationshipChange(client, userId, speakerId, stat as 'friendship' | 'romance', amount);
 }
 
 /**
@@ -430,6 +536,7 @@ export async function recordChoiceAndEffects(
   // identical between the dialogue-choice path and IronGateValidator.
   const effects = nextNode.effects;
   await applyEffects(client, userId, effects);
+  await applyRelationshipEffect(client, userId, nextNode.speaker_id, effects?.relationship_effect, true);
   // M15: grant destination-node rewards idempotently via the shared
   // helper (claim key `grant_<u>_<d>_<nextNodeId>` is unchanged).
   return grantDialogueRewards(client, userId, dialogueId, nextNodeId, effects, 'grant');
@@ -557,23 +664,8 @@ async function processAlignmentChange(
 }
 
 async function processRelationshipAndCheckEnd(
-  client: any,
-  userId: string,
-  nextNode: any,
-  chosenOption: DialogueChoice
+  nextNode: any
 ): Promise<{ isEnd: boolean }> {
-  if (chosenOption.relationship_change) {
-    const speakerId = nextNode.speaker_id;
-    if (speakerId) {
-      await processRelationshipChange(
-        client,
-        userId,
-        speakerId,
-        chosenOption.relationship_change.stat,
-        chosenOption.relationship_change.amount
-      );
-    }
-  }
   const isEnd = nextNode.is_end === true || (!nextNode.choices || nextNode.choices.length === 0);
   return { isEnd };
 }
@@ -698,7 +790,25 @@ export async function processChoice(
     timeBlocksSpent = tbResult.spent ?? 0;
   }
 
-  const { isEnd } = await processRelationshipAndCheckEnd(client, userId, nextNode, chosenOption);
+  const relationshipSpeakerId = nextNode.speaker_id;
+  if (chosenOption.relationship_change && relationshipSpeakerId) {
+    await processRelationshipChange(
+      client,
+      userId,
+      relationshipSpeakerId,
+      chosenOption.relationship_change.stat,
+      chosenOption.relationship_change.amount
+    );
+  }
+  await applyRelationshipEffect(
+    client,
+    userId,
+    relationshipSpeakerId,
+    chosenOption.effects?.relationship_effect,
+    !chosenOption.relationship_change
+  );
+
+  const { isEnd } = await processRelationshipAndCheckEnd(nextNode);
 
   // Apply the choice's own effects (choice-level stat_set/flag_set/state_set)
   // BEFORE the destination node's effects. Both go through the shared

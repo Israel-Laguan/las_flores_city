@@ -8,6 +8,7 @@ import { dialogueRouter } from './dialogue.js';
 import { bankRouter } from './bank.js';
 import { gigsRouter } from './gigs.js';
 import { commsRouter } from './comms.js';
+import { relationshipsRouter } from './relationships.js';
 import { feedRouter } from './feed.js';
 import { vaultRouter } from './vault.js';
 import { settingsRouter } from './settings.js';
@@ -54,6 +55,7 @@ export function registerGameRoutes(app: express.Express, opts?: { skipShared?: b
   app.use('/bank', bankRouter);
   app.use('/gigs', gigsRouter);
   app.use('/comms', commsRouter);
+  app.use('/relationships', relationshipsRouter);
   app.use('/network/feed', feedRouter);
   app.use('/vault', vaultRouter);
   app.use('/settings', settingsRouter);

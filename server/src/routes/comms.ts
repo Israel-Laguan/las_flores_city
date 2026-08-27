@@ -10,6 +10,8 @@ import { getCache, setCache, deleteCache } from '@las-flores/infra';
 import { userStateCacheKey } from './player-helpers.js';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
 import { performStartThreadTransaction, emitStartThreadAnalytics } from './comms-start-helpers.js';
+import { getRelationshipForFilter } from '../database/repositories/RelationshipRepository.js';
+import { snapshotToConditionState } from './dialogue-helpers.js';
 import type {
   SMSMessage,
   SMSThreadPreview,
@@ -17,7 +19,12 @@ import type {
   SMSThreadChoice,
   SMSInboxResponse,
 } from '../../../shared/src/types/sms.js';
-import { choicePassesFilters, type PlayerConditionState } from '@las-flores/shared';
+import {
+  choicePassesFilters,
+  relationshipPassesFilters,
+  type PlayerConditionState,
+  type RelationshipStateByTarget,
+} from '@las-flores/shared';
 import { fetchNodesFromContentUrl } from '../services/contentFetch.js';
 
 export const commsRouter = express.Router();
@@ -55,6 +62,15 @@ export interface ThreadRow {
   avatar_url: string | null;
   friendship_level: number;
   romance_level: number;
+  trust: number;
+  familiarity: number;
+  alignment: number;
+  tension: number;
+  debt: number;
+  visibility: number;
+  bond_level: number;
+  daily_vibe: number;
+  relationship_status: string;
 }
 
 export const THREAD_BASE_SELECT = `
@@ -71,7 +87,16 @@ export const THREAD_BASE_SELECT = `
     c.title AS character_title,
     c.avatar_url,
     COALESCE(ur.friendship_level, 0) AS friendship_level,
-    COALESCE(ur.romance_level, 0) AS romance_level
+    COALESCE(ur.romance_level, 0) AS romance_level,
+    COALESCE(ur.trust, 0) AS trust,
+    COALESCE(ur.familiarity, 0) AS familiarity,
+    COALESCE(ur.alignment, 0) AS alignment,
+    COALESCE(ur.tension, 0) AS tension,
+    COALESCE(ur.debt, 0) AS debt,
+    COALESCE(ur.visibility, 0) AS visibility,
+    COALESCE(ur.bond_level, 0) AS bond_level,
+    COALESCE(ur.daily_vibe, 0) AS daily_vibe,
+    COALESCE(ur.status, 'STRANGER') AS relationship_status
   FROM player_sms_threads pst
   JOIN characters c ON c.id = pst.character_id
   LEFT JOIN user_relationships ur
@@ -105,6 +130,15 @@ async function loadInbox(userId: string): Promise<SMSThreadPreview[]> {
     updated_at: string;
     friendship_level: number;
     romance_level: number;
+    trust: number;
+    familiarity: number;
+    alignment: number;
+    tension: number;
+    debt: number;
+    visibility: number;
+    bond_level: number;
+    daily_vibe: number;
+    relationship_status: string;
   }>(
     `
     SELECT
@@ -117,7 +151,16 @@ async function loadInbox(userId: string): Promise<SMSThreadPreview[]> {
       pst.last_npc_message_at,
       pst.updated_at,
       COALESCE(ur.friendship_level, 0) AS friendship_level,
-      COALESCE(ur.romance_level, 0) AS romance_level
+      COALESCE(ur.romance_level, 0) AS romance_level,
+      COALESCE(ur.trust, 0) AS trust,
+      COALESCE(ur.familiarity, 0) AS familiarity,
+      COALESCE(ur.alignment, 0) AS alignment,
+      COALESCE(ur.tension, 0) AS tension,
+      COALESCE(ur.debt, 0) AS debt,
+      COALESCE(ur.visibility, 0) AS visibility,
+      COALESCE(ur.bond_level, 0) AS bond_level,
+      COALESCE(ur.daily_vibe, 0) AS daily_vibe,
+      COALESCE(ur.status, 'STRANGER') AS relationship_status
     FROM player_sms_threads pst
     JOIN characters c ON c.id = pst.character_id
     LEFT JOIN user_relationships ur
@@ -140,12 +183,31 @@ async function loadInbox(userId: string): Promise<SMSThreadPreview[]> {
       lastNpcMessageAt: row.last_npc_message_at,
       friendshipLevel: row.friendship_level,
       romanceLevel: row.romance_level,
+      relationship: relationshipSummary(row),
       unread: row.unread,
     };
   });
 
   await setCache(inboxCacheKey(userId), threads, INBOX_TTL_SECONDS);
   return threads;
+}
+
+function relationshipSummary(row: Pick<ThreadRow, 'friendship_level' | 'romance_level' | 'trust' | 'familiarity' | 'alignment' | 'tension' | 'debt' | 'visibility' | 'bond_level' | 'daily_vibe' | 'relationship_status'>) {
+  return {
+    friendshipLevel: row.friendship_level,
+    romanceLevel: row.romance_level,
+    bondLevel: row.bond_level,
+    dailyVibe: row.daily_vibe,
+    status: row.relationship_status,
+    axes: {
+      trust: row.trust,
+      familiarity: row.familiarity,
+      alignment: row.alignment,
+      tension: row.tension,
+      debt: row.debt,
+      visibility: row.visibility,
+    },
+  };
 }
 
 export function toDetail(row: ThreadRow, choices: SMSThreadChoice[], isEnd: boolean): SMSThreadDetail {
@@ -160,6 +222,7 @@ export function toDetail(row: ThreadRow, choices: SMSThreadChoice[], isEnd: bool
     choices,
     friendshipLevel: row.friendship_level,
     romanceLevel: row.romance_level,
+    relationship: relationshipSummary(row),
     unread: row.unread,
   };
 }
@@ -210,7 +273,8 @@ export async function findDialogueTreeForCharacter(characterId: string) {
 
 export async function applyChoiceFilters(
   rawChoices: any[],
-  userId: string
+  userId: string,
+  characterId?: string
 ): Promise<any[]> {
   if (!rawChoices || rawChoices.length === 0) return [];
 
@@ -225,7 +289,29 @@ export async function applyChoiceFilters(
     timeBlocks: player.time_blocks ?? 0,
   };
 
-  return rawChoices.filter((choice: any) => choicePassesFilters(choice, playerState));
+  // M48: load the thread character's relationship state once and
+  // evaluate relationship/posture gates (mirrors filterChoices).
+  // Collect all targets: default characterId + any target_character_id from gates.
+  const targetIds = new Set<string>();
+  if (characterId) targetIds.add(characterId);
+  for (const choice of rawChoices) {
+    const requiredTarget = choice?.required_relationship?.target_character_id;
+    const hiddenTarget = choice?.hidden_if_relationship?.target_character_id;
+    if (requiredTarget) targetIds.add(requiredTarget);
+    if (hiddenTarget) targetIds.add(hiddenTarget);
+  }
+
+  const relStateByTarget: RelationshipStateByTarget = {};
+  await Promise.all([...targetIds].map(async (targetId) => {
+    const snap = await getRelationshipForFilter(userId, targetId);
+    relStateByTarget[targetId] = snapshotToConditionState(snap);
+  }));
+
+  return rawChoices.filter(
+    (choice: any) =>
+      choicePassesFilters(choice, playerState) &&
+      relationshipPassesFilters(choice, relStateByTarget, characterId)
+  );
 }
 
 export async function invalidateCaches(userId: string) {
@@ -264,7 +350,7 @@ commsRouter.post(
         const node = tree && existing.current_node_id ? tree.nodes[existing.current_node_id] : null;
         const isEnd = !node || node.is_end === true || !node.choices || node.choices.length === 0;
         const choices = node
-          ? await applyChoiceFilters(node.choices ?? [], userId)
+          ? await applyChoiceFilters(node.choices ?? [], userId, characterId)
           : [];
         return res.json(ok(toDetail(existing, choices, isEnd)));
       }
@@ -295,7 +381,7 @@ commsRouter.post(
 
       const startNode = tree.nodes[tree.start_node_id];
       const choices = startNode.choices
-        ? await applyChoiceFilters(startNode.choices, userId)
+        ? await applyChoiceFilters(startNode.choices, userId, characterId)
         : [];
       const isEnd = !startNode.choices || startNode.choices.length === 0;
       return res.json(ok(toDetail(created, choices, isEnd)));
@@ -344,7 +430,7 @@ commsRouter.get(
       const node = tree && thread.current_node_id ? tree.nodes[thread.current_node_id] : null;
       const isEnd = !node || node.is_end === true || !node.choices || node.choices.length === 0;
       const choices = node
-        ? await applyChoiceFilters(node.choices ?? [], userId)
+        ? await applyChoiceFilters(node.choices ?? [], userId, characterId)
         : [];
 
       return res.json(ok(toDetail(thread, choices, isEnd)));

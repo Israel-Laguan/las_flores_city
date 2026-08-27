@@ -80,9 +80,11 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Asking for local knowledge"
-        relationship_change:
-          stat: friendship
-          amount: 2
+        effects:
+          relationship_effect:
+            friendship: 2
+          state_set:
+            last_barista_encounter_at: NOW
       - id: "reject_marco"
         text: "Actually, I need to go."
         next_node_id: "node_marco_rejection"
@@ -135,9 +137,11 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Learning about N&M LTD"
-        relationship_change:
-          stat: friendship
-          amount: 3
+        effects:
+          relationship_effect:
+            friendship: 3
+          state_set:
+            last_barista_encounter_at: NOW
       - id: "ask_about_districts"
         text: "What's good around here?"
         next_node_id: "district_tips"
@@ -194,9 +198,11 @@ nodes:
       - id: "thank_him"
         text: "Thanks, Marco. I'll be back."
         next_node_id: "farewell"
-        relationship_change:
-          stat: friendship
-          amount: 5
+        effects:
+          relationship_effect:
+            friendship: 5
+          state_set:
+            last_barista_encounter_at: NOW
       - id: "ask_more"
         text: "Any other tips?"
         next_node_id: "additional_tips"
@@ -226,9 +232,11 @@ nodes:
       - id: "thank_him"
         text: "Thanks for the story, Marco."
         next_node_id: "farewell"
-        relationship_change:
-          stat: friendship
-          amount: 5
+        effects:
+          relationship_effect:
+            friendship: 5
+          state_set:
+            last_barista_encounter_at: NOW
       - id: "reject_marco"
         text: "Actually, I need to go."
         next_node_id: "node_marco_rejection"
@@ -300,9 +308,11 @@ nodes:
       - id: "thank_him_final"
         text: "Thanks, Marco. I'll remember that."
         next_node_id: "farewell"
-        relationship_change:
-          stat: friendship
-          amount: 3
+        effects:
+          relationship_effect:
+            friendship: 3
+          state_set:
+            last_barista_encounter_at: NOW
       - id: "reject_marco"
         text: "Actually, I need to go."
         next_node_id: "node_marco_rejection"

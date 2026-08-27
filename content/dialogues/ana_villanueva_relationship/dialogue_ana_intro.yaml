@@ -44,9 +44,11 @@ nodes:
       - id: "reply_analytical"
         text: "Gas leaks don't selectively fry security camera feeds three blocks away. Someone was scrubbing a server farm, and the explosion was just the cover."
         next_node_id: "c1110000-0000-0000-0000-000000000007"
-        relationship_change:
-          stat: "friendship"
-          amount: 5
+        effects:
+          relationship_effect:
+            friendship: 5
+          state_set:
+            last_ana_encounter_at: NOW
 
   c1110000-0000-0000-0000-000000000005:
     id: "c1110000-0000-0000-0000-000000000005"

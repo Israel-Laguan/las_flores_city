@@ -141,7 +141,7 @@ dialogueRouter.get('/active', authMiddleware, async (req: AuthRequest, res) => {
           return res.json({ success: true, data: null, timestamp: new Date().toISOString() });
         }
 
-        const availableChoices = await filterChoices(currentNode.choices || [], userId);
+        const availableChoices = await filterChoices(currentNode.choices || [], userId, currentNode.speaker_id);
         const isEnd = currentNode.is_end === true || (!currentNode.choices || currentNode.choices.length === 0);
 
         const chunkPayload: ChunkPayload = {
@@ -177,7 +177,7 @@ dialogueRouter.get('/active', authMiddleware, async (req: AuthRequest, res) => {
       return res.json({ success: true, data: null, timestamp: new Date().toISOString() });
     }
 
-    const availableChoices = await filterChoices(currentNode.choices || [], userId);
+    const availableChoices = await filterChoices(currentNode.choices || [], userId, currentNode.speaker_id);
     const isEnd = currentNode.is_end === true || (!currentNode.choices || currentNode.choices.length === 0);
 
     const chunkPayload: ChunkPayload = {
