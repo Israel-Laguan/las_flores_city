@@ -75,7 +75,7 @@ function toGraphDelta(nodeLike: unknown): GraphDelta {
     op: props.op as string,
     fields,
     createdAt: props.createdAt as string,
-    ...(resolution !== undefined ? { _resolution: resolution } : {}),
+    ...(resolution != null ? { _resolution: resolution } : {}),
   });
 }
 
