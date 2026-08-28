@@ -11,6 +11,20 @@ nodes:
     type: system
     text: ""
     choices:
+      # Ungated fallback into the router below — keeps the tree's ENTRY node
+      # free of relationship gates so filterChoices can never return an
+      # empty list on entry (M48 entry-node empty-list guard).
+      - id: branch_route
+        text: "[Continue]"
+        next_node_id: wen_aftermath_route
+
+  # Interior router: the two branches below are complementary gates
+  # (required flag vs hidden flag), so exactly one is always visible.
+  wen_aftermath_route:
+    id: wen_aftermath_route
+    type: system
+    text: ""
+    choices:
       - id: branch_lovers
         text: "[Layla is Lover]"
         next_node_id: wen_aftermath_lovers_start
@@ -18,8 +32,8 @@ nodes:
           flags:
             layla_ending_lovers: true
 
-      # Fallback: Layla not LOVERS -> opportunist branch. Ungated so
-      # filterChoices can never return an empty list on the entry node.
+      # Fallback: Layla not LOVERS -> opportunist branch. Hidden only when
+      # the LOVERS ending flag is set, so one of the two always remains.
       - id: branch_single
         text: "[Layla is Single]"
         next_node_id: wen_aftermath_single_start

@@ -21,8 +21,9 @@ metadata:
     - "corporate_corruption"
   story_beat: "beat_sofia_corruption_network"
   location: "south_las_flores"
-  required_stats:
-    sofia_trust: "gt:0"
+  required_relationship:
+    axes:
+      trust: "gt:0"
 
 nodes:
   node_sofia_discovery:
@@ -64,8 +65,11 @@ nodes:
     thought: "There's a fire in her eyes. This is what she was meant to do."
     is_end: true
     effects:
-      stat_set:
-        sofia_trust: 20
+      relationship_effect:
+        axes:
+          trust: 20
+      state_set:
+        last_sofia_encounter_at: NOW
       story_beat: "beat_sofia_corruption_network"
 
   node_mercenary_path:
@@ -92,8 +96,10 @@ nodes:
     thought: "Her voice is flat. Disappointed. You've crossed a line she can't forgive."
     is_end: true
     effects:
-      stat_set:
-        sofia_trust: -50
+      relationship_effect:
+        axes:
+          trust: -50
       state_set:
+        last_sofia_encounter_at: NOW
         sofia_status: "disillusioned"
       story_beat: "beat_sofia_corruption_network"

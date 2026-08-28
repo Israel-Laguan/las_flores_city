@@ -37,8 +37,11 @@ nodes:
         text: "What happened to the kid?"
         next_node_id: adeyemi_ord_hours_kid
         effects:
-          stat_set:
-            adeyemi_trust: 5
+          relationship_effect:
+            axes:
+              trust: 5
+          state_set:
+            last_adeyemi_encounter_at: NOW
       - id: let_pass
         text: "[Listen silently]"
         next_node_id: adeyemi_ord_hours_question
@@ -70,9 +73,12 @@ nodes:
         text: "What about you?"
         next_node_id: adeyemi_ord_hours_answer_back
         effects:
-          stat_set:
-            adeyemi_familiarity: 10
-            adeyemi_alignment: 5
+          relationship_effect:
+            axes:
+              familiarity: 10
+              alignment: 5
+          state_set:
+            last_adeyemi_encounter_at: NOW
 
   adeyemi_ord_hours_answer_back:
     id: adeyemi_ord_hours_answer_back

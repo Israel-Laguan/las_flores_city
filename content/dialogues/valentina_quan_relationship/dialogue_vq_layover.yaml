@@ -94,6 +94,8 @@ nodes:
       relationship_effect:
         axes:
           trust: 5
+      state_set:
+        last_vq_encounter_at: NOW
     choices:
       - id: tease_to_phone
         text: "'If you say so.'"
@@ -112,6 +114,8 @@ nodes:
         axes:
           trust: 15
         romance: 3
+      state_set:
+        last_vq_encounter_at: NOW
     choices:
       - id: empathize_to_phone
         text: "'Thank you for telling me the true version.'"
@@ -129,6 +133,8 @@ nodes:
       relationship_effect:
         axes:
           trust: 8
+      state_set:
+        last_vq_encounter_at: NOW
     choices:
       - id: why_to_phone
         text: "'Same result on paper. Sure.'"
@@ -158,6 +164,8 @@ nodes:
       relationship_effect:
         axes:
           trust: 8
+      state_set:
+        last_vq_encounter_at: NOW
     choices:
       - id: mother_to_end
         text: "'You don't have to carry it alone. That's all I'll say.'"
@@ -176,6 +184,8 @@ nodes:
         axes:
           trust: 5
         romance: 2
+      state_set:
+        last_vq_encounter_at: NOW
     choices:
       - id: space_to_end
         text: "'The long version sounds worth the wait.'"

@@ -67,7 +67,12 @@
     "074_job_runs_run_token.sql",
       "076_drop_dialogue_jsonb.sql",
       "077_social_relationships.sql",
-      "078_relationship_backfill_valentina.sql"
+      "078_relationship_backfill_valentina.sql",
+    "079_relationship_backfill_adeyemi.sql",
+    "080_relationship_backfill_sofia.sql",
+    "081_relationship_backfill_valentina.sql",
+    "082_relationship_backfill_aisha.sql",
+    "083_relationship_backfill_vance.sql"
   ],
   "nontransactional": {
     "075_job_runs_run_token_backfill.sql": "las_flores"

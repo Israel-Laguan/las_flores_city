@@ -64,9 +64,12 @@ nodes:
     text: "The confrontation is quick and brutal. The gang members retreat, nursing bruises. Sofia watches, her expression unreadable."
     is_end: true
     effects:
-      stat_set:
-        sofia_trust: 10
+      relationship_effect:
+        axes:
+          trust: 10
       story_beat: "beat_sofia_intro"
+    state_set:
+      last_sofia_encounter_at: NOW
 
   node_diplomatic_intervention:
     id: "node_diplomatic_intervention"
@@ -87,9 +90,12 @@ nodes:
     thought: "She's genuinely impressed. This wasn't just about helping her - it was about doing it the right way."
     is_end: true
     effects:
-      stat_set:
-        sofia_trust: 20
+      relationship_effect:
+        axes:
+          trust: 20
       story_beat: "beat_sofia_intro"
+    state_set:
+      last_sofia_encounter_at: NOW
 
   node_ignore_path:
     id: "node_ignore_path"
@@ -98,8 +104,10 @@ nodes:
     thought: "That was your chance to make a difference. Now it's too late."
     is_end: true
     effects:
+      relationship_effect:
+        axes:
+          trust: -50
       state_set:
         sofia_status: "disillusioned"
-      stat_set:
-        sofia_trust: -50
+        last_sofia_encounter_at: NOW
       story_beat: "beat_sofia_intro"

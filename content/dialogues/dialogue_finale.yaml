@@ -27,10 +27,16 @@ nodes:
         text: "I signed a contract with Nakamura & Morgan. I'll honor it. Shut down your override, Vance."
         next_node_id: "finale_loyalist_ending"
         alignment_change: "loyalist"
+        required_relationship:
+          neutral_default: true
+          romance: "gte:0"
       - id: "finale_fugitive_choice"
         text: "No corporation should have this power. Let's burn the model and go off-grid."
         next_node_id: "finale_fugitive_ending"
         alignment_change: "fugitive"
+        required_relationship:
+          neutral_default: true
+          romance: "gte:0"
 
   finale_loyalist_ending:
     id: "finale_loyalist_ending"
@@ -42,7 +48,12 @@ nodes:
     effects:
       state_set:
         final_alignment: "loyalist"
+        last_vance_encounter_at: NOW
       story_beat: finale_complete
+      relationship_effect:
+        axes:
+          alignment: 10
+        romance: 5
 
   finale_fugitive_ending:
     id: "finale_fugitive_ending"
@@ -54,7 +65,12 @@ nodes:
     effects:
       state_set:
         final_alignment: "fugitive"
+        last_vance_encounter_at: NOW
       story_beat: finale_complete
+      relationship_effect:
+        axes:
+          alignment: -10
+        romance: 8
 
 metadata:
   version: "1.0"

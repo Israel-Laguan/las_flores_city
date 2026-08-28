@@ -36,8 +36,9 @@ nodes:
       - id: "check_high_trust"
         text: ""
         next_node_id: "node_loyal_ally_path"
-        required_stats:
-          sofia_trust: "gte:75"
+        required_relationship:
+          axes:
+            trust: "gte:75"
 
       - id: "check_disillusioned"
         text: ""

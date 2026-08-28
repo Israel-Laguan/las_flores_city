@@ -45,11 +45,12 @@ nodes:
           DEEPENED: true
           ROMANTIC_TENSION_CONFIRMED: true
           LOVER_PATH_ACTIVE: true
-        required_stats:
-          adeyemi_trust: "gte:75"
-          adeyemi_familiarity: "gte:80"
-          adeyemi_alignment: "gte:60"
-          adeyemi_tension: "gte:30"
+        required_relationship:
+          axes:
+            trust: "gte:75"
+            familiarity: "gte:80"
+            alignment: "gte:60"
+            tension: "gte:30"
       - id: covered_friend
         text: "[FRIEND PATH]"
         next_node_id: adeyemi_act5_friend
@@ -57,22 +58,24 @@ nodes:
           ANSWERED: true
           DEEPENED: true
           FRIEND_PATH_ACTIVE: true
-        required_stats:
-          adeyemi_trust: "gte:70"
-          adeyemi_familiarity: "gte:75"
-          adeyemi_alignment: "gte:65"
-          adeyemi_tension: "lte:40"
+        required_relationship:
+          axes:
+            trust: "gte:70"
+            familiarity: "gte:75"
+            alignment: "gte:65"
+            tension: "lte:40"
       - id: covered_mirror
         text: "[MIRROR PATH]"
         next_node_id: adeyemi_act5_mirror
         required_flags:
           ANSWERED: true
           COVERED: true
-        required_stats:
-          adeyemi_trust: "gte:60"
-          adeyemi_familiarity: "gte:65"
-          adeyemi_alignment: "gte:40"
-          adeyemi_tension: "gte:50"
+        required_relationship:
+          axes:
+            trust: "gte:60"
+            familiarity: "gte:65"
+            alignment: "gte:40"
+            tension: "gte:50"
       - id: covered_ally
         text: "[RELUCTANT ALLY PATH]"
         next_node_id: adeyemi_act5_ally
@@ -81,8 +84,9 @@ nodes:
         hidden_if:
           LOVER_PATH_ACTIVE: true
           FRIEND_PATH_ACTIVE: true
-        required_stats:
-          adeyemi_trust: "gte:50"
+        required_relationship:
+          axes:
+            trust: "gte:50"
       - id: covered_default
         text: "[Take the drive and go]"
         next_node_id: adeyemi_act5_distant
@@ -153,18 +157,20 @@ nodes:
           ANSWERED: true
           WITNESSED: true
           LOVER_PATH_ACTIVE: true
-        required_stats:
-          adeyemi_trust: "gte:60"
-          adeyemi_familiarity: "gte:70"
-          adeyemi_tension: "gte:65"
+        required_relationship:
+          axes:
+            trust: "gte:60"
+            familiarity: "gte:70"
+            tension: "gte:65"
       - id: witnessed_opponent
         text: "[OPPONENT PATH]"
         next_node_id: adeyemi_act5_opponent
         required_flags:
           WITNESSED: true
-        required_stats:
-          adeyemi_alignment: "lte:30"
-          adeyemi_tension: "gte:70"
+        required_relationship:
+          axes:
+            alignment: "lte:30"
+            tension: "gte:70"
       - id: witnessed_default
         text: "[Grab the drive and run]"
         next_node_id: adeyemi_act5_distant
@@ -209,16 +215,18 @@ nodes:
           ANSWERED: true
           DEFLECTED: true
           FRIEND_PATH_ACTIVE: true
-        required_stats:
-          adeyemi_trust: "gte:40"
-          adeyemi_familiarity: "gte:60"
-          adeyemi_tension: "gte:50"
+        required_relationship:
+          axes:
+            trust: "gte:40"
+            familiarity: "gte:60"
+            tension: "gte:50"
       - id: deflected_distant
         text: "[ALWAYS DISTANT PATH]"
         next_node_id: adeyemi_act5_distant
-        required_stats:
-          adeyemi_trust: "lte:50"
-          adeyemi_familiarity: "lte:50"
+        required_relationship:
+          axes:
+            trust: "lte:50"
+            familiarity: "lte:50"
       - id: deflected_default
         text: "[Take the drive alone]"
         next_node_id: adeyemi_act5_distant

@@ -17,10 +17,13 @@ nodes:
       position: right
       transition: fade
     effects:
-      stat_set:
-        adeyemi_trust: -20
-        adeyemi_alignment: -40
-        adeyemi_tension: 30
+      relationship_effect:
+        axes:
+          trust: -20
+          alignment: -40
+          tension: 30
+      state_set:
+        last_adeyemi_encounter_at: NOW
     choices:
       - id: act1_invite_in
         text: "Come in."
@@ -54,9 +57,10 @@ nodes:
         adeyemi_first_contact_made: true
       state_set:
         last_adeyemi_encounter_at: NOW
-      stat_set:
-        adeyemi_trust: 5
-        adeyemi_familiarity: -5
+      relationship_effect:
+        axes:
+          trust: 5
+          familiarity: -5
 
   adeyemi_act1_enter:
     id: adeyemi_act1_enter
@@ -77,8 +81,11 @@ nodes:
         text: "Yesterday morning, around 8 AM."
         next_node_id: adeyemi_act1_q2
         effects:
-          stat_set:
-            adeyemi_familiarity: 3
+          relationship_effect:
+            axes:
+              familiarity: 3
+          state_set:
+            last_adeyemi_encounter_at: NOW
       - id: q1_deflect
         text: "I don't remember exactly."
         next_node_id: adeyemi_act1_q2
@@ -86,8 +93,11 @@ nodes:
         text: "Why do you want to know?"
         next_node_id: adeyemi_act1_q1_answer
         effects:
-          stat_set:
-            adeyemi_trust: 5
+          relationship_effect:
+            axes:
+              trust: 5
+          state_set:
+            last_adeyemi_encounter_at: NOW
 
   adeyemi_act1_q1_answer:
     id: adeyemi_act1_q1_answer
@@ -113,8 +123,11 @@ nodes:
         text: "I don't know what you're talking about."
         next_node_id: adeyemi_act1_q3
         effects:
-          stat_set:
-            adeyemi_tension: 8
+          relationship_effect:
+            axes:
+              tension: 8
+          state_set:
+            last_adeyemi_encounter_at: NOW
       - id: q2_ask_how
         text: "How do you know that?"
         next_node_id: adeyemi_act1_q2_answer
@@ -129,8 +142,11 @@ nodes:
         text: "[Listen]"
         next_node_id: adeyemi_act1_q3
         effects:
-          stat_set:
-            adeyemi_trust: 3
+          relationship_effect:
+            axes:
+              trust: 3
+          state_set:
+            last_adeyemi_encounter_at: NOW
 
   adeyemi_act1_q3:
     id: adeyemi_act1_q3
@@ -143,15 +159,21 @@ nodes:
         text: "No, document everything."
         next_node_id: adeyemi_act1_q4
         effects:
-          stat_set:
-            adeyemi_trust: 8
-            adeyemi_alignment: 5
+          relationship_effect:
+            axes:
+              trust: 8
+              alignment: 5
+          state_set:
+            last_adeyemi_encounter_at: NOW
       - id: q3_hide_things
         text: "Yes, leave the bedroom out of it."
         next_node_id: adeyemi_act1_q4
         effects:
-          stat_set:
-            adeyemi_tension: 10
+          relationship_effect:
+            axes:
+              tension: 10
+          state_set:
+            last_adeyemi_encounter_at: NOW
       - id: q3_ask_why
         text: "Why are you asking me that?"
         next_node_id: adeyemi_act1_q3_answer
@@ -166,9 +188,12 @@ nodes:
         text: "[Listen]"
         next_node_id: adeyemi_act1_q4
         effects:
-          stat_set:
-            adeyemi_trust: 12
-            adeyemi_familiarity: 8
+          relationship_effect:
+            axes:
+              trust: 12
+              familiarity: 8
+          state_set:
+            last_adeyemi_encounter_at: NOW
 
   adeyemi_act1_q4:
     id: adeyemi_act1_q4
@@ -181,8 +206,11 @@ nodes:
         text: "No."
         next_node_id: adeyemi_act1_end
         effects:
-          stat_set:
-            adeyemi_familiarity: 3
+          relationship_effect:
+            axes:
+              familiarity: 3
+          state_set:
+            last_adeyemi_encounter_at: NOW
       - id: q4_ask
         text: "Should I be?"
         next_node_id: adeyemi_act1_q4_answer
@@ -190,8 +218,11 @@ nodes:
         text: "[Say nothing]"
         next_node_id: adeyemi_act1_end
         effects:
-          stat_set:
-            adeyemi_familiarity: 5
+          relationship_effect:
+            axes:
+              familiarity: 5
+          state_set:
+            last_adeyemi_encounter_at: NOW
 
   adeyemi_act1_q4_answer:
     id: adeyemi_act1_q4_answer
@@ -203,9 +234,12 @@ nodes:
         text: "[Listen]"
         next_node_id: adeyemi_act1_end
         effects:
-          stat_set:
-            adeyemi_tension: 5
-            adeyemi_trust: 5
+          relationship_effect:
+            axes:
+              tension: 5
+              trust: 5
+          state_set:
+            last_adeyemi_encounter_at: NOW
 
   adeyemi_act1_end:
     id: adeyemi_act1_end

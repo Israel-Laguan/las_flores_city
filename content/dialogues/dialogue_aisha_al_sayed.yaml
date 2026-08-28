@@ -420,8 +420,11 @@ nodes:
       flag_set:
         aisha_contact_made: true
         aisha_rejected: true
-      stat_set:
-        aisha_relationship: -5
+      state_set:
+        last_aisha_encounter_at: NOW
+      relationship_effect:
+        axes:
+          trust: -5
 
   farewell:
     id: "farewell"
@@ -432,8 +435,11 @@ nodes:
     effects:
       flag_set:
         aisha_contact_made: true
-      stat_set:
-        aisha_relationship: 5
+      state_set:
+        last_aisha_encounter_at: NOW
+      relationship_effect:
+        axes:
+          trust: 5
     is_end: true
 
 metadata:
