@@ -20,6 +20,7 @@ import {
   pruneOrphanContentEdges,
 } from './GraphBaseService.js';
 import { withGraphWriteLock } from './graphLock.js';
+import { seedAliases, pruneOrphanAliases } from './GraphAliasService.js';
 
 export interface ResyncJobStatus {
   jobId: string;
@@ -77,6 +78,12 @@ async function performResync(status: ResyncJobStatus): Promise<void> {
     // that `pruneOrphanContentEdges` would then never see (undercounting).
     status.deletedEdges = await pruneOrphanContentEdges(keepEdgeKeys);
     status.deletedNodes = await pruneOrphanContentNodes(keepKeys);
+
+    // M50: keep curated aliases consistent with the resynced canonical graph.
+    // Seed curated aliases (idempotent MERGE) and prune orphans whose
+    // `ALIAS_OF` target was resynced away.
+    await seedAliases();
+    await pruneOrphanAliases();
   });
   status.status = 'completed';
   status.finishedAt = new Date().toISOString();

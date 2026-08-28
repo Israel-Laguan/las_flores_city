@@ -90,6 +90,25 @@ async function main(): Promise<void> {
       neo.deltaCount === result.deltaCount && neo.edgeCount === result.edgeCount,
       { neo, service: { deltaCount: result.deltaCount, edgeCount: result.edgeCount } });
 
+    // M50: entity-resolution blocks present on the plan's deltas, and any
+    // ambiguous/unresolved references surfaced for human confirmation.
+    const planDeltas = await graphIntakeService.getPlanDeltas(planId);
+    const blocks = planDeltas.deltas.flatMap((d) => d._resolution ?? []);
+    check('plan deltas carry _resolution blocks', blocks.length > 0, blocks.length);
+    const needsReview = blocks.filter(
+      (b) => b.status === 'ambiguous' || b.status === 'unresolved',
+    );
+    if (needsReview.length > 0) {
+      console.warn(
+        `\n  ⚠️  ${needsReview.length} reference(s) need admin confirmation before approval:`,
+      );
+      for (const b of needsReview) {
+        console.warn(`     - "${b.raw}" -> ${b.status} (${b.candidates.map((c) => `${c.name}@${c.confidence}`).join(', ') || 'no candidates'})`);
+      }
+    } else {
+      console.log('  (no ambiguous/unresolved references detected)');
+    }
+
     // Review URL
     const url = reviewUrl(
       options.adminUrl ?? process.env.ADMIN_URL ?? 'http://localhost:3002',

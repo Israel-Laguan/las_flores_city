@@ -41,7 +41,12 @@ import { contentPlanService } from './ContentPlanService.js';
 import { resolveContentDir } from './StoryBuilderLore.js';
 import { applyDelta, applyDeltaEdge, getDeltasForPlan, getDeltaEdgesForPlan, clearDeltasForPlan, preflightDeltas, preflightDeltaEdges, normalizeKeyComponent, resolveEdgeTargetNameValue } from './GraphDeltaService.js';
 import { isNeo4jEnabled, runNeo4jTransaction } from './Neo4jClient.js';
+import { EntityResolutionService } from './EntityResolutionService.js';
+import { Neo4jCandidateSource } from './Neo4jCandidateSource.js';
 import type { ExistingContentContext, LLMUsage } from './types/LLMTypes.js';
+
+/** M50: graph-assisted entity resolution for natural-language references in deltas. */
+const entityResolutionService = new EntityResolutionService(new Neo4jCandidateSource());
 
 /** GraphIntakeService error when Neo4j is disabled. */
 export class GraphIntakeDisabledError extends Error {
@@ -639,8 +644,20 @@ export class GraphIntakeService {
 
     // Step 6: Write all deltas and edges to Neo4j in a single transaction
     // Assign the new planId to all deltas/edges
-    const planDeltas = deltas.map(d => ({ ...d, planId }));
+    let planDeltas = deltas.map(d => ({ ...d, planId }));
     const planEdges = deltaEdges.map(e => ({ ...e, planId }));
+
+    // M50: attach `_resolution` to each delta for any natural-language reference
+    // it carries (e.g. a Scene's `district` field). Best-effort: if the graph is
+    // unavailable or resolution throws, proceed without it so intake never aborts
+    // on the advisory resolution layer.
+    if (isNeo4jEnabled()) {
+      try {
+        planDeltas = await entityResolutionService.resolvePlanDeltas(planDeltas);
+      } catch (resErr) {
+        console.warn('[graph-intake] entity resolution failed; skipping _resolution attachment:', (resErr as Error).message);
+      }
+    }
 
     // If the graph write fails, roll back the OLTP plan row so it is not orphaned.
     try {

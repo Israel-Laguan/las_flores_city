@@ -56,6 +56,17 @@ function toGraphDelta(nodeLike: unknown): GraphDelta {
   } else if (raw && typeof raw === 'object') {
     fields = raw as Record<string, unknown>;
   }
+  let resolution: unknown;
+  const resRaw = props.resolutionJson;
+  if (typeof resRaw === 'string') {
+    try {
+      resolution = JSON.parse(resRaw);
+    } catch {
+      resolution = undefined;
+    }
+  } else if (resRaw && typeof resRaw === 'object') {
+    resolution = resRaw;
+  }
   return GraphDeltaSchema.parse({
     id: props.id as string,
     planId: props.planId as string,
@@ -64,6 +75,7 @@ function toGraphDelta(nodeLike: unknown): GraphDelta {
     op: props.op as string,
     fields,
     createdAt: props.createdAt as string,
+    ...(resolution !== undefined ? { _resolution: resolution } : {}),
   });
 }
 
@@ -73,7 +85,7 @@ function toGraphDelta(nodeLike: unknown): GraphDelta {
  */
 export async function applyDelta(delta: GraphDelta, tx?: ManagedTransaction): Promise<void> {
   if (!isNeo4jEnabled()) return;
-  const { id, planId, nodeType, nodeId, op, fields, createdAt } = delta;
+  const { id, planId, nodeType, nodeId, op, fields, createdAt, _resolution } = delta;
   const name = typeof fields.name === 'string' ? fields.name : null;
   // Normalize UUID-case so an uppercase id never forks the (nodeType,nodeId,
   // planId) key away from the canonical lowercase UUID the base graph stores.
@@ -113,16 +125,18 @@ export async function applyDelta(delta: GraphDelta, tx?: ManagedTransaction): Pr
     MERGE (d:ContentDelta { key: $key })
     ON CREATE SET d.nodeType = $nodeType, d.nodeId = $nodeId, d.planId = $planId,
                   d.op = $op, d.name = $name, d.fieldsJson = $fieldsJson,
+                  d.resolutionJson = $resolutionJson,
                   d.createdAt = $createdAt, d.id = $id
     ON MATCH SET  d.nodeType = $nodeType, d.nodeId = $nodeId,
-                  d.op = $op, d.name = $name, d.fieldsJson = $fieldsJson, d.id = $id,
+                  d.op = $op, d.name = $name, d.fieldsJson = $fieldsJson,
+                  d.resolutionJson = $resolutionJson, d.id = $id,
                   d.createdAt = $createdAt
     `,
     // Surrogate unique key (Community Edition can't NODE KEY on 3 props).
     // Neo4j properties can't be maps, so fields are stored as a JSON string.
     // `createdAt` is refreshed on MATCH too so a re-applied edit moves the delta
     // to its true position (getDeltasForPlan orders by createdAt ASC).
-    { key: `${nodeType}:${nNodeId}:${nPlanId}`, nodeType, nodeId: nNodeId, planId: nPlanId, op, name, fieldsJson: JSON.stringify(fields), createdAt, id },
+    { key: `${nodeType}:${nNodeId}:${nPlanId}`, nodeType, nodeId: nNodeId, planId: nPlanId, op, name, fieldsJson: JSON.stringify(fields), resolutionJson: JSON.stringify(_resolution ?? null), createdAt, id },
     tx,
   );
 }

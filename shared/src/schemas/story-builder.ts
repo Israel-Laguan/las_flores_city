@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { zodUuid, zodUuidArray, UUID_REGEX } from './uuid.js';
 import { ContentTypeSchema } from './content-validation.js';
 import { IdentityResolutionSchema } from './entity-identity.js';
+import { ConsistencyReportSchema } from './graph-delta.js';
 
 // Reuse the existing ContentType enum
 const contentType = ContentTypeSchema;
@@ -121,6 +122,9 @@ export const ContentPlanSchema = z.object({
   links: z.array(ContentLinkSchema).default([]),
   status: z.enum(['draft', 'proposed', 'approved', 'staged', 'migrated', 'verified', 'failed', 'pending', 'staging', 'migrating', 'verifying']).default('draft'),
   _meta: ContentPlanMetaSchema,
+  // M50: non-blocking semantic consistency report attached by PlanConsistencyChecker
+  // at approve time. The materialize path ignores it; the review UI surfaces it.
+  _consistency: ConsistencyReportSchema.optional(),
 }).superRefine((plan, ctx) => {
   // 1. Reject duplicate (type, slug). Duplicate items silently overwrite files
   // on write, so they must be caught before staging.

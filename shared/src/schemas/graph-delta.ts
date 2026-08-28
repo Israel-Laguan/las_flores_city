@@ -65,6 +65,10 @@ export const GraphDeltaSchema = z.object({
   // diffing is M28's apply-delta); DELETE may carry none.
   fields: z.record(z.string(), z.any()).default({}),
   createdAt: z.iso.datetime(), // ISO timestamp
+  // M50: NL-reference resolution result for each reference found in `fields`.
+  // Carried on the delta for review surfacing; ignored by the materialize path.
+  // `z.lazy` defers evaluation so the schema can be declared later in this file.
+  _resolution: z.array(z.lazy(() => ResolutionBlockSchema)).optional(),
 }).superRefine((delta, ctx) => {
   // `nodeId` is a UUID for any op, or a stable lowercase slug ONLY for a new
   // ADD entity. A MODIFY/DELETE `nodeId` must be the base `:Content` node's
@@ -89,6 +93,66 @@ export const GraphDeltaSchema = z.object({
 });
 
 export type GraphDelta = z.infer<typeof GraphDeltaSchema>;
+
+// ---------------------------------------------------------------------------
+// M50 — Entity resolution + consistency metadata
+//
+// `GraphDelta._resolution` carries the NL-reference → canonical-entity resolution
+// result for each natural-language reference found in a delta's fields. The
+// materialize path ignores it; admin review + the intake probe surface it so an
+// ambiguous/unresolved reference is confirmed or corrected before approval.
+//
+// `ContentPlan._consistency` (defined in story-builder.ts, re-using the schemas
+// below) carries the PlanConsistencyChecker report attached at approve time.
+// ---------------------------------------------------------------------------
+
+/** Outcome of resolving one natural-language reference against the graph. */
+export const ResolutionStatusSchema = z.enum(['resolved', 'ambiguous', 'unresolved']);
+export type ResolutionStatus = z.infer<typeof ResolutionStatusSchema>;
+
+/** A single ranked candidate for a reference, with a confidence score. */
+export const ResolutionCandidateSchema = z.object({
+  nodeType: GraphNodeTypeSchema,
+  nodeId: z.string(),
+  name: z.string(),
+  confidence: z.number().min(0).max(1),
+  note: z.string().optional(),
+});
+export type ResolutionCandidate = z.infer<typeof ResolutionCandidateSchema>;
+
+/** The resolution result for one reference found in a delta. */
+export const ResolutionBlockSchema = z.object({
+  raw: z.string(), // the user's raw wording, e.g. "Industrail Zone"
+  status: ResolutionStatusSchema,
+  field: z.string().optional(), // which delta field carried the reference
+  targetNodeType: GraphNodeTypeSchema.optional(), // the node type the ref resolves against
+  candidates: z.array(ResolutionCandidateSchema).default([]),
+});
+export type ResolutionBlock = z.infer<typeof ResolutionBlockSchema>;
+
+/** Severity of a consistency finding. Lenient by design — never blocks approval. */
+export const ConsistencySeveritySchema = z.enum(['warning']);
+export type ConsistencySeverity = z.infer<typeof ConsistencySeveritySchema>;
+
+/** One semantic conflict surfaced by PlanConsistencyChecker (non-blocking). */
+export const ConsistencyFindingSchema = z.object({
+  code: z.string().min(1),
+  severity: ConsistencySeveritySchema.default('warning'),
+  message: z.string().min(1),
+  nodeType: GraphNodeTypeSchema.optional(),
+  nodeId: z.string().optional(),
+  field: z.string().optional(),
+  detail: z.record(z.string(), z.any()).optional(),
+});
+export type ConsistencyFinding = z.infer<typeof ConsistencyFindingSchema>;
+
+/** The plan-level consistency report attached at approve time. */
+export const ConsistencyReportSchema = z.object({
+  checkedAt: z.string(),
+  hasConflicts: z.boolean(),
+  findings: z.array(ConsistencyFindingSchema).default([]),
+});
+export type ConsistencyReport = z.infer<typeof ConsistencyReportSchema>;
 
 /** A plan delta edge — a relationship authored as part of a plan. */
 export const GraphDeltaEdgeSchema = z.object({

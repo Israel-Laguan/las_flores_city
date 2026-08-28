@@ -12,6 +12,9 @@ import {
 import { clearDeltasForPlan, getDeltasForPlan, getDeltaEdgesForPlan } from '../../src/services/GraphDeltaService.js';
 import { ensureGraphConstraints } from '../../src/services/GraphBaseService.js';
 import { adminStoryBuilderRouter } from '../../src/routes/admin-story-builder.js';
+import { seedAliases, pruneOrphanAliases, loadSeedAliases } from '../../src/services/GraphAliasService.js';
+import { EntityResolutionService } from '../../src/services/EntityResolutionService.js';
+import { Neo4jCandidateSource } from '../../src/services/Neo4jCandidateSource.js';
 
 // The parent router applies authAndAdminMiddleware to every sub-route (including
 // the graph-intake routes), so HTTP tests must bypass it. Other graph
@@ -342,5 +345,38 @@ describe('GraphIntakeService — integration tests (Neo4j-gated)', () => {
       const result = await service.getPlanDeltas('any-plan-id');
       expect(result).toEqual({ deltas: [], edges: [] });
     });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// M50 — graph-assisted entity resolution + consistency validation integration.
+// Runs only when Neo4j is enabled (the suite's top-level enableTestNeo4j helper
+// opts in). Mirrors the M50 verification checklist item.
+// ---------------------------------------------------------------------------
+const m50Enabled = isNeo4jEnabled();
+
+describe('M50 graph-intake alias + resolution integration', () => {
+  if (!m50Enabled) {
+    test.skip('requires Neo4j', () => {});
+    return;
+  }
+
+  test('curated aliases seed and survive a prune against the live graph', async () => {
+    const seeded = await seedAliases();
+    expect(seeded).toHaveProperty('linked');
+    expect(seeded).toHaveProperty('skipped');
+    const pruned = await pruneOrphanAliases();
+    expect(typeof pruned).toBe('number');
+  });
+
+  test('EntityResolutionService resolves curated aliases against the live graph', async () => {
+    const svc = new EntityResolutionService(new Neo4jCandidateSource());
+    const aliases = await loadSeedAliases();
+    expect(aliases.length).toBeGreaterThan(0);
+    for (const a of aliases) {
+      const block = await svc.resolve(a.alias, { targetNodeType: a.nodeType });
+      expect(['resolved', 'ambiguous', 'unresolved']).toContain(block.status);
+      expect(Array.isArray(block.candidates)).toBe(true);
+    }
   });
 });
