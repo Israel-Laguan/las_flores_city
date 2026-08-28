@@ -74,6 +74,7 @@ adminStoryBuilderGraphIntakeRouter.post('/plans/graph-intake', async (req: AuthR
           : String(fixture.description ?? `[M47 fixture] ${fixtureId}`),
         Array.isArray(fixture.deltas) ? fixture.deltas : [],
         Array.isArray(fixture.edges) ? fixture.edges : [],
+        req.userId,
       );
       res.json({
         success: true,
@@ -118,7 +119,11 @@ adminStoryBuilderGraphIntakeRouter.post('/plans/graph-intake', async (req: AuthR
       }
     }
 
-    const result = await graphIntakeService.createPlanFromDescription(description, validatedMessages);
+    const result = await graphIntakeService.createPlanFromDescription(
+      description,
+      validatedMessages,
+      req.userId,
+    );
 
     res.json({
       success: true,

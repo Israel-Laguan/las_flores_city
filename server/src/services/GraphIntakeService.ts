@@ -8,7 +8,7 @@
 // Flow:
 //   1. createPlanFromDescription(description) → calls chatPropose
 //   2. chatPropose returns GraphDelta[] + GraphDeltaEdge[]
-//   3. Persist plan row to OLTP (content_plans) with status='draft'
+//   3. Persist plan row to OLTP (content_plans) with status='proposed'
 //   4. Write all deltas/edges to Neo4j via GraphDeltaService
 //   5. Return the planId + delta/edge counts
 //
@@ -36,6 +36,7 @@ import path from 'node:path';
 import * as yaml from 'js-yaml';
 import { glob } from 'glob';
 import { chatService } from './ChatService.js';
+import { emitAdminEvent } from './AdminEventEmitter.js';
 import { contentPlanService } from './ContentPlanService.js';
 import { resolveContentDir } from './StoryBuilderLore.js';
 import { applyDelta, applyDeltaEdge, getDeltasForPlan, getDeltaEdgesForPlan, clearDeltasForPlan, preflightDeltas, preflightDeltaEdges, normalizeKeyComponent, resolveEdgeTargetNameValue } from './GraphDeltaService.js';
@@ -491,17 +492,18 @@ export class GraphIntakeService {
    * Create a new content plan from a natural language description using the
    * graph-based authoring path. This:
    *   1. Calls chatPropose to generate structured GraphDelta[] + GraphDeltaEdge[]
-    *   2. Creates a content_plans row with status='proposed'
+   *   2. Creates a content_plans row with status='proposed' and optional actor attribution
    *   3. Writes all deltas and edges to Neo4j (the authoring canvas)
    *   4. Returns the planId + counts
    *
    * This is the M32 replacement for ContentPlanService.parseDescription → plan_json.
-   * The legacy plan_json is NOT populated; the deltas live in Neo4j and the plan
-   * row is minimal (id, description, status, metadata).
+   * A synthesized plan_json review snapshot is stored alongside the authoritative
+   * Neo4j deltas so existing review consumers can read the proposed plan.
    */
   async createPlanFromDescription(
     description: string,
     initialMessages: ChatMessage[] = [],
+    createdBy?: string,
   ): Promise<CreatePlanFromDescriptionResult> {
     if (!description || typeof description !== 'string' || description.trim().length === 0) {
       throw new GraphIntakeValidationError('Description is required and must be a non-empty string');
@@ -515,8 +517,6 @@ export class GraphIntakeService {
     // The provider requires a valid UUID planId to associate deltas; passing ''
     // causes every delta to be silently discarded.
     const planId = uuidv4();
-    const timestamp = new Date().toISOString();
-
     // Step 2: Gather existing content context
     const context = await this.gatherContext();
 
@@ -535,7 +535,7 @@ export class GraphIntakeService {
       context,
     );
 
-    return this.persistPlanWithDeltas(planId, description, deltas, deltaEdges, usage);
+    return this.persistPlanWithDeltas(planId, description, deltas, deltaEdges, usage, createdBy);
   }
 
   /**
@@ -549,6 +549,7 @@ export class GraphIntakeService {
     description: string,
     rawDeltas: unknown[],
     rawEdges: unknown[],
+    createdBy?: string,
   ): Promise<CreatePlanFromDescriptionResult> {
     if (!description || description.trim().length === 0) {
       throw new GraphIntakeValidationError(
@@ -589,7 +590,7 @@ export class GraphIntakeService {
       return parsed.data;
     });
 
-    return this.persistPlanWithDeltas(planId, description, deltas, deltaEdges, null);
+    return this.persistPlanWithDeltas(planId, description, deltas, deltaEdges, null, createdBy);
   }
 
   /** Shared post-proposal persistence flow (OLTP row + Neo4j transaction). */
@@ -599,6 +600,7 @@ export class GraphIntakeService {
     deltas: GraphDelta[],
     deltaEdges: GraphDeltaEdge[],
     usage: LLMUsage | null,
+    createdBy?: string,
   ): Promise<CreatePlanFromDescriptionResult> {
     const timestamp = new Date().toISOString();
     // Step 4: Validate we got deltas back
@@ -629,9 +631,10 @@ export class GraphIntakeService {
       );
     }
     await queryOLTP(
-       `INSERT INTO content_plans (id, description, status, plan_json, created_at, updated_at)
-        VALUES ($1, $2, 'proposed', $3::jsonb, $4, $4)`,
-      [planId, description, parsedPlan.data, timestamp],
+      `INSERT INTO content_plans
+         (id, description, status, plan_json, created_by, created_at, updated_at)
+       VALUES ($1, $2, 'proposed', $3::jsonb, $4, $5, $5)`,
+      [planId, description, parsedPlan.data, createdBy ?? null, timestamp],
     );
 
     // Step 6: Write all deltas and edges to Neo4j in a single transaction
@@ -668,6 +671,18 @@ export class GraphIntakeService {
       }
       throw graphErr;
     }
+
+    emitAdminEvent(
+      'plan_created',
+      {
+        descriptionLength: description.trim().length,
+        deltaCount: planDeltas.length,
+        edgeCount: planEdges.length,
+        source: 'graph-intake',
+      },
+      planId,
+      createdBy,
+    );
 
     return {
       planId,
@@ -737,10 +752,8 @@ export class GraphIntakeService {
 
   /**
    * Load a ContentPlan for any legacy (plan_json-based) consumer (e.g. preview,
-   * stage). Graph-authored plans persist an empty `plan_json` until they are
-   * exported, so synthesize a plan from the graph deltas when `plan_json` is
-   * empty. This keeps the persisted graph plan independent of any UI-only
-   * synthesized copy and prevents legacy actions from 400-ing on an empty plan.
+   * stage). Graph-authored plans persist a synthesized `plan_json` snapshot. If
+   * an older graph plan has an empty snapshot, synthesize it from graph deltas.
    */
   async loadPlanForLegacyActions(
     planId: string,

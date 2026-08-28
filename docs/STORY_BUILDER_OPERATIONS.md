@@ -8,6 +8,37 @@
 
 **Verified**: Full pipeline works end-to-end.
 
+## 1.1. CLI-First Plan Intake
+
+Use the CLI to exercise the same proposal boundary that the future admin textarea
+endpoint should use. Write the request as Markdown outside `content/`, then run:
+
+```bash
+npm run seed:dev --workspace=server
+npm run plan:intake --workspace=server -- path/to/intake.md \
+  --user-email admin@example.com
+```
+
+The command reads the Markdown as the plan description, calls the graph-based AI
+intake service, and records the result as a `content_plans` row with status
+`proposed` and `created_by` set to the selected admin/developer user. It also writes
+the generated `ContentDelta` nodes and edges to Neo4j. The command prints the plan
+ID, graph counts, and an admin review URL.
+
+The default development actor is the seeded admin ID
+`00000000-0000-0000-0000-000000000001`. Prefer `--user-email` or
+`--user-id` when several development users exist. `PLAN_ACTOR_USER_ID` can provide
+the actor non-interactively.
+
+This is intentionally review-only. It does not stage files, migrate canonical
+content, publish assets, approve the plan, or run solidify. Review the plan in the
+admin UI and inspect its Neo4j deltas before a later approval step. `proposed` is
+the existing review-ready state; no separate `working` status is needed.
+
+If the plan is accepted as a new milestone, record the reviewed decision in the
+appropriate `docs/milestones/` document and use the normal approve → solidify →
+migrate → verify pipeline to materialize authored content.
+
 | Test | Input | Result | Notes |
 |------|-------|--------|-------|
 | LiteLLM health | `curl localhost:4000/health` | PASS | Healthy endpoints confirmed |
