@@ -67,9 +67,9 @@ nodes:
       relationship_effect:
         axes:
           trust: 10
+      state_set:
+        last_sofia_encounter_at: NOW
       story_beat: "beat_sofia_intro"
-    state_set:
-      last_sofia_encounter_at: NOW
 
   node_diplomatic_intervention:
     id: "node_diplomatic_intervention"
@@ -93,9 +93,9 @@ nodes:
       relationship_effect:
         axes:
           trust: 20
+      state_set:
+        last_sofia_encounter_at: NOW
       story_beat: "beat_sofia_intro"
-    state_set:
-      last_sofia_encounter_at: NOW
 
   node_ignore_path:
     id: "node_ignore_path"

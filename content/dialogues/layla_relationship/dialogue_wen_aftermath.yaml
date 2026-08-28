@@ -28,18 +28,19 @@ nodes:
       - id: branch_lovers
         text: "[Layla is Lover]"
         next_node_id: wen_aftermath_lovers_start
-        required_relationship:
-          flags:
-            layla_ending_lovers: true
+        # layla_ending_lovers is a player-state flag (see
+        # dialogue_layla_act3_endings.yaml), not a relationship flag, so gate it
+        # via required_flags/hidden_if (matching dialogue_wen_act3.yaml).
+        required_flags:
+          layla_ending_lovers: true
 
       # Fallback: Layla not LOVERS -> opportunist branch. Hidden only when
       # the LOVERS ending flag is set, so one of the two always remains.
       - id: branch_single
         text: "[Layla is Single]"
         next_node_id: wen_aftermath_single_start
-        hidden_if_relationship:
-          flags:
-            layla_ending_lovers: true
+        hidden_if:
+          layla_ending_lovers: true
 
   # ============================================
   # LOVERS BRANCH: The Conspirator

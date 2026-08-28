@@ -29,7 +29,7 @@ SELECT
   END,
   NOW()
 FROM player_states ps
-WHERE ps.stats ? 'sofia_trust'
+WHERE ps.stats ?| array['sofia_trust', 'sofia_status']
 ON CONFLICT (user_id, character_id) DO UPDATE
   SET flags = user_relationships.flags || EXCLUDED.flags,
       updated_at = NOW();
