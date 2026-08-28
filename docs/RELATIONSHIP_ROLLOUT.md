@@ -17,9 +17,10 @@ and `effects.relationship_effect`; persisted relationship state lives in
 
 ## Completed Rollout
 
-The converted arcs have per-arc `AUDIT.md` records under their dialogue folders.
-Those records document mappings, conflicts, backfills, and validation results.
-The integration coverage is in `server/tests/integration/arcBatchGates.test.ts`.
+The converted arcs are covered by `server/tests/integration/arcBatchGates.test.ts`,
+with character-specific backfill migrations under
+`server/src/database/migrations/`. The rollout is complete; future changes should
+follow the authoring rules above and the checklist in `docs/relationship_template.md`.
 
 ## Future Work
 
