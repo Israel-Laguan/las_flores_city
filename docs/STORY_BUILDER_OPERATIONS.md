@@ -30,6 +30,45 @@ The default development actor is the seeded admin ID
 `--user-id` when several development users exist. `PLAN_ACTOR_USER_ID` can provide
 the actor non-interactively.
 
+### Prerequisites
+
+- A live local stack: `npm run seed:dev --workspace=server` (seeds the admin user
+  and content context), an OLTP database reachable via `DATABASE_URL`, and the
+  intake-worker / game-server env loaded from `.env`.
+- **Neo4j enabled** — `NEO4J_ENABLED=true` with `NEO4J_URI` / `NEO4J_USER` /
+  `NEO4J_PASSWORD` set. The graph intake path throws `GraphIntakeDisabledError`
+  when the authoring graph is off, because plan deltas are written to Neo4j.
+- **LiteLLM reachable** — `LITELLM_BASE_URL` / `LITELLM_API_KEY` / `LLM_MODEL` set
+  so `chatService.propose` can return structured deltas + edges. Write the intake
+  request as Markdown **outside** `content/` (e.g. `/tmp/intake.md`).
+
+### Live-stack probe
+
+The probe in `server/scripts/probe_plan_intake.ts` exercises the same
+`createPlanFromDescription` path the CLI uses and asserts the M50 acceptance
+criteria against the live stack (with Neo4j + LiteLLM enabled):
+
+```bash
+tsx server/scripts/probe_plan_intake.ts /tmp/intake.md \
+  --user-email admin@example.com
+```
+
+It checks that `content_plans.status = proposed`, `created_by` matches the actor,
+Neo4j contains `ContentDelta` nodes and edges for the returned `planId`, and the
+review URL is well-formed. It exits non-zero on any assertion failure. Note: the
+probe does **not** stage files, migrate content, publish assets, or approve — it
+stops at `proposed` exactly like the CLI.
+
+### Unit tests
+
+`server/tests/unit/plan-intake-cli.test.ts` covers the pure CLI helpers (argument
+parsing, actor resolution, missing-user and non-admin rejection, and review-URL
+formatting) without a live stack. Run with:
+
+```bash
+npm run test:unit --workspace=server -- plan-intake-cli
+```
+
 This is intentionally review-only. It does not stage files, migrate canonical
 content, publish assets, approve the plan, or run solidify. Review the plan in the
 admin UI and inspect its Neo4j deltas before a later approval step. `proposed` is
