@@ -193,7 +193,7 @@ describe('GraphIntakeService — unit tests (Neo4j mocked)', () => {
       expect(insertCall).toBeDefined();
       const [, params] = insertCall!;
       // plan_json is now synthesized from the deltas/edges (no longer an empty
-      // object), so the INSERT carries [id, description, plan_json, timestamp].
+      // object), and actor attribution is persisted when supplied.
       // Assert the synthesized ContentPlan shape so the test fails if plan_json
       // stops being a valid plan (expect.any(Object) would also pass for {}).
       expect(params).toEqual([
@@ -204,9 +204,24 @@ describe('GraphIntakeService — unit tests (Neo4j mocked)', () => {
           status: 'proposed',
           items: expect.any(Array),
         }),
+        null,
         expect.any(String),
       ]);
       expect((params[2] as any).items.length).toBeGreaterThan(0);
+    });
+
+    test('persists the creating actor when supplied', async () => {
+      const service = new GraphIntakeService();
+      await service.createPlanFromDescription(
+        'Test description',
+        [],
+        'f0000000-e29b-41d4-a716-4466554400f2',
+      );
+
+      const insertCall = mockQueryOLTP.mock.calls.find(([sql]) =>
+        typeof sql === 'string' && sql.includes('INSERT INTO content_plans'),
+      );
+      expect(insertCall?.[1]?.[3]).toBe('f0000000-e29b-41d4-a716-4466554400f2');
     });
 
     test('writes deltas and edges to Neo4j via transaction', async () => {

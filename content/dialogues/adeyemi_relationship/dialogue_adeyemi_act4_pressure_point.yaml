@@ -17,7 +17,7 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Meeting Adeyemi at the industrial crane yard"
-        
+  
   adeyemi_crane_adeyemi_speaks:
     id: adeyemi_crane_adeyemi_speaks
     type: character
@@ -77,27 +77,36 @@ nodes:
           flag_set:
             COVERED: true
             adeyemi_publicly_defended: true
-          stat_set:
-            adeyemi_trust: 30
-            adeyemi_alignment: 20
+          relationship_effect:
+            axes:
+              trust: 30
+              alignment: 20
+          state_set:
+            last_adeyemi_encounter_at: NOW
       - id: step_to_solis
         text: "[Step toward Solis]"
         next_node_id: adeyemi_crane_witnessed
         effects:
           flag_set:
             WITNESSED: true
-          stat_set:
-            adeyemi_trust: -50
-            adeyemi_tension: 40
+          relationship_effect:
+            axes:
+              trust: -50
+              tension: 40
+          state_set:
+            last_adeyemi_encounter_at: NOW
       - id: stand_still
         text: "[Stand perfectly still]"
         next_node_id: adeyemi_crane_deflected
         effects:
           flag_set:
             DEFLECTED: true
-          stat_set:
-            adeyemi_familiarity: -10
-            adeyemi_tension: 20
+          relationship_effect:
+            axes:
+              familiarity: -10
+              tension: 20
+          state_set:
+            last_adeyemi_encounter_at: NOW
 
   adeyemi_crane_covered:
     id: adeyemi_crane_covered

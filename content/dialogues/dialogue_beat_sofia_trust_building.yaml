@@ -20,8 +20,9 @@ metadata:
     - "trust_gate"
   story_beat: "beat_sofia_trust_building"
   location: "south_las_flores"
-  required_stats:
-    sofia_trust: "gt:50"
+  required_relationship:
+    axes:
+      trust: "gt:50"
 
 nodes:
   node_food_stand_approach:
@@ -81,8 +82,10 @@ nodes:
     effects:
       state_set:
         sofia_status: "romanced"
-      stat_set:
-        sofia_trust: 10
+        last_sofia_encounter_at: NOW
+      relationship_effect:
+        axes:
+          trust: 10
       story_beat: "beat_sofia_trust_building"
 
   node_neutral_path:
@@ -93,8 +96,11 @@ nodes:
     thought: "She's grateful, but there's a hint of disappointment. You didn't quite meet her where she needed you to be."
     is_end: true
     effects:
-      stat_set:
-        sofia_trust: 5
+      state_set:
+        last_sofia_encounter_at: NOW
+      relationship_effect:
+        axes:
+          trust: 5
       story_beat: "beat_sofia_trust_building"
 
   node_insufficient_trust:
@@ -104,4 +110,5 @@ nodes:
     thought: "She doesn't trust you enough yet. You need to build that relationship first."
     is_end: true
     conditions:
-      sofia_trust: "lte:50"
+      axes:
+        trust: "lte:50"

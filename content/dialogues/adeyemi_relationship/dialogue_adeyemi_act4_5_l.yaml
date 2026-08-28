@@ -37,9 +37,12 @@ nodes:
     speaker_id: a0000001-0000-4000-8000-000000000003
     text: "His fiancée. She left after. I don't blame her."
     effects:
-      stat_set:
-        adeyemi_trust: 10
-        adeyemi_tension: 8
+      relationship_effect:
+        axes:
+          trust: 10
+          tension: 8
+      state_set:
+        last_adeyemi_encounter_at: NOW
     choices:
       - id: ask_why_from_photo
         text: "Why are you showing me this now?"
@@ -55,8 +58,11 @@ nodes:
         text: "[Look at him]"
         next_node_id: adeyemi_meridian_file_moment
         effects:
-          stat_set:
-            adeyemi_familiarity: 5
+          relationship_effect:
+            axes:
+              familiarity: 5
+          state_set:
+            last_adeyemi_encounter_at: NOW
 
   adeyemi_meridian_file_moment:
     id: adeyemi_meridian_file_moment
@@ -69,16 +75,22 @@ nodes:
         effects:
           flag_set:
             ROMANTIC_TENSION_CONFIRMED: true
-          stat_set:
-            adeyemi_tension: 15
+          relationship_effect:
+            axes:
+              tension: 15
+          state_set:
+            last_adeyemi_encounter_at: NOW
       - id: say_name
         text: "Adeyemi."
         next_node_id: adeyemi_meridian_file_door
         effects:
           flag_set:
             ROMANTIC_TENSION_CONFIRMED: true
-          stat_set:
-            adeyemi_tension: 15
+          relationship_effect:
+            axes:
+              tension: 15
+          state_set:
+            last_adeyemi_encounter_at: NOW
       - id: step_back
         text: "[Step back]"
         next_node_id: adeyemi_meridian_file_door

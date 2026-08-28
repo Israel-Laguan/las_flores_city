@@ -30,12 +30,33 @@ model_list:
       model: openai/poolside/laguna-m.1
       api_key: <your-poolside-api-key>
       api_base: https://inference.poolside.ai/v1
-  - model_name: openrouter/owl-alpha
+  - model_name: openrouter/z-ai/glm-5.2:free
     litellm_params:
-      model: openrouter/owl-alpha
+      model: openrouter/z-ai/glm-5.2:free
       api_key: <your-openrouter-api-key>
       api_base: https://openrouter.ai/api/v1
       modify_params: True
+  - model_name: openrouter/nvidia/nemotron-3-super-120b-a12b:free
+    litellm_params:
+      model: openrouter/nvidia/nemotron-3-super-120b-a12b:free
+      api_key: <your-openrouter-api-key>
+      api_base: https://openrouter.ai/api/v1
+      modify_params: True
+  - model_name: gemini/gemini-2.5-flash
+    litellm_params:
+      model: gemini/gemini-2.5-flash
+      api_key: <your-gemini-api-key>
+  - model_name: mistral/mistral-large-latest
+    litellm_params:
+      model: mistral/mistral-large-latest
+      api_key: <your-mistral-api-key>
+
+router_settings:
+  num_retries: 2
+  fallbacks:
+    - openrouter/z-ai/glm-5.2:free: ["openrouter/nvidia/nemotron-3-super-120b-a12b:free", "gemini/gemini-2.5-flash", "poolside/laguna-m.1"]
+    - gemini/gemini-2.5-flash: ["mistral/mistral-large-latest", "poolside/laguna-m.1"]
+    - mistral/mistral-large-latest: ["poolside/laguna-m.1"]
 
 general_settings:
   master_key: local-key
@@ -97,6 +118,55 @@ litellm:
 2. Verify LiteLLM is reachable: `curl -fsS --connect-timeout 5 http://localhost:4000/health/liveliness`
 3. Test connectivity from server container: `podman exec las-flores-server wget -qO- --header="Authorization: Bearer local-key" http://host.containers.internal:4000/v1/models`
 4. If DNS resolution fails, use the host's actual IP address in `LITELLM_BASE_URL`.
+
+### Batch and failover examples
+
+For occasional batch work, you can use several free OpenRouter models from distinct
+upstream model providers before falling back to other providers. This can diversify
+the underlying model providers and spread per-model rate limits, but all OpenRouter
+models still share OpenRouter's gateway and the same API key as common failure
+points — it does not provide true provider isolation, and rate limits land on that
+single key. For real isolation, give each upstream its own endpoint and credential.
+A sanitized example:
+
+```yaml
+model_list:
+  - model_name: openrouter/z-ai/glm-5.2:free
+    litellm_params:
+      model: openrouter/z-ai/glm-5.2:free
+      api_key: <your-openrouter-api-key>
+      api_base: https://openrouter.ai/api/v1
+      modify_params: True
+  - model_name: openrouter/nvidia/nemotron-3-super-120b-a12b:free
+    litellm_params:
+      model: openrouter/nvidia/nemotron-3-super-120b-a12b:free
+      api_key: <your-openrouter-api-key>
+      api_base: https://openrouter.ai/api/v1
+      modify_params: True
+  - model_name: gemini/gemini-2.5-flash
+    litellm_params:
+      model: gemini/gemini-2.5-flash
+      api_key: <your-gemini-api-key>
+  - model_name: poolside/laguna-m.1
+    litellm_params:
+      model: openai/poolside/laguna-m.1
+      api_key: <your-poolside-api-key>
+      api_base: https://inference.poolside.ai/v1
+
+router_settings:
+  num_retries: 2
+  fallbacks:
+    - openrouter/z-ai/glm-5.2:free: ["openrouter/nvidia/nemotron-3-super-120b-a12b:free", "gemini/gemini-2.5-flash"]
+    - gemini/gemini-2.5-flash: ["poolside/laguna-m.1"]
+```
+
+Re-verify provider model slugs before a large run because free models are retired or
+renamed frequently. Never commit real API keys or a personal host configuration.
+
+> ⚠️ **Data retention**: Free/third-party providers may retain or use the content you
+> submit. Only send public or non-sensitive data through these endpoints. For
+> sensitive or proprietary data, enforce a provider data policy via a private
+> endpoint you control.
 
 ### Connection errors from server
 - **`Cannot reach LiteLLM at ...`**: Check that LiteLLM is running and that `LITELLM_BASE_URL` is correct. With Podman rootless, `host.containers.internal` may not resolve without `aardvark-dns`. Try using the host's IP address directly.

@@ -64,6 +64,8 @@ nodes:
       relationship_effect:
         axes:
           trust: 5
+      state_set:
+        last_vq_encounter_at: NOW
     choices:
       - id: trust_continue
         text: "'Long version. I'm listening.'"
@@ -81,6 +83,8 @@ nodes:
       relationship_effect:
         axes:
           trust: 10
+      state_set:
+        last_vq_encounter_at: NOW
     choices:
       - id: deep_continue
         text: "'I've got you. Start anywhere.'"
@@ -163,6 +167,8 @@ nodes:
       relationship_effect:
         axes:
           trust: 15
+      state_set:
+        last_vq_encounter_at: NOW
     choices:
       - id: breakthrough_answer
         text: "'No. What I want is for you to know there are other arithmetics. That's all.'"
@@ -181,6 +187,8 @@ nodes:
       relationship_effect:
         axes:
           trust: -10
+      state_set:
+        last_vq_encounter_at: NOW
     choices:
       - id: probe_back_off
         text: "'Forget it. I overstepped. I'm sorry.'"
@@ -201,6 +209,8 @@ nodes:
       relationship_effect:
         axes:
           trust: 5
+      state_set:
+        last_vq_encounter_at: NOW
     choices:
       - id: recover_continue
         text: "'Locked door. Understood. The rest of it — thank you for trusting me with it.'"
@@ -232,6 +242,8 @@ nodes:
       relationship_effect:
         axes:
           trust: 8
+      state_set:
+        last_vq_encounter_at: NOW
     choices:
       - id: quiet_continue
         text: "(Stay exactly where you are.)"

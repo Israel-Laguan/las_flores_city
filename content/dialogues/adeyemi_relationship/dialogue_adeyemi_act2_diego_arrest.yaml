@@ -61,10 +61,11 @@ nodes:
     thought: "He says 'I know' and walks away. Does he mean he knows Reyes is innocent? Or he knows I'm upset? Or he knows more than I do?"
     is_end: true
     effects:
-      stat_set:
-        adeyemi_tension: 15
-        adeyemi_alignment: -10
-        adeyemi_familiarity: 3
+      relationship_effect:
+        axes:
+          tension: 15
+          alignment: -10
+          familiarity: 3
       state_set:
         last_adeyemi_encounter_at: NOW
 
@@ -74,10 +75,11 @@ nodes:
     text: "Adeyemi sees you watching. He doesn't acknowledge it, but he definitely clocked you."
     is_end: true
     effects:
-      stat_set:
-        adeyemi_familiarity: 5
-        adeyemi_tension: 5
-        adeyemi_trust: 3
+      relationship_effect:
+        axes:
+          familiarity: 5
+          tension: 5
+          trust: 3
       state_set:
         last_adeyemi_encounter_at: NOW
 
@@ -101,11 +103,12 @@ nodes:
     text: "You stop. He nods slightly, then walks away."
     is_end: true
     effects:
-      stat_set:
-        adeyemi_tension: 10
-        adeyemi_trust: 8
-        adeyemi_familiarity: 8
-        adeyemi_alignment: -5
+      relationship_effect:
+        axes:
+          tension: 10
+          trust: 8
+          familiarity: 8
+          alignment: -5
       state_set:
         last_adeyemi_encounter_at: NOW
 
@@ -115,11 +118,12 @@ nodes:
     text: "You push past him. His expression tightens. The other officers warn you to step back, and Adeyemi watches you with a hard look before leaving."
     is_end: true
     effects:
-      stat_set:
-        adeyemi_tension: 20
-        adeyemi_alignment: -15
-        adeyemi_trust: -5
-        adeyemi_familiarity: 5
+      relationship_effect:
+        axes:
+          tension: 20
+          alignment: -15
+          trust: -5
+          familiarity: 5
       state_set:
         last_adeyemi_encounter_at: NOW
 
@@ -131,11 +135,12 @@ nodes:
     effects:
       flag_set:
         adeyemi_helped_reyes: true
-      stat_set:
-        adeyemi_alignment: 10
-        adeyemi_tension: 8
-        adeyemi_trust: 5
-        adeyemi_familiarity: 3
+      relationship_effect:
+        axes:
+          alignment: 10
+          tension: 8
+          trust: 5
+          familiarity: 3
       state_set:
         last_adeyemi_encounter_at: NOW
 
@@ -147,11 +152,12 @@ nodes:
     effects:
       flag_set:
         adeyemi_publicly_denounced: true
-      stat_set:
-        adeyemi_alignment: -20
-        adeyemi_tension: 25
-        adeyemi_trust: -15
-        adeyemi_familiarity: 5
+      relationship_effect:
+        axes:
+          alignment: -20
+          tension: 25
+          trust: -15
+          familiarity: 5
       state_set:
         last_adeyemi_encounter_at: NOW
 
@@ -185,9 +191,10 @@ nodes:
     effects:
       flag_set:
         SECONDARY_NUMBER_USED: true
-      stat_set:
-        adeyemi_trust: 12
-        adeyemi_familiarity: 5
+      relationship_effect:
+        axes:
+          trust: 12
+          familiarity: 5
       state_set:
         last_adeyemi_encounter_at: NOW
 

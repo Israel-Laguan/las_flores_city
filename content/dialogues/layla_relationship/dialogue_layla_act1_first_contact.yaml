@@ -21,6 +21,8 @@ nodes:
           trust: -10
           alignment: -20
           tension: 20
+      state_set:
+        last_layla_encounter_at: NOW
     choices:
       - id: act1_flirt
         text: "Maybe I was just watching you."

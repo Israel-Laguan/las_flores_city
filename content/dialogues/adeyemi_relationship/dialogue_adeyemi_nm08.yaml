@@ -48,8 +48,9 @@ nodes:
     thought: "He looks at you. At the snack. At you. He means it."
     is_end: true
     effects:
-      stat_set:
-        adeyemi_familiarity: 12
+      relationship_effect:
+        axes:
+          familiarity: 12
       state_set:
         last_adeyemi_encounter_at: NOW
 
@@ -61,8 +62,9 @@ nodes:
     thought: "He presses the button one more time. Walks away."
     is_end: true
     effects:
-      stat_set:
-        adeyemi_familiarity: 5
+      relationship_effect:
+        axes:
+          familiarity: 5
       state_set:
         last_adeyemi_encounter_at: NOW
 
@@ -72,8 +74,9 @@ nodes:
     text: "He eventually walks away without the snack or his money, with the dignity of a man who will never speak of this again."
     is_end: true
     effects:
-      stat_set:
-        adeyemi_familiarity: 8
+      relationship_effect:
+        axes:
+          familiarity: 8
       state_set:
         last_adeyemi_encounter_at: NOW
 

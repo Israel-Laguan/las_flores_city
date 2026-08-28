@@ -115,7 +115,7 @@ describe('GraphIntakeService — integration tests (Neo4j-gated)', () => {
     
     // Mock the admin auth middleware
     app.use('/admin/story-builder', (req, res, next) => {
-      req.userId = 'test-user';
+      req.userId = '00000000-0000-0000-0000-000000000001';
       req.isAdmin = true;
       next();
     });
@@ -321,7 +321,7 @@ describe('GraphIntakeService — integration tests (Neo4j-gated)', () => {
       const app = express();
       app.use(express.json());
       app.use('/admin/story-builder', (req, res, next) => {
-        req.userId = 'test-user';
+        req.userId = '00000000-0000-0000-0000-000000000001';
         req.isAdmin = true;
         next();
       });

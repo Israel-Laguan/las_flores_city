@@ -428,8 +428,10 @@ nodes:
       flag_set:
         valentina_contact_made: true
         valentina_rejected: true
-      stat_set:
-        valentina_relationship: -5
+      relationship_effect:
+        friendship: -5
+      state_set:
+        last_valentina_encounter_at: NOW
 
 metadata:
   version: "1.0"

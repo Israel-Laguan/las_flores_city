@@ -25,8 +25,11 @@ nodes:
           flag_set:
             adeyemi_phone_call_answered: true
             adeyemi_encounter_stack_phone_call: true
-          stat_set:
-            adeyemi_visibility: 5  # Phone calls are private
+          relationship_effect:
+            axes:
+              visibility: 5  # Phone calls are private
+          state_set:
+            last_adeyemi_encounter_at: NOW
 
   # The phone call begins - Adeyemi's disclosure
   adeyemi_phone_call_opening:
@@ -43,9 +46,12 @@ nodes:
           amount: 1
           description: "Engaging in phone call with Adeyemi"
         effects:
-          stat_set:
-            adeyemi_familiarity: 10
-            adeyemi_trust: 15
+          relationship_effect:
+            axes:
+              familiarity: 10
+              trust: 15
+          state_set:
+            last_adeyemi_encounter_at: NOW
       - id: cautious_verify
         text: "How do I know it's really you?"
         next_node_id: adeyemi_verify_identity
@@ -53,9 +59,12 @@ nodes:
           amount: 1
           description: "Engaging in phone call with Adeyemi"
         effects:
-          stat_set:
-            adeyemi_familiarity: 5
-            adeyemi_trust: 5
+          relationship_effect:
+            axes:
+              familiarity: 5
+              trust: 5
+          state_set:
+            last_adeyemi_encounter_at: NOW
       - id: deflect_call
         text: "This isn't a good time. Call me tomorrow."
         next_node_id: adeyemi_deflection_response
@@ -63,10 +72,13 @@ nodes:
           amount: 1
           description: "Engaging in phone call with Adeyemi"
         effects:
-          stat_set:
-            adeyemi_familiarity: 3
-            adeyemi_trust: -5
-            adeyemi_tension: 8
+          relationship_effect:
+            axes:
+              familiarity: 3
+              trust: -5
+              tension: 8
+          state_set:
+            last_adeyemi_encounter_at: NOW
 
   # Identity verification path
   adeyemi_verify_identity:
@@ -80,16 +92,22 @@ nodes:
         text: "...Yeah, I remember. LW-2077-0042. What do you want, Adeyemi?"
         next_node_id: adeyemi_disclosure_begin
         effects:
-          stat_set:
-            adeyemi_familiarity: 8
-            adeyemi_trust: 12
+          relationship_effect:
+            axes:
+              familiarity: 8
+              trust: 12
+          state_set:
+            last_adeyemi_encounter_at: NOW
       - id: verify_fail
         text: "I don't... I'm not sure. Maybe this isn't such a good idea."
         next_node_id: adeyemi_deflection_response
         effects:
-          stat_set:
-            adeyemi_trust: -8
-            adeyemi_tension: 10
+          relationship_effect:
+            axes:
+              trust: -8
+              tension: 10
+          state_set:
+            last_adeyemi_encounter_at: NOW
 
   # Deflection response
   adeyemi_deflection_response:
@@ -102,8 +120,11 @@ nodes:
     effects:
       flag_set:
         adeyemi_phone_call_declined: true
-      stat_set:
-        adeyemi_tension: 10
+      relationship_effect:
+        axes:
+          tension: 10
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
   # Main disclosure - Daniel's story begins
   adeyemi_disclosure_begin:
@@ -117,26 +138,35 @@ nodes:
         text: "What happened, Adeyemi?"
         next_node_id: adeyemi_reveal_daniel
         effects:
-          stat_set:
-            adeyemi_familiarity: 12
-            adeyemi_trust: 20
-            adeyemi_alignment: 8
+          relationship_effect:
+            axes:
+              familiarity: 12
+              trust: 20
+              alignment: 8
+          state_set:
+            last_adeyemi_encounter_at: NOW
       - id: push_details
         text: "Tell me everything. I need to understand."
         next_node_id: adeyemi_full_disclosure
         effects:
-          stat_set:
-            adeyemi_familiarity: 15
-            adeyemi_trust: 25
-            adeyemi_alignment: 10
+          relationship_effect:
+            axes:
+              familiarity: 15
+              trust: 25
+              alignment: 10
+          state_set:
+            last_adeyemi_encounter_at: NOW
       - id: deflect_vulnerability
         text: "Look, I appreciate you reaching out, but I don't know if I want to get involved in... whatever this is."
         next_node_id: adeyemi_vulnerability_rejected
         effects:
-          stat_set:
-            adeyemi_familiarity: 5
-            adeyemi_trust: -15
-            adeyemi_tension: 15
+          relationship_effect:
+            axes:
+              familiarity: 5
+              trust: -15
+              tension: 15
+          state_set:
+            last_adeyemi_encounter_at: NOW
 
   # Daniel's story - the heart of Adeyemi's vulnerability
   adeyemi_reveal_daniel:
@@ -150,26 +180,35 @@ nodes:
         text: "I'm so sorry, Adeyemi. That must have been... unbearable."
         next_node_id: adeyemi_sympathy_received
         effects:
-          stat_set:
-            adeyemi_familiarity: 15
-            adeyemi_trust: 25
-            adeyemi_alignment: 15
+          relationship_effect:
+            axes:
+              familiarity: 15
+              trust: 25
+              alignment: 15
+          state_set:
+            last_adeyemi_encounter_at: NOW
       - id: ask_what_happened
         text: "What really happened to Daniel?"
         next_node_id: adeyemi_explain_daniels_fate
         effects:
-          stat_set:
-            adeyemi_familiarity: 12
-            adeyemi_trust: 18
-            adeyemi_alignment: 12
+          relationship_effect:
+            axes:
+              familiarity: 12
+              trust: 18
+              alignment: 12
+          state_set:
+            last_adeyemi_encounter_at: NOW
       - id: ask_why_telling_me
         text: "Why are you telling me this now?"
         next_node_id: adeyemi_explain_why_now
         effects:
-          stat_set:
-            adeyemi_familiarity: 10
-            adeyemi_trust: 20
-            adeyemi_alignment: 10
+          relationship_effect:
+            axes:
+              familiarity: 10
+              trust: 20
+              alignment: 10
+          state_set:
+            last_adeyemi_encounter_at: NOW
 
   # Full disclosure path
   adeyemi_full_disclosure:
@@ -183,26 +222,35 @@ nodes:
         text: "I understand. And I won't let his death be for nothing. I promise you that."
         next_node_id: adeyemi_promise_received
         effects:
-          stat_set:
-            adeyemi_familiarity: 20
-            adeyemi_trust: 30
-            adeyemi_alignment: 25
+          relationship_effect:
+            axes:
+              familiarity: 20
+              trust: 30
+              alignment: 25
+          state_set:
+            last_adeyemi_encounter_at: NOW
       - id: full_ask_proof
         text: "Do you have proof of what happened to Daniel?"
         next_node_id: adeyemi_offer_proof
         effects:
-          stat_set:
-            adeyemi_familiarity: 10
-            adeyemi_trust: 15
-            adeyemi_alignment: 10
+          relationship_effect:
+            axes:
+              familiarity: 10
+              trust: 15
+              alignment: 10
+          state_set:
+            last_adeyemi_encounter_at: NOW
       - id: full_retreat
         text: "This is... this is a lot to take in. I need to think."
         next_node_id: adeyemi_retreat_response
         effects:
-          stat_set:
-            adeyemi_familiarity: 5
-            adeyemi_trust: 5
-            adeyemi_tension: 10
+          relationship_effect:
+            axes:
+              familiarity: 5
+              trust: 5
+              tension: 10
+          state_set:
+            last_adeyemi_encounter_at: NOW
 
   # Vulnerability rejected path
   adeyemi_vulnerability_rejected:
@@ -216,9 +264,10 @@ nodes:
       flag_set:
         adeyemi_vulnerability_shared: false
         adeyemi_vulnerability_rejected: true
-      stat_set:
-        adeyemi_tension: 20
-        adeyemi_trust: -10
+      relationship_effect:
+        axes:
+          tension: 20
+          trust: -10
       state_set:
         last_adeyemi_encounter_at: NOW
 
@@ -234,26 +283,35 @@ nodes:
         text: "Have you ever thought about... I don't know, getting justice for Daniel?"
         next_node_id: adeyemi_justice_question
         effects:
-          stat_set:
-            adeyemi_familiarity: 12
-            adeyemi_trust: 20
-            adeyemi_alignment: 12
+          relationship_effect:
+            axes:
+              familiarity: 12
+              trust: 20
+              alignment: 12
+          state_set:
+            last_adeyemi_encounter_at: NOW
       - id: offer_help
         text: "If there's anything I can do to help find out what happened... just tell me."
         next_node_id: adeyemi_help_offer
         effects:
-          stat_set:
-            adeyemi_familiarity: 10
-            adeyemi_trust: 25
-            adeyemi_alignment: 15
-            adeyemi_debt: 10  # Player now owes Adeyemi
+          relationship_effect:
+            axes:
+              familiarity: 10
+              trust: 25
+              alignment: 15
+              debt: 10  # Player now owes Adeyemi
+          state_set:
+            last_adeyemi_encounter_at: NOW
       - id: change_subject
         text: "So what does this have to do with why you called me tonight?"
         next_node_id: adeyemi_back_to_business
         effects:
-          stat_set:
-            adeyemi_familiarity: 5
-            adeyemi_trust: 10
+          relationship_effect:
+            axes:
+              familiarity: 5
+              trust: 10
+          state_set:
+            last_adeyemi_encounter_at: NOW
 
   # Daniel's fate explained
   adeyemi_explain_daniels_fate:
@@ -267,19 +325,25 @@ nodes:
         text: "That's... that's terrible. And you've had to live with that knowledge."
         next_node_id: adeyemi_horror_acknowledged
         effects:
-          stat_set:
-            adeyemi_familiarity: 15
-            adeyemi_trust: 22
-            adeyemi_alignment: 18
+          relationship_effect:
+            axes:
+              familiarity: 15
+              trust: 22
+              alignment: 18
+          state_set:
+            last_adeyemi_encounter_at: NOW
       - id: react_anger
         text: "Those bastards. We need to make them pay for what they did."
         next_node_id: adeyemi_anger_response
         effects:
-          stat_set:
-            adeyemi_familiarity: 12
-            adeyemi_trust: 15
-            adeyemi_alignment: 20
-            adeyemi_tension: 8
+          relationship_effect:
+            axes:
+              familiarity: 12
+              trust: 15
+              alignment: 20
+              tension: 8
+          state_set:
+            last_adeyemi_encounter_at: NOW
 
   # Why he's telling me now
   adeyemi_explain_why_now:
@@ -293,18 +357,24 @@ nodes:
         text: "I appreciate that, Adeyemi. And I won't let you down. Or Daniel."
         next_node_id: adeyemi_responsibility_accepted
         effects:
-          stat_set:
-            adeyemi_familiarity: 18
-            adeyemi_trust: 28
-            adeyemi_alignment: 22
+          relationship_effect:
+            axes:
+              familiarity: 18
+              trust: 28
+              alignment: 22
+          state_set:
+            last_adeyemi_encounter_at: NOW
       - id: ask_about_protection
         text: "So what, you're trying to protect me? After everything?"
         next_node_id: adeyemi_protection_explanation
         effects:
-          stat_set:
-            adeyemi_familiarity: 10
-            adeyemi_trust: 15
-            adeyemi_alignment: 8
+          relationship_effect:
+            axes:
+              familiarity: 10
+              trust: 15
+              alignment: 8
+          state_set:
+            last_adeyemi_encounter_at: NOW
 
   # Promise received
   adeyemi_promise_received:
@@ -318,12 +388,13 @@ nodes:
       flag_set:
         adeyemi_vulnerability_shared: true
         adeyemi_daniels_story_revealed: true
-      stat_set:
-        adeyemi_familiarity: 20
-        adeyemi_trust: 35
-        adeyemi_alignment: 25
-        adeyemi_debt: 15
-        adeyemi_tension: -10
+      relationship_effect:
+        axes:
+          familiarity: 20
+          trust: 35
+          alignment: 25
+          debt: 15
+          tension: -10
       state_set:
         last_adeyemi_encounter_at: NOW
 
@@ -341,19 +412,25 @@ nodes:
         effects:
           flag_set:
             adeyemi_offered_daniels_notes: true
-          stat_set:
-            adeyemi_familiarity: 25
-            adeyemi_trust: 40
-            adeyemi_alignment: 30
-            adeyemi_debt: 20
+          relationship_effect:
+            axes:
+              familiarity: 25
+              trust: 40
+              alignment: 30
+              debt: 20
+          state_set:
+            last_adeyemi_encounter_at: NOW
       - id: decline_proof
         text: "I appreciate the offer, but I don't want to put you at risk. You've already done enough by telling me this much."
         next_node_id: adeyemi_proof_declined
         effects:
-          stat_set:
-            adeyemi_familiarity: 10
-            adeyemi_trust: 20
-            adeyemi_alignment: 15
+          relationship_effect:
+            axes:
+              familiarity: 10
+              trust: 20
+              alignment: 15
+          state_set:
+            last_adeyemi_encounter_at: NOW
 
   # Retreat response
   adeyemi_retreat_response:
@@ -367,11 +444,12 @@ nodes:
       flag_set:
         adeyemi_vulnerability_shared: true
         adeyemi_daniels_story_heard: true
-      stat_set:
-        adeyemi_trust: 8
-        adeyemi_tension: 5
+      relationship_effect:
+        axes:
+          trust: 8
+          tension: 5
       state_set:
-        last_adeyemi_encounter_at: NOW
+            last_adeyemi_encounter_at: NOW
 
   # Justice question
   adeyemi_justice_question:
@@ -385,19 +463,25 @@ nodes:
         text: "But doesn't that make you complicit? Working for the people who covered it up?"
         next_node_id: adeyemi_complicit_question
         effects:
-          stat_set:
-            adeyemi_familiarity: 15
-            adeyemi_trust: 12
-            adeyemi_alignment: -5
-            adeyemi_tension: 15
+          relationship_effect:
+            axes:
+              familiarity: 15
+              trust: 12
+              alignment: -5
+              tension: 15
+          state_set:
+            last_adeyemi_encounter_at: NOW
       - id: respect_choice
         text: "I can respect that. Sometimes the hard choices are the right ones."
         next_node_id: adeyemi_choice_respected
         effects:
-          stat_set:
-            adeyemi_familiarity: 12
-            adeyemi_trust: 20
-            adeyemi_alignment: 15
+          relationship_effect:
+            axes:
+              familiarity: 12
+              trust: 20
+              alignment: 15
+          state_set:
+            last_adeyemi_encounter_at: NOW
 
   # Help offer
   adeyemi_help_offer:
@@ -413,19 +497,25 @@ nodes:
         effects:
           flag_set:
             adeyemi_partnership_offered: true
-          stat_set:
-            adeyemi_familiarity: 25
-            adeyemi_trust: 40
-            adeyemi_alignment: 30
-            adeyemi_debt: 25
+          relationship_effect:
+            axes:
+              familiarity: 25
+              trust: 40
+              alignment: 30
+              debt: 25
+          state_set:
+            last_adeyemi_encounter_at: NOW
       - id: cautious_partnership
         text: "Let me think about it. This is a big step for both of us."
         next_node_id: adeyemi_cautious_acceptance
         effects:
-          stat_set:
-            adeyemi_familiarity: 15
-            adeyemi_trust: 20
-            adeyemi_alignment: 10
+          relationship_effect:
+            axes:
+              familiarity: 15
+              trust: 20
+              alignment: 10
+          state_set:
+            last_adeyemi_encounter_at: NOW
 
   # Back to business
   adeyemi_back_to_business:
@@ -439,17 +529,23 @@ nodes:
         text: "What kind of danger? And why me?"
         next_node_id: adeyemi_danger_explanation
         effects:
-          stat_set:
-            adeyemi_familiarity: 8
-            adeyemi_trust: 15
+          relationship_effect:
+            axes:
+              familiarity: 8
+              trust: 15
+          state_set:
+            last_adeyemi_encounter_at: NOW
       - id: dismiss_warning
         text: "I can handle myself. But thanks for the heads up."
         next_node_id: adeyemi_warning_dismissed
         effects:
-          stat_set:
-            adeyemi_familiarity: 5
-            adeyemi_trust: 5
-            adeyemi_tension: 5
+          relationship_effect:
+            axes:
+              familiarity: 5
+              trust: 5
+              tension: 5
+          state_set:
+            last_adeyemi_encounter_at: NOW
 
   # Anger response
   adeyemi_anger_response:
@@ -463,13 +559,14 @@ nodes:
       flag_set:
         adeyemi_vulnerability_shared: true
         adeyemi_shared_anger: true
-      stat_set:
-        adeyemi_familiarity: 12
-        adeyemi_trust: 18
-        adeyemi_alignment: 15
-        adeyemi_tension: 8
+      relationship_effect:
+        axes:
+          familiarity: 12
+          trust: 18
+          alignment: 15
+          tension: 8
       state_set:
-        last_adeyemi_encounter_at: NOW
+            last_adeyemi_encounter_at: NOW
 
   # Horror acknowledged
   adeyemi_horror_acknowledged:
@@ -483,19 +580,25 @@ nodes:
         text: "You can count on me, Adeyemi. Whatever you need."
         next_node_id: adeyemi_backup_accepted
         effects:
-          stat_set:
-            adeyemi_familiarity: 20
-            adeyemi_trust: 30
-            adeyemi_alignment: 22
-            adeyemi_debt: 20
+          relationship_effect:
+            axes:
+              familiarity: 20
+              trust: 30
+              alignment: 22
+              debt: 20
+          state_set:
+            last_adeyemi_encounter_at: NOW
       - id: ask_about_evidence
         text: "What have you found? Who do you think did this?"
         next_node_id: adeyemi_evidence_sharing
         effects:
-          stat_set:
-            adeyemi_familiarity: 15
-            adeyemi_trust: 25
-            adeyemi_alignment: 18
+          relationship_effect:
+            axes:
+              familiarity: 15
+              trust: 25
+              alignment: 18
+          state_set:
+            last_adeyemi_encounter_at: NOW
 
   # Responsibility accepted
   adeyemi_responsibility_accepted:
@@ -510,13 +613,14 @@ nodes:
         adeyemi_vulnerability_shared: true
         adeyemi_daniels_story_revealed: true
         adeyemi_partnership_implied: true
-      stat_set:
-        adeyemi_familiarity: 25
-        adeyemi_trust: 35
-        adeyemi_alignment: 25
-        adeyemi_debt: 15
+      relationship_effect:
+        axes:
+          familiarity: 25
+          trust: 35
+          alignment: 25
+          debt: 15
       state_set:
-        last_adeyemi_encounter_at: NOW
+            last_adeyemi_encounter_at: NOW
 
   # Protection explanation
   adeyemi_protection_explanation:
@@ -529,12 +633,13 @@ nodes:
     effects:
       flag_set:
         adeyemi_vulnerability_shared: true
-      stat_set:
-        adeyemi_familiarity: 15
-        adeyemi_trust: 18
-        adeyemi_alignment: 10
+      relationship_effect:
+        axes:
+          familiarity: 15
+          trust: 18
+          alignment: 10
       state_set:
-        last_adeyemi_encounter_at: NOW
+            last_adeyemi_encounter_at: NOW
 
   # Proof accepted
   adeyemi_proof_accepted:
@@ -548,14 +653,15 @@ nodes:
       flag_set:
         adeyemi_vulnerability_shared: true
         adeyemi_daniels_notes_meeting_set: true
-      stat_set:
-        adeyemi_familiarity: 30
-        adeyemi_trust: 45
-        adeyemi_alignment: 35
-        adeyemi_debt: 30
-        adeyemi_visibility: 15
+      relationship_effect:
+        axes:
+          familiarity: 30
+          trust: 45
+          alignment: 35
+          debt: 30
+          visibility: 15
       state_set:
-        last_adeyemi_encounter_at: NOW
+            last_adeyemi_encounter_at: NOW
 
   # Proof declined
   adeyemi_proof_declined:
@@ -569,11 +675,12 @@ nodes:
       flag_set:
         adeyemi_vulnerability_shared: true
         adeyemi_daniels_notes_offered: true
-      stat_set:
-        adeyemi_familiarity: 12
-        adeyemi_trust: 25
+      relationship_effect:
+        axes:
+          familiarity: 12
+          trust: 25
       state_set:
-        last_adeyemi_encounter_at: NOW
+            last_adeyemi_encounter_at: NOW
 
   # Complicit question
   adeyemi_complicit_question:
@@ -587,19 +694,25 @@ nodes:
         text: "I can't answer that for you, Adeyemi. But I know you're trying to do the right thing. That counts for something."
         next_node_id: adeyemi_absolution_received
         effects:
-          stat_set:
-            adeyemi_familiarity: 18
-            adeyemi_trust: 22
-            adeyemi_alignment: 12
+          relationship_effect:
+            axes:
+              familiarity: 18
+              trust: 22
+              alignment: 12
+          state_set:
+            last_adeyemi_encounter_at: NOW
       - id: challenge_logic
         text: "But how many people have to die while you figure that out?"
         next_node_id: adeyemi_logic_challenged
         effects:
-          stat_set:
-            adeyemi_familiarity: 10
-            adeyemi_trust: 5
-            adeyemi_tension: 18
-            adeyemi_alignment: -10
+          relationship_effect:
+            axes:
+              familiarity: 10
+              trust: 5
+              tension: 18
+              alignment: -10
+          state_set:
+            last_adeyemi_encounter_at: NOW
 
   # Choice respected
   adeyemi_choice_respected:
@@ -612,12 +725,13 @@ nodes:
     effects:
       flag_set:
         adeyemi_vulnerability_shared: true
-      stat_set:
-        adeyemi_familiarity: 15
-        adeyemi_trust: 25
-        adeyemi_alignment: 18
+      relationship_effect:
+        axes:
+          familiarity: 15
+          trust: 25
+          alignment: 18
       state_set:
-        last_adeyemi_encounter_at: NOW
+            last_adeyemi_encounter_at: NOW
 
   # Partnership forged
   adeyemi_partnership_forged:
@@ -631,14 +745,15 @@ nodes:
       flag_set:
         adeyemi_vulnerability_shared: true
         adeyemi_partnership_forged: true
-      stat_set:
-        adeyemi_familiarity: 35
-        adeyemi_trust: 45
-        adeyemi_alignment: 35
-        adeyemi_debt: 30
-        adeyemi_visibility: 10
+      relationship_effect:
+        axes:
+          familiarity: 35
+          trust: 45
+          alignment: 35
+          debt: 30
+          visibility: 10
       state_set:
-        last_adeyemi_encounter_at: NOW
+            last_adeyemi_encounter_at: NOW
 
   # Cautious acceptance
   adeyemi_cautious_acceptance:
@@ -652,12 +767,13 @@ nodes:
       flag_set:
         adeyemi_vulnerability_shared: true
         adeyemi_partnership_considering: true
-      stat_set:
-        adeyemi_familiarity: 18
-        adeyemi_trust: 25
-        adeyemi_alignment: 12
+      relationship_effect:
+        axes:
+          familiarity: 18
+          trust: 25
+          alignment: 12
       state_set:
-        last_adeyemi_encounter_at: NOW
+            last_adeyemi_encounter_at: NOW
 
   # Danger explanation
   adeyemi_danger_explanation:
@@ -671,13 +787,14 @@ nodes:
       flag_set:
         adeyemi_vulnerability_shared: true
         adeyemi_warning_serious_danger: true
-      stat_set:
-        adeyemi_familiarity: 15
-        adeyemi_trust: 22
-        adeyemi_alignment: 18
-        adeyemi_tension: 12
+      relationship_effect:
+        axes:
+          familiarity: 15
+          trust: 22
+          alignment: 18
+          tension: 12
       state_set:
-        last_adeyemi_encounter_at: NOW
+            last_adeyemi_encounter_at: NOW
 
   # Warning dismissed
   adeyemi_warning_dismissed:
@@ -690,11 +807,12 @@ nodes:
     effects:
       flag_set:
         adeyemi_vulnerability_shared: true
-      stat_set:
-        adeyemi_trust: 5
-        adeyemi_tension: 8
+      relationship_effect:
+        axes:
+          trust: 5
+          tension: 8
       state_set:
-        last_adeyemi_encounter_at: NOW
+            last_adeyemi_encounter_at: NOW
 
   # Backup accepted
   adeyemi_backup_accepted:
@@ -708,13 +826,14 @@ nodes:
       flag_set:
         adeyemi_vulnerability_shared: true
         adeyemi_partnership_implied: true
-      stat_set:
-        adeyemi_familiarity: 22
-        adeyemi_trust: 35
-        adeyemi_alignment: 25
-        adeyemi_debt: 20
+      relationship_effect:
+        axes:
+          familiarity: 22
+          trust: 35
+          alignment: 25
+          debt: 20
       state_set:
-        last_adeyemi_encounter_at: NOW
+            last_adeyemi_encounter_at: NOW
 
   # Evidence sharing
   adeyemi_evidence_sharing:
@@ -728,13 +847,14 @@ nodes:
       flag_set:
         adeyemi_vulnerability_shared: true
         adeyemi_shared_senator_chen_theory: true
-      stat_set:
-        adeyemi_familiarity: 20
-        adeyemi_trust: 30
-        adeyemi_alignment: 22
-        adeyemi_visibility: 8
+      relationship_effect:
+        axes:
+          familiarity: 20
+          trust: 30
+          alignment: 22
+          visibility: 8
       state_set:
-        last_adeyemi_encounter_at: NOW
+            last_adeyemi_encounter_at: NOW
 
   # Absolution received
   adeyemi_absolution_received:
@@ -747,12 +867,13 @@ nodes:
     effects:
       flag_set:
         adeyemi_vulnerability_shared: true
-      stat_set:
-        adeyemi_familiarity: 20
-        adeyemi_trust: 25
-        adeyemi_alignment: 15
+      relationship_effect:
+        axes:
+          familiarity: 20
+          trust: 25
+          alignment: 15
       state_set:
-        last_adeyemi_encounter_at: NOW
+            last_adeyemi_encounter_at: NOW
 
   # Logic challenged
   adeyemi_logic_challenged:
@@ -766,22 +887,24 @@ nodes:
       flag_set:
         adeyemi_vulnerability_shared: true
         adeyemi_logic_challenged: true
-      stat_set:
-        adeyemi_familiarity: 12
-        adeyemi_trust: 8
-        adeyemi_alignment: -5
-        adeyemi_tension: 20
+      relationship_effect:
+        axes:
+          familiarity: 12
+          trust: 8
+          alignment: -5
+          tension: 20
       state_set:
-        last_adeyemi_encounter_at: NOW
+            last_adeyemi_encounter_at: NOW
 
 metadata:
   version: "1.0"
   author: "Las Flores Team"
   required_flags:
     adeyemi_first_contact_made: true
-  required_stats:
-    adeyemi_familiarity: "gte:25"
-    adeyemi_trust: "gte:20"
+  required_relationship:
+    axes:
+      familiarity: "gte:25"
+      trust: "gte:20"
   hidden_if:
     adeyemi_publicly_denounced: true
   tags:
@@ -795,7 +918,7 @@ metadata:
   notes: |
     This dialogue implements Phase 4.1-4.3 of the Adeyemi relationship plan:
     - Gate logic: Only accessible if player didn't publicly denounce Adeyemi in Act 2
-    - Requires adeyemi_familiarity >= 25 and adeyemi_trust >= 20
+    - Requires relationship.familiarity >= 25 and relationship.trust >= 20
     - Requires adeyemi_first_contact_made flag to be true
     - Hidden if adeyemi_publicly_denounced flag is true
     - Player can reciprocate vulnerability or close off
