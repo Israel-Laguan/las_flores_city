@@ -81,7 +81,8 @@ export function levenshtein(a: string, b: string): number {
 /**
  * Similarity in [0,1] combining token Jaccard and Levenshtein ratio, plus a
  * substring boost (a reference that is a sub-token of a candidate name is a very
- * strong signal). A tiny edit distance (<=2) is treated as near-certain.
+ * strong signal). A tiny edit distance (<=2) on a sufficiently long string is
+ * treated as near-certain.
  */
 export function similarity(ref: string, candidate: string): number {
   const a = ref.trim();
@@ -109,8 +110,10 @@ export function similarity(ref: string, candidate: string): number {
   if (normA.length > 0 && (normB.includes(normA) || normA.includes(normB))) {
     score = Math.max(score, 0.9);
   }
-  // Near-miss (small edit distance) is high confidence.
-  if (dist <= 2) score = Math.max(score, 0.92);
+  // Near-miss (small edit distance) is high confidence, but only when the edit
+  // is small RELATIVE to the strings — "Bar" vs "Baz" is not a typo match.
+  const minLen = Math.min(a.length, b.length);
+  if (dist <= 2 && minLen >= 6) score = Math.max(score, 0.92);
   return Math.min(1, score);
 }
 

@@ -229,8 +229,13 @@ export class ChatService {
       }
 
       // Only deltas that actually made it into the write set can anchor an edge.
+      // The rest were dropped (missing base node / evidence-only) and must not be
+      // resurrected by a stale :ContentDelta left from an earlier run.
       const safeKeys = new Set(deltaPartition.safe.map((d) => deltaKey(d.nodeType, d.nodeId)));
-      const edgePartition = await partitionDeltaEdges(deltaEdges, safeKeys, tx);
+      const droppedKeys = new Set(
+        deltas.filter((d) => !safeKeys.has(deltaKey(d.nodeType, d.nodeId))).map((d) => deltaKey(d.nodeType, d.nodeId)),
+      );
+      const edgePartition = await partitionDeltaEdges(deltaEdges, safeKeys, tx, droppedKeys);
       for (const edge of edgePartition.safe) {
         await applyDeltaEdge(edge, tx);
       }

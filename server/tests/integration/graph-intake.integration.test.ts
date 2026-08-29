@@ -375,8 +375,12 @@ describe('M50 graph-intake alias + resolution integration', () => {
     expect(aliases.length).toBeGreaterThan(0);
     for (const a of aliases) {
       const block = await svc.resolve(a.alias, { targetNodeType: a.nodeType });
-      expect(['resolved', 'ambiguous', 'unresolved']).toContain(block.status);
-      expect(Array.isArray(block.candidates)).toBe(true);
+      // A curated alias that seedAliases linked must match its target. Skip the
+      // rare case where the target node is absent from this graph (e.g. a
+      // district not yet seeded), but otherwise the alias must resolve to it.
+      if (block.status === 'unresolved' && block.candidates.length === 0) continue;
+      expect(block.candidates.length).toBeGreaterThan(0);
+      expect(block.candidates.map((c) => c.name)).toContain(a.targetName);
     }
   });
 });

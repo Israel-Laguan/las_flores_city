@@ -8,6 +8,7 @@
 // ============================================================
 
 import { isNeo4jEnabled, runNeo4jQuery } from './Neo4jClient.js';
+import { GraphNodeTypeSchema } from '@las-flores/shared';
 import type { CanonicalCandidate, CandidateSource } from './EntityResolutionService.js';
 
 interface ContentRow {
@@ -58,7 +59,16 @@ export class Neo4jCandidateSource implements CandidateSource {
       neighborByKey.set(key, list);
     }
 
-    return content.map((c) => {
+    // A `:Content` node whose `nodeType` is not a supported `GraphNodeType`
+    // would otherwise flow through as a bare string cast in `toCandidate` and
+    // later throw when `ResolutionCandidateSchema` parses `_resolution` during
+    // `getDeltasForPlan`. Drop unsupported rows up front so they can never reach
+    // resolution or the persisted delta set.
+    const supported = content.filter(
+      (c) => GraphNodeTypeSchema.safeParse(c.nodeType).success,
+    );
+
+    return supported.map((c) => {
       const key = `${c.nodeType}:${String(c.nodeId).toLowerCase()}`;
       return {
         nodeType: c.nodeType,

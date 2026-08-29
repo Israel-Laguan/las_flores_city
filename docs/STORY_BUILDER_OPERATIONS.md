@@ -98,7 +98,7 @@ system already has. The printed JSON carries `notes: [{ nodeType, nodeId, field,
 status, raw, suggestion, candidates, annotationId }]`, and stderr prints one
 directly-runnable line per note:
 
-```
+```text
 [note] Scene:8f2a... (district) "City Center" is ambiguous — City District (0.82) or Central District (0.71). <suggestion text>
   → npm run plan:amend --workspace=server -- <planId> --annotation <annotationId>:"<your comment>"
 ```

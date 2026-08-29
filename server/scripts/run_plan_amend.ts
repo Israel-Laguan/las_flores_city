@@ -23,6 +23,7 @@ import {
   reviewUrl,
   type AmendCliOptions,
 } from '../src/planIntakeCore.js';
+import type { IntakeDiagnostic } from '@las-flores/shared';
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(SCRIPT_DIR, '../..');
@@ -79,6 +80,7 @@ async function main(): Promise<void> {
       reply: string;
       error?: string;
     }> = [];
+    const amendmentDiagnostics: IntakeDiagnostic[] = [];
 
     for (const { annotationId, comment } of options.annotations) {
       // One amendment failing must not abandon the others — each note is an
@@ -103,6 +105,9 @@ async function main(): Promise<void> {
           droppedCount: result.diagnostics.length,
           reply: proposal.reply,
         });
+        // Carry every unresolved dropped delta/edge into the refreshed note set so
+        // a partially-applied amendment still surfaces a replacement intake note.
+        amendmentDiagnostics.push(...result.diagnostics);
       } catch (err) {
         applied.push({
           annotationId,
@@ -118,7 +123,7 @@ async function main(): Promise<void> {
     // Re-triage from the refreshed graph so the printed notes reflect reality —
     // including a FRESH note if an amendment only partially resolved the ambiguity.
     const graph = await graphIntakeService.getPlanDeltas(options.planId);
-    const notes = await graphIntakeService.triageAndAnnotate(options.planId, graph.deltas, []);
+    const notes = await graphIntakeService.triageAndAnnotate(options.planId, graph.deltas, amendmentDiagnostics);
 
     console.log(JSON.stringify({
       planId: options.planId,

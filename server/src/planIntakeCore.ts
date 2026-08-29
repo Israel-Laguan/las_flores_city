@@ -17,7 +17,7 @@ export interface Actor {
 
 export type QueryOLTP = typeof import('@las-flores/infra')['queryOLTP'];
 
-export const DEFAULT_DEV_ADMIN_ID = '00000000-0000-0000-0000-000000000001';
+export const DEFAULT_DEV_ADMIN_ID = 'f0000000-0000-4000-8000-00000000a001';
 
 export function usage(): string {
   return [

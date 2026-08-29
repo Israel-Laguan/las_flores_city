@@ -73,7 +73,8 @@
     "081_relationship_backfill_valentina.sql",
     "082_relationship_backfill_aisha.sql",
     "083_relationship_backfill_vance.sql",
-    "084_critique_scope_intake.sql"
+    "084_critique_scope_intake.sql",
+    "085_critique_scope_intake_validate.sql"
   ],
   "nontransactional": {
     "075_job_runs_run_token_backfill.sql": "las_flores"

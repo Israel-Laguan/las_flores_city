@@ -691,7 +691,10 @@ export class GraphIntakeService {
     // dropped is correctly reported as dangling rather than silently attaching to a
     // stale node from an earlier run.
     const safeKeys = new Set(deltaPartition.safe.map((d) => deltaKey(d.nodeType, d.nodeId)));
-    const edgePartition = await partitionDeltaEdges(planEdges, safeKeys);
+    const droppedKeys = new Set(
+      planDeltas.filter((d) => !safeKeys.has(deltaKey(d.nodeType, d.nodeId))).map((d) => deltaKey(d.nodeType, d.nodeId)),
+    );
+    const edgePartition = await partitionDeltaEdges(planEdges, safeKeys, undefined, droppedKeys);
     diagnostics.push(...edgePartition.diagnostics);
 
     return { safeDeltas: deltaPartition.safe, safeEdges: edgePartition.safe, diagnostics };

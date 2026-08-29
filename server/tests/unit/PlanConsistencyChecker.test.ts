@@ -123,4 +123,47 @@ describe('PlanConsistencyChecker', () => {
     expect(report.hasConflicts).toBe(false);
     expect(report.findings).toHaveLength(0);
   });
+
+  it('prefers a Location MODIFY delta district over the stale canonical node', async () => {
+    // The canonical Location still reports the OLD district, but this plan MODIFYs
+    // it to the new one. The Scene names the new district, so there must be no
+    // spurious mismatch warning from the stale canonical value.
+    const nodes = new Map<string, { name: string; fields: Record<string, unknown> }>([
+      node('Location', 'loc-1', { district: 'City District' }),
+    ]);
+    const locationModify: GraphDelta = {
+      id: '2',
+      planId: 'p',
+      nodeType: 'Location',
+      nodeId: 'loc-1',
+      op: 'MODIFY',
+      fields: { district: 'Industrial District' },
+      createdAt: new Date().toISOString(),
+    } as GraphDelta;
+    const checker = new PlanConsistencyChecker(new FakeView(DISTRICTS, nodes));
+    const report = await checker.check('p', [sceneDelta('Industrial District'), locationModify], [locEdge]);
+
+    expect(report.findings.find((f) => f.code === 'location_district_mismatch')).toBeUndefined();
+  });
+
+  it('still flags a real mismatch when the delta district differs from the scene', async () => {
+    const nodes = new Map<string, { name: string; fields: Record<string, unknown> }>([
+      node('Location', 'loc-1', { district: 'City District' }),
+    ]);
+    const locationModify: GraphDelta = {
+      id: '2',
+      planId: 'p',
+      nodeType: 'Location',
+      nodeId: 'loc-1',
+      op: 'MODIFY',
+      fields: { district: 'City District' },
+      createdAt: new Date().toISOString(),
+    } as GraphDelta;
+    const checker = new PlanConsistencyChecker(new FakeView(DISTRICTS, nodes));
+    const report = await checker.check('p', [sceneDelta('Industrial District'), locationModify], [locEdge]);
+
+    const finding = report.findings.find((f) => f.code === 'location_district_mismatch');
+    expect(finding).toBeDefined();
+    expect(finding?.detail).toMatchObject({ sceneDistrict: 'Industrial District', locationDistrict: 'City District' });
+  });
 });

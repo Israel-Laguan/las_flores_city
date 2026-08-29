@@ -252,6 +252,21 @@ describe('partitionDeltaEdges — fail-open edge triage', () => {
     expect(result.diagnostics[0].kind).toBe('dangling_edge_source');
   });
 
+  test('a DROPPED source stays dangling even when a stale :ContentDelta exists', async () => {
+    // Regression: a prior run left a :ContentDelta for the source (graph lookup
+    // would otherwise return count: 1), but this run explicitly dropped the source
+    // delta, so the edge must remain dangling rather than silently attach to the
+    // stale node.
+    mockQuery.mockResolvedValue([{ count: 1 }]);
+
+    const e = edge();
+    const dropped = new Set([deltaKey(e.sourceNodeType, e.sourceNodeId)]);
+    const result = await partitionDeltaEdges([e], new Set(), undefined, dropped);
+
+    expect(result.safe).toEqual([]);
+    expect(result.diagnostics[0].kind).toBe('dangling_edge_source');
+  });
+
   test('a mixed batch keeps the resolvable edge and reports the dangling one', async () => {
     const good = edge({ sourceNodeId: 'new_dialogue', targetNodeId: CHAR_ID });
     const bad = edge({ sourceNodeId: 'new_dialogue', targetNodeId: MISSING_ID, targetNodeType: 'Scene' });

@@ -327,6 +327,7 @@ export async function partitionDeltaEdges(
   edges: GraphDeltaEdge[],
   safeDeltaKeys: ReadonlySet<string>,
   tx?: ManagedTransaction,
+  droppedDeltaKeys: ReadonlySet<string> = new Set(),
 ): Promise<{ safe: GraphDeltaEdge[]; diagnostics: IntakeDiagnostic[] }> {
   const safe: GraphDeltaEdge[] = [];
   const diagnostics: IntakeDiagnostic[] = [];
@@ -356,7 +357,10 @@ export async function partitionDeltaEdges(
     // reflects the write set this run is about to commit, so an edge is not
     // rejected merely because its source has not been written yet.
     let sourceOk = safeDeltaKeys.has(deltaKey(sourceNodeType, sourceNodeId));
-    if (!sourceOk) {
+    // A source this run explicitly DROPPED must not be revived by a stale
+    // :ContentDelta node left over from an earlier run — skip the graph lookup
+    // so the edge is reported as dangling instead of silently attaching.
+    if (!sourceOk && !droppedDeltaKeys.has(deltaKey(sourceNodeType, sourceNodeId))) {
       const sourceRows = await queryRows<{ count: unknown }>(
         `MATCH (d:ContentDelta { planId: $planId, nodeType: $sourceNodeType, nodeId: $sourceNodeId })
          RETURN count(d) AS count`,

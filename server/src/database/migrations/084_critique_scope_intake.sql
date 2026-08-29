@@ -31,7 +31,7 @@ ALTER TABLE critique_annotations
 
 ALTER TABLE critique_annotations
   ADD CONSTRAINT critique_annotations_scope_check
-  CHECK (scope IN ('entity', 'cross_entity', 'cross_mission', 'intake'));
+  CHECK (scope IN ('entity', 'cross_entity', 'cross_mission', 'intake')) NOT VALID;
 
 COMMENT ON COLUMN critique_annotations.scope IS
   'Which pass produced the annotation: entity | cross_entity | cross_mission (LLM critique passes), or intake (fail-open plan-intake diagnostic note).';

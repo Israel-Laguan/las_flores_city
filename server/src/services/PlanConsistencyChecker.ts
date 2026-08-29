@@ -64,7 +64,13 @@ export class PlanConsistencyChecker {
       );
       for (const e of locEdges) {
         const locNode = await this.view.getNode('Location', e.targetNodeId);
-        const locDistrictRaw = locNode?.fields?.district;
+        // Prefer a district this plan explicitly sets on the Location delta over
+        // the canonical node's (possibly stale) value.
+        const locationDelta = deltaByKey.get(`Location:${e.targetNodeId.toLowerCase()}`);
+        const deltaFields = locationDelta?.fields as Record<string, unknown> | undefined;
+        const locDistrictRaw = Object.prototype.hasOwnProperty.call(deltaFields ?? {}, 'district')
+          ? deltaFields?.district
+          : locNode?.fields?.district;
         if (typeof locDistrictRaw !== 'string' || !locDistrictRaw) continue;
         const locDistrict = await this.view.resolveByName('District', locDistrictRaw);
         if (!locDistrict) continue;
@@ -183,7 +189,7 @@ export class Neo4jGraphView implements CanonicalGraphView {
       // Also try curated aliases.
       const aliasRows = await runNeo4jQuery<{ nodeId: string; name: string }>(
         `MATCH (a:Alias)-[:ALIAS_OF]->(c:Content)
-         WHERE c.nodeType = $nodeType AND a.name = $name
+         WHERE c.nodeType = $nodeType AND toLower(a.name) = toLower($name)
          RETURN c.nodeId AS nodeId, c.name AS name LIMIT 1`,
         { nodeType, name },
       );

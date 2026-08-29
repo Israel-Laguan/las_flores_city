@@ -94,7 +94,16 @@ async function main(): Promise<void> {
     // ambiguous/unresolved references surfaced for human confirmation.
     const planDeltas = await graphIntakeService.getPlanDeltas(planId);
     const blocks = planDeltas.deltas.flatMap((d) => d._resolution ?? []);
-    check('plan deltas carry _resolution blocks', blocks.length > 0, blocks.length);
+    // Only Scene/Location deltas carry a resolvable reference field, so an absent
+    // block set is not a failure — assert only when one is expected.
+    const expectsResolution = planDeltas.deltas.some(
+      (d) => d.nodeType === 'Scene' || d.nodeType === 'Location',
+    );
+    if (expectsResolution) {
+      check('plan deltas carry _resolution blocks', blocks.length > 0, blocks.length);
+    } else {
+      console.log('  SKIP  _resolution blocks (no Scene/Location deltas in this plan)');
+    }
     const needsReview = blocks.filter(
       (b) => b.status === 'ambiguous' || b.status === 'unresolved',
     );
