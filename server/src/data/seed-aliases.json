@@ -1,0 +1,7 @@
+[
+  { "nodeType": "District", "alias": "Industrial Zone", "targetName": "Industrial District", "note": "Common alternate name for the Industrial District" },
+  { "nodeType": "District", "alias": "El Centro", "targetName": "City District", "note": "Spanish colloquial name for the City District" },
+  { "nodeType": "District", "alias": "Central District", "targetName": "Central District", "note": "Canonical self-alias used for disambiguation of 'City Center' vs 'Central District'" },
+  { "nodeType": "Location", "alias": "Mercado Popular", "targetName": "Mercado Popular Las Flores", "note": "Short name for the Mercado Popular Las Flores location" },
+  { "nodeType": "District", "alias": "The Center", "targetName": "City District", "note": "Colloquial reference to the City District" }
+]

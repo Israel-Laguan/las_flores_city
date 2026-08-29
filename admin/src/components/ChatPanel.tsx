@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable max-lines-per-function */
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { cn } from '@las-flores/ui';

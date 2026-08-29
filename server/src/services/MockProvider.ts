@@ -1,13 +1,7 @@
-import { ContentPlanSchema, GraphDeltaSchema, type ContentPlan, type ContentPlanItem, type IntakeConflictPreview, type CritiqueAnnotation, type GraphDelta, type GraphDeltaEdge, type ChatMessage, type ConflictChatContext } from '@las-flores/shared';
-import type { LLMProvider, ExistingContentContext, LLMUsage, CritiqueScopeType } from './types/LLMTypes.js';
+import { GraphDeltaSchema, type ContentPlan, type ContentPlanItem, type IntakeConflictPreview, type CritiqueAnnotation, type GraphDelta, type GraphDeltaEdge, type ChatMessage, type ConflictChatContext } from '@las-flores/shared';
+import type { LLMProvider, ExistingContentContext, LLMUsage, CritiqueScopeType, IntakeDiagnosticItem } from './types/LLMTypes.js';
 import { gatherExistingContentContext } from './ContentContext.js';
-
-const MOCK_IDS = {
-  planId: 'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d',
-  characterId: 'b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e',
-  sceneId: 'c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f',
-  dialogueId: 'd4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f80',
-};
+import { templatedSuggestion } from './llmPromptsIntakeDiagnostics.js';
 
 /** Map an evidence `nodeType` (often lowercase) to a `GraphNodeType` enum value. */
 const NODE_TYPE_CAPS: Record<string, string> = {
@@ -326,6 +320,17 @@ ${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
     }
 
     return { fields, lore_refs: [] };
+  }
+
+  /**
+   * Deterministic templated suggestions — one per item, aligned by index. Shares
+   * `templatedSuggestion` with the LiteLLM fallback path so tests and offline runs
+   * assert exactly the string a real degraded call would produce.
+   */
+  async suggestDiagnostics(
+    items: IntakeDiagnosticItem[],
+  ): Promise<{ suggestions: string[]; usage: LLMUsage | null }> {
+    return { suggestions: items.map(templatedSuggestion), usage: null };
   }
 
 }

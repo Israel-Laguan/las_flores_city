@@ -12,6 +12,9 @@ import {
 import { clearDeltasForPlan, getDeltasForPlan, getDeltaEdgesForPlan } from '../../src/services/GraphDeltaService.js';
 import { ensureGraphConstraints } from '../../src/services/GraphBaseService.js';
 import { adminStoryBuilderRouter } from '../../src/routes/admin-story-builder.js';
+import { seedAliases, pruneOrphanAliases, loadSeedAliases } from '../../src/services/GraphAliasService.js';
+import { EntityResolutionService } from '../../src/services/EntityResolutionService.js';
+import { Neo4jCandidateSource } from '../../src/services/Neo4jCandidateSource.js';
 
 // The parent router applies authAndAdminMiddleware to every sub-route (including
 // the graph-intake routes), so HTTP tests must bypass it. Other graph
@@ -343,4 +346,240 @@ describe('GraphIntakeService — integration tests (Neo4j-gated)', () => {
       expect(result).toEqual({ deltas: [], edges: [] });
     });
   });
+});
+
+// ---------------------------------------------------------------------------
+// M50 — graph-assisted entity resolution + consistency validation integration.
+// Runs only when Neo4j is reachable (gated per-test via `neo4jLive`, the same
+// reachability flag used by every other graph integration suite, so it is
+// skipped rather than failing when the authoring graph is down).
+// ---------------------------------------------------------------------------
+describe('M50 graph-intake alias + resolution integration', () => {
+  test('curated aliases seed and survive a prune against the live graph', async () => {
+    if (!neo4jLive) return;
+    const seeded = await seedAliases();
+    expect(seeded).toHaveProperty('linked');
+    expect(seeded).toHaveProperty('skipped');
+    const pruned = await pruneOrphanAliases();
+    expect(typeof pruned).toBe('number');
+  });
+
+  test('EntityResolutionService resolves curated aliases against the live graph', async () => {
+    if (!neo4jLive) return;
+    const svc = new EntityResolutionService(new Neo4jCandidateSource());
+    const aliases = await loadSeedAliases();
+    expect(aliases.length).toBeGreaterThan(0);
+    for (const a of aliases) {
+      const block = await svc.resolve(a.alias, { targetNodeType: a.nodeType });
+      // A curated alias that seedAliases linked must match its target. Skip the
+      // rare case where the target node is absent from this graph (e.g. a
+      // district not yet seeded), but otherwise the alias must resolve to it.
+      if (block.status === 'unresolved' && block.candidates.length === 0) continue;
+      expect(block.candidates.length).toBeGreaterThan(0);
+      expect(block.candidates.map((c) => c.name)).toContain(a.targetName);
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Fail-open intake: a plan with an unresolvable reference must still be created.
+//
+// The regression this guards: preflightDeltas/preflightDeltaEdges used to throw
+// inside persistPlanWithDeltas' Neo4j transaction, whose catch block DELETED the
+// just-created content_plans row. One bad reference destroyed the whole plan with
+// no surviving artifact. Intake now drops the offending delta/edge and reports it
+// as a note, so submitting a plan always returns a plan.
+// ---------------------------------------------------------------------------
+describe('fail-open graph intake (unresolvable references)', () => {
+  // Dedicated synthetic UUIDs for this block — deliberately absent from the graph.
+  const MISSING_CHAR_ID = '63200003-e29b-41d4-a716-446655440004';
+  const MISSING_SCENE_ID = '63200004-e29b-41d4-a716-446655440005';
+  const DELTA_GOOD_ADD = 'd3200005-0000-4000-8000-000000000005';
+  const DELTA_BAD_MODIFY = 'd3200006-0000-4000-8000-000000000006';
+
+  /** Run createPlanFromDescription with a stubbed proposal. */
+  async function intakeWith(deltas: any[], edges: any[]): Promise<any> {
+    const { GraphIntakeService } = await import('../../src/services/GraphIntakeService.js');
+    const chatService = await import('../../src/services/ChatService.js');
+    const originalPropose = chatService.chatService.propose;
+    try {
+      chatService.chatService.propose = jest.fn(async () => ({
+        reply: 'Proposal generated',
+        deltas,
+        deltaEdges: edges,
+        usage: null,
+      })) as never;
+      const service = new GraphIntakeService();
+      const result = await service.createPlanFromDescription('Create a test character');
+      createdPlanIds.push(result.planId);
+      return result;
+    } finally {
+      chatService.chatService.propose = originalPropose;
+    }
+  }
+
+  test('a MODIFY against a non-existent base node is dropped, and the plan SURVIVES', async () => {
+    if (!neo4jLive) return;
+    const result = await intakeWith(
+      [
+        {
+          id: DELTA_GOOD_ADD,
+          planId: '',
+          nodeType: 'Character',
+          nodeId: MISSING_CHAR_ID,
+          op: 'ADD',
+          fields: { name: 'Fail Open Test Character' },
+          createdAt: new Date().toISOString(),
+        },
+        {
+          // References a canonical node that does not exist — the exact case that
+          // used to abort intake and delete the plan row.
+          id: DELTA_BAD_MODIFY,
+          planId: '',
+          nodeType: 'Scene',
+          nodeId: MISSING_SCENE_ID,
+          op: 'MODIFY',
+          fields: { name: 'Nonexistent Scene', district: 'City Center' },
+          createdAt: new Date().toISOString(),
+        },
+      ],
+      [],
+    );
+
+    // The plan row must exist — this is the whole point of failing open.
+    const row = await queryOLTP<{ id: string; status: string }>(
+      'SELECT id, status FROM content_plans WHERE id = $1',
+      [result.planId],
+    );
+    expect(row.rows).toHaveLength(1);
+    expect(row.rows[0].status).toBe('proposed');
+
+    // The good ADD landed; the unresolvable MODIFY did not.
+    const deltas = await getDeltasForPlan(result.planId);
+    expect(deltas.map((d) => d.nodeId)).toContain(MISSING_CHAR_ID);
+    expect(deltas.map((d) => d.nodeId)).not.toContain(MISSING_SCENE_ID);
+
+    // ...and the drop is reported as an actionable note.
+    const note = result.notes.find((n: any) => n.nodeId === MISSING_SCENE_ID);
+    expect(note).toBeDefined();
+    expect(note.kind).toBe('missing_base_node');
+    expect(note.status).toBe('unresolved');
+    expect(typeof note.suggestion).toBe('string');
+    expect(note.suggestion.length).toBeGreaterThan(0);
+  }, 30000);
+
+  test('a dangling edge target is dropped, and the plan SURVIVES with a note', async () => {
+    if (!neo4jLive) return;
+    const result = await intakeWith(
+      [
+        {
+          id: DELTA_GOOD_ADD,
+          planId: '',
+          nodeType: 'Character',
+          nodeId: MISSING_CHAR_ID,
+          op: 'ADD',
+          fields: { name: 'Fail Open Edge Character' },
+          createdAt: new Date().toISOString(),
+        },
+      ],
+      [
+        {
+          // Target exists neither as canon nor as a delta of this plan.
+          planId: '',
+          sourceNodeType: 'Character',
+          sourceNodeId: MISSING_CHAR_ID,
+          targetNodeType: 'Scene',
+          targetNodeId: MISSING_SCENE_ID,
+          type: 'APPEARS_IN',
+        },
+      ],
+    );
+
+    const row = await queryOLTP<{ id: string }>(
+      'SELECT id FROM content_plans WHERE id = $1',
+      [result.planId],
+    );
+    expect(row.rows).toHaveLength(1);
+
+    // The delta landed; the edge was dropped.
+    expect(await getDeltasForPlan(result.planId)).toHaveLength(1);
+    expect(await getDeltaEdgesForPlan(result.planId)).toHaveLength(0);
+
+    const note = result.notes.find((n: any) => n.kind === 'dangling_edge_target');
+    expect(note).toBeDefined();
+    expect(note.field).toBe('links');
+    expect(note.nodeId).toBe(MISSING_SCENE_ID);
+  }, 30000);
+
+  test('notes are persisted as answerable intake annotations', async () => {
+    if (!neo4jLive) return;
+    const result = await intakeWith(
+      [
+        {
+          id: DELTA_GOOD_ADD,
+          planId: '',
+          nodeType: 'Character',
+          nodeId: MISSING_CHAR_ID,
+          op: 'ADD',
+          fields: { name: 'Annotation Bridge Character' },
+          createdAt: new Date().toISOString(),
+        },
+        {
+          id: DELTA_BAD_MODIFY,
+          planId: '',
+          nodeType: 'Scene',
+          nodeId: MISSING_SCENE_ID,
+          op: 'MODIFY',
+          fields: { name: 'Nonexistent Scene' },
+          createdAt: new Date().toISOString(),
+        },
+      ],
+      [],
+    );
+
+    expect(result.notes.length).toBeGreaterThan(0);
+
+    // Every note needs a durable annotation id — that is the handle
+    // `plan:amend --annotation <id>:"<comment>"` replies to.
+    const noted = result.notes.find((n: any) => n.nodeId === MISSING_SCENE_ID);
+    expect(noted.annotationId).toBeDefined();
+
+    const annotations = await queryOLTP<{ id: string; scope: string; status: string; type: string }>(
+      `SELECT id, scope, status, type FROM critique_annotations
+        WHERE plan_id = $1 AND is_marker = FALSE`,
+      [result.planId],
+    );
+    expect(annotations.rows.length).toBeGreaterThan(0);
+    const annotation = annotations.rows.find((r) => r.id === noted.annotationId);
+    expect(annotation).toBeDefined();
+    // Scope 'intake' keeps these isolated from real critique passes, whose
+    // retire-on-write would otherwise wipe them.
+    expect(annotation!.scope).toBe('intake');
+    expect(annotation!.status).toBe('open');
+    // 'suggestion' carries no evidence requirement, so nothing is fabricated.
+    expect(annotation!.type).toBe('suggestion');
+  }, 30000);
+
+  test('a fully resolvable plan produces no notes', async () => {
+    if (!neo4jLive) return;
+    const result = await intakeWith(
+      [
+        {
+          id: DELTA_GOOD_ADD,
+          planId: '',
+          nodeType: 'Character',
+          nodeId: MISSING_CHAR_ID,
+          op: 'ADD',
+          fields: { name: 'Clean Plan Character' },
+          createdAt: new Date().toISOString(),
+        },
+      ],
+      [],
+    );
+
+    // An ADD with no references and no edges has nothing to resolve, so the
+    // fail-open machinery must stay silent rather than inventing notes.
+    expect(result.notes).toEqual([]);
+    expect(await getDeltasForPlan(result.planId)).toHaveLength(1);
+  }, 30000);
 });

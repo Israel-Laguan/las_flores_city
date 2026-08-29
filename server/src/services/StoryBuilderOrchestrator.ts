@@ -17,7 +17,8 @@ import { GraphDisabledError, PlanNotFoundError, PlanStatusError } from './errors
 import { isNeo4jEnabled } from './Neo4jClient.js';
 import { detectGraphDrift } from './GraphMerger.js';
 import { exportContentPlan, GraphExportError } from './GraphExporter.js';
-import { getDeltasForPlan, getPlanDeltaRevisionWithEdges } from './GraphDeltaService.js';
+import { getDeltasForPlan, getPlanDeltaRevisionWithEdges, getDeltaEdgesForPlan } from './GraphDeltaService.js';
+import { PlanConsistencyChecker, Neo4jGraphView } from './PlanConsistencyChecker.js';
 import {
   startJobRun,
   updateJobRun,
@@ -118,6 +119,7 @@ export interface SolidifyResult {
  * the transaction, and returns immediately. The caller polls
  * `GET /plans/:id/status` for progress.
  */
+// eslint-disable-next-line max-lines-per-function
 export async function approveAndSolidifyPlan(planId: string, userId?: string): Promise<SolidifyResult> {
   // --- M32: graph is now the sole authoring entry point for approvals. ---
   if (!isNeo4jEnabled()) {
@@ -164,6 +166,28 @@ export async function approveAndSolidifyPlan(planId: string, userId?: string): P
       );
       const description = planRow.rows[0]?.description ?? 'Graph-authored plan';
       exported = await exportContentPlan(planId, description);
+
+      // M50: semantic consistency validation (advisory, non-blocking). Runs after
+      // the drift check passes and before the plan is persisted. Conflicts are
+      // attached as `exported._consistency` and warned; they never block approval.
+      try {
+        const consistencyEdges = await getDeltaEdgesForPlan(planId);
+        const report = await new PlanConsistencyChecker(new Neo4jGraphView()).check(
+          planId,
+          deltas,
+          consistencyEdges,
+        );
+        exported._consistency = report;
+        if (report.hasConflicts) {
+          console.warn(
+            `[story-builder] plan ${planId} has ${report.findings.length} consistency warning(s):`,
+            JSON.stringify(report.findings),
+          );
+        }
+      } catch (consistencyErr) {
+        // The advisory layer must never abort approval (graph advises, admin decides).
+        console.warn('[story-builder] consistency check failed (non-fatal):', (consistencyErr as Error).message);
+      }
     } catch (err) {
       if (err instanceof GraphExportError) {
         throw new PlanStatusError(err.message);

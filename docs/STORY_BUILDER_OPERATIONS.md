@@ -16,8 +16,13 @@ endpoint should use. Write the request as Markdown outside `content/`, then run:
 ```bash
 npm run seed:dev --workspace=server
 npm run plan:intake --workspace=server -- path/to/intake.md \
-  --user-email admin@example.com
+  --user-id f0000000-0000-4000-8000-00000000a001
 ```
+
+> `seedAdmin.ts` derives the seeded admin's email from `ADMIN_EMAIL` (default
+> `dev-admin-f0000000-0000-4000-8000-00000000a001@example.com`), so `--user-email
+> admin@example.com` does **not** match the seeded account. Use `--user-id` with the
+> seeded admin UUID above, or `--user-email` with the actual `ADMIN_EMAIL` value.
 
 The command reads the Markdown as the plan description, calls the graph-based AI
 intake service, and records the result as a `content_plans` row with status
@@ -26,14 +31,172 @@ the generated `ContentDelta` nodes and edges to Neo4j. The command prints the pl
 ID, graph counts, and an admin review URL.
 
 The default development actor is the seeded admin ID
-`00000000-0000-0000-0000-000000000001`. Prefer `--user-email` or
-`--user-id` when several development users exist. `PLAN_ACTOR_USER_ID` can provide
-the actor non-interactively.
+`f0000000-0000-4000-8000-00000000a001` (email derived from `ADMIN_EMAIL`; not
+`admin@example.com`). Prefer `--user-email` with the real `ADMIN_EMAIL` value or
+`--user-id` with that UUID when several development users exist. `PLAN_ACTOR_USER_ID`
+can provide the actor non-interactively.
+
+### Prerequisites
+
+- A live local stack: `npm run seed:dev --workspace=server` (seeds the admin user
+  and content context), an OLTP database reachable via `DATABASE_URL`, and the
+  intake-worker / game-server env loaded from `.env`.
+- **Neo4j enabled** — `NEO4J_ENABLED=true` with `NEO4J_URI` / `NEO4J_USER` /
+  `NEO4J_PASSWORD` set. The graph intake path throws `GraphIntakeDisabledError`
+  when the authoring graph is off, because plan deltas are written to Neo4j.
+- **LiteLLM reachable** — `LITELLM_BASE_URL` / `LITELLM_API_KEY` / `LLM_MODEL` set
+  so `chatService.propose` can return structured deltas + edges. Write the intake
+  request as Markdown **outside** `content/` (e.g. `/tmp/intake.md`).
+
+### Live-stack probe
+
+The probe in `server/scripts/probe_plan_intake.ts` exercises the same
+`createPlanFromDescription` path the CLI uses and asserts the M50 acceptance
+criteria against the live stack (with Neo4j + LiteLLM enabled):
+
+```bash
+npx tsx server/scripts/probe_plan_intake.ts /tmp/intake.md \
+  --user-id f0000000-0000-4000-8000-00000000a001
+```
+
+It checks that `content_plans.status = proposed`, `created_by` matches the actor,
+Neo4j contains `ContentDelta` nodes and edges for the returned `planId`, and the
+review URL is well-formed. It exits non-zero on any assertion failure. Note: the
+probe does **not** stage files, migrate content, publish assets, or approve — it
+stops at `proposed` exactly like the CLI.
+
+### Unit tests
+
+`server/tests/unit/plan-intake-cli.test.ts` covers the pure CLI helpers (argument
+parsing, actor resolution, missing-user and non-admin rejection, and review-URL
+formatting) without a live stack. Run with:
+
+```bash
+npm run test:unit --workspace=server -- plan-intake-cli
+```
 
 This is intentionally review-only. It does not stage files, migrate canonical
 content, publish assets, approve the plan, or run solidify. Review the plan in the
 admin UI and inspect its Neo4j deltas before a later approval step. `proposed` is
 the existing review-ready state; no separate `working` status is needed.
+
+#### 1.1.1 Fail-open intake: a plan full of notes + the amend loop
+
+Intake is **lenient by contract**. If the LLM cannot confidently resolve a
+natural-language reference (e.g. "City Center"), or if a delta/edge references a
+node that does not exist in the canonical graph, intake does **not** abort. It:
+
+- drops the offending delta/edge from the write set,
+- keeps the plan (the `content_plans` row survives — it is never deleted on an
+  ambiguity),
+- and records each unresolved reference as a **note** with a human-actionable
+  suggestion.
+
+Every note is persisted as a `critique_annotations` row scoped `'intake'`
+(`type: 'suggestion'`), so it reuses the exact comment/amend loop the critique
+system already has. The printed JSON carries `notes: [{ nodeType, nodeId, field,
+status, raw, suggestion, candidates, annotationId }]`, and stderr prints one
+directly-runnable line per note:
+
+```text
+[note] Scene:8f2a... (district) "City Center" is ambiguous — City District (0.82) or Central District (0.71). <suggestion text>
+  → npm run plan:amend --workspace=server -- <planId> --annotation <annotationId>:"<your comment>"
+```
+
+**Prerequisites** are the same as §1.1 (live `npm run seed:dev`, Neo4j enabled,
+LiteLLM reachable).
+
+**Amend runbook.** Reply to any note by attaching a comment to its annotation id.
+`plan:amend` re-proposes against the *same* plan scoped to that annotation, applies
+the resulting deltas (the `MERGE` on `(nodeType, nodeId, planId)` overwrites the
+flagged delta in place — no separate "replace" step), and re-runs the same triage +
+suggestion + annotation-attach flow, so the printed notes reflect the refreshed
+state — including a fresh note when the amendment only partially resolved the
+ambiguity. An annotation whose comment resolved its delta is auto-marked
+`'addressed'`; an empty/again-unresolvable correction leaves it `'open'`.
+
+```bash
+# After an intake run, reply to one note:
+npm run plan:amend --workspace=server -- <planId> \
+  --annotation <annotationId>:"it means City District"
+
+# Reply to several notes in one run (repeatable flag):
+npm run plan:amend --workspace=server -- <planId> \
+  --annotation <id1>:"it means City District" \
+  --annotation <id2>:"link it to Scene:abc123"
+
+# Actor resolution mirrors plan:intake (--user-id / --user-email / PLAN_ACTOR_USER_ID).
+```
+
+Unit coverage: `server/tests/unit/plan-intake-cli.test.ts` (`parseAmendArgs`,
+`amendUsage`). Integration coverage:
+`server/tests/integration/graph-intake.integration.test.ts` (the "fail-open graph
+intake" block forces a missing base node + dangling edge and asserts the plan is
+created, not deleted, with `notes`/annotations present).
+
+### M50 — Graph-assisted entity resolution + consistency validation (2026-08-28)
+
+M50 adds a graph-assisted validation layer **in front of** the approve gate (the
+materialize/migrate/verify path is unchanged). Two new services and an alias seed
+make natural-language intake references safe.
+
+- **`EntityResolutionService`** (`server/src/services/EntityResolutionService.ts`)
+  resolves each natural-language reference found in a delta (e.g. a Scene's
+  `district` field) to ranked canonical `:Content` nodes with a confidence score
+  and a status: `resolved` (single high-confidence match), `ambiguous` (several
+  plausible matches), or `unresolved` (nothing above threshold). Strategy order:
+  exact name/alias match → normalized match (lowercase, strip accents/punctuation,
+  drop role words like `district`/`zone`) → Levenshtein-bounded fuzzy match →
+  graph-context disambiguation (a candidate whose neighbors are also referenced by
+  the plan scores higher). The result is persisted on each `:ContentDelta` as
+  `resolutionJson` and surfaced in the plan's `_resolution` blocks. The materialize
+  path ignores `_resolution`.
+- **`PlanConsistencyChecker`** (`server/src/services/PlanConsistencyChecker.ts`)
+  runs at approve time (after the drift check, before status flips to `approved`)
+  and attaches a non-blocking `_consistency` report to the plan: location-district
+  mismatch, prose-vs-field district contradiction, and orphan relationships. It
+  **warns** on conflicts but does not block (the structural "Unmapped edge type"
+  failure still blocks, as before).
+- **`GraphAliasService`** (`server/src/services/GraphAliasService.ts`) seeds
+  `(:Alias)-[:ALIAS_OF]->(:Content)` nodes from the curated, reviewed
+  `server/src/data/seed-aliases.json` (NOT LLM-generated) and prunes orphans whose
+  target no longer exists. It is wired into `seed:graph` and `resync:graph`, so
+  aliases stay consistent with the canonical graph. Common alternate names
+  ("El Centro" → City District, "Industrial Zone" → Industrial District) then
+  resolve via the alias match above.
+
+Prerequisites for resolution/aliases to work:
+
+```bash
+npm run seed:graph --workspace=server   # seeds :Content base graph + curated aliases
+# or, to repair drift and re-seed aliases:
+npm run resync:graph --workspace=server
+```
+
+The CLI now also returns a `_resolution` count implicitly via the probe; see the
+live-stack probe section for the added assertions.
+
+### M50 unit tests
+
+```bash
+npm run test:unit --workspace=server -- \
+  EntityResolutionService PlanConsistencyChecker GraphAliasService
+```
+
+- `EntityResolutionService.test.ts`: exact/normalized/fuzzy/alias match, ambiguous
+  case, unresolved case, graph-context disambiguation, and `resolvePlanDeltas`
+  attaching `_resolution` (skipping UUID references).
+- `PlanConsistencyChecker.test.ts`: location-district mismatch, prose-vs-field
+  contradiction, orphan relationship, and a clean plan producing an empty report.
+- `GraphAliasService.test.ts`: curated-alias load, seed-as-`(:Alias)-[:ALIAS_OF]`,
+  prune-orphans, and no-op when Neo4j is disabled.
+
+Integration (guarded by `NEO4J_ENABLED`):
+
+```bash
+npm run test:integration --workspace=server -- \
+  tests/integration/graph-intake.integration.test.ts
+```
 
 If the plan is accepted as a new milestone, record the reviewed decision in the
 appropriate `docs/milestones/` document and use the normal approve → solidify →

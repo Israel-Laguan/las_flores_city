@@ -15,6 +15,7 @@ import { closeConnections } from '@las-flores/infra';
 import { isNeo4jEnabled, verifyNeo4j, closeNeo4j } from '../src/services/Neo4jClient.js';
 import { ensureGraphConstraints, upsertContentNode, upsertContentRelationship, countContentNodes } from '../src/services/GraphBaseService.js';
 import { gatherBaseGraphData } from '../src/services/GraphSeedSource.js';
+import { seedAliases } from '../src/services/GraphAliasService.js';
 
 async function main(): Promise<void> {
   dotenv.config();
@@ -61,6 +62,11 @@ async function main(): Promise<void> {
 
   const total = await countContentNodes();
   console.log(`✅ Base graph seeded. Canonical :Content nodes in graph: ${total}`);
+
+  // M50: seed curated aliases (idempotent) so common alternate names resolve to
+  // canonical nodes. Skipped entries (target node missing) are reported, not fatal.
+  const aliasResult = await seedAliases();
+  console.log(`   Aliases linked: ${aliasResult.linked}, skipped: ${aliasResult.skipped}`);
 }
 
 main()

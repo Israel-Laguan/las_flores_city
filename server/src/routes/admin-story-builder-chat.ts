@@ -97,10 +97,14 @@ adminStoryBuilderChatRouter.post('/plans/:id/chat/apply-delta', async (req: Auth
     const result = await chatService.applyDeltas(id, deltas as never, deltaEdges as never, annotationId);
 
     // Ops audit trail — carry the originating annotation so reviewers can link
-    // the application back to the conflict it resolved (§13).
-    emitAdminEvent('plan_delta_applied', { appliedCount: result.appliedCount, annotationId: annotationId ?? null }, id, req.userId);
+    // the application back to the conflict it resolved (§13). `droppedCount`
+    // records fail-open drops (unresolvable base node / dangling edge endpoint)
+    // so a partially-applied proposal is auditable, not silent.
+    emitAdminEvent('plan_delta_applied', { appliedCount: result.appliedCount, droppedCount: result.diagnostics.length, annotationId: annotationId ?? null }, id, req.userId);
 
-    res.json({ success: true, data: { appliedCount: result.appliedCount, mergedView: result.mergedView }, timestamp: new Date().toISOString() });
+    // `diagnostics` tells the UI which deltas/edges were dropped and why, so a
+    // vanished delta is explained rather than looking like a silent failure.
+    res.json({ success: true, data: { appliedCount: result.appliedCount, diagnostics: result.diagnostics, mergedView: result.mergedView }, timestamp: new Date().toISOString() });
   } catch (error: any) {
     console.error('[story-builder] POST /plans/:id/chat/apply-delta error:', error);
     const status = error instanceof ChatDeltaValidationError ? 400

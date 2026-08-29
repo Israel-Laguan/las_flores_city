@@ -39,8 +39,14 @@ export const CritiqueRelatedEntitySchema = z.object({
 
 export type CritiqueRelatedEntity = z.infer<typeof CritiqueRelatedEntitySchema>;
 
-/** Which critique pass produced the annotation (maps to the two-model split). */
-export const CritiqueScopeSchema = z.enum(['entity', 'cross_entity', 'cross_mission']);
+/** Which critique pass produced the annotation (maps to the two-model split).
+ *
+ * `'intake'` is not an LLM critique pass — it is the fail-open plan-intake
+ * diagnostic channel (a dropped delta/edge or an unresolved NL reference). It
+ * needs its own scope so `persistAnnotations`' retire-on-write
+ * (`DELETE ... WHERE plan_id = $1 AND scope = $2 AND status = 'open'`) never has
+ * a real critique pass wipe intake notes, or vice versa. */
+export const CritiqueScopeSchema = z.enum(['entity', 'cross_entity', 'cross_mission', 'intake']);
 export type CritiqueScope = z.infer<typeof CritiqueScopeSchema>;
 
 /** Lifecycle of an annotation. M26 supports open/dismissed via live overrides;

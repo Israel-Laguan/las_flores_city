@@ -1,6 +1,7 @@
-import { ContentPlanSchema, IntakeConflictPreviewSchema, CritiqueAnnotationSchema, CritiqueEvidenceSchema, CritiqueRelatedEntitySchema, GraphDeltaSchema, GraphDeltaEdgeSchema, type ContentPlan, type ContentPlanItem, type IntakeConflictPreview, type CritiqueAnnotation, type ChatMessage, type ConflictChatContext, type GraphDelta, type GraphDeltaEdge } from '@las-flores/shared';
-import type { LLMProvider, ExistingContentContext, LLMUsage, CritiqueScopeType } from './types/LLMTypes.js';
+import { IntakeConflictPreviewSchema, CritiqueAnnotationSchema, CritiqueEvidenceSchema, CritiqueRelatedEntitySchema, GraphDeltaSchema, GraphDeltaEdgeSchema, type ContentPlan, type ContentPlanItem, type IntakeConflictPreview, type CritiqueAnnotation, type ChatMessage, type ConflictChatContext, type GraphDelta, type GraphDeltaEdge } from '@las-flores/shared';
+import type { LLMProvider, ExistingContentContext, LLMUsage, CritiqueScopeType, IntakeDiagnosticItem } from './types/LLMTypes.js';
 import { buildLorePrompt, buildIntakeConflictPrompt, buildSemanticCritiquePrompt, buildChatExplainPrompt, buildChatProposePrompt } from './LLMPrompts.js';
+import { buildIntakeDiagnosticsPrompt, templatedSuggestion } from './llmPromptsIntakeDiagnostics.js';
 import { finiteInt } from '../utils/env.js';
 import { createLiteLLMCore, type LiteLLMCore } from './liteLLMCore.js';
 import { gatherExistingContentContext } from './ContentContext.js';
@@ -219,7 +220,12 @@ export class LiteLLMProvider implements LLMProvider {
    */
   critiqueModel(scope: CritiqueScopeType): string {
     const deepModel = (process.env.LLM_DEEP_MODEL || '').trim() || undefined;
-    return scope !== 'entity' && deepModel && deepModel !== this.model ? deepModel : this.model;
+    // Only the genuinely deep cross-entity passes get the deep model. 'intake' is
+    // not an LLM critique pass at all (it labels fail-open intake diagnostic notes,
+    // whose suggestions come from the default model), so it must report the default
+    // model rather than being swept up by a `!== 'entity'` test.
+    const isDeepPass = scope === 'cross_entity' || scope === 'cross_mission';
+    return isDeepPass && deepModel && deepModel !== this.model ? deepModel : this.model;
   }
 
   // ── M29 Chat: explain / propose split ─────────────────────────────────────
@@ -332,6 +338,52 @@ export class LiteLLMProvider implements LLMProvider {
 
     console.warn(`[LiteLLM] chatPropose failed after refine; degrading to empty deltas (plan=${planId}): ${chatProposeErrors}`);
     return { reply: 'Proposal generation could not produce valid deltas. Please rephrase or use explain mode.', deltas: [], deltaEdges: [], usage: lastUsage };
+  }
+
+  /**
+   * Fail-open plan intake — one batched call producing an actionable suggestion
+   * per flagged reference, aligned by index.
+   *
+   * Advisory only, so this degrades instead of throwing: a malformed response, a
+   * short list, or a non-string entry falls back to `templatedSuggestion` for the
+   * affected index. The caller additionally wraps the call in try/catch, so a
+   * transport failure also never reaches the author.
+   */
+  async suggestDiagnostics(
+    items: IntakeDiagnosticItem[],
+  ): Promise<{ suggestions: string[]; usage: LLMUsage | null }> {
+    if (items.length === 0) return { suggestions: [], usage: null };
+
+    const systemPrompt = buildIntakeDiagnosticsPrompt(items);
+    const maxTokens = finiteInt(process.env.LLM_INTAKE_DIAGNOSTICS_MAX_TOKENS, 2048);
+    const { result, usage } = await this.callLLM(
+      systemPrompt,
+      'Write one suggestion per item, in order.',
+      undefined,
+      maxTokens,
+    );
+
+    const isObject = result !== null && typeof result === 'object' && !Array.isArray(result);
+    const raw = isObject ? (result as Record<string, unknown>).suggestions : undefined;
+    const list = Array.isArray(raw) ? raw : [];
+
+    if (!Array.isArray(raw)) {
+      const rawKeys = isObject ? Object.keys(result).join(',') || '(none)' : '(non-object response)';
+      console.warn(`[LiteLLM] suggestDiagnostics returned no "suggestions" array; using templated fallbacks (raw keys: ${rawKeys})`);
+    } else if (list.length < items.length) {
+      console.warn(`[LiteLLM] suggestDiagnostics returned ${list.length} suggestion(s) for ${items.length} item(s); padding with templated fallbacks`);
+    }
+
+    // Always return exactly one suggestion per item so the caller can zip by
+    // index without any length checks of its own.
+    const suggestions = items.map((item, i) => {
+      const candidate = list[i];
+      return typeof candidate === 'string' && candidate.trim().length > 0
+        ? candidate.trim()
+        : templatedSuggestion(item);
+    });
+
+    return { suggestions, usage };
   }
 
 }

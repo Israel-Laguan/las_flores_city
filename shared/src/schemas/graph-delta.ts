@@ -65,6 +65,10 @@ export const GraphDeltaSchema = z.object({
   // diffing is M28's apply-delta); DELETE may carry none.
   fields: z.record(z.string(), z.any()).default({}),
   createdAt: z.iso.datetime(), // ISO timestamp
+  // M50: NL-reference resolution result for each reference found in `fields`.
+  // Carried on the delta for review surfacing; ignored by the materialize path.
+  // `z.lazy` defers evaluation so the schema can be declared later in this file.
+  _resolution: z.array(z.lazy(() => ResolutionBlockSchema)).optional(),
 }).superRefine((delta, ctx) => {
   // `nodeId` is a UUID for any op, or a stable lowercase slug ONLY for a new
   // ADD entity. A MODIFY/DELETE `nodeId` must be the base `:Content` node's
@@ -89,6 +93,151 @@ export const GraphDeltaSchema = z.object({
 });
 
 export type GraphDelta = z.infer<typeof GraphDeltaSchema>;
+
+// ---------------------------------------------------------------------------
+// M50 — Entity resolution + consistency metadata
+//
+// `GraphDelta._resolution` carries the NL-reference → canonical-entity resolution
+// result for each natural-language reference found in a delta's fields. The
+// materialize path ignores it; admin review + the intake probe surface it so an
+// ambiguous/unresolved reference is confirmed or corrected before approval.
+//
+// `ContentPlan._consistency` (defined in story-builder.ts, re-using the schemas
+// below) carries the PlanConsistencyChecker report attached at approve time.
+// ---------------------------------------------------------------------------
+
+/** Outcome of resolving one natural-language reference against the graph. */
+export const ResolutionStatusSchema = z.enum(['resolved', 'ambiguous', 'unresolved']);
+export type ResolutionStatus = z.infer<typeof ResolutionStatusSchema>;
+
+/** A single ranked candidate for a reference, with a confidence score. */
+export const ResolutionCandidateSchema = z.object({
+  nodeType: GraphNodeTypeSchema,
+  nodeId: z.string(),
+  name: z.string(),
+  confidence: z.number().min(0).max(1),
+  note: z.string().optional(),
+});
+export type ResolutionCandidate = z.infer<typeof ResolutionCandidateSchema>;
+
+/** The resolution result for one reference found in a delta. */
+export const ResolutionBlockSchema = z.object({
+  raw: z.string(), // the user's raw wording, e.g. "Industrail Zone"
+  status: ResolutionStatusSchema,
+  field: z.string().optional(), // which delta field carried the reference
+  targetNodeType: GraphNodeTypeSchema.optional(), // the node type the ref resolves against
+  candidates: z.array(ResolutionCandidateSchema).default([]),
+  // A short, human-actionable next step authored by the LLM (or a templated
+  // fallback) telling the reviewer how to confirm/amend this reference. Advisory
+  // only — the materialize path ignores it, exactly like the rest of this block.
+  suggestion: z.string().optional(),
+});
+export type ResolutionBlock = z.infer<typeof ResolutionBlockSchema>;
+
+// ---------------------------------------------------------------------------
+// Fail-open intake diagnostics
+//
+// Intake is lenient by contract: an ambiguous or unresolvable reference must
+// never abort a plan. Where the pipeline previously threw (a MODIFY/DELETE
+// delta whose base `:Content` node is missing, a delta edge with a dangling
+// endpoint, or a MODIFY whose canonical on-disk slug cannot be resolved), it
+// now DROPS the offending delta/edge from the write set and records an
+// `IntakeDiagnostic` instead. The plan still persists — "full of notes" — and a
+// human confirms or amends each note afterwards via `plan:amend`.
+//
+// Structural failures that are unsafe to wave through (an injection-unsafe
+// relationship type, or a genuine infra error like Neo4j being unreachable)
+// still throw. Only the ambiguity class fails open.
+// ---------------------------------------------------------------------------
+
+/** Why a delta or edge was dropped from the intake write set. */
+export const IntakeDiagnosticKindSchema = z.enum([
+  // A MODIFY/DELETE delta referenced a base `:Content` node that does not exist.
+  'missing_base_node',
+  // The base node exists only as critique evidence, never as canon.
+  'evidence_only_node',
+  // A delta edge's source `:ContentDelta` was not written (its delta was dropped).
+  'dangling_edge_source',
+  // A delta edge's target is neither a canonical `:Content` nor a same-plan delta.
+  'dangling_edge_target',
+  // A MODIFY delta's canonical on-disk slug could not be resolved, so synthesis
+  // cannot target its existing file safely.
+  'unresolvable_canonical_slug',
+]);
+export type IntakeDiagnosticKind = z.infer<typeof IntakeDiagnosticKindSchema>;
+
+/**
+ * One dropped delta/edge, shaped to sit alongside `ResolutionBlock` so both can
+ * be surfaced through the same "notes" channel.
+ *
+ * For a dropped delta, `field` is the delta's own field (or absent) and `raw` is
+ * the offending reference. For a dropped edge, `field` is `'links'` and `raw` is
+ * `"TYPE source -> target"` — mirroring how `PlanConsistencyChecker`'s
+ * `orphan_relationship` finding already reports relationship-level problems.
+ */
+export const IntakeDiagnosticSchema = z.object({
+  nodeType: GraphNodeTypeSchema,
+  nodeId: z.string().min(1),
+  field: z.string().optional(),
+  raw: z.string(),
+  kind: IntakeDiagnosticKindSchema,
+  status: ResolutionStatusSchema,
+  candidates: z.array(ResolutionCandidateSchema).default([]),
+  suggestion: z.string().optional(),
+  reason: z.string(),
+});
+export type IntakeDiagnostic = z.infer<typeof IntakeDiagnosticSchema>;
+
+// ---------------------------------------------------------------------------
+// Intake note (cross-package contract)
+//
+// The advisory note surfaced for every reference the intake pipeline could not
+// confidently resolve — whether that is an ambiguous natural-language reference
+// (`ResolutionBlock`) or a dropped delta/edge (`IntakeDiagnostic`). It is exported
+// from `shared` (not just `GraphIntakeService`) so M51's HTTP route and M52's
+// admin UI — which live in different packages — have a single typed contract for
+// `content_plans` intake notes instead of a structural `any`.
+// ---------------------------------------------------------------------------
+export const IntakeNoteSchema = z.object({
+  nodeType: z.string(),
+  nodeId: z.string(),
+  field: z.string().optional(),
+  status: ResolutionStatusSchema,
+  raw: z.string(),
+  /** Present for a dropped delta/edge; absent for an unresolved NL reference. */
+  kind: z.string().optional(),
+  reason: z.string(),
+  suggestion: z.string().optional(),
+  candidates: z.array(ResolutionCandidateSchema).default([]),
+  /** Durable handle for `plan:amend --annotation <id>:"<comment>"`; absent only
+   * if persisting the annotation degraded (the note is still reported). */
+  annotationId: z.string().optional(),
+});
+export type IntakeNote = z.infer<typeof IntakeNoteSchema>;
+
+/** Severity of a consistency finding. Lenient by design — never blocks approval. */
+export const ConsistencySeveritySchema = z.enum(['warning']);
+export type ConsistencySeverity = z.infer<typeof ConsistencySeveritySchema>;
+
+/** One semantic conflict surfaced by PlanConsistencyChecker (non-blocking). */
+export const ConsistencyFindingSchema = z.object({
+  code: z.string().min(1),
+  severity: ConsistencySeveritySchema.default('warning'),
+  message: z.string().min(1),
+  nodeType: GraphNodeTypeSchema.optional(),
+  nodeId: z.string().optional(),
+  field: z.string().optional(),
+  detail: z.record(z.string(), z.any()).optional(),
+});
+export type ConsistencyFinding = z.infer<typeof ConsistencyFindingSchema>;
+
+/** The plan-level consistency report attached at approve time. */
+export const ConsistencyReportSchema = z.object({
+  checkedAt: z.string(),
+  hasConflicts: z.boolean(),
+  findings: z.array(ConsistencyFindingSchema).default([]),
+});
+export type ConsistencyReport = z.infer<typeof ConsistencyReportSchema>;
 
 /** A plan delta edge — a relationship authored as part of a plan. */
 export const GraphDeltaEdgeSchema = z.object({

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 // ============================================================
 // SnapshotService - M30 Phase A: Pre-Resolved Per-State Overlay Snapshots
 //

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 // ============================================================
 // GraphIntakeService — M32 graph-based authoring intake
 //
@@ -27,6 +28,10 @@ import {
   GraphDeltaEdgeSchema,
   type GraphDelta,
   type GraphDeltaEdge,
+  type IntakeDiagnostic,
+  type IntakeNote,
+  type ResolutionBlock,
+  type CritiqueAnnotationDraft,
   findEdgeMapping,
 } from '@las-flores/shared';
 import { queryOLTP, queryContent } from '@las-flores/infra';
@@ -39,9 +44,17 @@ import { chatService } from './ChatService.js';
 import { emitAdminEvent } from './AdminEventEmitter.js';
 import { contentPlanService } from './ContentPlanService.js';
 import { resolveContentDir } from './StoryBuilderLore.js';
-import { applyDelta, applyDeltaEdge, getDeltasForPlan, getDeltaEdgesForPlan, clearDeltasForPlan, preflightDeltas, preflightDeltaEdges, normalizeKeyComponent, resolveEdgeTargetNameValue } from './GraphDeltaService.js';
+import { applyDelta, applyDeltaEdge, getDeltasForPlan, getDeltaEdgesForPlan, clearDeltasForPlan, partitionDeltas, partitionDeltaEdges, deltaKey, normalizeKeyComponent, resolveEdgeTargetNameValue } from './GraphDeltaService.js';
 import { isNeo4jEnabled, runNeo4jTransaction } from './Neo4jClient.js';
-import type { ExistingContentContext, LLMUsage } from './types/LLMTypes.js';
+import { EntityResolutionService } from './EntityResolutionService.js';
+import { Neo4jCandidateSource } from './Neo4jCandidateSource.js';
+import { aiCritiqueService } from './AICritiqueService.js';
+import { createLLMProvider } from './LLMService.js';
+import { templatedSuggestion } from './llmPromptsIntakeDiagnostics.js';
+import type { ExistingContentContext, LLMUsage, LLMProvider, IntakeDiagnosticItem } from './types/LLMTypes.js';
+
+/** M50: graph-assisted entity resolution for natural-language references in deltas. */
+const entityResolutionService = new EntityResolutionService(new Neo4jCandidateSource());
 
 /** GraphIntakeService error when Neo4j is disabled. */
 export class GraphIntakeDisabledError extends Error {
@@ -59,12 +72,25 @@ export class GraphIntakeValidationError extends Error {
   }
 }
 
-/** Result of creating a plan from a description via graph deltas. */
+/**
+ * One reviewable "the graph could not confidently resolve this" note.
+ *
+ * The unified surface a CLI/UI renders, whether the underlying signal was an
+ * ambiguous natural-language reference (`ResolutionBlock`) or a delta/edge dropped
+ * from the write set (`IntakeDiagnostic`). `annotationId` is the durable handle for
+ * `plan:amend --annotation <id>:"<comment>"`; it is absent only if persisting the
+ * annotation degraded (the note is still reported). The `IntakeNote` contract lives
+ * in `@las-flores/shared` so M51's route and M52's admin UI (separate packages)
+ * share the same typed shape.
+ */
+
 export interface CreatePlanFromDescriptionResult {
   planId: string;
   description: string;
   deltaCount: number;
   edgeCount: number;
+  /** Advisory notes for everything the graph could not confidently resolve. */
+  notes: IntakeNote[];
   usage: LLMUsage | null;
   timestamp: string;
 }
@@ -291,19 +317,28 @@ function synthesizeEdges(
  * files on disk. Locations are file-only content with no DB table, so their
  * slug is the location directory name (NOT a slugified name, which would
  * diverge for accented/manually-named locations). Mirrors
- * GraphExporter.resolveLocationSlugs. */
-async function resolveLocationSlugsForDeltas(locationIds: string[]): Promise<Map<string, string>> {
-  const result = new Map<string, string>();
-  if (locationIds.length === 0) return result;
+ * GraphExporter.resolveLocationSlugs.
+ *
+ * Fail-open per id: an individual Location MODIFY that cannot be matched to an
+ * on-disk YAML is reported in `unresolved` (the caller turns it into an
+ * `unresolvable_canonical_slug` note and drops just that delta) instead of
+ * aborting the whole plan. A genuine glob/infra ERROR still throws, because then
+ * NO id can be trusted and silently dropping every Location would be worse than
+ * surfacing the failure. */
+async function resolveLocationSlugsForDeltas(
+  locationIds: string[],
+): Promise<{ slugByKey: Map<string, string>; unresolved: Set<string> }> {
+  const slugByKey = new Map<string, string>();
+  const unresolved = new Set<string>();
+  if (locationIds.length === 0) return { slugByKey, unresolved };
 
   const contentDir = resolveContentDir();
   let files: string[];
   try {
     files = await glob(`${contentDir}/districts/*/locations/*/*.yaml`, { absolute: true });
   } catch (err) {
-    // Fail closed: a glob failure means we cannot trust a name-derived slug for
-    // any Location MODIFY, so surface it rather than letting synthesis stage a
-    // wrong (name-derived) path.
+    // Infra failure — not an ambiguity. Surface it rather than reporting every
+    // Location as individually unresolvable.
     throw new GraphIntakeValidationError(
       `Canonical location slug lookup failed during plan synthesis: ${(err as Error)?.message}`,
     );
@@ -318,27 +353,20 @@ async function resolveLocationSlugsForDeltas(locationIds: string[]): Promise<Map
       if (!idSet.has(String(data.id).toLowerCase())) continue;
       const slug = path.basename(path.dirname(file));
       if (slug.length > 0) {
-        result.set(`Location:${normalizeKeyComponent(String(data.id))}`, slug);
+        slugByKey.set(`Location:${normalizeKeyComponent(String(data.id))}`, slug);
       }
     } catch (err) {
       console.warn(`[graph-intake] failed to read location YAML ${file}:`, (err as Error)?.message);
     }
   }
 
-  // Fail closed: if any Location MODIFY id is not resolvable to an on-disk YAML,
-  // reject instead of returning a partial map — otherwise synthesis derives a
-  // slugified name (wrong path for accented/manually-named locations).
-  const expectedKeys = new Set(
-    locationIds.map((id) => `Location:${normalizeKeyComponent(id)}`),
-  );
-  for (const key of expectedKeys) {
-    if (!result.has(key)) {
-      throw new GraphIntakeValidationError(
-        `Canonical location slug lookup failed: ${key} was not found on disk`,
-      );
-    }
+  // Report — never guess. A name-derived slug would target the wrong path for an
+  // accented/manually-named location, so an unmatched id is flagged instead.
+  for (const id of locationIds) {
+    const key = `Location:${normalizeKeyComponent(id)}`;
+    if (!slugByKey.has(key)) unresolved.add(key);
   }
-  return result;
+  return { slugByKey, unresolved };
 }
 
 /** Resolve canonical on-disk slugs for MODIFY deltas, keyed `nodeType:nodeId`.
@@ -351,13 +379,16 @@ async function resolveLocationSlugsForDeltas(locationIds: string[]): Promise<Map
  * GraphExporter.resolveCanonicalSlugsBulk. Locations have no DB table, so their
  * slugs are resolved separately from YAML.
  *
- * Fail-closed: if the content-store lookup for a given type throws, we cannot
- * trust a name-derived slug for any unresolved MODIFY of that type — rethrow so
- * the synthesized plan fails validation instead of later targeting a
- * non-existent path. (A transient blip still aborts the plan, which is safer
- * than silently writing to the wrong file.) An empty result for a type that
- * simply has no MODIFY deltas is fine and not an error. */
-async function resolveCanonicalSlugsForDeltas(deltas: GraphDelta[]): Promise<Map<string, string>> {
+ * Fail-open per id, fail-closed per failure: `unresolved` reports the MODIFY ids
+ * whose on-disk path could not be trusted, so the caller drops just those deltas
+ * and attaches a note (the lenient-intake contract). Today that is Locations only —
+ * their slug is a directory name that can legitimately diverge from the entity
+ * name, so deriving one would target the wrong file. DB-backed types keep their
+ * pre-existing name-derived fallback and are never flagged. A content-store ERROR
+ * for a whole type still throws — that is infra, not ambiguity. */
+async function resolveCanonicalSlugsForDeltas(
+  deltas: GraphDelta[],
+): Promise<{ slugByKey: Map<string, string>; unresolved: Set<string> }> {
   const CANONICAL_SLUG_QUERY: Partial<Record<string, { table: string; column: string }>> = {
     Character: { table: 'characters', column: 'name' },
     Scene: { table: 'scenes', column: 'name' },
@@ -375,10 +406,13 @@ async function resolveCanonicalSlugsForDeltas(deltas: GraphDelta[]): Promise<Map
     byType.set(d.nodeType, list);
   }
 
-  const result = new Map<string, string>();
+  const slugByKey = new Map<string, string>();
+  const unresolved = new Set<string>();
   for (const [nodeType, ids] of byType) {
     if (nodeType === 'Location' || ids.length === 0) continue;
     const meta = CANONICAL_SLUG_QUERY[nodeType];
+    // A type with no slug query (and no Location handling) cannot be resolved or
+    // meaningfully flagged here; deltaToPlanItem falls back to a name-derived slug.
     if (!meta) continue;
     const placeholders = ids.map((_, i) => `$${i + 1}`).join(', ');
     try {
@@ -389,29 +423,36 @@ async function resolveCanonicalSlugsForDeltas(deltas: GraphDelta[]): Promise<Map
       for (const row of rows.rows) {
         const slug = slugify(row.name);
         if (slug.length > 0) {
-          result.set(`${nodeType}:${normalizeKeyComponent(row.id)}`, slug);
+          slugByKey.set(`${nodeType}:${normalizeKeyComponent(row.id)}`, slug);
         }
       }
     } catch (err) {
-      // Fail closed: a content-store failure means we cannot guarantee the
-      // canonical slug for these MODIFY deltas, so surface it rather than
-      // letting a name-derived slug target a possibly non-existent path.
+      // Infra failure for the whole type — surface it rather than reporting every
+      // id of this type as individually unresolvable.
       throw new GraphIntakeValidationError(
         `Canonical slug lookup failed for ${nodeType} during plan synthesis: ${(err as Error)?.message}`,
       );
     }
+    // NOT flagged as unresolvable. For these DB-backed types `deltaToPlanItem`
+    // legitimately derives the slug from `fields.slug` / `fields.name` / the nodeId,
+    // which is the pre-existing behaviour for a non-renamed MODIFY and is correct
+    // whenever the entity's on-disk directory follows its name. A missing row only
+    // means "the canonical slug could not be confirmed", not "the path is wrong".
+    // (Locations are different — see resolveLocationSlugsForDeltas — because their
+    // slug is a directory name that can legitimately diverge from the entity name.)
   }
 
   // Locations: resolve from YAML (no DB table).
   const locationIds = byType.get('Location') ?? [];
   if (locationIds.length > 0) {
-    const locationSlugs = await resolveLocationSlugsForDeltas(locationIds);
-    for (const [key, slug] of locationSlugs) {
-      result.set(key, slug);
+    const locations = await resolveLocationSlugsForDeltas(locationIds);
+    for (const [key, slug] of locations.slugByKey) {
+      slugByKey.set(key, slug);
     }
+    for (const key of locations.unresolved) unresolved.add(key);
   }
 
-  return result;
+  return { slugByKey, unresolved };
 }
 
 /** Synthesize a ContentPlan from deltas+edges for compatibility with the legacy pipeline. */
@@ -421,22 +462,44 @@ async function synthesizePlanFromDeltas(
   deltas: GraphDelta[],
   edges: GraphDeltaEdge[],
   context: ExistingContentContext,
-): Promise<ContentPlan> {
+): Promise<{ plan: ContentPlan; diagnostics: IntakeDiagnostic[] }> {
   // Resolve canonical on-disk slugs for MODIFY deltas so a renamed entity keeps
-  // its existing file path (see deltaToPlanItem). Best-effort: a content-store
-  // failure logs a warning and leaves the map empty, in which case we fall back
-  // to the name-derived slug (acceptable for ADD / non-renamed MODIFY).
-  const canonicalSlugByKey = await resolveCanonicalSlugsForDeltas(deltas);
+  // its existing file path (see deltaToPlanItem). An individual MODIFY whose
+  // canonical slug cannot be resolved is EXCLUDED from `items` and reported as a
+  // note — guessing a name-derived slug would retarget a different file and orphan
+  // the real one. Aborting the whole plan over one such id is exactly the
+  // hard-stop this fail-open path exists to remove.
+  const { slugByKey: canonicalSlugByKey, unresolved } = await resolveCanonicalSlugsForDeltas(deltas);
 
-  const items = deltas.map(d => deltaToPlanItem(d, context, canonicalSlugByKey));
+  const diagnostics: IntakeDiagnostic[] = [];
+  const includedDeltas: GraphDelta[] = [];
+  for (const d of deltas) {
+    const key = `${d.nodeType}:${normalizeKeyComponent(d.nodeId)}`;
+    if (d.op === 'MODIFY' && unresolved.has(key)) {
+      const name = typeof d.fields?.name === 'string' ? d.fields.name : '';
+      diagnostics.push({
+        nodeType: d.nodeType,
+        nodeId: d.nodeId,
+        raw: name.length > 0 ? name : d.nodeId,
+        kind: 'unresolvable_canonical_slug',
+        status: 'unresolved',
+        candidates: [],
+        reason: `Could not locate the existing content file for [${d.nodeType}:${d.nodeId}], so this change was left out of the plan snapshot to avoid writing to the wrong file.`,
+      });
+      continue;
+    }
+    includedDeltas.push(d);
+  }
+
+  const items = includedDeltas.map(d => deltaToPlanItem(d, context, canonicalSlugByKey));
 
   // Build an index mapping (nodeType:graphNodeId) → plan-item id so edge links
   // resolve to generated item IDs, not raw graph node IDs. Edges reference the
   // delta's `nodeId` (the graph identity), so we key on that — NOT the
   // transient plan-item id.
   const itemIndex = new Map<string, string>();
-  for (let i = 0; i < deltas.length; i++) {
-    const delta = deltas[i];
+  for (let i = 0; i < includedDeltas.length; i++) {
+    const delta = includedDeltas[i];
     const item = items[i];
     itemIndex.set(
       `${delta.nodeType}:${normalizeKeyComponent(delta.nodeId)}`,
@@ -455,7 +518,7 @@ async function synthesizePlanFromDeltas(
   // materialization could not match the District by name. Delta names win over
   // canonical names (a District MODIFY in this plan keeps its new name).
   const nameLookup = new Map<string, string>();
-  for (const delta of deltas) {
+  for (const delta of includedDeltas) {
     const name = (delta.fields as Record<string, any> | undefined)?.name;
     if (typeof name === 'string' && name.length > 0) {
       nameLookup.set(`${delta.nodeType}:${normalizeKeyComponent(delta.nodeId)}`, name);
@@ -476,18 +539,30 @@ async function synthesizePlanFromDeltas(
   const links = synthesizeEdges(edges, items, itemIndex, nameLookup);
 
   return {
-    id: planId,
-    description,
-    status: 'proposed',
-    items,
-    links,
-    _meta: {
-      scaffolded_at: new Date().toISOString(),
+    plan: {
+      id: planId,
+      description,
+      status: 'proposed',
+      items,
+      links,
+      _meta: {
+        scaffolded_at: new Date().toISOString(),
+      },
     },
+    diagnostics,
   };
 }
 
 export class GraphIntakeService {
+  /** LLM provider for diagnostic suggestions, created lazily so importing this
+   *  module never constructs an LLM client (and tests can run without one). */
+  private providerInstance?: LLMProvider;
+
+  private get provider(): LLMProvider {
+    this.providerInstance ??= createLLMProvider();
+    return this.providerInstance;
+  }
+
   /**
    * Create a new content plan from a natural language description using the
    * graph-based authoring path. This:
@@ -593,7 +668,45 @@ export class GraphIntakeService {
     return this.persistPlanWithDeltas(planId, description, deltas, deltaEdges, null, createdBy);
   }
 
-  /** Shared post-proposal persistence flow (OLTP row + Neo4j transaction). */
+  /**
+   * Partition a plan's deltas/edges into the set that is safe to write, plus a
+   * diagnostic per dropped item.
+   *
+   * Runs in a read-only session BEFORE the write transaction so the plan_json
+   * snapshot and the graph write can share one safe set. Intake is single-writer
+   * (CLI-driven), so the small TOCTOU window before the write is acceptable.
+   */
+  private async partitionForWrite(
+    planDeltas: GraphDelta[],
+    planEdges: GraphDeltaEdge[],
+  ): Promise<{ safeDeltas: GraphDelta[]; safeEdges: GraphDeltaEdge[]; diagnostics: IntakeDiagnostic[] }> {
+    if (!isNeo4jEnabled()) {
+      return { safeDeltas: planDeltas, safeEdges: planEdges, diagnostics: [] };
+    }
+    const diagnostics: IntakeDiagnostic[] = [];
+    const deltaPartition = await partitionDeltas(planDeltas);
+    diagnostics.push(...deltaPartition.diagnostics);
+
+    // Only deltas that survived can anchor an edge, so an edge whose source was
+    // dropped is correctly reported as dangling rather than silently attaching to a
+    // stale node from an earlier run.
+    const safeKeys = new Set(deltaPartition.safe.map((d) => deltaKey(d.nodeType, d.nodeId)));
+    const droppedKeys = new Set(
+      planDeltas.filter((d) => !safeKeys.has(deltaKey(d.nodeType, d.nodeId))).map((d) => deltaKey(d.nodeType, d.nodeId)),
+    );
+    const edgePartition = await partitionDeltaEdges(planEdges, safeKeys, undefined, droppedKeys);
+    diagnostics.push(...edgePartition.diagnostics);
+
+    return { safeDeltas: deltaPartition.safe, safeEdges: edgePartition.safe, diagnostics };
+  }
+
+  /** Shared post-proposal persistence flow (OLTP row + Neo4j transaction).
+   *
+   * Fail-open by contract: submitting a plan always yields a plan. A delta or edge
+   * that cannot be resolved against the canonical graph is DROPPED from the write
+   * set and recorded as a note, never thrown. Only a genuine infra failure (Neo4j
+   * unreachable) still aborts and rolls the OLTP row back.
+   */
   private async persistPlanWithDeltas(
     planId: string,
     description: string,
@@ -612,17 +725,57 @@ export class GraphIntakeService {
       throw new GraphIntakeValidationError(`Cannot synthesize a plan item from a DELETE delta for [${deleteDelta.nodeType}:${deleteDelta.nodeId}] — delete materialization is not supported by the legacy plan contract. Remove the tombstone before approving.`);
     }
 
+    // Assign the new planId to all deltas/edges before anything inspects them.
+    let planDeltas = deltas.map(d => ({ ...d, planId }));
+    const planEdges = deltaEdges.map(e => ({ ...e, planId }));
+
+    // M50: attach `_resolution` to each delta for any natural-language reference
+    // it carries (e.g. a Scene's `district` field). Best-effort: if the graph is
+    // unavailable or resolution throws, proceed without it so intake never aborts
+    // on the advisory resolution layer.
+    if (isNeo4jEnabled()) {
+      try {
+        planDeltas = await entityResolutionService.resolvePlanDeltas(planDeltas);
+      } catch (resErr) {
+        console.warn('[graph-intake] entity resolution failed; skipping _resolution attachment:', (resErr as Error).message);
+      }
+    }
+
+    // Partition BEFORE synthesis so the plan_json snapshot and the graph write
+    // share ONE safe set. Doing this after synthesis would let a delta be present
+    // in plan_json but absent from the graph (or the reverse), which is exactly the
+    // kind of silent divergence that makes a "successful" plan unusable later.
+    const partition = await this.partitionForWrite(planDeltas, planEdges);
+    const partitionDiagnostics: IntakeDiagnostic[] = [...partition.diagnostics];
+    let safeDeltas = partition.safeDeltas;
+    let safeEdges = partition.safeEdges;
+
     // Create the plan row in OLTP. plan_json is synthesized from the
     // deltas/edges so every legacy/preview consumer (which parses plan_json
     // directly, e.g. StoryBuilderOrchestrator.stagePlan, StoryBuilderSolidify,
     // StoryBuilderMigration, AssetPublishService) receives a valid ContentPlan
     // instead of an empty object that fails ContentPlanSchema.parse.
     const context = await this.gatherContext();
-    const synthesizedPlan = await synthesizePlanFromDeltas(planId, description, deltas, deltaEdges, context);
+    const synthesized = await synthesizePlanFromDeltas(planId, description, safeDeltas, safeEdges, context);
+    partitionDiagnostics.push(...synthesized.diagnostics);
+
+    // A MODIFY excluded by synthesis (unresolvable canonical slug) must not be
+    // written to the graph either — otherwise the snapshot and the graph disagree.
+    const excludedKeys = new Set(
+      synthesized.diagnostics
+        .filter((d) => d.kind === 'unresolvable_canonical_slug')
+        .map((d) => deltaKey(d.nodeType, d.nodeId)),
+    );
+    if (excludedKeys.size > 0) {
+      safeDeltas = safeDeltas.filter((d) => !excludedKeys.has(deltaKey(d.nodeType, d.nodeId)));
+      const remaining = new Set(safeDeltas.map((d) => deltaKey(d.nodeType, d.nodeId)));
+      safeEdges = safeEdges.filter((e) => remaining.has(deltaKey(e.sourceNodeType, e.sourceNodeId)));
+    }
+
     // Reject a schema-invalid plan before it is persisted. The synthesized
     // snapshot is what every legacy/preview consumer parses; persisting an
     // invalid one would make preview/stage/approve fail opaquely later.
-    const parsedPlan = ContentPlanSchema.safeParse(synthesizedPlan);
+    const parsedPlan = ContentPlanSchema.safeParse(synthesized.plan);
     if (!parsedPlan.success) {
       throw new GraphIntakeValidationError(
         `Synthesized plan for [${planId}] failed schema validation: ${parsedPlan.error.issues
@@ -637,27 +790,16 @@ export class GraphIntakeService {
       [planId, description, parsedPlan.data, createdBy ?? null, timestamp],
     );
 
-    // Step 6: Write all deltas and edges to Neo4j in a single transaction
-    // Assign the new planId to all deltas/edges
-    const planDeltas = deltas.map(d => ({ ...d, planId }));
-    const planEdges = deltaEdges.map(e => ({ ...e, planId }));
-
-    // If the graph write fails, roll back the OLTP plan row so it is not orphaned.
+    // Step 6: Write the safe deltas and edges to Neo4j in a single transaction.
+    // Nothing in this block throws for the ambiguity class anymore, so the
+    // delete-the-OLTP-row rollback below is reachable only for real infra
+    // failures (Neo4j down, unsafe relationship type), which must still abort.
     try {
       await runNeo4jTransaction(async (tx) => {
-        // Write all deltas first, THEN preflight edges — edge preflight checks
-        // that edge endpoints exist in the graph, so deltas must already be
-        // applied for those endpoints to resolve.
-        await preflightDeltas(planDeltas, tx);
-
-        for (const delta of planDeltas) {
+        for (const delta of safeDeltas) {
           await applyDelta(delta, tx);
         }
-
-        // Edge preflight runs AFTER deltas are written so endpoint lookups succeed.
-        await preflightDeltaEdges(planEdges, tx);
-
-        for (const edge of planEdges) {
+        for (const edge of safeEdges) {
           await applyDeltaEdge(edge, tx);
         }
       });
@@ -672,12 +814,18 @@ export class GraphIntakeService {
       throw graphErr;
     }
 
+    // Turn every unresolved reference + dropped delta/edge into reviewable notes
+    // (suggestions + `CritiqueAnnotation`s) the author can reply to via plan:amend.
+    const notes = await this.triageAndAnnotate(planId, safeDeltas, partitionDiagnostics);
+
     emitAdminEvent(
       'plan_created',
       {
         descriptionLength: description.trim().length,
-        deltaCount: planDeltas.length,
-        edgeCount: planEdges.length,
+        deltaCount: safeDeltas.length,
+        edgeCount: safeEdges.length,
+        droppedCount: partitionDiagnostics.length,
+        noteCount: notes.length,
         source: 'graph-intake',
       },
       planId,
@@ -687,11 +835,117 @@ export class GraphIntakeService {
     return {
       planId,
       description,
-      deltaCount: planDeltas.length,
-      edgeCount: planEdges.length,
+      deltaCount: safeDeltas.length,
+      edgeCount: safeEdges.length,
+      notes,
       usage,
       timestamp,
     };
+  }
+
+  /**
+   * Collect every "the graph could not confidently resolve this" signal for a plan,
+   * attach an LLM-authored suggestion to each, and persist them as reviewable
+   * `CritiqueAnnotation`s under scope `'intake'`.
+   *
+   * Shared by intake and amend so the notes an author sees after amending are
+   * produced by exactly the same code path as the notes they saw after intake —
+   * including a fresh note when an amendment only partially resolved an ambiguity.
+   *
+   * Sources:
+   *   - `_resolution` blocks with `status !== 'resolved'` (ambiguous / unresolved
+   *     natural-language references, from EntityResolutionService)
+   *   - `IntakeDiagnostic`s (deltas/edges dropped from the write set)
+   *
+   * Entirely best-effort. A suggestion is cosmetic and an annotation is a review
+   * aid; neither may abort a plan that has already been persisted.
+   */
+  async triageAndAnnotate(
+    planId: string,
+    deltas: GraphDelta[],
+    diagnostics: IntakeDiagnostic[],
+  ): Promise<IntakeNote[]> {
+    // Keep resolution blocks paired with their owning delta so a note can name the
+    // entity it belongs to (a ResolutionBlock alone has no nodeType/nodeId).
+    const resolutionNotes: Array<{ delta: GraphDelta; block: ResolutionBlock }> = [];
+    for (const delta of deltas) {
+      for (const block of delta._resolution ?? []) {
+        if (block.status !== 'resolved') resolutionNotes.push({ delta, block });
+      }
+    }
+
+    const items: IntakeDiagnosticItem[] = [
+      ...resolutionNotes.map((r) => r.block),
+      ...diagnostics,
+    ];
+    if (items.length === 0) return [];
+
+    // One batched LLM call for the whole plan. Mirrors the best-effort treatment of
+    // `resolvePlanDeltas`: on any failure fall back to the templated string.
+    let suggestions: string[];
+    try {
+      const result = await this.provider.suggestDiagnostics(items);
+      suggestions = items.map((item, i) => result.suggestions[i] || templatedSuggestion(item));
+    } catch (err) {
+      console.warn('[graph-intake] suggestion generation failed; using templated fallbacks:', (err as Error).message);
+      suggestions = items.map(templatedSuggestion);
+    }
+
+    const notes: IntakeNote[] = [
+      ...resolutionNotes.map(({ delta, block }, i) => ({
+        nodeType: delta.nodeType,
+        nodeId: delta.nodeId,
+        field: block.field,
+        status: block.status,
+        raw: block.raw,
+        kind: undefined,
+        reason: `"${block.raw}" could not be confidently matched${block.field ? ` for ${delta.nodeType}.${block.field}` : ''} (${block.status}).`,
+        suggestion: suggestions[i],
+        candidates: block.candidates,
+        annotationId: undefined as string | undefined,
+      })),
+      ...diagnostics.map((d, i) => ({
+        nodeType: d.nodeType,
+        nodeId: d.nodeId,
+        field: d.field,
+        status: d.status,
+        raw: d.raw,
+        kind: d.kind as string | undefined,
+        reason: d.reason,
+        suggestion: suggestions[resolutionNotes.length + i],
+        candidates: d.candidates,
+        annotationId: undefined as string | undefined,
+      })),
+    ];
+
+    // Persist as annotations so `plan:amend --annotation <id>:"<comment>"` has a
+    // durable handle to reply to. Best-effort: losing the annotation only costs the
+    // amend handle, and the note itself is still printed by the CLI.
+    try {
+      const drafts: CritiqueAnnotationDraft[] = notes.map((note) => ({
+        type: 'suggestion' as const,
+        severity: 'warning' as const,
+        description: `${note.reason} ${note.suggestion ?? ''}`.trim(),
+        // `suggestion` annotations carry no evidence requirement, so nothing has to
+        // be fabricated to satisfy the anti-hallucination refinement.
+        evidence: [],
+        relatedEntities: [{ entityType: note.nodeType, slug: note.nodeId }],
+        scope: 'intake' as const,
+        aiModel: this.provider.critiqueModel('intake'),
+        status: 'open' as const,
+        planId,
+        itemIds: [note.nodeId],
+        inputHash: '',
+      }));
+      const attached = await aiCritiqueService.attachDiagnosticAnnotations(planId, drafts);
+      attached.forEach((annotation, i) => {
+        if (notes[i]) notes[i].annotationId = annotation.id;
+      });
+    } catch (err) {
+      console.warn('[graph-intake] failed to attach diagnostic annotations:', (err as Error).message);
+    }
+
+    return notes;
   }
 
   /**
@@ -745,8 +999,10 @@ export class GraphIntakeService {
 
     const synthesized = await synthesizePlanFromDeltas(planId, description, deltas, edges, context);
     // Validate so consumers (e.g. staging) never receive a schema-invalid plan
-    // that would later fail ContentPlanSchema.parse opaquely.
-    const parsed = ContentPlanSchema.safeParse(synthesized);
+    // that would later fail ContentPlanSchema.parse opaquely. Diagnostics are
+    // discarded here: this is a read-only re-synthesis of an already-persisted
+    // plan, and the notes were recorded as annotations at intake/amend time.
+    const parsed = ContentPlanSchema.safeParse(synthesized.plan);
     return parsed.success ? parsed.data : null;
   }
 

@@ -346,6 +346,15 @@ export {
   EDGE_FIELD_MAPPINGS,
   UNSUPPORTED_EDGE_TYPES,
   findEdgeMapping,
+  ResolutionStatusSchema,
+  ResolutionCandidateSchema,
+  ResolutionBlockSchema,
+  IntakeDiagnosticKindSchema,
+  IntakeDiagnosticSchema,
+  IntakeNoteSchema,
+  ConsistencySeveritySchema,
+  ConsistencyFindingSchema,
+  ConsistencyReportSchema,
 } from './schemas/graph-delta.js';
 export type {
   GraphNodeType,
@@ -358,6 +367,15 @@ export type {
   GraphImpactAnalysis,
   GraphDeltaEdge,
   EdgeFieldMapping,
+  ResolutionStatus,
+  ResolutionCandidate,
+  ResolutionBlock,
+  IntakeDiagnosticKind,
+  IntakeDiagnostic,
+  IntakeNote,
+  ConsistencySeverity,
+  ConsistencyFinding,
+  ConsistencyReport,
 } from './schemas/graph-delta.js';
 
 

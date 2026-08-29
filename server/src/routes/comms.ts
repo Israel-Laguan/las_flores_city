@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import express, { Response, NextFunction } from 'express';
 import {
   AuthRequest,
