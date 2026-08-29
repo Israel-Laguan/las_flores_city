@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 // ============================================================
 // DialogueResolver - Mystery Overlay Merging Service
 // ============================================================

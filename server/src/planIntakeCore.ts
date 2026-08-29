@@ -68,7 +68,9 @@ export function parseArgs(argv: string[]): CliOptions {
 
 export async function resolveActor(
   queryOLTP: QueryOLTP,
-  options: CliOptions,
+  // Only the actor fields are read, so both the intake and amend option shapes
+  // (which differ in their positional argument) can share this resolver.
+  options: Pick<CliOptions, 'userId' | 'userEmail'>,
 ): Promise<Actor> {
   const configuredId = options.userId
     ?? process.env.PLAN_ACTOR_USER_ID
@@ -104,4 +106,101 @@ export async function resolveActor(
 export function reviewUrl(adminUrl: string, planId: string): string {
   const base = adminUrl.replace(/\/$/, '');
   return `${base}/story-builder?planId=${encodeURIComponent(planId)}`;
+}
+
+// ---------------------------------------------------------------------------
+// plan:amend — reply to an intake note on an EXISTING plan.
+//
+// Intake is fail-open: an ambiguous reference produces a note (a `CritiqueAnnotation`
+// scoped 'intake') instead of stopping the plan. Amend is the other half of that
+// loop — attach a comment to one note and let the plan incorporate the correction.
+// ---------------------------------------------------------------------------
+
+/** One note to reply to: the annotation's id plus the author's correction. */
+export interface AmendAnnotation {
+  annotationId: string;
+  comment: string;
+}
+
+export interface AmendCliOptions {
+  planId: string;
+  annotations: AmendAnnotation[];
+  userId?: string;
+  userEmail?: string;
+  adminUrl?: string;
+}
+
+export function amendUsage(): string {
+  return [
+    'Usage: npm run plan:amend --workspace=server -- <planId> --annotation <id>:"<comment>" [options]',
+    '',
+    'Options:',
+    '  --annotation <id>:<comment>  Reply to one intake note (repeatable)',
+    '  --user-id <uuid>             Admin/developer actor (or PLAN_ACTOR_USER_ID)',
+    '  --user-email <email>         Resolve admin/developer actor by email',
+    '  --admin-url <url>            Review UI base URL (default http://localhost:3002)',
+  ].join('\n');
+}
+
+/**
+ * Parse the amend CLI. Repeated `--annotation <id>:<comment>` flags keep this a
+ * pure CLI tool with no invented file format.
+ *
+ * The id/comment split is on the FIRST colon only, so a comment may itself contain
+ * colons (e.g. `--annotation abc:"it means City District: the northern one"`).
+ */
+export function parseAmendArgs(argv: string[]): AmendCliOptions {
+  let planId: string | undefined;
+  let userId: string | undefined;
+  let userEmail: string | undefined;
+  let adminUrl: string | undefined;
+  const annotations: AmendAnnotation[] = [];
+
+  for (let i = 2; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg === '--help' || arg === '-h') {
+      console.log(amendUsage());
+      process.exit(0);
+    }
+    if (arg === '--annotation') {
+      const raw = argv[++i];
+      if (!raw) throw new Error(`--annotation requires <id>:<comment>\n\n${amendUsage()}`);
+      const sep = raw.indexOf(':');
+      if (sep <= 0) {
+        throw new Error(`--annotation must be <id>:<comment> (got "${raw}")\n\n${amendUsage()}`);
+      }
+      const annotationId = raw.slice(0, sep).trim();
+      const comment = raw.slice(sep + 1).trim();
+      if (!annotationId) throw new Error(`--annotation is missing an annotation id\n\n${amendUsage()}`);
+      // An empty comment would send the LLM nothing to act on, so reject it here
+      // rather than burning a proposal call that cannot succeed.
+      if (!comment) throw new Error(`--annotation ${annotationId} is missing a comment\n\n${amendUsage()}`);
+      annotations.push({ annotationId, comment });
+      continue;
+    }
+    if (arg === '--user-id') {
+      userId = argv[++i];
+      continue;
+    }
+    if (arg === '--user-email') {
+      userEmail = argv[++i];
+      continue;
+    }
+    if (arg === '--admin-url') {
+      adminUrl = argv[++i];
+      continue;
+    }
+    if (arg.startsWith('--')) {
+      throw new Error(`Unknown option: ${arg}\n\n${amendUsage()}`);
+    }
+    if (planId) throw new Error(`Unexpected argument: ${arg}\n\n${amendUsage()}`);
+    planId = arg;
+  }
+
+  if (!planId) throw new Error(`A planId is required.\n\n${amendUsage()}`);
+  if (annotations.length === 0) {
+    throw new Error(`At least one --annotation <id>:<comment> is required.\n\n${amendUsage()}`);
+  }
+  if (userId && userEmail) throw new Error('Use either --user-id or --user-email, not both');
+  return { planId, annotations, userId, userEmail, adminUrl };
 }

@@ -80,6 +80,60 @@ content, publish assets, approve the plan, or run solidify. Review the plan in t
 admin UI and inspect its Neo4j deltas before a later approval step. `proposed` is
 the existing review-ready state; no separate `working` status is needed.
 
+#### 1.1.1 Fail-open intake: a plan full of notes + the amend loop
+
+Intake is **lenient by contract**. If the LLM cannot confidently resolve a
+natural-language reference (e.g. "City Center"), or if a delta/edge references a
+node that does not exist in the canonical graph, intake does **not** abort. It:
+
+- drops the offending delta/edge from the write set,
+- keeps the plan (the `content_plans` row survives — it is never deleted on an
+  ambiguity),
+- and records each unresolved reference as a **note** with a human-actionable
+  suggestion.
+
+Every note is persisted as a `critique_annotations` row scoped `'intake'`
+(`type: 'suggestion'`), so it reuses the exact comment/amend loop the critique
+system already has. The printed JSON carries `notes: [{ nodeType, nodeId, field,
+status, raw, suggestion, candidates, annotationId }]`, and stderr prints one
+directly-runnable line per note:
+
+```
+[note] Scene:8f2a... (district) "City Center" is ambiguous — City District (0.82) or Central District (0.71). <suggestion text>
+  → npm run plan:amend --workspace=server -- <planId> --annotation <annotationId>:"<your comment>"
+```
+
+**Prerequisites** are the same as §1.1 (live `npm run seed:dev`, Neo4j enabled,
+LiteLLM reachable).
+
+**Amend runbook.** Reply to any note by attaching a comment to its annotation id.
+`plan:amend` re-proposes against the *same* plan scoped to that annotation, applies
+the resulting deltas (the `MERGE` on `(nodeType, nodeId, planId)` overwrites the
+flagged delta in place — no separate "replace" step), and re-runs the same triage +
+suggestion + annotation-attach flow, so the printed notes reflect the refreshed
+state — including a fresh note when the amendment only partially resolved the
+ambiguity. An annotation whose comment resolved its delta is auto-marked
+`'addressed'`; an empty/again-unresolvable correction leaves it `'open'`.
+
+```bash
+# After an intake run, reply to one note:
+npm run plan:amend --workspace=server -- <planId> \
+  --annotation <annotationId>:"it means City District"
+
+# Reply to several notes in one run (repeatable flag):
+npm run plan:amend --workspace=server -- <planId> \
+  --annotation <id1>:"it means City District" \
+  --annotation <id2>:"link it to Scene:abc123"
+
+# Actor resolution mirrors plan:intake (--user-id / --user-email / PLAN_ACTOR_USER_ID).
+```
+
+Unit coverage: `server/tests/unit/plan-intake-cli.test.ts` (`parseAmendArgs`,
+`amendUsage`). Integration coverage:
+`server/tests/integration/graph-intake.integration.test.ts` (the "fail-open graph
+intake" block forces a missing base node + dangling edge and asserts the plan is
+created, not deleted, with `notes`/annotations present).
+
 ### M50 — Graph-assisted entity resolution + consistency validation (2026-08-28)
 
 M50 adds a graph-assisted validation layer **in front of** the approve gate (the

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 // ============================================================
 // AICritiqueService — AI semantic critique (Moment 3 / M26)
 //
@@ -21,7 +22,7 @@ import { queryOLTP, withOLTPTransaction } from '@las-flores/infra';
 import { createLLMProvider } from './LLMService.js';
 import { boundedPlanItems, serializeCritiqueContext } from './LLMPrompts.js';
 import type { LLMProvider, CritiqueScopeType, ExistingContentContext } from './types/LLMTypes.js';
-import type { CritiqueAnnotation, CritiqueAnnotationsResult, ContentPlan } from '@las-flores/shared';
+import type { CritiqueAnnotation, CritiqueAnnotationDraft, CritiqueAnnotationsResult, ContentPlan } from '@las-flores/shared';
 import { postgresNeighborhoodProvider, neo4jNeighborhoodProvider, type NeighborhoodProvider } from './NeighborhoodProvider.js';
 import { isNeo4jEnabled } from './Neo4jClient.js';
 import { graphCritiqueService, type GraphCritiqueService } from './GraphCritiqueService.js';
@@ -316,6 +317,55 @@ export class AICritiqueService {
         console.warn('[AICritiqueService] graph clear degraded (Postgres kept):', (err as Error).message);
       }
     }
+  }
+
+  /**
+   * Fail-open plan intake: persist advisory diagnostic notes as annotations so the
+   * existing comment/amend loop can be reused verbatim.
+   *
+   * Intake never blocks on an ambiguous reference — it drops the offending
+   * delta/edge and records a note. Each note becomes a `type: 'suggestion'`
+   * annotation (suggestions carry no evidence requirement, so nothing has to be
+   * fabricated), which the author can then reply to via
+   * `ChatService.propose/applyDeltas(planId, ..., annotationId)`. That path already
+   * marks the annotation 'addressed' on a successful write.
+   *
+   * Always persisted under scope `'intake'`. `persistAnnotations` retires prior
+   * OPEN annotations for the same (plan, scope) only, so re-running intake or amend
+   * refreshes the note set without touching real critique findings — and a critique
+   * pass cannot wipe these.
+   *
+   * `inputHash` is deliberately empty: these notes are derived from the graph write
+   * set, not from an LLM analysis of a subgraph, so they must never participate in
+   * the critique cache.
+   */
+  async attachDiagnosticAnnotations(
+    planId: string,
+    drafts: CritiqueAnnotationDraft[],
+  ): Promise<CritiqueAnnotation[]> {
+    // Short-circuit on an empty set. persistAnnotations inserts a "No conflicts
+    // found" MARKER row when handed zero annotations (a cache optimization for the
+    // critique path); for intake that would both be misleading and pollute the
+    // cache, and there is nothing to retire when there is nothing to write.
+    if (drafts.length === 0) return [];
+
+    const createdAt = new Date().toISOString();
+    const model = this.provider.critiqueModel('intake');
+    const annotations: CritiqueAnnotation[] = drafts.map((draft) => ({
+      ...draft,
+      // Force the identity/provenance fields the service owns — a caller must
+      // never supply these (mirrors how runCritique stamps LLM output).
+      id: crypto.randomUUID(),
+      createdAt,
+      status: 'open' as const,
+      scope: 'intake' as const,
+      planId,
+      aiModel: draft.aiModel || model,
+      inputHash: '',
+    }));
+
+    await this.persistAnnotations(annotations, { planId, scope: 'intake', inputHash: '', model });
+    return annotations;
   }
 
   /**

@@ -114,7 +114,7 @@ export async function scaffoldPlan(plan: ContentPlan) {
  * graph-intake / conversational propose flow. Returns a clear structured error
  * so the stale control degrades gracefully instead of hitting a 404.
  */
-export async function refinePlanPreview(plan: ContentPlan, feedback: string) {
+export async function refinePlanPreview(_plan: ContentPlan, _feedback: string) {
   return {
     success: false,
     error: 'In-memory plan refinement was retired in M32 — use the graph-intake / chat propose flow to revise a plan.',
@@ -144,7 +144,7 @@ export async function savePlan(description: string, plan: ContentPlan) {
   );
 }
 
-export async function refinePlan(planId: string, feedback: string, itemIds?: string[]) {
+export async function refinePlan(_planId: string, _feedback: string, _itemIds?: string[]) {
   // M32 retired the single-turn `/plans/:id/refine` route; refinement now lives
   // in the chat/propose flow. Fail closed with a clear message rather than 404.
   return {
@@ -181,7 +181,7 @@ export async function retryPlan(planId: string) {
   );
 }
 
-export async function selectTemplate(templateId: string, description: string) {
+export async function selectTemplate(_templateId: string, _description: string) {
   // M32 retired the templates/clone meta routes alongside the draft router.
   // The template picker is superseded by graph-intake description authoring.
   return {
@@ -223,7 +223,7 @@ export async function fetchTemplates() {
   return { success: true, data: { templates: [] } as { templates: Array<{ id: string; label: string; description: string; icon: string }> } };
 }
 
-export async function cloneEntity(sourcePath: string, newName: string) {
+export async function cloneEntity(_sourcePath: string, _newName: string) {
   // M32 retired the clone route with the meta router.
   return {
     success: false,
@@ -354,7 +354,7 @@ export async function deletePlan(planId: string) {
   );
 }
 
-export async function generateDrafts(planId: string, count?: number) {
+export async function generateDrafts(_planId: string, _count?: number) {
   // M32 retired the drafts router; asset drafting moved elsewhere.
   return { success: false, error: 'Draft generation was retired in M32 — asset authoring moved to graph-intake/CDN.' };
 }
@@ -373,7 +373,7 @@ export interface DraftItem {
   preSelected: string | null;
 }
 
-export async function listDrafts(planId: string) {
+export async function listDrafts(_planId: string) {
   // M32 retired the drafts router; the draft picker is superseded by asset
   // authoring via graph-intake/CDN. Fail closed with a clear message rather
   // than 404ing on the removed `/plans/:id/drafts` endpoint.
@@ -384,7 +384,7 @@ export async function listDrafts(planId: string) {
   };
 }
 
-export async function chooseDraft(planId: string, itemId: string, promptType: string, filename: string) {
+export async function chooseDraft(_planId: string, _itemId: string, _promptType: string, _filename: string) {
   // M32 retired the drafts router.
   return { success: false, error: 'Draft selection was retired in M32.' };
 }

@@ -1,9 +1,11 @@
 import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
 import {
   parseArgs,
+  parseAmendArgs,
   resolveActor,
   reviewUrl,
   usage,
+  amendUsage,
   DEFAULT_DEV_ADMIN_ID,
 } from '../../src/planIntakeCore.js';
 import type { QueryOLTP } from '../../src/planIntakeCore.js';
@@ -152,6 +154,141 @@ describe('plan:intake review URL', () => {
 describe('plan:intake usage', () => {
   it('documents the intake path and options', () => {
     const text = usage();
+    expect(text).toContain('--user-id');
+    expect(text).toContain('--user-email');
+    expect(text).toContain('--admin-url');
+  });
+});
+
+describe('plan:amend CLI argument parsing', () => {
+  const ORIGINAL_ARGV = process.argv;
+
+  afterEach(() => {
+    process.argv = ORIGINAL_ARGV;
+  });
+
+  const PLAN_ID = 'c9600000-e000-4000-8000-0000000000c0';
+  const ANNOTATION_ID = 'c9600001-e000-4000-8000-0000000000c1';
+  const ANNOTATION_ID_2 = 'c9600002-e000-4000-8000-0000000000c2';
+
+  it('parses a planId and a single --annotation pair', () => {
+    const opts = parseAmendArgs([
+      'node', 'run_plan_amend.ts', PLAN_ID,
+      '--annotation', `${ANNOTATION_ID}:it means City District`,
+    ]);
+    expect(opts.planId).toBe(PLAN_ID);
+    expect(opts.annotations).toEqual([
+      { annotationId: ANNOTATION_ID, comment: 'it means City District' },
+    ]);
+  });
+
+  it('accepts repeated --annotation flags so several notes are amended in one run', () => {
+    const opts = parseAmendArgs([
+      'node', 'run_plan_amend.ts', PLAN_ID,
+      '--annotation', `${ANNOTATION_ID}:first correction`,
+      '--annotation', `${ANNOTATION_ID_2}:second correction`,
+    ]);
+    expect(opts.annotations).toEqual([
+      { annotationId: ANNOTATION_ID, comment: 'first correction' },
+      { annotationId: ANNOTATION_ID_2, comment: 'second correction' },
+    ]);
+  });
+
+  it('splits on the FIRST colon so a comment may contain colons', () => {
+    const opts = parseAmendArgs([
+      'node', 'run_plan_amend.ts', PLAN_ID,
+      '--annotation', `${ANNOTATION_ID}:it means City District: the northern one`,
+    ]);
+    expect(opts.annotations[0]).toEqual({
+      annotationId: ANNOTATION_ID,
+      comment: 'it means City District: the northern one',
+    });
+  });
+
+  it('trims surrounding whitespace from the id and comment', () => {
+    const opts = parseAmendArgs([
+      'node', 'run_plan_amend.ts', PLAN_ID,
+      '--annotation', `${ANNOTATION_ID}:   padded comment   `,
+    ]);
+    expect(opts.annotations[0].comment).toBe('padded comment');
+  });
+
+  it('parses actor and admin-url options alongside annotations', () => {
+    const opts = parseAmendArgs([
+      'node', 'run_plan_amend.ts', PLAN_ID,
+      '--annotation', `${ANNOTATION_ID}:fix it`,
+      '--user-email', 'admin@example.com',
+      '--admin-url', 'http://localhost:4000',
+    ]);
+    expect(opts.userEmail).toBe('admin@example.com');
+    expect(opts.adminUrl).toBe('http://localhost:4000');
+  });
+
+  it('throws when the planId is missing', () => {
+    expect(() => parseAmendArgs([
+      'node', 'run_plan_amend.ts', '--annotation', `${ANNOTATION_ID}:fix it`,
+    ])).toThrow(/A planId is required/);
+  });
+
+  it('throws when no --annotation is supplied (nothing to amend)', () => {
+    expect(() => parseAmendArgs(['node', 'run_plan_amend.ts', PLAN_ID]))
+      .toThrow(/At least one --annotation/);
+  });
+
+  it('throws when --annotation has no colon separator', () => {
+    expect(() => parseAmendArgs([
+      'node', 'run_plan_amend.ts', PLAN_ID, '--annotation', ANNOTATION_ID,
+    ])).toThrow(/must be <id>:<comment>/);
+  });
+
+  it('throws when --annotation has an empty comment', () => {
+    // An empty comment gives the LLM nothing to act on, so reject it before
+    // burning a proposal call that cannot succeed.
+    expect(() => parseAmendArgs([
+      'node', 'run_plan_amend.ts', PLAN_ID, '--annotation', `${ANNOTATION_ID}:`,
+    ])).toThrow(/missing a comment/);
+  });
+
+  it('throws when --annotation has an empty id', () => {
+    expect(() => parseAmendArgs([
+      'node', 'run_plan_amend.ts', PLAN_ID, '--annotation', ':orphan comment',
+    ])).toThrow(/must be <id>:<comment>/);
+  });
+
+  it('throws when --annotation has no value at all', () => {
+    expect(() => parseAmendArgs([
+      'node', 'run_plan_amend.ts', PLAN_ID, '--annotation',
+    ])).toThrow(/--annotation requires/);
+  });
+
+  it('rejects an unknown option', () => {
+    expect(() => parseAmendArgs([
+      'node', 'run_plan_amend.ts', PLAN_ID,
+      '--annotation', `${ANNOTATION_ID}:fix it`, '--nope',
+    ])).toThrow(/Unknown option/);
+  });
+
+  it('rejects a duplicate positional argument', () => {
+    expect(() => parseAmendArgs([
+      'node', 'run_plan_amend.ts', PLAN_ID, 'extra',
+      '--annotation', `${ANNOTATION_ID}:fix it`,
+    ])).toThrow(/Unexpected argument/);
+  });
+
+  it('rejects both --user-id and --user-email', () => {
+    expect(() => parseAmendArgs([
+      'node', 'run_plan_amend.ts', PLAN_ID,
+      '--annotation', `${ANNOTATION_ID}:fix it`,
+      '--user-id', 'c9600003-e000-4000-8000-0000000000c3',
+      '--user-email', 'admin@example.com',
+    ])).toThrow(/not both/);
+  });
+});
+
+describe('plan:amend usage', () => {
+  it('documents the annotation flag and actor options', () => {
+    const text = amendUsage();
+    expect(text).toContain('--annotation');
     expect(text).toContain('--user-id');
     expect(text).toContain('--user-email');
     expect(text).toContain('--admin-url');

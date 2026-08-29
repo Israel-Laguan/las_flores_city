@@ -60,13 +60,33 @@ async function main(): Promise<void> {
       descriptionLength: description.length,
       deltaCount: graph.deltas.length,
       edgeCount: graph.edges.length,
+      // Everything the graph could not confidently resolve. Intake is fail-open:
+      // these are advisory, the plan is already persisted, and each one carries an
+      // `annotationId` you can reply to with `plan:amend`.
+      notes: result.notes,
       updatedAt: plan.updated_at,
       reviewUrl: reviewUrl(
         options.adminUrl ?? process.env.ADMIN_URL ?? 'http://localhost:3002',
         result.planId,
       ),
-      next: 'Review the plan before invoking approval/solidify; no content files or canonical rows were changed.',
+      next: result.notes.length > 0
+        ? 'The plan was created with notes. Reply to each note with plan:amend, then review before approval/solidify.'
+        : 'Review the plan before invoking approval/solidify; no content files or canonical rows were changed.',
     }, null, 2));
+
+    // Human-readable, directly actionable form on stderr so the JSON on stdout
+    // stays machine-parseable.
+    for (const note of result.notes) {
+      const where = note.field ? ` (${note.field})` : '';
+      const candidates = note.candidates.length > 0
+        ? ` — ${note.candidates.map((c) => `${c.name} (${c.confidence.toFixed(2)})`).join(' or ')}`
+        : '';
+      const suggestion = note.suggestion ? ` ${note.suggestion}` : '';
+      console.error(`[note] ${note.nodeType}:${note.nodeId}${where} "${note.raw}" is ${note.status}${candidates}.${suggestion}`);
+      if (note.annotationId) {
+        console.error(`  → npm run plan:amend --workspace=server -- ${result.planId} --annotation ${note.annotationId}:"<your comment>"`);
+      }
+    }
   } finally {
     await closeNeo4j();
     await infra.closeConnections();

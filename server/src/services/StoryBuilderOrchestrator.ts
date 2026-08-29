@@ -119,6 +119,7 @@ export interface SolidifyResult {
  * the transaction, and returns immediately. The caller polls
  * `GET /plans/:id/status` for progress.
  */
+// eslint-disable-next-line max-lines-per-function
 export async function approveAndSolidifyPlan(planId: string, userId?: string): Promise<SolidifyResult> {
   // --- M32: graph is now the sole authoring entry point for approvals. ---
   if (!isNeo4jEnabled()) {

@@ -1,6 +1,7 @@
+/* eslint-disable max-lines */
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import type { ContentPlan, ContentPlanItem, AssetNeed, GraphDelta, GraphDeltaEdge } from '@las-flores/shared';
+import type { ContentPlan, ContentPlanItem, AssetNeed, GraphDelta } from '@las-flores/shared';
 import { generateYaml, resolveFilePath } from './ContentSkeletonGenerator.js';
 import { validateContent } from '../content/validate.js';
 import { migrateContent } from '../content/migrate.js';
@@ -14,7 +15,7 @@ import {
 import { buildValidationErrors } from './StoryBuilderValidation.js';
 import { resolveContentDir, generateLoreStubs } from './StoryBuilderLore.js';
 import { generatePromptFiles } from './PromptFileGenerator.js';
-import { applyDelta, applyDeltaEdge, preflightDeltas, preflightDeltaEdges } from './GraphDeltaService.js';
+import { applyDelta, preflightDeltas } from './GraphDeltaService.js';
 import { isNeo4jEnabled, runNeo4jTransaction } from './Neo4jClient.js';
 import { uuidv4, CONTENT_TYPE_TO_NODE_TYPE } from '@las-flores/shared';
 import type { LLMProvider, ExistingContentContext } from './types/LLMTypes.js';

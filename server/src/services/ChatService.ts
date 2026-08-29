@@ -19,11 +19,11 @@
 //   - getReviewQueue() — global `needs_review`: open annotations ∪ all deltas.
 // ============================================================
 
-import { GraphDeltaSchema, GraphDeltaEdgeSchema, type ConflictChatContext, type CritiqueAnnotation, type GraphDelta, type GraphDeltaEdge, type ReviewQueueItem, type ChatMessage } from '@las-flores/shared';
+import { GraphDeltaSchema, GraphDeltaEdgeSchema, type ConflictChatContext, type CritiqueAnnotation, type GraphDelta, type GraphDeltaEdge, type IntakeDiagnostic, type ReviewQueueItem, type ChatMessage } from '@las-flores/shared';
 import { queryOLTP } from '@las-flores/infra';
 import { createLLMProvider } from './LLMService.js';
 import { buildMergedRevision } from './GraphMerger.js';
-import { applyDelta, applyDeltaEdge, removeDelta, getAllDeltas, getDeltaEdgesForPlans, preflightDeltas, preflightDeltaEdges } from './GraphDeltaService.js';
+import { applyDelta, applyDeltaEdge, removeDelta, getAllDeltas, getDeltaEdgesForPlans, partitionDeltas, partitionDeltaEdges, deltaKey } from './GraphDeltaService.js';
 import { aiCritiqueService, type AICritiqueService } from './AICritiqueService.js';
 import { postgresNeighborhoodProvider, neo4jNeighborhoodProvider, type NeighborhoodProvider } from './NeighborhoodProvider.js';
 import { isNeo4jEnabled, runNeo4jTransaction } from './Neo4jClient.js';
@@ -143,17 +143,23 @@ export class ChatService {
    *   ① validate every delta against `GraphDeltaSchema` (collect issues, throw)
    *   ② enforce `delta.planId === planId`                          (400)
    *   ③ require the graph (409 when disabled)
-   *   ④ `applyDelta`/`applyDeltaEdge` sequentially (base-node guards live in
-   *      the service, so an invalid MODIFY target throws before any write sticks)
-   *   ⑤ if `annotationId`: mark the conflict 'addressed' (Postgres + graph sync)
-   *   ⑥ return `{ appliedCount, mergedView }` (the merged-view refresh)
+   * ④ `applyDelta`/`applyDeltaEdge` sequentially, fail-open: a delta whose base
+   *      node is missing, or an edge with a dangling endpoint, is dropped and
+   *      returned as a `diagnostic` rather than aborting the batch
+   *   ⑤ if `annotationId` AND at least one delta landed: mark it 'addressed'
+   *   ⑥ return `{ appliedCount, appliedEdgeCount, diagnostics, mergedView }`
    */
   async applyDeltas(
     planId: string,
     deltas: GraphDelta[],
     deltaEdges: GraphDeltaEdge[] = [],
     annotationId?: string,
-  ): Promise<{ appliedCount: number; mergedView: Awaited<ReturnType<typeof buildMergedRevision>> }> {
+  ): Promise<{
+    appliedCount: number;
+    appliedEdgeCount: number;
+    diagnostics: IntakeDiagnostic[];
+    mergedView: Awaited<ReturnType<typeof buildMergedRevision>>;
+  }> {
     // ① validate before write — a malformed delta must never corrupt the graph.
     const issues: string[] = [];
     deltas.forEach((d, i) => {
@@ -203,32 +209,60 @@ export class ChatService {
       throw new ChatGraphDisabledError('Neo4j authoring graph is disabled — cannot apply deltas. Enable NEO4J_ENABLED first.');
     }
 
-    // ④ write the WHOLE batch in a single Neo4j transaction so a later
-    //    guard/edge failure (or a concurrent graph change) can never leave a
-    //    partially-applied proposal in the graph. Deltas are written first, then
-    //    each delta-edge endpoint is validated (so an edge whose source/target
-    //    is a delta authored in THIS same request is visible) and written — all
-    //    atomically. Any throw rolls back the entire batch.
+    // ④ write the WHOLE batch in a single Neo4j transaction so a genuine infra
+    //    failure can never leave a partially-applied proposal in the graph.
+    //
+    //    Endpoint problems fail OPEN rather than aborting: a delta whose base node
+    //    is missing, or an edge with a dangling endpoint, is DROPPED and reported
+    //    as a diagnostic. That keeps the amend loop usable — a reply that only
+    //    partially resolves an ambiguity still lands its good half instead of
+    //    throwing the author back to square one. Structural problems (an unsafe
+    //    relationship type) and infra failures still throw and roll back.
+    const diagnostics: IntakeDiagnostic[] = [];
+    let appliedDeltas: GraphDelta[] = [];
+    let appliedEdges: GraphDeltaEdge[] = [];
+
     await runNeo4jTransaction(async (tx) => {
-      await preflightDeltas(deltas, tx);
-      for (const delta of deltas) {
+      const deltaPartition = await partitionDeltas(deltas, tx);
+      for (const delta of deltaPartition.safe) {
         await applyDelta(delta, tx);
       }
-      await preflightDeltaEdges(deltaEdges, tx);
-      for (const edge of deltaEdges) {
+
+      // Only deltas that actually made it into the write set can anchor an edge.
+      const safeKeys = new Set(deltaPartition.safe.map((d) => deltaKey(d.nodeType, d.nodeId)));
+      const edgePartition = await partitionDeltaEdges(deltaEdges, safeKeys, tx);
+      for (const edge of edgePartition.safe) {
         await applyDeltaEdge(edge, tx);
       }
+
+      appliedDeltas = deltaPartition.safe;
+      appliedEdges = edgePartition.safe;
+      diagnostics.length = 0;
+      diagnostics.push(...deltaPartition.diagnostics, ...edgePartition.diagnostics);
     });
+
+    if (diagnostics.length > 0) {
+      console.warn(
+        `[ChatService] applyDeltas dropped ${diagnostics.length} item(s) as unresolvable (plan=${planId}): ` +
+        diagnostics.map((d) => `${d.kind} [${d.nodeType}:${d.nodeId}]`).join('; '),
+      );
+    }
 
     // ⑥ mark the conflict that started the chat 'addressed' (durable Postgres
     //    + graph sync). The annotation scope is already validated above.
-    if (annotationId) {
+    //
+    //    Only when something actually landed: if every delta was dropped, the
+    //    author's comment resolved nothing, so the annotation must stay 'open' for
+    //    them to try again rather than silently disappearing from the note list.
+    if (annotationId && appliedDeltas.length > 0) {
       await this.critique.setAnnotationStatus(annotationId, 'addressed');
     }
 
     // ⑦ return the merged-view refresh so the UI reflects the new shadow node.
     return {
-      appliedCount: deltas.length,
+      appliedCount: appliedDeltas.length,
+      appliedEdgeCount: appliedEdges.length,
+      diagnostics,
       mergedView: await buildMergedRevision(planId),
     };
   }

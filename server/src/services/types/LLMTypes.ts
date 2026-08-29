@@ -1,4 +1,8 @@
-import type { ContentPlan, ContentPlanItem, IntakeConflictPreview, CritiqueAnnotation, CritiqueScope, ChatMessage, ConflictChatContext, GraphDelta, GraphDeltaEdge } from '@las-flores/shared';
+import type { ContentPlan, ContentPlanItem, IntakeConflictPreview, CritiqueAnnotation, CritiqueScope, ChatMessage, ConflictChatContext, GraphDelta, GraphDeltaEdge, ResolutionBlock, IntakeDiagnostic } from '@las-flores/shared';
+
+/** A flagged intake reference needing a suggestion: an unresolved NL reference
+ *  (`ResolutionBlock`) or a dropped delta/edge (`IntakeDiagnostic`). */
+export type IntakeDiagnosticItem = ResolutionBlock | IntakeDiagnostic;
 
 // M32 - Extracted from OutlineChunking.ts
 export interface EntityCandidate {
@@ -94,4 +98,17 @@ export interface LLMProvider {
     conflict?: ConflictChatContext,
     planDescription?: string,
   ): Promise<{ reply: string; deltas: GraphDelta[]; deltaEdges: GraphDeltaEdge[]; usage: LLMUsage | null }>;
+
+  /**
+   * Fail-open plan intake — author one short, actionable suggestion per flagged
+   * reference, returned aligned by index with `items`.
+   *
+   * Purely advisory: intake attaches these to its notes so the CLI can print a
+   * usable next step instead of a raw error. Callers MUST treat a short list or a
+   * thrown error as non-fatal and fall back to a templated string — a cosmetic
+   * suggestion can never be a reason to reject a plan.
+   */
+  suggestDiagnostics(
+    items: IntakeDiagnosticItem[],
+  ): Promise<{ suggestions: string[]; usage: LLMUsage | null }>;
 }

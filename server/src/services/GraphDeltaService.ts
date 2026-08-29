@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 // ============================================================
 // GraphDeltaService — plan delta model (ADD / MODIFY / DELETE)
 //
@@ -19,6 +20,7 @@ import {
   findEdgeMapping,
   type GraphDelta,
   type GraphDeltaEdge,
+  type IntakeDiagnostic,
 } from '@las-flores/shared';
 import { createHash } from 'node:crypto';
 import { isNeo4jEnabled, runNeo4jQuery, runNeo4jTransaction } from './Neo4jClient.js';
@@ -234,6 +236,184 @@ async function queryRows<T = Record<string, unknown>>(
     return result.records.map((r) => r.toObject() as T);
   }
   return runNeo4jQuery<T>(cypher, params);
+}
+
+/** Stable identity key for a delta/edge endpoint, `nodeType:normalizedNodeId`. */
+export function deltaKey(nodeType: string, nodeId: string): string {
+  return `${nodeType}:${normalizeKeyComponent(nodeId)}`;
+}
+
+/**
+ * Fail-open sibling of `preflightDeltas`: instead of throwing on the first
+ * MODIFY/DELETE delta whose canonical base `:Content` node is missing, drop that
+ * delta from `safe` and record an `IntakeDiagnostic`.
+ *
+ * `preflightDeltas` is intentionally left intact for callers that want strict
+ * all-or-nothing validation. This variant exists so plan intake can stay lenient:
+ * one bad reference (typically the LLM guessing an id for an ambiguous name)
+ * must not destroy the whole plan. ADD deltas always pass — they define their own
+ * node, so there is nothing to look up.
+ */
+export async function partitionDeltas(
+  deltas: GraphDelta[],
+  tx?: ManagedTransaction,
+): Promise<{ safe: GraphDelta[]; diagnostics: IntakeDiagnostic[] }> {
+  // With the graph disabled there is nothing to validate against, so every delta
+  // is nominally "safe" — matching `preflightDeltas`, which no-ops in that case.
+  if (!isNeo4jEnabled()) return { safe: [...deltas], diagnostics: [] };
+
+  const safe: GraphDelta[] = [];
+  const diagnostics: IntakeDiagnostic[] = [];
+
+  for (const delta of deltas) {
+    const { nodeType, nodeId, op } = delta;
+    if (op === 'ADD') {
+      safe.push(delta);
+      continue;
+    }
+    const nNodeId = normalizeKeyComponent(nodeId);
+    const base = await queryRows<{ anyExists: boolean; canonical: boolean }>(
+      `MATCH (c:Content { nodeType: $nodeType, nodeId: $nodeId })
+       WHERE c.planId IS null
+       RETURN
+         count(c) > 0 AS anyExists,
+         count(CASE WHEN c.isEvidence IS NULL OR c.isEvidence = false THEN 1 END) > 0 AS canonical`,
+      { nodeType, nodeId: nNodeId },
+      tx,
+    );
+    const anyExists = base[0]?.anyExists ?? false;
+    const canonical = base[0]?.canonical ?? false;
+
+    if (anyExists && canonical) {
+      safe.push(delta);
+      continue;
+    }
+
+    // Prefer the delta's own `name` as the human-facing `raw` wording — that is
+    // what the author actually wrote — and fall back to the id when absent.
+    const name = typeof delta.fields?.name === 'string' ? delta.fields.name : '';
+    diagnostics.push({
+      nodeType,
+      nodeId,
+      raw: name.length > 0 ? name : nodeId,
+      kind: anyExists ? 'evidence_only_node' : 'missing_base_node',
+      status: 'unresolved',
+      candidates: [],
+      reason: anyExists
+        ? `${op} delta targets a base :Content node that exists only as evidence (no canonical node) [${nodeType}:${nodeId}] — dropped from this plan.`
+        : `${op} delta references a non-existent base :Content node [${nodeType}:${nodeId}] — dropped from this plan.`,
+    });
+  }
+
+  return { safe, diagnostics };
+}
+
+/**
+ * Fail-open sibling of `preflightDeltaEdges`.
+ *
+ * The relationship-type check stays a HARD THROW: `type` is interpolated
+ * straight into Cypher by `applyDeltaEdge`, so waving an unsafe type through
+ * would be an injection hole. This also matches the milestone's own carve-out
+ * that structural failures still block, while semantic ambiguity does not.
+ *
+ * Endpoint existence becomes advisory. A dangling source or target drops the
+ * edge and records a diagnostic. `safeDeltaKeys` (from `partitionDeltas`, via
+ * `deltaKey`) lets a source be recognised as valid even before its delta is
+ * written, and — critically — lets an edge whose source delta was DROPPED be
+ * reported as dangling rather than silently attaching to a stale node from a
+ * previous run.
+ */
+export async function partitionDeltaEdges(
+  edges: GraphDeltaEdge[],
+  safeDeltaKeys: ReadonlySet<string>,
+  tx?: ManagedTransaction,
+): Promise<{ safe: GraphDeltaEdge[]; diagnostics: IntakeDiagnostic[] }> {
+  const safe: GraphDeltaEdge[] = [];
+  const diagnostics: IntakeDiagnostic[] = [];
+
+  for (const edge of edges) {
+    const { planId, sourceNodeType, sourceNodeId, targetNodeType, targetNodeId, type } = edge;
+
+    // Structural / injection safety — never fails open.
+    if (!/^[A-Z][A-Z_0-9]*$/.test(type)) {
+      throw new Error(`Unsafe graph relationship type "${type}"`);
+    }
+
+    // `raw` mirrors PlanConsistencyChecker's relationship reporting shape so the
+    // note reads as the edge the author asked for.
+    const raw = `${type} ${sourceNodeType}:${sourceNodeId} -> ${targetNodeType}:${targetNodeId}`;
+
+    if (!isNeo4jEnabled()) {
+      safe.push(edge);
+      continue;
+    }
+
+    const nPlanId = normalizeKeyComponent(planId);
+    const nSourceId = normalizeKeyComponent(sourceNodeId);
+    const nTargetId = normalizeKeyComponent(targetNodeId);
+
+    // The source must be a delta of THIS plan. Trust `safeDeltaKeys` first: it
+    // reflects the write set this run is about to commit, so an edge is not
+    // rejected merely because its source has not been written yet.
+    let sourceOk = safeDeltaKeys.has(deltaKey(sourceNodeType, sourceNodeId));
+    if (!sourceOk) {
+      const sourceRows = await queryRows<{ count: unknown }>(
+        `MATCH (d:ContentDelta { planId: $planId, nodeType: $sourceNodeType, nodeId: $sourceNodeId })
+         RETURN count(d) AS count`,
+        { planId: nPlanId, sourceNodeType, sourceNodeId: nSourceId },
+        tx,
+      );
+      sourceOk = Number(sourceRows[0]?.count ?? 0) > 0;
+    }
+    if (!sourceOk) {
+      diagnostics.push({
+        nodeType: sourceNodeType,
+        nodeId: sourceNodeId,
+        field: 'links',
+        raw,
+        kind: 'dangling_edge_source',
+        status: 'unresolved',
+        candidates: [],
+        reason: `Delta edge source references a non-existent :ContentDelta [${sourceNodeType}:${sourceNodeId}] for plan ${planId} — relationship dropped from this plan.`,
+      });
+      continue;
+    }
+
+    // The target may be a canonical `:Content` node or another delta of this plan.
+    let targetOk = safeDeltaKeys.has(deltaKey(targetNodeType, targetNodeId));
+    if (!targetOk) {
+      const targetRows = await queryRows<{ count: unknown }>(
+        `MATCH (c:Content { nodeType: $targetNodeType, nodeId: $targetNodeId })
+            WHERE c.planId IS null AND (c.isEvidence IS NULL OR c.isEvidence = false)
+          RETURN count(c) AS count
+          UNION ALL
+          MATCH (d:ContentDelta { planId: $planId, nodeType: $targetNodeType, nodeId: $targetNodeId })
+          RETURN count(d) AS count`,
+        { planId: nPlanId, targetNodeType, targetNodeId: nTargetId },
+        tx,
+      );
+      const targetCount = (targetRows[0]?.count != null ? Number(targetRows[0].count) : 0)
+        + (targetRows[1]?.count != null ? Number(targetRows[1].count) : 0);
+      targetOk = targetCount > 0;
+    }
+    if (!targetOk) {
+      diagnostics.push({
+        nodeType: targetNodeType,
+        nodeId: targetNodeId,
+        field: 'links',
+        raw,
+        kind: 'dangling_edge_target',
+        status: 'unresolved',
+        candidates: [],
+        reason: `Delta edge target references a non-existent :Content/:ContentDelta [${targetNodeType}:${targetNodeId}] for plan ${planId} — relationship dropped from this plan.`,
+      });
+      continue;
+    }
+
+    safe.push(edge);
+  }
+
+  return { safe, diagnostics };
 }
 
 /** Fetch all deltas belonging to one plan, ordered by creation time. */

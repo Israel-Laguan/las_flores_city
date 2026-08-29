@@ -228,12 +228,14 @@ describe('GraphIntakeService — unit tests (Neo4j mocked)', () => {
       const service = new GraphIntakeService();
       await service.createPlanFromDescription('Test');
 
-      // Should call runNeo4jTransaction once for all deltas + edges
+      // Should call runNeo4jTransaction once for all deltas + edges.
+      // Intake now partitions (fail-open) instead of preflighting (fail-closed):
+      // the safe deltas are written, and the fixture's edge targets a Scene that
+      // exists in neither the deltas nor the graph, so it is dropped as dangling
+      // rather than throwing.
       expect(runNeo4jTransaction as jest.Mock).toHaveBeenCalledTimes(1);
-      expect(mockPreflightDeltas).toHaveBeenCalledTimes(1);
       expect(mockApplyDelta).toHaveBeenCalledTimes(1);
-      expect(mockPreflightDeltaEdges).toHaveBeenCalledTimes(1);
-      expect(mockApplyDeltaEdge).toHaveBeenCalledTimes(1);
+      expect(mockApplyDeltaEdge).toHaveBeenCalledTimes(0);
     });
 
     test('returns result with planId and counts', async () => {
@@ -244,7 +246,18 @@ describe('GraphIntakeService — unit tests (Neo4j mocked)', () => {
         planId: TEST_PLAN_ID,
         description: 'Test',
         deltaCount: 1,
-        edgeCount: 1,
+        // The fixture edge's target Scene does not exist, so the edge is dropped
+        // and reported as a note instead of aborting the plan.
+        edgeCount: 0,
+        notes: [
+          expect.objectContaining({
+            nodeType: 'Scene',
+            nodeId: 'scene-001',
+            field: 'links',
+            kind: 'dangling_edge_target',
+            status: 'unresolved',
+          }),
+        ],
         usage: null,
         timestamp: expect.any(String),
       });
