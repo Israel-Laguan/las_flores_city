@@ -126,7 +126,8 @@ export class PlanConsistencyChecker {
 
     // ---- Rule C: orphan relationship ----
     for (const e of edges) {
-      const exists = await this.view.hasNode(e.targetNodeType, e.targetNodeId);
+      const deltaTarget = deltaByKey.get(`${e.targetNodeType}:${e.targetNodeId.toLowerCase()}`);
+      const exists = !!deltaTarget || (await this.view.hasNode(e.targetNodeType, e.targetNodeId));
       if (!exists) {
         findings.push({
           code: 'orphan_relationship',

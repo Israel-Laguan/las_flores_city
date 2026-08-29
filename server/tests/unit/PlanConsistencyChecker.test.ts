@@ -166,4 +166,42 @@ describe('PlanConsistencyChecker', () => {
     expect(finding).toBeDefined();
     expect(finding?.detail).toMatchObject({ sceneDistrict: 'Industrial District', locationDistrict: 'City District' });
   });
+
+  it('does not flag an orphan when the edge targets a plan-created ADD delta', async () => {
+    // The target node does not exist in the canonical graph, but it is created by
+    // this plan (op ADD). Rule C must treat delta-by-key targets as existing.
+    const nodes = new Map<string, { name: string; fields: Record<string, unknown> }>();
+    const newLocation: GraphDelta = {
+      id: '3',
+      planId: 'p',
+      nodeType: 'Location',
+      nodeId: 'loc-new',
+      op: 'ADD',
+      fields: { name: 'Dockside', district: 'City District' },
+      createdAt: new Date().toISOString(),
+    } as GraphDelta;
+    const edgeToAdd: GraphDeltaEdge = {
+      planId: 'p',
+      sourceNodeType: 'Scene',
+      sourceNodeId: 's-1',
+      targetNodeType: 'Location',
+      targetNodeId: 'loc-new',
+      type: 'SET_IN',
+    };
+    const checker = new PlanConsistencyChecker(new FakeView(DISTRICTS, nodes));
+    const report = await checker.check('p', [sceneDelta('City District'), newLocation], [edgeToAdd]);
+
+    expect(report.findings.find((f) => f.code === 'orphan_relationship')).toBeUndefined();
+    expect(report.hasConflicts).toBe(false);
+  });
+
+  it('still flags an orphan for a target absent from both canonical and delta set', async () => {
+    const nodes = new Map<string, { name: string; fields: Record<string, unknown> }>();
+    const checker = new PlanConsistencyChecker(new FakeView(DISTRICTS, nodes));
+    const report = await checker.check('p', [sceneDelta('City District')], [locEdge]);
+
+    const finding = report.findings.find((f) => f.code === 'orphan_relationship');
+    expect(finding).toBeDefined();
+    expect(finding?.detail).toMatchObject({ targetNodeType: 'Location', targetNodeId: 'loc-1' });
+  });
 });

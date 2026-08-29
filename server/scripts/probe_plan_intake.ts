@@ -104,7 +104,17 @@ async function main(): Promise<void> {
     } else {
       console.log('  SKIP  _resolution blocks (no Scene/Location deltas in this plan)');
     }
-    const needsReview = blocks.filter(
+
+    // Merge the plan's advisory reference blocks with the intake notes produced by
+    // persistPlanWithDeltas (which also captures dropped reference-bearing deltas
+    // that never reached the graph write set). Either source can raise a review,
+    // and a reference-bearing delta dropped during partition must still surface.
+    const noteKey = (n: { nodeType?: string; nodeId?: string; raw?: string; status?: string }) =>
+      `${n.nodeType}:${n.nodeId}:${n.raw ?? ''}:${n.status ?? ''}`;
+    const merged = new Map<string, { nodeType?: string; nodeId?: string; raw?: string; status?: string }>();
+    for (const b of blocks) merged.set(noteKey(b), b);
+    for (const n of result.notes) merged.set(noteKey(n), n);
+    const needsReview = [...merged.values()].filter(
       (b) => b.status === 'ambiguous' || b.status === 'unresolved',
     );
     if (needsReview.length > 0) {

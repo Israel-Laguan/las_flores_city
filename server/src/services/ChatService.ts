@@ -259,7 +259,7 @@ export class ChatService {
     //    Only when something actually landed: if every delta was dropped, the
     //    author's comment resolved nothing, so the annotation must stay 'open' for
     //    them to try again rather than silently disappearing from the note list.
-    if (annotationId && appliedDeltas.length > 0) {
+    if (annotationId && (appliedDeltas.length > 0 || appliedEdges.length > 0)) {
       await this.critique.setAnnotationStatus(annotationId, 'addressed');
     }
 

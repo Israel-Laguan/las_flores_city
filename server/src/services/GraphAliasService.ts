@@ -77,15 +77,17 @@ export async function seedAliases(): Promise<SeedAliasResult> {
     }
     const targetNodeId = target[0].nodeId;
     await runNeo4jQuery(
-      `// Drop any ALIAS_OF relationships to non-target Content nodes so a
-       // re-seeded alias resolves only to its current target (and never both
-       // the current and an obsolete :Content node from a prior target).
-       MATCH (a:Alias { key: $key })-[r:ALIAS_OF]->(old:Content)
-       WHERE NOT (old.nodeType = $nodeType AND old.nodeId = $targetNodeId)
-       DELETE r
-       WITH a
+      `// Ensure the alias node exists before touching its relationships, so the
+       // first seed for $key still creates a usable :Alias node on a clean graph.
        MERGE (a:Alias { key: $key })
        SET a.name = $alias, a.nodeType = $nodeType, a.targetNodeId = $targetNodeId, a.targetName = $targetName
+       WITH a
+       // Drop any ALIAS_OF relationships to non-target Content nodes so a
+       // re-seeded alias resolves only to its current target (and never both
+       // the current and an obsolete :Content node from a prior target).
+       OPTIONAL MATCH (a)-[r:ALIAS_OF]->(old:Content)
+       WHERE NOT (old.nodeType = $nodeType AND old.nodeId = $targetNodeId)
+       DELETE r
        WITH a
        MATCH (c:Content { nodeType: $nodeType, nodeId: $targetNodeId })
        WHERE c.planId IS null
