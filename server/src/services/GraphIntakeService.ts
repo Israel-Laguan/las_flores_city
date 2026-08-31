@@ -1501,7 +1501,7 @@ export class GraphIntakeService {
     }
     const plan = row.rows[0];
     const { deltas, edges } = await this.getPlanDeltas(planId);
-    const diff = await this.buildPlanDiff(planId);
+    const planDiff = await this.buildPlanDiff(planId);
     const openAnnotations = await this.getPlanOpenAnnotations(planId);
 
     return {
@@ -1515,7 +1515,7 @@ export class GraphIntakeService {
       edgeCount: edges.length,
       deltas,
       edges,
-      diff,
+      diff: planDiff.deltas,
       openAnnotations,
       reviewUrl: reviewUrl(process.env.ADMIN_URL ?? 'http://localhost:3002', planId),
     };
