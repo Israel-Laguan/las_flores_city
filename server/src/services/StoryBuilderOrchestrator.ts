@@ -17,7 +17,9 @@ import { PlanNotFoundError, PlanStatusError } from './errors.js';
 import { isNeo4jEnabled } from './Neo4jClient.js';
 import { detectGraphDrift } from './GraphMerger.js';
 import { exportContentPlan, GraphExportError } from './GraphExporter.js';
-import { getDeltasForPlan, getPlanDeltaRevisionWithEdges } from './GraphDeltaService.js';
+import { getDeltasForPlan, getPlanDeltaRevisionWithEdges, getDeltaEdgesForPlan } from './GraphDeltaService.js';
+import type { GraphDelta } from '@las-flores/shared';
+import { PlanConsistencyChecker, Neo4jGraphView } from './PlanConsistencyChecker.js';
 import {
   startJobRun,
   updateJobRun,
@@ -164,6 +166,15 @@ export async function approveAndSolidifyPlan(planId: string, userId?: string): P
         }
         throw err;
       }
+
+      // M50 AC7: attach a non-blocking semantic consistency report (see helper).
+      try {
+        exported = await attachConsistencyReport(planId, deltas, exported);
+      } catch (err) {
+        console.warn(
+          `[PlanConsistencyCheck] skipped for ${planId}: ${(err as Error).message}`,
+        );
+      }
     }
   }
 
@@ -261,6 +272,37 @@ export async function approveAndSolidifyPlan(planId: string, userId?: string): P
     success: true,
     status: 'pending',
   };
+}
+
+/**
+ * M50 AC7: attach a non-blocking semantic consistency report to the exported
+ * plan before it is persisted. Runs after drift check + export; warns (never
+ * blocks) on location-district mismatches, prose-vs-field contradictions, and
+ * orphan relationships. Findings land on `exported._consistency` for the review
+ * UI. A checker/view error is swallowed as an advisory skip — approval is never
+ * gated on the semantic layer.
+ */
+async function attachConsistencyReport(
+  planId: string,
+  deltas: GraphDelta[],
+  exported: ContentPlan | null,
+): Promise<ContentPlan | null> {
+  if (!exported) return exported;
+  const edges = await getDeltaEdgesForPlan(planId);
+  const report = await new PlanConsistencyChecker(new Neo4jGraphView()).check(
+    planId,
+    deltas,
+    edges,
+  );
+  if (!report.hasConflicts) return exported;
+  exported._consistency = report;
+  for (const f of report.findings) {
+    const loc = `${f.nodeType ?? '?'}:${f.nodeId ?? '?'}`;
+    console.warn(
+      `[PlanConsistencyCheck] [${planId}] ${f.code}: ${f.message} (${loc})`,
+    );
+  }
+  return exported;
 }
 
 /**

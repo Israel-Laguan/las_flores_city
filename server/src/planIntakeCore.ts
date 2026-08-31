@@ -70,7 +70,9 @@ export async function resolveActor(
   queryOLTP: QueryOLTP,
   // Only the actor fields are read, so both the intake and amend option shapes
   // (which differ in their positional argument) can share this resolver.
-  options: Pick<CliOptions, 'userId' | 'userEmail'>,
+  // `inputPath` is accepted for forward-compatibility with callers passing the
+  // full parsed-args object but is not read here.
+  options: Pick<CliOptions, 'inputPath' | 'userId' | 'userEmail'>,
 ): Promise<Actor> {
   const configuredId = options.userId
     ?? process.env.PLAN_ACTOR_USER_ID
@@ -264,4 +266,235 @@ export function parsePlanDiffArgs(argv: string[]): PlanDiffCliOptions {
 
   if (!planId) throw new Error(`A planId is required.\n\n${planDiffUsage()}`);
   return { planId, adminUrl };
+}
+
+// ---------------------------------------------------------------------------
+// plan:reject — soft-terminal a plan: keep the row (status = 'rejected'),
+// prune its authoring-graph deltas, and close open intake annotations. Never
+// touches canonical content. Read-only re-check aside, this is a mutation, so
+// it surfaces its effect as a small JSON object on stdout.
+// ---------------------------------------------------------------------------
+
+export interface RejectCliOptions {
+  planId: string;
+  adminUrl?: string;
+}
+
+export function rejectUsage(): string {
+  return [
+    'Usage: npm run plan:reject --workspace=server -- <planId> [options]',
+    '',
+    'Softly rejects a plan: sets status to `rejected` (row preserved for audit),',
+    'prunes the plan\'s planId-scoped ContentDelta nodes/edges from Neo4j, and',
+    'marks open intake annotations addressed. Canonical content is untouched.',
+    '',
+    'Options:',
+    '  --admin-url <url>      Review UI base URL (default http://localhost:3002)',
+  ].join('\n');
+}
+
+export function parseRejectArgs(argv: string[]): RejectCliOptions {
+  let planId: string | undefined;
+  let adminUrl: string | undefined;
+
+  for (let i = 2; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg === '--help' || arg === '-h') {
+      console.log(rejectUsage());
+      process.exit(0);
+    }
+    if (arg === '--admin-url') {
+      adminUrl = argv[++i];
+      continue;
+    }
+    if (arg.startsWith('--')) {
+      throw new Error(`Unknown option: ${arg}\n\n${rejectUsage()}`);
+    }
+    if (planId) throw new Error(`Unexpected argument: ${arg}\n\n${rejectUsage()}`);
+    planId = arg;
+  }
+
+  if (!planId) throw new Error(`A planId is required.\n\n${rejectUsage()}`);
+  return { planId, adminUrl };
+}
+
+// ---------------------------------------------------------------------------
+// plan:delete — hard-delete a plan (row + plan-scoped graph data). Irreversible,
+// so it requires an explicit `--yes` confirmation guard (same pattern as other
+// destructive scripts in this codebase) and refuses plans already in the
+// materialize pipeline (only proposed/rejected plans are deletable).
+// ---------------------------------------------------------------------------
+
+export interface DeleteCliOptions {
+  planId: string;
+  yes: boolean;
+  adminUrl?: string;
+}
+
+export function deleteUsage(): string {
+  return [
+    'Usage: npm run plan:delete --workspace=server -- <planId> --yes [options]',
+    '',
+    'Hard-delete a plan: removes the content_plans row, its planId-scoped',
+    'ContentDelta nodes/edges from Neo4j, and its scope=intake annotations.',
+    'Destructive and irreversible — requires --yes. Refuses approved/staged/',
+    'migrated/verified/solidified plans; only proposed/rejected are deletable.',
+    '',
+    'Options:',
+    '  --yes                  REQUIRED confirmation guard',
+    '  --admin-url <url>      Review UI base URL (default http://localhost:3002)',
+  ].join('\n');
+}
+
+export function parseDeleteArgs(argv: string[]): DeleteCliOptions {
+  let planId: string | undefined;
+  let yes = false;
+  let adminUrl: string | undefined;
+
+  for (let i = 2; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg === '--help' || arg === '-h') {
+      console.log(deleteUsage());
+      process.exit(0);
+    }
+    if (arg === '--yes') {
+      yes = true;
+      continue;
+    }
+    if (arg === '--admin-url') {
+      adminUrl = argv[++i];
+      continue;
+    }
+    if (arg.startsWith('--')) {
+      throw new Error(`Unknown option: ${arg}\n\n${deleteUsage()}`);
+    }
+    if (planId) throw new Error(`Unexpected argument: ${arg}\n\n${deleteUsage()}`);
+    planId = arg;
+  }
+
+  if (!planId) throw new Error(`A planId is required.\n\n${deleteUsage()}`);
+  if (!yes) {
+    throw new Error(
+      `This operation is destructive and irreversible. Re-run with --yes to confirm.\n\n${deleteUsage()}`,
+    );
+  }
+  return { planId, yes, adminUrl };
+}
+
+// ---------------------------------------------------------------------------
+// plan:get — print the full resumable state of a plan by id: status,
+// created_by, deltaCount/edgeCount, the full delta list, the canonical-vs-
+// proposed diff, open intake annotations, and the review URL. The resume path:
+// a planId should survive across sessions/terminals.
+// ---------------------------------------------------------------------------
+
+export interface GetCliOptions {
+  planId: string;
+  adminUrl?: string;
+}
+
+export function getUsage(): string {
+  return [
+    'Usage: npm run plan:get --workspace=server -- <planId> [options]',
+    '',
+    'Print the full current state of a plan (seeks it fresh from the DB — not',
+    'limited to the one just created in this command invocation).',
+    '',
+    'Options:',
+    '  --admin-url <url>      Review UI base URL (default http://localhost:3002)',
+  ].join('\n');
+}
+
+export function parseGetArgs(argv: string[]): GetCliOptions {
+  let planId: string | undefined;
+  let adminUrl: string | undefined;
+
+  for (let i = 2; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg === '--help' || arg === '-h') {
+      console.log(getUsage());
+      process.exit(0);
+    }
+    if (arg === '--admin-url') {
+      adminUrl = argv[++i];
+      continue;
+    }
+    if (arg.startsWith('--')) {
+      throw new Error(`Unknown option: ${arg}\n\n${getUsage()}`);
+    }
+    if (planId) throw new Error(`Unexpected argument: ${arg}\n\n${getUsage()}`);
+    planId = arg;
+  }
+
+  if (!planId) throw new Error(`A planId is required.\n\n${getUsage()}`);
+  return { planId, adminUrl };
+}
+
+// ---------------------------------------------------------------------------
+// plan:list — enumerate plans with optional filters. Default (no --status)
+// surfaces only non-terminal plans (proposed + rejected) so routine \"what's
+// open\" checks aren't buried under approved/solidified history.
+// ---------------------------------------------------------------------------
+
+export interface ListCliOptions {
+  status?: string;
+  createdByEmail?: string;
+  since?: string;
+  adminUrl?: string;
+}
+
+export function listUsage(): string {
+  return [
+    'Usage: npm run plan:list --workspace=server -- [options]',
+    '',
+    'Enumerate plans (id, status, created_by, created_at, deltaCount).',
+    '',
+    'Options:',
+    '  --status <status>      Filter by status (e.g. proposed, rejected)',
+    '  --created-by <email>   Filter by plan creator email',
+    '  --since <iso-date>     ISO date/timestamp lower-bound on created_at',
+    '  --admin-url <url>      Review UI base URL (default http://localhost:3002)',
+  ].join('\n');
+}
+
+export function parseListArgs(argv: string[]): ListCliOptions {
+  let status: string | undefined;
+  let createdByEmail: string | undefined;
+  let since: string | undefined;
+  let adminUrl: string | undefined;
+
+  for (let i = 2; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg === '--help' || arg === '-h') {
+      console.log(listUsage());
+      process.exit(0);
+    }
+    if (arg === '--status') {
+      status = argv[++i];
+      if (!status) throw new Error(`--status requires a value\n\n${listUsage()}`);
+      continue;
+    }
+    if (arg === '--created-by') {
+      const email = argv[++i];
+      if (!email) throw new Error(`--created-by requires a value\n\n${listUsage()}`);
+      createdByEmail = email;
+      continue;
+    }
+    if (arg === '--since') {
+      const value = argv[++i];
+      if (!value) throw new Error(`--since requires a value\n\n${listUsage()}`);
+      since = value;
+      continue;
+    }
+    if (arg === '--admin-url') {
+      adminUrl = argv[++i];
+      continue;
+    }
+    if (arg.startsWith('--')) {
+      throw new Error(`Unknown option: ${arg}\n\n${listUsage()}`);
+    }
+    throw new Error(`Unexpected argument: ${arg}\n\n${listUsage()}`);
+  }
+
+  return { status, createdByEmail, since, adminUrl };
 }

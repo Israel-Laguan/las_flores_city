@@ -29,6 +29,10 @@
     "plan:intake": "tsx scripts/run_plan_intake.ts",
     "plan:amend": "tsx scripts/run_plan_amend.ts",
     "plan:diff": "tsx scripts/run_plan_diff.ts",
+    "plan:reject": "tsx scripts/run_plan_reject.ts",
+    "plan:delete": "tsx scripts/run_plan_delete.ts",
+    "plan:get": "tsx scripts/run_plan_get.ts",
+    "plan:list": "tsx scripts/run_plan_list.ts",
     "backfill:critique-graph": "tsx scripts/backfill-critique-graph.ts",
     "probe:content-urls": "tsx scripts/probe_content_url_coverage.ts",
     "flow:plan-template": "tsx scripts/run_plan_template_flow.ts"
