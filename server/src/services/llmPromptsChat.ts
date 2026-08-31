@@ -1,5 +1,5 @@
 import type { ExistingContentContext } from './types/LLMTypes.js';
-import type { ConflictChatContext } from '@las-flores/shared';
+import type { ConflictChatContext, GraphDelta } from '@las-flores/shared';
 import { serializeCritiqueContext } from './llmPromptsCritique.js';
 
 // ---------------------------------------------------------------------------
@@ -96,8 +96,12 @@ export function buildChatProposePrompt(
   plan: { id: string; description?: string },
   context: ExistingContentContext,
   conflict?: ConflictChatContext,
+  existingDeltas?: GraphDelta[],
 ): string {
   const e = serializeCritiqueContext(context);
+  const deltasBlock = existingDeltas && existingDeltas.length > 0
+    ? `\n## Current plan deltas (already-proposed changes for this plan — REUSE their nodeIds to remake them; mint a new lowercase_slug nodeId only for a genuinely new entity)\n${existingDeltas.map((d) => `- ${d.nodeType}:${d.nodeId} op=${d.op} name="${(d.fields as Record<string, any> | undefined)?.name ?? ''}"`).join('\n')}\n`
+    : '';
   return `You are a narrative authoring assistant for Las Flores 2077. The author wants you to PROPOSE concrete changes to canon. Return a single JSON object that encodes exactly how the canon graph should change.
 
 ## Proposed plan
@@ -106,7 +110,7 @@ export function buildChatProposePrompt(
 
 ## Existing canon (reference ids exactly as shown)
 ${JSON.stringify(e, null, 2)}
-
+${deltasBlock}
 ## Active conflict (Copy-to-Chat context)
 ${serializeConflictForChat(conflict)}
 ${DELTA_RULES}

@@ -53,6 +53,40 @@ function printNote(note: {
   }
 }
 
+/** Run the unscoped free-form instruction path and render its result to stdout/stderr. */
+async function runInstruction(
+  graphIntakeService: typeof import('../src/services/GraphIntakeService.js')['graphIntakeService'],
+  options: AmendCliOptions,
+  actor: { id: string; email: string; role: string },
+): Promise<void> {
+  const result = await graphIntakeService.amendPlanWithInstruction(
+    options.planId,
+    options.instruction!,
+    actor.id,
+    options.adminUrl,
+  );
+
+  console.log(JSON.stringify({
+    planId: result.planId,
+    status: result.status,
+    actor: { id: actor.id, email: actor.email, role: actor.role },
+    instruction: result.instruction,
+    appliedCount: result.appliedCount,
+    droppedCount: result.droppedCount,
+    reply: result.reply,
+    deltaCount: result.deltaCount,
+    edgeCount: result.edgeCount,
+    notes: result.notes,
+    reviewUrl: reviewUrl(
+      result.reviewUrl ?? options.adminUrl ?? process.env.ADMIN_URL ?? 'http://localhost:3002',
+      result.planId,
+    ),
+    next: result.next,
+  }, null, 2));
+
+  for (const note of result.notes) printNote(note, result.planId);
+}
+
 async function main(): Promise<void> {
   const options: AmendCliOptions = parseAmendArgs(process.argv);
 
@@ -72,6 +106,16 @@ async function main(): Promise<void> {
       throw new Error(`Plan ${options.planId} not found`);
     }
 
+    // Unscoped, free-form instruction path (Part 2, numeral 1): a directive
+    // against the whole plan with no annotation anchor. Re-enters the
+    // propose→apply loop targeting the existing planId; the LLM sees the plan's
+    // current deltas so a remake can reuse a plan-local nodeId and MERGE in place.
+    if (options.instruction) {
+      await runInstruction(graphIntakeService, options, actor);
+      return;
+    }
+
+    // Scoped annotation-reply path (existing behavior, unchanged).
     const applied: Array<{
       annotationId: string;
       comment: string;

@@ -256,13 +256,14 @@ export class LiteLLMProvider implements LLMProvider {
     context: ExistingContentContext,
     conflict?: ConflictChatContext,
     planDescription?: string,
+    existingDeltas?: GraphDelta[],
   ): Promise<{ reply: string; deltas: GraphDelta[]; deltaEdges: GraphDeltaEdge[]; usage: LLMUsage | null }> {
     const maxTokens = finiteInt(process.env.LLM_CHAT_MAX_TOKENS, 4096);
     let chatProposeErrors = '';
     let lastUsage: LLMUsage | null = null;
 
     for (let attempt = 0; attempt <= 1; attempt++) {
-      let systemPrompt = buildChatProposePrompt({ id: planId, description: planDescription }, context, conflict);
+      let systemPrompt = buildChatProposePrompt({ id: planId, description: planDescription }, context, conflict, existingDeltas);
       if (attempt === 1) {
         // Reject-and-refine: tell the model the exact validation failures from
         // the previous attempt (collected below).

@@ -125,6 +125,7 @@ export interface AmendAnnotation {
 export interface AmendCliOptions {
   planId: string;
   annotations: AmendAnnotation[];
+  instruction?: string;
   userId?: string;
   userEmail?: string;
   adminUrl?: string;
@@ -132,10 +133,11 @@ export interface AmendCliOptions {
 
 export function amendUsage(): string {
   return [
-    'Usage: npm run plan:amend --workspace=server -- <planId> --annotation <id>:"<comment>" [options]',
+    'Usage: npm run plan:amend --workspace=server -- <planId> (--annotation <id>:"<comment>" | --instruction "<text>") [options]',
     '',
     'Options:',
     '  --annotation <id>:<comment>  Reply to one intake note (repeatable)',
+    '  --instruction <text>         Free-form directive against the whole plan (unscoped)',
     '  --user-id <uuid>             Admin/developer actor (or PLAN_ACTOR_USER_ID)',
     '  --user-email <email>         Resolve admin/developer actor by email',
     '  --admin-url <url>            Review UI base URL (default http://localhost:3002)',
@@ -154,6 +156,7 @@ export function parseAmendArgs(argv: string[]): AmendCliOptions {
   let userId: string | undefined;
   let userEmail: string | undefined;
   let adminUrl: string | undefined;
+  let instruction: string | undefined;
   const annotations: AmendAnnotation[] = [];
 
   for (let i = 2; i < argv.length; i += 1) {
@@ -178,6 +181,15 @@ export function parseAmendArgs(argv: string[]): AmendCliOptions {
       annotations.push({ annotationId, comment });
       continue;
     }
+    if (arg === '--instruction') {
+      const text = argv[++i];
+      if (!text || text.trim().length === 0) {
+        throw new Error(`--instruction requires a non-empty string\n\n${amendUsage()}`);
+      }
+      if (instruction) throw new Error(`Only one --instruction is allowed\n\n${amendUsage()}`);
+      instruction = text.trim();
+      continue;
+    }
     if (arg === '--user-id') {
       userId = argv[++i];
       continue;
@@ -198,9 +210,12 @@ export function parseAmendArgs(argv: string[]): AmendCliOptions {
   }
 
   if (!planId) throw new Error(`A planId is required.\n\n${amendUsage()}`);
-  if (annotations.length === 0) {
-    throw new Error(`At least one --annotation <id>:<comment> is required.\n\n${amendUsage()}`);
+  if (annotations.length === 0 && !instruction) {
+    throw new Error(`At least one --annotation <id>:<comment> or --instruction "<text>" is required.\n\n${amendUsage()}`);
+  }
+  if (annotations.length > 0 && instruction) {
+    throw new Error(`--instruction cannot be combined with --annotation.\n\n${amendUsage()}`);
   }
   if (userId && userEmail) throw new Error('Use either --user-id or --user-email, not both');
-  return { planId, annotations, userId, userEmail, adminUrl };
+  return { planId, annotations, instruction, userId, userEmail, adminUrl };
 }

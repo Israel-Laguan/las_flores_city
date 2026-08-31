@@ -154,17 +154,26 @@ export async function preflightDeltas(deltas: GraphDelta[], tx?: ManagedTransact
     const { nodeType, nodeId, op } = delta;
     if (op === 'ADD') continue;
     const nNodeId = normalizeKeyComponent(nodeId);
-    const base = await queryRows<{ anyExists: boolean; canonical: boolean }>(
+    const base = await queryRows<{ anyExists: boolean; canonical: boolean; planLocal: boolean }>(
       `MATCH (c:Content { nodeType: $nodeType, nodeId: $nodeId })
        WHERE c.planId IS null
        RETURN
          count(c) > 0 AS anyExists,
-         count(CASE WHEN c.isEvidence IS NULL OR c.isEvidence = false THEN 1 END) > 0 AS canonical`,
-      { nodeType, nodeId: nNodeId },
+         count(CASE WHEN c.isEvidence IS NULL OR c.isEvidence = false THEN 1 END) > 0 AS canonical,
+         false AS planLocal
+       UNION ALL
+       MATCH (d:ContentDelta { nodeType: $nodeType, nodeId: $nodeId, planId: $planId })
+       RETURN false AS anyExists, false AS canonical, count(d) > 0 AS planLocal`,
+      { nodeType, nodeId: nNodeId, planId: delta.planId },
       tx,
     );
-    const anyExists = base[0]?.anyExists ?? false;
-    const canonical = base[0]?.canonical ?? false;
+    const anyExists = base.some((r) => r.anyExists);
+    const canonical = base.some((r) => r.canonical);
+    const planLocal = base.some((r) => r.planLocal);
+    // A same-plan :ContentDelta is a valid MODIFY/DELETE base: amending a plan
+    // delta that remakes an entity authored in this plan should MERGE in place
+    // rather than being dropped as a missing canonical node.
+    if (planLocal) continue;
     if (!anyExists) {
       throw new Error(`${op} delta references non-existent base :Content node [${nodeType}:${nodeId}]`);
     }
@@ -272,19 +281,27 @@ export async function partitionDeltas(
       continue;
     }
     const nNodeId = normalizeKeyComponent(nodeId);
-    const base = await queryRows<{ anyExists: boolean; canonical: boolean }>(
+    const base = await queryRows<{ anyExists: boolean; canonical: boolean; planLocal: boolean }>(
       `MATCH (c:Content { nodeType: $nodeType, nodeId: $nodeId })
        WHERE c.planId IS null
        RETURN
          count(c) > 0 AS anyExists,
-         count(CASE WHEN c.isEvidence IS NULL OR c.isEvidence = false THEN 1 END) > 0 AS canonical`,
-      { nodeType, nodeId: nNodeId },
+         count(CASE WHEN c.isEvidence IS NULL OR c.isEvidence = false THEN 1 END) > 0 AS canonical,
+         false AS planLocal
+       UNION ALL
+       MATCH (d:ContentDelta { nodeType: $nodeType, nodeId: $nodeId, planId: $planId })
+       RETURN false AS anyExists, false AS canonical, count(d) > 0 AS planLocal`,
+      { nodeType, nodeId: nNodeId, planId: delta.planId },
       tx,
     );
-    const anyExists = base[0]?.anyExists ?? false;
-    const canonical = base[0]?.canonical ?? false;
+    const anyExists = base.some((r) => r.anyExists);
+    const canonical = base.some((r) => r.canonical);
+    const planLocal = base.some((r) => r.planLocal);
 
-    if (anyExists && canonical) {
+    // A same-plan :ContentDelta is a valid MODIFY/DELETE base: amending a plan
+    // delta that remakes an entity authored in this plan should MERGE in place
+    // (applyDelta keys on nodeType:nodeId:planId) rather than being dropped.
+    if (planLocal || (anyExists && canonical)) {
       safe.push(delta);
       continue;
     }

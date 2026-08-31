@@ -583,3 +583,126 @@ describe('fail-open graph intake (unresolvable references)', () => {
     expect(await getDeltasForPlan(result.planId)).toHaveLength(1);
   }, 30000);
 });
+
+describe('GraphIntakeService.amendPlanWithInstruction — unscoped free-form amend (Neo4j-gated)', () => {
+  // A plan-local ADD delta's slug nodeId — the remake must reuse this exact id.
+  const DIEGO_ADD = 'd3200010-0000-4000-8000-000000000010';
+  const DIEGO_SLUG = 'diego';
+
+  test('a free-form instruction adds a new entity (deltaCount grows)', async () => {
+    if (!neo4jLive) return;
+    // Seed a plan with one ADD delta via a stubbed proposal.
+    const result = await intakeWith(
+      [
+        {
+          id: DIEGO_ADD,
+          planId: '',
+          nodeType: 'Character',
+          nodeId: DIEGO_SLUG,
+          op: 'ADD',
+          fields: { name: 'Diego el Mock', role: 'bartender' },
+          createdAt: new Date().toISOString(),
+        },
+      ],
+      [],
+    );
+    expect(await getDeltasForPlan(result.planId)).toHaveLength(1);
+
+    // Stub propose for the amendment to return a brand-new ADD (no name overlap
+    // with existing deltas → the mock path adds a fresh entity).
+    const chatService = await import('../../src/services/ChatService.js');
+    const originalPropose = chatService.chatService.propose;
+    try {
+      chatService.chatService.propose = jest.fn(async () => ({
+        reply: 'Mock: add vendor',
+        deltas: [{
+          id: 'd3200011-0000-4000-8000-000000000011',
+          planId: result.planId,
+          nodeType: 'Character',
+          nodeId: 'vendor_npc',
+          op: 'ADD',
+          fields: { name: 'Paco the Vendor', role: 'vendor' },
+          createdAt: new Date().toISOString(),
+        }],
+        deltaEdges: [],
+        usage: null,
+      })) as never;
+
+      const { GraphIntakeService } = await import('../../src/services/GraphIntakeService.js');
+      const service = new GraphIntakeService();
+      const amend = await service.amendPlanWithInstruction(
+        result.planId,
+        'add a vendor NPC named Paco to Mercado Popular',
+      );
+
+      expect(amend.appliedCount).toBe(1);
+      // A genuinely new entity increases the delta count.
+      expect(amend.deltaCount).toBe(2);
+      const deltas = await getDeltasForPlan(result.planId);
+      expect(deltas.some((d) => d.nodeId === 'vendor_npc' && d.nodeType === 'Character')).toBe(true);
+      // The original delta is untouched.
+      expect(deltas.some((d) => d.nodeId === DIEGO_SLUG)).toBe(true);
+    } finally {
+      chatService.chatService.propose = originalPropose;
+    }
+  }, 30000);
+
+  test('a free-form instruction remakes a plan-local entity in place (MERGE, deltaCount unchanged)', async () => {
+    if (!neo4jLive) return;
+    const result = await intakeWith(
+      [
+        {
+          id: DIEGO_ADD,
+          planId: '',
+          nodeType: 'Character',
+          nodeId: DIEGO_SLUG,
+          op: 'ADD',
+          fields: { name: 'Diego el Mock', role: 'bartender' },
+          createdAt: new Date().toISOString(),
+        },
+      ],
+      [],
+    );
+    expect(await getDeltasForPlan(result.planId)).toHaveLength(1);
+
+    // Stub propose to return a MODIFY reusing the plan-local nodeId — the amend
+    // path must MERGE this in place (partitionDeltas now accepts a same-plan
+    // :ContentDelta base), so deltaCount stays at 1 and the fields update.
+    const chatService = await import('../../src/services/ChatService.js');
+    const originalPropose = chatService.chatService.propose;
+    try {
+      chatService.chatService.propose = jest.fn(async () => ({
+        reply: 'Mock: remake Diego',
+        deltas: [{
+          id: 'd3200012-0000-4000-8000-000000000012',
+          planId: result.planId,
+          nodeType: 'Character',
+          nodeId: DIEGO_SLUG,
+          op: 'MODIFY',
+          fields: { name: 'Diego el Mock', role: 'bouncer' },
+          createdAt: new Date().toISOString(),
+        }],
+        deltaEdges: [],
+        usage: null,
+      })) as never;
+
+      const { GraphIntakeService } = await import('../../src/services/GraphIntakeService.js');
+      const service = new GraphIntakeService();
+      const amend = await service.amendPlanWithInstruction(
+        result.planId,
+        'rewrite Diego: make him a bouncer',
+      );
+
+      expect(amend.appliedCount).toBe(1);
+      // Remake merges in place — no duplicate delta created (AC2).
+      expect(amend.deltaCount).toBe(1);
+      const deltas = await getDeltasForPlan(result.planId);
+      expect(deltas).toHaveLength(1);
+      expect(deltas[0].nodeId).toBe(DIEGO_SLUG);
+      expect(deltas[0].op).toBe('MODIFY');
+      expect(deltas[0].fields.role).toBe('bouncer');
+    } finally {
+      chatService.chatService.propose = originalPropose;
+    }
+  }, 30000);
+});

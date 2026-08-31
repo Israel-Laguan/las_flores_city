@@ -48,6 +48,7 @@ import { applyDelta, applyDeltaEdge, getDeltasForPlan, getDeltaEdgesForPlan, cle
 import { isNeo4jEnabled, runNeo4jTransaction } from './Neo4jClient.js';
 import { EntityResolutionService } from './EntityResolutionService.js';
 import { Neo4jCandidateSource } from './Neo4jCandidateSource.js';
+import { PlanAwareCandidateSource } from './PlanAwareCandidateSource.js';
 import { aiCritiqueService } from './AICritiqueService.js';
 import { createLLMProvider } from './LLMService.js';
 import { templatedSuggestion } from './llmPromptsIntakeDiagnostics.js';
@@ -93,6 +94,21 @@ export interface CreatePlanFromDescriptionResult {
   notes: IntakeNote[];
   usage: LLMUsage | null;
   timestamp: string;
+}
+
+export interface AmendInstructionResult {
+  planId: string;
+  status: string;
+  actor?: { id: string; email: string; role: string };
+  instruction: string;
+  appliedCount: number;
+  droppedCount: number;
+  reply: string;
+  deltaCount: number;
+  edgeCount: number;
+  notes: IntakeNote[];
+  reviewUrl?: string;
+  next: string;
 }
 
 /** Reject DELETE deltas before synthesis — the legacy ContentPlanItem contract
@@ -946,6 +962,85 @@ export class GraphIntakeService {
     }
 
     return notes;
+  }
+
+  /**
+   * M50 Part 2 (numeral 1) — apply a free-form, unscoped instruction against an
+   * existing plan. Re-enters the propose→apply loop targeting the existing planId
+   * (no annotation anchor): the LLM sees the plan's current deltas so a remake can
+   * reuse a plan-local nodeId and MERGE in place, while a genuinely new entity is
+   * added with a fresh nodeId. New deltas get the standard `_resolution` treatment
+   * via a plan-aware candidate source. Stops at `proposed` — never stages, migrates,
+   * or solidifies.
+   */
+  async amendPlanWithInstruction(
+    planId: string,
+    instruction: string,
+    createdBy?: string,
+    adminUrl?: string,
+  ): Promise<AmendInstructionResult> {
+    if (!instruction || typeof instruction !== 'string' || instruction.trim().length === 0) {
+      throw new GraphIntakeValidationError('Instruction is required and must be a non-empty string');
+    }
+    if (!isNeo4jEnabled()) {
+      throw new GraphIntakeDisabledError('Neo4j authoring graph is disabled — cannot amend graph-based plan. Enable NEO4J_ENABLED first.');
+    }
+
+    const planRow = await queryOLTP<{ status: string }>(
+      `SELECT status FROM content_plans WHERE id = $1`,
+      [planId],
+    );
+    if (planRow.rows.length === 0) {
+      throw new GraphIntakeValidationError(`Plan ${planId} not found`);
+    }
+    const status = planRow.rows[0].status;
+
+    const existing = await this.getPlanDeltas(planId);
+
+    const proposal = await chatService.propose(
+      planId,
+      [{ role: 'user', content: instruction }],
+      undefined,
+      undefined,
+      existing.deltas,
+    );
+
+    // Plan-aware resolution: let references in the new deltas resolve against
+    // both canonical nodes and the plan's own pending deltas, so a remake that
+    // references a plan-local entity is not flagged ambiguous/unresolved.
+    let resolvedDeltas = proposal.deltas;
+    try {
+      const resolver = new EntityResolutionService(new PlanAwareCandidateSource(planId));
+      resolvedDeltas = await resolver.resolvePlanDeltas(proposal.deltas);
+    } catch (resErr) {
+      console.warn('[graph-intake] entity resolution failed during instruction amend; skipping _resolution attachment:', (resErr as Error).message);
+    }
+
+    // applyDeltas is the fail-open write gate: a MODIFY/DELETE against a
+    // same-plan :ContentDelta now MERGEs in place (partitionDeltas accepts it);
+    // a genuinely missing base is dropped and reported as a diagnostic.
+    const result = await chatService.applyDeltas(planId, resolvedDeltas, proposal.deltaEdges);
+
+    await queryOLTP(`UPDATE content_plans SET updated_at = now() WHERE id = $1`, [planId]);
+
+    const graph = await this.getPlanDeltas(planId);
+    const notes = await this.triageAndAnnotate(planId, graph.deltas, result.diagnostics);
+
+    return {
+      planId,
+      status,
+      instruction,
+      appliedCount: result.appliedCount,
+      droppedCount: result.diagnostics.length,
+      reply: proposal.reply,
+      deltaCount: graph.deltas.length,
+      edgeCount: graph.edges.length,
+      notes,
+      reviewUrl: adminUrl ?? process.env.ADMIN_URL ?? 'http://localhost:3002',
+      next: notes.length > 0
+        ? 'Some references are still unresolved — reply to the remaining notes below.'
+        : 'Instruction applied. Review the plan before invoking approval/solidify; no content files or canonical rows were changed.',
+    };
   }
 
   /**

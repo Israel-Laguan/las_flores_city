@@ -97,6 +97,8 @@ export interface LLMProvider {
     context: ExistingContentContext,
     conflict?: ConflictChatContext,
     planDescription?: string,
+    /** Plan's existing deltas, so a remake can reuse a plan-local nodeId instead of minting a new one. */
+    existingDeltas?: GraphDelta[],
   ): Promise<{ reply: string; deltas: GraphDelta[]; deltaEdges: GraphDeltaEdge[]; usage: LLMUsage | null }>;
 
   /**

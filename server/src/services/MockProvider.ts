@@ -254,6 +254,7 @@ ${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
     _context: ExistingContentContext,
     conflict?: ConflictChatContext,
     _planDescription?: string,
+    existingDeltas?: GraphDelta[],
   ): Promise<{ reply: string; deltas: GraphDelta[]; deltaEdges: GraphDeltaEdge[]; usage: LLMUsage | null }> {
     const ev = conflict?.evidence?.[0];
     let deltas: GraphDelta[];
@@ -269,6 +270,44 @@ ${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
         },
         createdAt: new Date().toISOString(),
       })];
+    } else if (existingDeltas && existingDeltas.length > 0) {
+      // Deterministic remake: if a plan-local delta's name fuzzy-includes a token
+      // from the instruction, MODIFY that delta in place (reuse its nodeId so
+      // applyDelta MERGEs). Otherwise ADD a fresh entity. This exercises the
+      // unscoped amend path offline without a real LLM.
+      const instr = (messages[messages.length - 1]?.content ?? '').toLowerCase();
+      const match = existingDeltas.find((d) => {
+        const name = ((d.fields as Record<string, any> | undefined)?.name ?? '').toLowerCase();
+        return name.length > 0 && instr.includes(name);
+      });
+      if (match) {
+        const mergedFields = { ...(match.fields as Record<string, any>) };
+        mergedFields.role = mergedFields.role ? `${mergedFields.role}-remade` : 'remade';
+        mergedFields.description = `Mock-remade: ${mergedFields.description ?? 'rewritten per instruction'}.`;
+        deltas = [GraphDeltaSchema.parse({
+          id: crypto.randomUUID(),
+          planId,
+          nodeType: mockNodeType(match.nodeType) as GraphDelta['nodeType'],
+          nodeId: match.nodeId,
+          op: 'MODIFY',
+          fields: mergedFields,
+          createdAt: new Date().toISOString(),
+        })];
+      } else {
+        deltas = [GraphDeltaSchema.parse({
+          id: crypto.randomUUID(),
+          planId,
+          nodeType: 'Character',
+          nodeId: 'vendor_npc',
+          op: 'ADD',
+          fields: {
+            name: 'Paco the Vendor',
+            description: 'A deterministic mock proposal: add a new character per the free-form instruction.',
+            role: 'vendor',
+          },
+          createdAt: new Date().toISOString(),
+        })];
+      }
     } else {
       deltas = [GraphDeltaSchema.parse({
         id: crypto.randomUUID(),

@@ -283,12 +283,64 @@ describe('plan:amend CLI argument parsing', () => {
       '--user-email', 'admin@example.com',
     ])).toThrow(/not both/);
   });
+
+  it('parses a planId with --instruction (unscoped free-form directive)', () => {
+    const opts = parseAmendArgs([
+      'node', 'run_plan_amend.ts', PLAN_ID,
+      '--instruction', 'add a vendor NPC to Mercado Popular',
+    ]);
+    expect(opts.planId).toBe(PLAN_ID);
+    expect(opts.instruction).toBe('add a vendor NPC to Mercado Popular');
+    expect(opts.annotations).toEqual([]);
+  });
+
+  it('trims surrounding whitespace from --instruction', () => {
+    const opts = parseAmendArgs([
+      'node', 'run_plan_amend.ts', PLAN_ID,
+      '--instruction', '  rewrite Scene X entirely  ',
+    ]);
+    expect(opts.instruction).toBe('rewrite Scene X entirely');
+  });
+
+  it('accepts --instruction as an alternative to --annotation', () => {
+    expect(() => parseAmendArgs(['node', 'run_plan_amend.ts', PLAN_ID]))
+      .toThrow(/At least one --annotation <id>:<comment> or --instruction/);
+  });
+
+  it('throws when --instruction is empty', () => {
+    expect(() => parseAmendArgs([
+      'node', 'run_plan_amend.ts', PLAN_ID, '--instruction', '   ',
+    ])).toThrow(/non-empty string/);
+  });
+
+  it('throws when --instruction is missing a value', () => {
+    expect(() => parseAmendArgs([
+      'node', 'run_plan_amend.ts', PLAN_ID, '--instruction',
+    ])).toThrow(/non-empty string/);
+  });
+
+  it('rejects combining --instruction with --annotation', () => {
+    expect(() => parseAmendArgs([
+      'node', 'run_plan_amend.ts', PLAN_ID,
+      '--annotation', `${ANNOTATION_ID}:fix it`,
+      '--instruction', 'add a vendor NPC',
+    ])).toThrow(/cannot be combined/);
+  });
+
+  it('rejects more than one --instruction', () => {
+    expect(() => parseAmendArgs([
+      'node', 'run_plan_amend.ts', PLAN_ID,
+      '--instruction', 'first',
+      '--instruction', 'second',
+    ])).toThrow(/Only one --instruction/);
+  });
 });
 
 describe('plan:amend usage', () => {
   it('documents the annotation flag and actor options', () => {
     const text = amendUsage();
     expect(text).toContain('--annotation');
+    expect(text).toContain('--instruction');
     expect(text).toContain('--user-id');
     expect(text).toContain('--user-email');
     expect(text).toContain('--admin-url');
