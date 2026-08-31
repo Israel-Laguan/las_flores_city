@@ -120,7 +120,12 @@ export const ContentPlanSchema = z.object({
   description: z.string(),
   items: z.array(ContentPlanItemSchema),
   links: z.array(ContentLinkSchema).default([]),
-  status: z.enum(['draft', 'proposed', 'approved', 'staged', 'migrated', 'verified', 'failed', 'pending', 'staging', 'migrating', 'verifying']).default('draft'),
+    // `rejected` is a soft terminal state: the plan row (and its plan_json/plan_id) are
+  // preserved for audit, but its graph deltas are pruned and open intake annotations
+  // are marked addressed. See M50 Part 2 (reject/delete). A rejected plan is NOT a
+  // real proposal being declined silently — it stays visible in `plan:list` / `plan:get`
+  // as a declined proposal with its rationale captured in critique annotations.
+  status: z.enum(['draft', 'proposed', 'approved', 'staged', 'migrated', 'verified', 'failed', 'pending', 'staging', 'migrating', 'verifying', 'rejected']).default('draft'),
   _meta: ContentPlanMetaSchema,
   // M50: non-blocking semantic consistency report attached by PlanConsistencyChecker
   // at approve time. The materialize path ignores it; the review UI surfaces it.

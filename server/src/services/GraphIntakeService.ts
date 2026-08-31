@@ -45,8 +45,9 @@ import { chatService } from './ChatService.js';
 import { emitAdminEvent } from './AdminEventEmitter.js';
 import { contentPlanService } from './ContentPlanService.js';
 import { resolveContentDir } from './StoryBuilderLore.js';
-import { applyDelta, applyDeltaEdge, getDeltasForPlan, getDeltaEdgesForPlan, clearDeltasForPlan, partitionDeltas, partitionDeltaEdges, deltaKey, normalizeKeyComponent, resolveEdgeTargetNameValue, getPlanDeltaRevisionWithEdges } from './GraphDeltaService.js';
+import { applyDelta, applyDeltaEdge, getDeltasForPlan, getDeltaEdgesForPlan, clearDeltasForPlan, countDeltasForPlan, partitionDeltas, partitionDeltaEdges, deltaKey, normalizeKeyComponent, resolveEdgeTargetNameValue, getPlanDeltaRevisionWithEdges } from './GraphDeltaService.js';
 import { isNeo4jEnabled, runNeo4jTransaction, runNeo4jQuery } from './Neo4jClient.js';
+import { reviewUrl } from '../planIntakeCore.js';
 import { EntityResolutionService } from './EntityResolutionService.js';
 import { Neo4jCandidateSource } from './Neo4jCandidateSource.js';
 import { PlanAwareCandidateSource } from './PlanAwareCandidateSource.js';
@@ -145,6 +146,64 @@ export interface PlanDiffResult {
   planId: string;
   deltas: PlanDeltaDiff[];
   edges: GraphDeltaEdge[];
+}
+
+/**
+ * Full resumable state of a plan (M50 Part 2 `plan:get`). Read-only: it never
+ * mutates the plan or its deltas — it is the "what was I doing?" surface for a
+ * plan created in a prior process/terminal.
+ */
+export interface PlanState {
+  planId: string;
+  status: string;
+  created_by: string | null;
+  description: string | null;
+  created_at: string;
+  updated_at: string;
+  deltaCount: number;
+  edgeCount: number;
+  deltas: GraphDelta[];
+  edges: GraphDeltaEdge[];
+  /** Full canonical-before vs proposed-after diff (prose + fields). */
+  diff: PlanDeltaDiff[];
+  /** Open intake notes + `IntakeDiagnostic` annotations the author can reply to. */
+  openAnnotations: OpenAnnotationInfo[];
+  reviewUrl: string;
+}
+
+/**
+ * A critique annotation scoped to intake, surfaced in `plan:get`/`plan:diff`.
+ * This is the advisory surface — the approve gate does not block on `open` notes
+ * (the graph advises), the admin decides.
+ */
+export interface OpenAnnotationInfo {
+  id: string;
+  type: string;
+  relatedField?: string;
+  relatedNodeId?: string;
+  status: 'open' | 'addressed' | 'dismissed';
+  suggestion?: string | null;
+  createdAt: string;
+}
+
+/** Lightweight listing entry for `plan:list`. */
+export interface PlanListing {
+  id: string;
+  status: string;
+  created_by: string | null;
+  creatorEmail?: string | null;
+  description: string | null;
+  created_at: string;
+  updated_at: string;
+  deltaCount: number;
+}
+
+/** Result of a plan lifecycle op (reject/delete) for CLI rendering. */
+export interface PlanLifecycleResult {
+  planId: string;
+  status: string;
+  deltaPruned: boolean;
+  annotationCount: number;
 }
 
 /** Reject DELETE deltas before synthesis — the legacy ContentPlanItem contract
@@ -1298,7 +1357,7 @@ export class GraphIntakeService {
     return { deltas, edges };
   }
 
-  /**
+    /**
    * Delete a graph-based plan and its associated deltas.
    */
   async discardPlan(planId: string): Promise<void> {
@@ -1314,7 +1373,229 @@ export class GraphIntakeService {
   }
 
   /**
-   * Synthesize a legacy ContentPlan from a plan's deltas+edges.
+   * Soft-terminal state set used by `plan:delete` (and checked by `plan:reject`)
+   * to refuse destroying a plan that has already entered the materialize
+   * pipeline. Only plans NOT in this set are deletable; `rejected` is explicitly
+   * deletable (re-drafting a declined plan from scratch).
+   */
+  private static readonly IMMUTABLE_STATUSES = new Set([
+    'approved', 'staged', 'migrated', 'verified',
+  ]);
+
+  /**
+   * Soft-reject a plan (`plan:reject`): keep the row (status = 'rejected', still
+   * visible in `plan:get`/`plan:list` for audit), prune its authoring-graph
+   * deltas/edges, and close open intake annotations. Never touches canonical
+   * content. Graph pruning is a no-op (but the status/annotation flip still
+   * applies) when Neo4j is disabled.
+   */
+  async rejectPlan(planId: string): Promise<PlanLifecycleResult> {
+    const row = await queryOLTP<{ id: string; status: string }>(
+      'SELECT id, status FROM content_plans WHERE id = $1',
+      [planId],
+    );
+    if (row.rows.length === 0) {
+      throw new GraphIntakeValidationError(`Plan not found: ${planId}`);
+    }
+    const status = row.rows[0].status;
+    if (status === 'rejected') {
+      throw new GraphIntakeValidationError(`Plan ${planId} is already rejected`);
+    }
+    if (GraphIntakeService.IMMUTABLE_STATUSES.has(status)) {
+      throw new GraphIntakeValidationError(
+        `Plan ${planId} cannot be rejected — status '${status}' is past the point of rejection. `
+          + `Only proposed/rejected plans may be rejected; materialize-state plans require a rollback path (future M).`,
+      );
+    }
+
+    // Count open intake annotations, then close them. Rejection closes them:
+    // the rationale lives in critique annotations, not the graph.
+    const countRow = await queryOLTP<{ count: string }>(
+      `SELECT COUNT(*)::text AS count FROM critique_annotations
+       WHERE plan_id = $1 AND scope = 'intake' AND status = 'open'`,
+      [planId],
+    );
+    const annotationCount = countRow.rows.length > 0 ? Number(countRow.rows[0].count) : 0;
+    if (annotationCount > 0) {
+      await queryOLTP(
+        `UPDATE critique_annotations SET status = 'addressed'
+         WHERE plan_id = $1 AND scope = 'intake' AND status = 'open'`,
+        [planId],
+      );
+    }
+
+    // Prune this plan's graph deltas. Best-effort when Neo4j is disabled.
+    let deltaPruned = false;
+    if (isNeo4jEnabled()) {
+      await clearDeltasForPlan(planId);
+      deltaPruned = true;
+    }
+
+    await queryOLTP(
+      `UPDATE content_plans SET status = 'rejected', updated_at = NOW() WHERE id = $1`,
+      [planId],
+    );
+    emitAdminEvent('plan_rejected', { planId }, planId);
+
+        return { planId, status: 'rejected', deltaPruned, annotationCount };
+  }
+
+  /**
+   * Hard-delete a plan (`plan:delete`): remove the content_plans row, its graph
+   * deltas/edges, and its scope='intake' critique annotations. Irreversible —
+   * the CLI refuses to run without `--yes` and refuses plans already in the
+   * materialize pipeline. Canonical content is never touched (a plan's deltas
+   * are plan-scoped, never canonical).
+   */
+  async deletePlan(planId: string): Promise<PlanLifecycleResult> {
+    const row = await queryOLTP<{ id: string; status: string }>(
+      'SELECT id, status FROM content_plans WHERE id = $1',
+      [planId],
+    );
+    if (row.rows.length === 0) {
+      throw new GraphIntakeValidationError(`Plan not found: ${planId}`);
+    }
+    const status = row.rows[0].status;
+    if (GraphIntakeService.IMMUTABLE_STATUSES.has(status)) {
+      throw new GraphIntakeValidationError(
+        `Plan ${planId} cannot be deleted — status '${status}' is past the point of deletion. `
+          + `Only proposed/rejected plans are deletable.`,
+      );
+    }
+
+    // Order: prune the graph first (the row is the join key), then annotations,
+    // then the plan row. Each step is independent; a partial wipe leaves no
+    // dangling canonical references because plan-scoped deltas are never read
+    // without the plan row that scopes them.
+    if (isNeo4jEnabled()) {
+      await clearDeltasForPlan(planId);
+    }
+    const ann = await queryOLTP<{ id: string }>(
+      `DELETE FROM critique_annotations WHERE plan_id = $1 AND scope = 'intake' RETURNING id`,
+      [planId],
+    );
+    const annotationCount = ann.rows.length;
+
+    await queryOLTP('DELETE FROM content_plans WHERE id = $1', [planId]);
+    emitAdminEvent('plan_deleted', { planId, status }, planId);
+
+    return { planId, status, deltaPruned: isNeo4jEnabled(), annotationCount };
+  }
+
+  /**
+   * Full resumable state of a plan (`plan:get`). Read-only — never mutates the
+   * plan or its deltas. Surfaces the canonical-before/proposed-after diff plus
+   * the open intake annotations an author can reply to.
+   */
+  async getPlanState(planId: string): Promise<PlanState | null> {
+    const row = await queryOLTP<{
+      id: string; status: string; created_by: string | null;
+      description: string | null; created_at: string; updated_at: string;
+    }>(
+      `SELECT id, status, created_by, description, created_at, updated_at
+       FROM content_plans WHERE id = $1`,
+      [planId],
+    );
+    if (row.rows.length === 0) {
+      return null;
+    }
+    const plan = row.rows[0];
+    const { deltas, edges } = await this.getPlanDeltas(planId);
+    const diff = await this.buildPlanDiff(planId);
+    const openAnnotations = await this.getPlanOpenAnnotations(planId);
+
+    return {
+      planId: plan.id,
+      status: plan.status,
+      created_by: plan.created_by,
+      description: plan.description,
+      created_at: plan.created_at,
+      updated_at: plan.updated_at,
+      deltaCount: deltas.length,
+      edgeCount: edges.length,
+      deltas,
+      edges,
+      diff,
+      openAnnotations,
+      reviewUrl: reviewUrl(process.env.ADMIN_URL ?? 'http://localhost:3002', planId),
+    };
+  }
+
+  /**
+   * List plans with optional filters (`plan:list`). Defaults to non-materialized
+   * plans (proposed + rejected) so a routine "what's open" check isn't buried
+   * under history. `deltaCount` is computed from Neo4j per plan; 0 when disabled.
+   */
+  async listPlans(opts: { status?: string; createdBy?: string; since?: string } = {}): Promise<PlanListing[]> {
+    const where: string[] = [];
+    const params: unknown[] = [];
+    let i = 1;
+    if (opts.status) {
+      where.push(`status = $${i}`);
+      params.push(opts.status);
+      i += 1;
+    } else {
+      where.push(`status IN ('proposed', 'rejected')`);
+    }
+    if (opts.createdBy) {
+      where.push(`created_by = $${i}`);
+      params.push(opts.createdBy);
+      i += 1;
+    }
+    if (opts.since) {
+      where.push(`created_at >= $${i}::timestamptz`);
+      params.push(opts.since);
+      i += 1;
+    }
+    const rows = await queryOLTP<{
+      id: string; status: string; created_by: string | null;
+      description: string | null; created_at: string; updated_at: string;
+    }>(
+      `SELECT id, status, created_by, description, created_at, updated_at
+       FROM content_plans${where.length ? ` WHERE ${where.join(' AND ')}` : ''}
+       ORDER BY created_at DESC`,
+      params,
+    );
+
+    return Promise.all(rows.rows.map(async (r) => ({
+      id: r.id,
+      status: r.status,
+      created_by: r.created_by,
+      description: r.description,
+      created_at: r.created_at,
+      updated_at: r.updated_at,
+      deltaCount: await countDeltasForPlan(r.id),
+    })));
+  }
+
+  /**
+   * Open intake annotations for a plan, used by `plan:get`/`plan:diff` so an
+   * author can see what still needs replying to.
+   */
+  private async getPlanOpenAnnotations(planId: string): Promise<OpenAnnotationInfo[]> {
+    const rows = await queryOLTP<{
+      id: string; type: string; related_field: string | null;
+      related_node_id: string | null; status: string; suggestion: string | null;
+      created_at: string;
+    }>(
+      `SELECT id, type, related_field, related_node_id, status, suggestion, created_at
+       FROM critique_annotations
+       WHERE plan_id = $1 AND scope = 'intake' AND status = 'open'
+       ORDER BY created_at ASC`,
+      [planId],
+    );
+    return rows.rows.map((r) => ({
+      id: r.id,
+      type: r.type,
+      relatedField: r.related_field ?? undefined,
+      relatedNodeId: r.related_node_id ?? undefined,
+      status: r.status as 'open' | 'addressed' | 'dismissed',
+      suggestion: r.suggestion,
+      createdAt: r.created_at,
+    }));
+  }
+
+  /** Synthesize a legacy ContentPlan from a plan's deltas+edges.
    * This allows the legacy materialize pipeline (stagePlan → migrateContent)
    * to consume graph-based plans.
    */
