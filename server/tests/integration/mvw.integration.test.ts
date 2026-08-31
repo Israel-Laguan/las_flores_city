@@ -14,7 +14,6 @@ import pg from 'pg';
 import express from 'express';
 import fs from 'fs';
 import path from 'path';
-import { queryOLTP } from '@las-flores/infra';
 import { withSchemaLock } from '../helpers/schemaLock.js';
 import { authRouter } from '../../src/routes/auth.js';
 import { playerRouter } from '../../src/routes/player.js';

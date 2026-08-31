@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Integration test — StoryBuilderMigration partial-failure audit coverage (M24).
  *

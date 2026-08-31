@@ -1,8 +1,8 @@
+/* eslint-disable max-lines-per-function */
 import { describe, it, expect, beforeAll, beforeEach, afterAll } from '@jest/globals';
 import fs from 'fs';
 import path from 'path';
-import { queryOLTP, closeConnections, deleteCache } from '@las-flores/infra';
-import { closeRedis } from '@las-flores/infra';
+import { queryOLTP, deleteCache } from '@las-flores/infra';
 import { withSchemaLock } from '../helpers/schemaLock.js';
 import {
   startJobRun,

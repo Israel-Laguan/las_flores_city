@@ -1,6 +1,8 @@
-import { queryOLTP, withOLTPTransaction, closeConnections } from '@las-flores/infra';
+/* eslint-disable max-lines-per-function */
+/* eslint-disable max-lines */
+import { queryOLTP, closeConnections } from '@las-flores/infra';
 import { closeRedis } from '@las-flores/infra';
-import { computeRelationshipDecay, RELATIONSHIP_STAT_PREFIXES } from '../../src/workers/RelationshipDecayWorker.js';
+import { computeRelationshipDecay } from '../../src/workers/RelationshipDecayWorker.js';
 import { choicePassesFilters, metadataConditionsPass, PlayerConditionState } from '@las-flores/shared';
 import { ADEYEMI_ENDINGS as ACT_5_ENDINGS } from '../fixtures/adeyemi_endings.js';
 import fs from 'fs';

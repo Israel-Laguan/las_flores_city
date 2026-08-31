@@ -1,8 +1,8 @@
+/* eslint-disable max-lines-per-function */
 import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 import { queryOLTP, closeConnections } from '@las-flores/infra';
 import { closeRedis } from '@las-flores/infra';
 import {
-  relationshipPassesFilters,
   derivePosture,
 } from '@las-flores/shared';
 import { filterChoices } from '../../src/routes/dialogue-helpers';

@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
+/* eslint-disable max-lines-per-function */
+import { describe, it, expect, afterEach } from '@jest/globals';
 import {
   STAGE_PRIORITY,
   getEnv,

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { describe, it, expect } from '@jest/globals';
 import type { AssetNeed } from '@las-flores/shared';
 import { transitionAssetNeed, markDrafted, markChosen, markPublished, markGenerating } from '../../src/services/AssetNeedsService.js';

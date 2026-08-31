@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Lore Path Validation Tests
  * 
@@ -24,7 +25,7 @@ beforeAll(async () => {
 afterAll(async () => {
   try {
     await fs.rm(path.dirname(testYamlDir), { recursive: true, force: true });
-  } catch (e: any) {}
+  } catch (e: any) { void e; }
 });
 
 describe('Lore Path Validation', () => {

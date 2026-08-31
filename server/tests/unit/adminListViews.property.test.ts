@@ -1,3 +1,5 @@
+/* eslint-disable max-lines-per-function */
+/* eslint-disable max-lines */
 import { describe, test, expect, jest, beforeEach } from '@jest/globals';
 import fc from 'fast-check';
 import { stringOf } from './__utils__/fastCheckV4';
@@ -267,7 +269,6 @@ describe('Property 1: Pagination slice correctness', () => {
           pageSizeArb(),
           async (dataset, pageSize) => {
             const total = dataset.length;
-            const maxPage = Math.ceil(total / pageSize);
             const page = fc.sample(pageArb(total, pageSize), 1)[0];
 
             jest.clearAllMocks();

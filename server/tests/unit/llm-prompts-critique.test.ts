@@ -6,7 +6,7 @@
  */
 import { describe, it, expect } from '@jest/globals';
 import type { ContentPlan } from '@las-flores/shared';
-import type { ExistingContentContext, CritiqueScopeType } from '../../src/services/types/LLMTypes.js';
+import type { ExistingContentContext } from '../../src/services/types/LLMTypes.js';
 import { buildSemanticCritiquePrompt } from '../../src/services/LLMPrompts.js';
 
 function makePlan(overrides: Partial<ContentPlan> = {}): ContentPlan {

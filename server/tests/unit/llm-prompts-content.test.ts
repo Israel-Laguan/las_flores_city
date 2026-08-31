@@ -4,7 +4,7 @@ import {
   buildRefinementPrompt,
   buildItemScopedRefinementPrompt,
 } from '../../src/services/LLMPrompts.js';
-import type { ContentPlan, ContentPlanItem, ExistingContentContext } from '@las-flores/shared';
+import type { ContentPlan, ExistingContentContext } from '@las-flores/shared';
 
 describe('LLMPrompts — content assertions (GAP 5)', () => {
   const emptyContext: ExistingContentContext = {

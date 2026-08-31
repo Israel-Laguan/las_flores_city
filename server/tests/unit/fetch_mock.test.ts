@@ -1,4 +1,4 @@
-import { test, expect, beforeAll, afterAll } from '@jest/globals';
+import { test, expect } from '@jest/globals';
 
 test('mock fetch works', async () => {
   const originalFetch = global.fetch;

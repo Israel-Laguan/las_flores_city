@@ -1,4 +1,5 @@
-import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
+/* eslint-disable max-lines-per-function */
+import { describe, it, expect, jest, afterEach } from '@jest/globals';
 import fc from 'fast-check';
 import { stringOf } from './__utils__/fastCheckV4';
 import path from 'node:path';
@@ -45,21 +46,6 @@ function makeFakeFileDirent(name: string, parentPath: string): fs.Dirent {
   } as unknown as fs.Dirent;
 }
 
-function makeFakeDirDirent(name: string, parentPath: string): fs.Dirent {
-  return {
-    name,
-    path: parentPath,
-    parentPath,
-    isFile: () => false,
-    isDirectory: () => true,
-    isSymbolicLink: () => false,
-    isBlockDevice: () => false,
-    isCharacterDevice: () => false,
-    isFIFO: () => false,
-    isSocket: () => false,
-  } as unknown as fs.Dirent;
-}
-
 // ── Minimal valid .prompt.md content ─────────────────────────
 
 function makePromptContent(name: string): string {
@@ -83,7 +69,7 @@ interface VirtualFS {
 
 function buildVirtualFS(
   rootFiles: Array<{ root: string; filenames: string[] }>,
-  absentRoots: string[],
+  _absentRoots: string[],
 ): VirtualFS {
   const existingRoots = new Set<string>();
   const fileContents = new Map<string, string>();
@@ -154,12 +140,8 @@ const rootDistributionArb = (): fc.Arbitrary<{
 
 // ── Spies ─────────────────────────────────────────────────────
 
-let accessSpy: ReturnType<typeof jest.spyOn>;
-let readdirSpy: ReturnType<typeof jest.spyOn>;
-let readFileSpy: ReturnType<typeof jest.spyOn>;
-
 function installMocks(vfs: VirtualFS): void {
-  accessSpy = jest
+  jest
     .spyOn(fs.promises, 'access')
     .mockImplementation(async (p) => {
       const resolved = String(p);
@@ -169,7 +151,7 @@ function installMocks(vfs: VirtualFS): void {
       // Exists — resolve normally
     });
 
-  readdirSpy = jest
+  jest
     .spyOn(fs.promises, 'readdir')
     .mockImplementation(async (p) => {
       const dir = String(p);
@@ -180,7 +162,7 @@ function installMocks(vfs: VirtualFS): void {
       return entries as any;
     });
 
-  readFileSpy = jest
+  jest
     .spyOn(fs.promises, 'readFile')
     .mockImplementation(async (p) => {
       const filePath = String(p);

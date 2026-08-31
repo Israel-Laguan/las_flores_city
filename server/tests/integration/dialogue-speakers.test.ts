@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { queryOLTP, closeConnections } from '@las-flores/infra';
 import { invalidatePattern, closeRedis } from '@las-flores/infra';
 import express from 'express';

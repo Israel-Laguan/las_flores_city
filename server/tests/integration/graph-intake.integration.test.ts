@@ -1,3 +1,5 @@
+/* eslint-disable max-lines-per-function */
+/* eslint-disable max-lines */
 import '../helpers/enableTestNeo4j.js';
 
 import { beforeAll, afterAll, afterEach, describe, test, expect, jest } from '@jest/globals';

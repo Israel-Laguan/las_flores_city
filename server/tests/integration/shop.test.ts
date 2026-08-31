@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Shop / MyMe Marketplace Integration Tests
  *

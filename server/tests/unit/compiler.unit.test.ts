@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { compileTree } from '../../src/content/compiler.js';
 import type { DialogueNode } from '@las-flores/shared';
 

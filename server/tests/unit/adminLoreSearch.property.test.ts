@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { describe, it, expect } from '@jest/globals';
 import fc from 'fast-check';
 import { stringOf } from './__utils__/fastCheckV4';
@@ -47,13 +48,7 @@ const matchingFileArb = (query: string): fc.Arbitrary<LoreFileRecord> =>
   }));
 
 /** Generates a single LoreFileRecord whose content does NOT contain the query. */
-const nonMatchingFileArb = (query: string): fc.Arbitrary<LoreFileRecord> =>
-  fc.tuple(
-    relativePathArb(),
-    alphaArb(1, 80),
-  ).filter(([, content]) =>
-    content.toLowerCase().indexOf(query.toLowerCase()) === -1,
-  ).map(([relativePath, content]) => ({ relativePath, content }));
+// (nonMatchingFileArb intentionally removed — unused.)
 
 // ── Property 4: Lore search result correctness ───────────────
 //

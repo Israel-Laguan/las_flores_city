@@ -35,7 +35,6 @@ async function probeRows(
   table: 'dialogue_trees' | 'dialogue_chunks',
 ): Promise<{ checked: number; gaps: Gap[] }> {
   const isChunk = table === 'dialogue_chunks';
-  const idCol = isChunk ? 'id, chunk_key' : 'id, name';
   const sql = `SELECT id, content_url${isChunk ? ', chunk_key' : ', name'} FROM ${table}`;
   const result = await queryContent<{ id: string; content_url: string | null; chunk_key?: string; name?: string }>(sql);
 

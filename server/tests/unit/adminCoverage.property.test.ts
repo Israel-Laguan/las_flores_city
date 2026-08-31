@@ -1,6 +1,4 @@
 import { describe, it, expect } from '@jest/globals';
-import fc from 'fast-check';
-import { stringOf } from './__utils__/fastCheckV4';
 
 import {
   matchStoriesToMissions,
@@ -8,20 +6,6 @@ import {
   characterStem,
   normalizeName,
 } from '../../src/routes/admin-coverage.js';
-
-// ── Shared arbitraries ──────────────────────────────────
-
-const stemArb = (): fc.Arbitrary<string> =>
-  stringOf(
-    fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789_'.split('')),
-    { minLength: 1, maxLength: 30 },
-  );
-
-const storyLorePathArb = (): fc.Arbitrary<string> =>
-  stemArb().map(stem => `stories/${stem}.md`);
-
-const missionTitleArb = (): fc.Arbitrary<string> =>
-  stemArb().map(stem => stem.replace(/_/g, ' '));
 
 // ── figureStem helper spot-checks ───────────────────────
 

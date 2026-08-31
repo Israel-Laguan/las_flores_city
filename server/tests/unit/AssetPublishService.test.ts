@@ -139,7 +139,6 @@ describe('AssetPublishService', () => {
 
     await publishChosenDrafts(TEST_PLAN_ID);
 
-    // eslint-disable-next-line no-console
     console.log('SQLS', JSON.stringify(mockQueryOLTP.mock.calls.map((c: any[]) => String(c[0]))));
     const updateCalls = mockQueryOLTP.mock.calls.filter((c: any[]) => String(c[0]).includes('UPDATE'));
     expect(updateCalls.length).toBeGreaterThan(0);

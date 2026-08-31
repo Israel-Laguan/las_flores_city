@@ -51,7 +51,7 @@ const mockQuery = runNeo4jQuery as unknown as Mock<(c: string, p: Record<string,
 let mockTx: {
   run: Mock<(cypher: string, params?: Record<string, unknown>) => Promise<{ records: Array<{ toObject: () => Record<string, unknown> }> }>>;
   [k: string]: unknown;
-} = { run: jest.fn(async (cypher: string, _params?: Record<string, unknown>) => ({ records: [] })) };
+} = { run: jest.fn(async (_cypher: string, _params?: Record<string, unknown>) => ({ records: [] })) };
 
 const PLAN_ID = 'e0000000-e29b-41d4-a716-4466554400aa';
 const CHAR_ID = 'e0000000-e29b-41d4-a716-4466554400bb';
@@ -80,7 +80,7 @@ beforeEach(() => {
   mockEnabled.mockReturnValue(true);
   mockQuery.mockReset();
   mockQuery.mockReturnValue(Promise.resolve([]));
-  mockTx = { run: jest.fn(async (cypher: string, _params?: Record<string, unknown>) => ({ records: [] })) };
+  mockTx = { run: jest.fn(async (_cypher: string, _params?: Record<string, unknown>) => ({ records: [] })) };
 });
 
 describe('graph-delta schema', () => {

@@ -1,10 +1,11 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Admin Asset Endpoint Tests
  * 
  * Tests for the asset path resolution endpoint (GET /admin/asset)
  * Feature: story-builder-milestone-3
  */
-import { describe, test, expect, beforeAll, afterAll, beforeEach, jest } from '@jest/globals';
+import { describe, test, expect, beforeAll, afterAll, beforeEach } from '@jest/globals';
 import express from 'express';
 import type { Server } from 'node:http';
 import { jest as jestGlobals } from '@jest/globals';
@@ -63,7 +64,7 @@ afterAll(async () => {
     await new Promise<void>((resolve, reject) =>
       server.close((e) => (e ? reject(e) : resolve()))
     );
-  } catch (e: any) {}
+  } catch (e: any) { void e; }
   
   jestGlobals.restoreAllMocks();
 });
@@ -209,6 +210,7 @@ describe('Admin Asset Endpoint (GET /admin/asset)', () => {
         // We can't easily test this without setting up the full filesystem
         // But we can verify the getContentType function logic
         // This is more of a documentation of expected behavior
+        void tc;
         expect(true).toBe(true); // Placeholder - actual test would need more setup
       }
     });

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { describe, it, expect } from '@jest/globals';
 import type { ContentPlan } from '@las-flores/shared';
 import type { ExistingContentContext } from '../../src/services/types/LLMTypes.js';

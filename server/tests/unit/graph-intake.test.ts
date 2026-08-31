@@ -1,6 +1,8 @@
+/* eslint-disable max-lines-per-function */
+/* eslint-disable max-lines */
 import { describe, test, expect, jest, beforeEach, afterEach } from '@jest/globals';
 import type { Mock } from 'jest-mock';
-import { GraphDeltaSchema, GraphDeltaEdgeSchema, type GraphDelta, type GraphDeltaEdge, type ChatMessage } from '@las-flores/shared';
+import { type GraphDelta, type GraphDeltaEdge, type ChatMessage } from '@las-flores/shared';
 
 // M32 — mock all external seams for unit testing (AGENTS.md rule: unit tests
 // must never open real Neo4j/Redis/DB TCP connections).
@@ -86,9 +88,7 @@ jest.mock('../../src/services/ContentPlanService.js', () => ({
 
 import { isNeo4jEnabled, runNeo4jQuery, runNeo4jTransaction } from '../../src/services/Neo4jClient.js';
 import { queryOLTP } from '@las-flores/infra';
-import { chatService } from '../../src/services/ChatService.js';
 import { GraphIntakeService, GraphIntakeDisabledError, GraphIntakeValidationError, graphIntakeService } from '../../src/services/GraphIntakeService.js';
-import { applyDelta, applyDeltaEdge, getDeltasForPlan, getDeltaEdgesForPlan, clearDeltasForPlan, preflightDeltas, preflightDeltaEdges } from '../../src/services/GraphDeltaService.js';
 
 const mockNeo4jEnabled = isNeo4jEnabled as unknown as Mock<() => boolean>;
 const mockQueryOLTP = queryOLTP as unknown as Mock<(sql: string, params: any[]) => Promise<{ rows: any[] }>>;
@@ -97,7 +97,7 @@ const mockQueryOLTP = queryOLTP as unknown as Mock<(sql: string, params: any[]) 
 let mockTx: {
   run: Mock<(cypher: string, params?: Record<string, unknown>) => Promise<{ records: Array<{ toObject: () => Record<string, unknown> }> }>>;
   [k: string]: unknown;
-} = { run: jest.fn(async (cypher: string, _params?: Record<string, unknown>) => ({ records: [] })) };
+} = { run: jest.fn(async (_cypher: string, _params?: Record<string, unknown>) => ({ records: [] })) };
 
 const mockChatProposeFn = mockChatPropose as unknown as Mock<(planId: string, messages: ChatMessage[], context: any, conflict?: any, description?: string) => Promise<{ reply: string; deltas: GraphDelta[]; deltaEdges: GraphDeltaEdge[]; usage: any }>>;
 const mockGatherContextFn = mockGatherContext as unknown as Mock<() => Promise<any>>;

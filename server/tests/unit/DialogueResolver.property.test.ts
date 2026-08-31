@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { describe, it, expect, jest as jestGlobals, beforeEach } from '@jest/globals';
 import fc from 'fast-check';
 import { stringOf } from './__utils__/fastCheckV4';

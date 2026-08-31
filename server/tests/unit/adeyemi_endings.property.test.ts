@@ -83,7 +83,7 @@ const statsVectorArb = fc.record({
 
 describe('Adeyemi endings property tests — reachability and excludability', () => {
   describe('Each ending has a reachable stats vector', () => {
-    for (const [endingName, ending] of Object.entries(ADEYEMI_ENDINGS)) {
+    for (const endingName of Object.keys(ADEYEMI_ENDINGS)) {
       it(`ending "${endingName}" has at least one reachable stats vector`, () => {
         // For this test, we manually construct a vector that satisfies the constraints
         // rather than using fc to search, because fc might take too long
@@ -95,7 +95,7 @@ describe('Adeyemi endings property tests — reachability and excludability', ()
   });
 
   describe('Each ending has an excludable stats vector', () => {
-    for (const [endingName, ending] of Object.entries(ADEYEMI_ENDINGS)) {
+    for (const endingName of Object.keys(ADEYEMI_ENDINGS)) {
       it(`ending "${endingName}" has at least one excludable stats vector`, () => {
         // For this test, we manually construct a vector that does NOT satisfy the constraints
         const stats = buildNonSatisfyingVector(endingName as EndingName);

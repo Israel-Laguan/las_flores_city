@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 import express from 'express';
 import { withSchemaLock } from '../helpers/schemaLock.js';
-import { queryOLTP, queryOLAP, withOLTPTransaction, closeConnections } from '@las-flores/infra';
+import { queryOLTP, withOLTPTransaction, closeConnections } from '@las-flores/infra';
 import { closeRedis } from '@las-flores/infra';
 import { dialogueRouter } from '../../src/routes/dialogue.js';
 import { generateToken } from '../../src/middleware/auth.js';

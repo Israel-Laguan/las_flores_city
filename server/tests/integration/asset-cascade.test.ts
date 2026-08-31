@@ -1,19 +1,16 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Integration tests for asset cascade resolution (Milestone 07).
  *
  * Verifies that the env-aware stage resolver picks the correct URL
  * for characters (portrait_urls) and scenes (background_urls).
  */
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from '@jest/globals';
+import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 import request from 'supertest';
 import express from 'express';
-import path from 'node:path';
-import fs from 'node:fs/promises';
-import os from 'node:os';
-import * as yaml from 'js-yaml';
 import { queryOLTP, closeConnections } from '@las-flores/infra';
 import { deleteCache, closeRedis } from '@las-flores/infra';
-import { authMiddleware, AuthRequest, generateToken } from '../../src/middleware/auth.js';
+import { generateToken } from '../../src/middleware/auth.js';
 import { locationRouter } from '../../src/routes/location.js';
 
 // Collision-avoidance: these UUIDs use reserved high-value prefixes that

@@ -187,7 +187,7 @@ describe('approveAndSolidifyPlan — validation harness gate (M20)', () => {
       ([text]) => typeof text === 'string' && text.includes('UPDATE content_plans SET status = $1') && text.includes('verification_report'),
     );
     expect(failedUpdate).toBeDefined();
-    const [sql, params] = failedUpdate as [string, any[]];
+    const [, params] = failedUpdate as [string, any[]];
     expect(params[0]).toBe('failed');
     // verification_report JSON carries the VerificationReport (gate-abort shape).
     // The raw harness findings are folded into `checks`/`errors`/`warnings`; the

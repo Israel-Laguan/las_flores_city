@@ -44,7 +44,6 @@ let server: ReturnType<typeof app.listen>;
 let oltpPool: pg.Pool;
 let olapPool: pg.Pool;
 let port: number;
-let token: string;
 
 function auth() {
   return { Authorization: `Bearer ${generateToken(TEST_USER_ID)}` };
@@ -116,7 +115,6 @@ beforeAll(async () => {
     const s = app.listen(0, () => resolve(s));
   });
   port = (server.address() as { port: number }).port;
-  token = generateToken(TEST_USER_ID);
 });
 
 afterAll(async () => {
@@ -238,7 +236,6 @@ describe(' SMS reply invalidates inbox Redis cache', () => {
     await apiFetch('GET', '/comms/inbox');
 
     const inboxKey = `user:sms:inbox:${TEST_USER_ID}`;
-    const before = await getCache(inboxKey);
     // Cache was populated (not null) OR we force-set it to confirm invalidation path
     await oltpPool.query(
       `INSERT INTO player_sms_threads (user_id, character_id, current_node_id, chat_history, unread)

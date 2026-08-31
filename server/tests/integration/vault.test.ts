@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Vault System Integration Tests
  */

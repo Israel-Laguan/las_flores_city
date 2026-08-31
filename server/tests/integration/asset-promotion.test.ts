@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Integration tests for asset promotion routes (Milestone 06).
  */
