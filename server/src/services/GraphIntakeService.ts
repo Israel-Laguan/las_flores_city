@@ -1057,31 +1057,75 @@ export class GraphIntakeService {
       console.warn('[graph-intake] entity resolution failed during instruction amend; skipping _resolution attachment:', (resErr as Error).message);
     }
 
+    // Reject DELETE deltas before any graph write, mirroring persistPlanWithDeltas:
+    // a DELETE against the canonical graph has no materialization in the legacy
+    // plan_json contract, so it must be rejected early rather than written and
+    // then surfacing a synthesis failure after the fact.
+    const deleteDelta = resolvedDeltas.find((delta) => delta.op === 'DELETE');
+    if (deleteDelta) {
+      throw new GraphIntakeValidationError(
+        `Cannot synthesize a plan item from a DELETE delta for [${deleteDelta.nodeType}:${deleteDelta.nodeId}] — delete materialization is not supported by the legacy plan contract. Remove the tombstone before approving.`,
+      );
+    }
+
+    // Capture the graph revision BEFORE applyDeltas so we can detect a concurrent
+    // amendment (optimistic check). The advisory lock + revision check ensures
+    // that the snapshot we persist reflects our own writes, not an interleaving
+    // amendment from a parallel request.
+    const preRevision = await getPlanDeltaRevisionWithEdges(planId);
+
     // applyDeltas is the fail-open write gate: a MODIFY/DELETE against a
     // same-plan :ContentDelta now MERGEs in place (partitionDeltas accepts it);
     // a genuinely missing base is dropped and reported as a diagnostic.
     const result = await chatService.applyDeltas(planId, resolvedDeltas, proposal.deltaEdges);
 
-    // Re-synthesize plan_json so legacy/preview consumers receive the amended
-    // snapshot (not the pre-amendment one). Mirror persistPlanWithDeltas: read
-    // the refreshed deltas/edges, synthesize, validate, then persist plan_json
-    // and updated_at together. A schema-invalid snapshot is surfaced rather than
-    // persisted, so preview/stage/approve never fails opaquely later.
-    const graph = await this.getPlanDeltas(planId);
-    const context = await this.gatherContext();
-    const synthesized = await synthesizePlanFromDeltas(planId, planRow.rows[0].description, graph.deltas, graph.edges, context);
-    const parsedPlan = ContentPlanSchema.safeParse(synthesized.plan);
-    const planJson = parsedPlan.success ? parsedPlan.data : null;
+    // Serialize the graph refresh per plan. Two concurrent amendments to the same
+    // plan can otherwise interleave: request A writes, request B writes and
+    // persists a newer plan_json, then request A persists its older snapshot,
+    // clobbering B. The advisory lock + revision re-check prevents this: if the
+    // graph revision changed since preRevision, we re-synthesize from the current
+    // graph state (which includes A's own writes) and retry the persistence.
+    let graph: { deltas: GraphDelta[]; edges: GraphDeltaEdge[] } = await this.getPlanDeltas(planId);
+    let synthesized = await synthesizePlanFromDeltas(planId, planRow.rows[0].description, graph.deltas, graph.edges, await this.gatherContext());
+    let parsedPlan = ContentPlanSchema.safeParse(synthesized.plan);
+    let planJson = parsedPlan.success ? parsedPlan.data : null;
     if (!planJson) {
       console.warn(
         `[graph-intake] amended plan ${planId} snapshot failed schema validation: ` +
         (parsedPlan.success ? '' : parsedPlan.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; ')),
       );
     }
-    await queryOLTP(
-      `UPDATE content_plans SET updated_at = now(), plan_json = COALESCE($2::jsonb, plan_json) WHERE id = $1`,
-      [planId, planJson],
-    );
+
+    await withOLTPTransaction(async (client) => {
+      await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [planId]);
+
+      // Re-check the revision after acquiring the lock. If a concurrent
+      // amendment changed the graph since preRevision, re-synthesize from the
+      // current graph state (which includes our applies) before persisting.
+      const postRevision = await getPlanDeltaRevisionWithEdges(planId);
+      if (postRevision !== preRevision) {
+        graph = await this.getPlanDeltas(planId);
+        synthesized = await synthesizePlanFromDeltas(
+          planId, planRow.rows[0].description, graph.deltas, graph.edges, await this.gatherContext(),
+        );
+        parsedPlan = ContentPlanSchema.safeParse(synthesized.plan);
+        planJson = parsedPlan.success ? parsedPlan.data : null;
+        if (!planJson) {
+          console.warn(
+            `[graph-intake] amended plan ${planId} snapshot failed schema validation after retry: ` +
+            (parsedPlan.success ? '' : parsedPlan.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; ')),
+          );
+        }
+      }
+
+      // plan_json is persisted via COALESCE so a schema-invalid snapshot never
+      // wipes the previous valid one — preview/stage/approve surface the issue
+      // rather than failing opaquely later.
+      await client.query(
+        `UPDATE content_plans SET updated_at = now(), plan_json = COALESCE($2::jsonb, plan_json) WHERE id = $1`,
+        [planId, planJson],
+      );
+    });
 
     const notes = await this.triageAndAnnotate(planId, graph.deltas, result.diagnostics);
 
