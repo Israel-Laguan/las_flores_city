@@ -35,7 +35,7 @@ import {
   type CritiqueAnnotationDraft,
   findEdgeMapping,
 } from '@las-flores/shared';
-import { queryOLTP, queryContent } from '@las-flores/infra';
+import { queryOLTP, queryContent, withOLTPTransaction } from '@las-flores/infra';
 import { uuidv4 } from '@las-flores/shared';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -45,7 +45,7 @@ import { chatService } from './ChatService.js';
 import { emitAdminEvent } from './AdminEventEmitter.js';
 import { contentPlanService } from './ContentPlanService.js';
 import { resolveContentDir } from './StoryBuilderLore.js';
-import { applyDelta, applyDeltaEdge, getDeltasForPlan, getDeltaEdgesForPlan, clearDeltasForPlan, partitionDeltas, partitionDeltaEdges, deltaKey, normalizeKeyComponent, resolveEdgeTargetNameValue } from './GraphDeltaService.js';
+import { applyDelta, applyDeltaEdge, getDeltasForPlan, getDeltaEdgesForPlan, clearDeltasForPlan, partitionDeltas, partitionDeltaEdges, deltaKey, normalizeKeyComponent, resolveEdgeTargetNameValue, getPlanDeltaRevisionWithEdges } from './GraphDeltaService.js';
 import { isNeo4jEnabled, runNeo4jTransaction, runNeo4jQuery } from './Neo4jClient.js';
 import { EntityResolutionService } from './EntityResolutionService.js';
 import { Neo4jCandidateSource } from './Neo4jCandidateSource.js';
@@ -1174,12 +1174,15 @@ export class GraphIntakeService {
     const result: PlanDeltaDiff[] = [];
 
     for (const delta of deltas) {
-      const proposed = delta.op === 'DELETE' ? null : delta.fields;
-      let canonical: { name: string; fields: Record<string, unknown> } | null = null;
-      if (delta.op !== 'ADD') {
-        canonical = await this.getCanonicalFields(delta.nodeType, delta.nodeId);
-      }
+      const canonical = delta.op !== 'ADD'
+        ? await this.getCanonicalFields(delta.nodeType, delta.nodeId)
+        : null;
       const before = delta.op === 'ADD' ? null : (canonical?.fields ?? null);
+      const proposed = delta.op === 'DELETE'
+        ? null
+        : delta.op === 'MODIFY' && canonical
+          ? deepMergeObjects(canonical.fields, delta.fields)
+          : delta.fields;
       const name = (typeof delta.fields?.name === 'string' && delta.fields.name.length > 0)
         ? delta.fields.name
         : (canonical?.name ?? delta.nodeId);

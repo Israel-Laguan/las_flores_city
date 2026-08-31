@@ -405,12 +405,12 @@ describe('GraphIntakeService — unit tests (Neo4j mocked)', () => {
         description: 'Old lore',
         metadata: { personality: 'Cheerful', backstory: 'Old' },
       });
-      // description changed, metadata.personality changed, metadata.backstory removed
-      // (nested objects are flattened into dotted keys for a precise field diff).
+      // description changed, metadata.personality changed, metadata.backstory
+      // is preserved from canonical (unchanged) since the MODIFY patch omits it.
       const byField = Object.fromEntries(d.fields.map((f) => [f.field, f.change]));
       expect(byField.description).toBe('modified');
       expect(byField['metadata.personality']).toBe('modified');
-      expect(byField['metadata.backstory']).toBe('removed');
+      expect(byField['metadata.backstory']).toBe('unchanged');
     });
 
     test('DELETE deltas show a null "after" and every field as removed', async () => {
