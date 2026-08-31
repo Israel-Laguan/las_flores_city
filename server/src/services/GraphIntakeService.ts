@@ -1069,15 +1069,32 @@ export class GraphIntakeService {
     }
 
     // Capture the graph revision BEFORE applyDeltas so we can detect a concurrent
-    // amendment (optimistic check). The advisory lock + revision check ensures
+    // amendment (optimistic check). The advisory lock + revision re-check ensures
     // that the snapshot we persist reflects our own writes, not an interleaving
     // amendment from a parallel request.
     const preRevision = await getPlanDeltaRevisionWithEdges(planId);
 
+    // Preflight synthesis: identify which new deltas would be excluded by
+    // synthesizePlanFromDeltas (e.g. unresolvable canonical slugs) so we can
+    // drop them from the write set. This keeps the applied graph set exactly
+    // equal to the synthesized snapshot, matching persistPlanWithDeltas.
+    const existingGraph = await this.getPlanDeltas(planId);
+    const preflightDeltas = [...existingGraph.deltas, ...resolvedDeltas];
+    const preflightEdges = [...existingGraph.edges, ...proposal.deltaEdges];
+    const preflight = await synthesizePlanFromDeltas(planId, planRow.rows[0].description, preflightDeltas, preflightEdges, await this.gatherContext());
+    const excludedKeys = new Set(
+      preflight.diagnostics
+        .filter((d) => d.kind === 'unresolvable_canonical_slug')
+        .map((d) => deltaKey(d.nodeType, d.nodeId)),
+    );
+    const filteredDeltas = resolvedDeltas.filter((d) => !excludedKeys.has(deltaKey(d.nodeType, d.nodeId)));
+    const remainingKeys = new Set(filteredDeltas.map((d) => deltaKey(d.nodeType, d.nodeId)));
+    const filteredEdges = proposal.deltaEdges.filter((e) => remainingKeys.has(deltaKey(e.sourceNodeType, e.sourceNodeId)));
+
     // applyDeltas is the fail-open write gate: a MODIFY/DELETE against a
     // same-plan :ContentDelta now MERGEs in place (partitionDeltas accepts it);
     // a genuinely missing base is dropped and reported as a diagnostic.
-    const result = await chatService.applyDeltas(planId, resolvedDeltas, proposal.deltaEdges);
+    const result = await chatService.applyDeltas(planId, filteredDeltas, filteredEdges);
 
     // Serialize the graph refresh per plan. Two concurrent amendments to the same
     // plan can otherwise interleave: request A writes, request B writes and
@@ -1127,7 +1144,7 @@ export class GraphIntakeService {
       );
     });
 
-    const notes = await this.triageAndAnnotate(planId, graph.deltas, result.diagnostics);
+    const notes = await this.triageAndAnnotate(planId, graph.deltas, [...result.diagnostics, ...synthesized.diagnostics]);
 
     emitAdminEvent(
       'plan_refined',
