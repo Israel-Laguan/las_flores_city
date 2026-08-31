@@ -174,6 +174,13 @@ export async function approveAndSolidifyPlan(planId: string, userId?: string): P
   // lock. This means Neo4j latency briefly holds the lock, but it ensures the
   // revision we check is the same one we persist against. The lock is held for
   // only the duration of the Neo4j read + comparison, not the full export.
+  // Mint a fresh run token BEFORE the transaction so the durable job_runs row
+  // (created inside the transaction below) can carry it. A legacy resume reads
+  // this same token from the DB, so it must exist before the plan commits to
+  // `pending`.
+  const runToken = randomUUID();
+  let jobRunId: string | undefined;
+
   await withOLTPTransaction(async (client) => {
     await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [planId]);
 
@@ -223,26 +230,26 @@ export async function approveAndSolidifyPlan(planId: string, userId?: string): P
 
     // 1. Lock the plan and set pending status.
     await ContentPlanService.setStatus(planId, 'pending', client);
+
+    // 2b. Create the durable job-runs row INSIDE the same transaction and under
+    //     the plan-row lock. This synchronizes run insertion with the legacy
+    //     resume ownership check in `resumeSolidify` (which also takes the plan
+    //     row `FOR UPDATE`): because both serialize on the plan row, a newer
+    //     approve-and-solidify can only observe the NEW run, so a legacy resume
+    //     can never flip the plan back to `failed` behind it. Creating the run
+    //     outside the lock (as before) left a window where the plan was `pending`
+    //     but no new run row existed yet, letting a concurrent legacy resume see
+    //     the OLD run and clobber the plan to `failed`. If the table is
+    //     unavailable the whole transaction rolls back and the caller surfaces
+    //     the error instead of leaving a half-created run.
+    const run = await startJobRun(planId, 'solidify', { runToken }, client);
+    jobRunId = run.id;
   });
 
   // 2. Write initial cache status only after the transaction commits, so a
-  //    commit failure cannot leave a stale pending cache entry. Issue a fresh
-  //    run token so stale terminal writes from a prior run can be rejected.
-  const runToken = randomUUID();
+  //    commit failure cannot leave a stale pending cache entry. Issue the run
+  //    token so stale terminal writes from a prior run can be rejected.
   await setJobStatus(planId, { status: 'pending' }, runToken);
-
-  // 2b. Create a durable job-runs row so the solidify job can be resumed from
-  //     its last persisted stage if this process dies mid-way (M22). The runToken
-  //     is persisted in the DB so it survives cache eviction. Best-effort:
-  //     if the job_runs table is unavailable we fall back to the legacy
-  //     fire-and-forget behavior (no resume).
-  let jobRunId: string | undefined;
-  try {
-    const run = await startJobRun(planId, 'solidify', { runToken });
-    jobRunId = run.id;
-  } catch (err) {
-    console.warn(`[story-builder] Could not create job run for ${planId}:`, (err as Error).message);
-  }
 
   // 3. Fire async solidify OUTSIDE the transaction.
   //    Errors are caught and persisted to status by runSolidify.
@@ -319,18 +326,29 @@ export async function resumeSolidify(planId: string, userId?: string): Promise<v
     //     the update is bound to this legacy run still being the latest
     //     solidify run for the plan; if a newer run exists, the subquery no
     //     longer matches `run.id` and the write no-ops.
-    await queryOLTP(
-      `UPDATE content_plans SET status = 'failed', updated_at = NOW()
-       WHERE id = $1
-         AND status IN ('pending', 'staging', 'staged', 'migrating', 'migrated', 'verifying')
-         AND $2 = (
-           SELECT id FROM job_runs
-            WHERE plan_id = $1 AND job_type = 'solidify'
-            ORDER BY created_at DESC, id DESC
-            LIMIT 1
-         )`,
-      [planId, run.id],
-    );
+    // Serialize this failure write with the approve-and-solidify retry path by
+    // taking the SAME `content_plans` row lock (`FOR UPDATE`) the approve
+    // transaction holds. Both lock the plan row, so a newer retry run cannot be
+    // inserted (startJobRun runs inside that locked transaction) between the
+    // ownership check and this UPDATE. Inside the lock we re-read the latest
+    // solidify run and only flip the plan to `failed` when this legacy run is
+    // still the owner — otherwise the newer run legitimately owns the plan and
+    // the write no-ops.
+    await withOLTPTransaction(async (client) => {
+      await client.query('SELECT 1 FROM content_plans WHERE id = $1 FOR UPDATE', [planId]);
+      await client.query(
+        `UPDATE content_plans SET status = 'failed', updated_at = NOW()
+         WHERE id = $1
+           AND status IN ('pending', 'staging', 'staged', 'migrating', 'migrated', 'verifying')
+           AND $2 = (
+             SELECT id FROM job_runs
+              WHERE plan_id = $1 AND job_type = 'solidify'
+              ORDER BY created_at DESC, id DESC
+              LIMIT 1
+           )`,
+        [planId, run.id],
+      );
+    });
     return;
   }
 

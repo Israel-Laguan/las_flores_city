@@ -1022,14 +1022,19 @@ export class GraphIntakeService {
       throw new GraphIntakeDisabledError('Neo4j authoring graph is disabled — cannot amend graph-based plan. Enable NEO4J_ENABLED first.');
     }
 
-    const planRow = await queryOLTP<{ status: string }>(
-      `SELECT status FROM content_plans WHERE id = $1`,
+    const planRow = await queryOLTP<{ status: string; description: string }>(
+      `SELECT status, description FROM content_plans WHERE id = $1`,
       [planId],
     );
     if (planRow.rows.length === 0) {
       throw new GraphIntakeValidationError(`Plan ${planId} not found`);
     }
     const status = planRow.rows[0].status;
+    if (status !== 'proposed') {
+      throw new GraphIntakeValidationError(
+        `Plan ${planId} has status '${status}' — only a 'proposed' plan can be amended.`,
+      );
+    }
 
     const existing = await this.getPlanDeltas(planId);
 
@@ -1057,14 +1062,50 @@ export class GraphIntakeService {
     // a genuinely missing base is dropped and reported as a diagnostic.
     const result = await chatService.applyDeltas(planId, resolvedDeltas, proposal.deltaEdges);
 
-    await queryOLTP(`UPDATE content_plans SET updated_at = now() WHERE id = $1`, [planId]);
-
+    // Re-synthesize plan_json so legacy/preview consumers receive the amended
+    // snapshot (not the pre-amendment one). Mirror persistPlanWithDeltas: read
+    // the refreshed deltas/edges, synthesize, validate, then persist plan_json
+    // and updated_at together. A schema-invalid snapshot is surfaced rather than
+    // persisted, so preview/stage/approve never fails opaquely later.
     const graph = await this.getPlanDeltas(planId);
+    const context = await this.gatherContext();
+    const synthesized = await synthesizePlanFromDeltas(planId, planRow.rows[0].description, graph.deltas, graph.edges, context);
+    const parsedPlan = ContentPlanSchema.safeParse(synthesized.plan);
+    const planJson = parsedPlan.success ? parsedPlan.data : null;
+    if (!planJson) {
+      console.warn(
+        `[graph-intake] amended plan ${planId} snapshot failed schema validation: ` +
+        (parsedPlan.success ? '' : parsedPlan.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; ')),
+      );
+    }
+    await queryOLTP(
+      `UPDATE content_plans SET updated_at = now(), plan_json = COALESCE($2::jsonb, plan_json) WHERE id = $1`,
+      [planId, planJson],
+    );
+
     const notes = await this.triageAndAnnotate(planId, graph.deltas, result.diagnostics);
+
+    emitAdminEvent(
+      'plan_refined',
+      {
+        instruction: instruction.trim().length > 0 ? instruction : '(empty)',
+        deltaCount: graph.deltas.length,
+        edgeCount: graph.edges.length,
+        appliedCount: result.appliedCount,
+        droppedCount: result.diagnostics.length,
+        noteCount: notes.length,
+        source: 'graph-intake',
+      },
+      planId,
+      createdBy,
+    );
 
     return {
       planId,
       status,
+      actor: createdBy
+        ? { id: createdBy, email: createdBy, role: 'admin' }
+        : undefined,
       instruction,
       appliedCount: result.appliedCount,
       droppedCount: result.diagnostics.length,
@@ -1097,7 +1138,7 @@ export class GraphIntakeService {
         `MATCH (c:Content { nodeType: $nodeType, nodeId: $nodeId })
          WHERE c.planId IS null
          RETURN c.name AS name, c.fieldsJson AS fieldsJson`,
-        { nodeType, nodeId: nodeId.toLowerCase() },
+         { nodeType, nodeId: normalizeKeyComponent(nodeId) },
       );
       if (rows.length === 0) return null;
       const fields: Record<string, unknown> = {};

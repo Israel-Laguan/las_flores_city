@@ -49,7 +49,7 @@ const DELTA_RULES = `
 ## Delta rules (STRICT — a malformed delta corrupts the graph)
 - \`nodeType\` MUST be one of: Character, Scene, Dialogue, Mission, Overlay, Location, District.
 - \`op\` MUST be one of: ADD, MODIFY, DELETE.
-- MODIFY and DELETE: \`nodeId\` MUST be the exact UUID (\`id\`) of an EXISTING canon entity — copy it from the context/evidence; never invent one.
+- MODIFY and DELETE: \`nodeId\` MUST reference an existing entity. For an entity OUTSIDE this plan, use the exact UUID (\`id\`) of the existing canon entity — copy it from the context/evidence. For an entity ALREADY authored in THIS plan's pending deltas (see the "Current plan deltas" block above), REUSE that plan-local nodeId (a slug such as \`diego\` or a UUID) so the change MERGEs into the existing planned delta in place instead of creating a duplicate ADD. Never invent a brand-new id for an entity that already appears in either source.
 - ADD: \`nodeId\` is a NEW stable lowercase_slug (letters, digits, underscores) for the entity you are adding.
 - MODIFY carries the FULL proposed post-approve field set of the entity (a shadow copy of its current fields with your changes, e.g. name, description, district, role, faction, title...). To avoid erasing canon fields, the model should hydrate MODIFY.fields as a patch against the current canon before applying it, or the route should provide complete editable fields to the prompt.
 - ADD carries the new entity's initial field set; DELETE carries no meaningful fields (use \`fields: {}\`).
@@ -121,7 +121,7 @@ ${DELTA_RULES}
   "deltas": [
     {
       "nodeType": "Character",
-      "nodeId": "<existing UUID for MODIFY/DELETE, or new lowercase_slug for ADD>",
+      "nodeId": "<existing UUID or a plan-local nodeId (slug/UUID) already in THIS plan's deltas for MODIFY/DELETE; new lowercase_slug only for ADD>",
       "op": "MODIFY",
       "fields": { "<field>": "<full post-approve value>", ... }
     }
