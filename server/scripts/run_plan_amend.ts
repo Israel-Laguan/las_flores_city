@@ -76,6 +76,8 @@ async function runInstruction(
     reply: result.reply,
     deltaCount: result.deltaCount,
     edgeCount: result.edgeCount,
+    deltas: result.deltas,
+    edges: result.edges,
     notes: result.notes,
     reviewUrl: reviewUrl(
       result.reviewUrl ?? options.adminUrl ?? process.env.ADMIN_URL ?? 'http://localhost:3002',
@@ -176,6 +178,8 @@ async function main(): Promise<void> {
       amendments: applied,
       deltaCount: graph.deltas.length,
       edgeCount: graph.edges.length,
+      deltas: graph.deltas,
+      edges: graph.edges,
       notes,
       reviewUrl: reviewUrl(
         options.adminUrl ?? process.env.ADMIN_URL ?? 'http://localhost:3002',

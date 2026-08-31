@@ -2,10 +2,12 @@ import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals
 import {
   parseArgs,
   parseAmendArgs,
+  parsePlanDiffArgs,
   resolveActor,
   reviewUrl,
   usage,
   amendUsage,
+  planDiffUsage,
   DEFAULT_DEV_ADMIN_ID,
 } from '../../src/planIntakeCore.js';
 import type { QueryOLTP } from '../../src/planIntakeCore.js';
@@ -344,5 +346,40 @@ describe('plan:amend usage', () => {
     expect(text).toContain('--user-id');
     expect(text).toContain('--user-email');
     expect(text).toContain('--admin-url');
+  });
+});
+
+describe('plan:diff CLI argument parsing', () => {
+  it('parses a positional planId', () => {
+    const opts = parsePlanDiffArgs(['node', 'run_plan_diff.ts', 'plan-xyz']);
+    expect(opts.planId).toBe('plan-xyz');
+    expect(opts.adminUrl).toBeUndefined();
+  });
+
+  it('parses --admin-url', () => {
+    const opts = parsePlanDiffArgs([
+      'node', 'run_plan_diff.ts', 'plan-xyz',
+      '--admin-url', 'http://localhost:4000',
+    ]);
+    expect(opts.adminUrl).toBe('http://localhost:4000');
+  });
+
+  it('throws when no planId is given', () => {
+    expect(() => parsePlanDiffArgs(['node', 'run_plan_diff.ts']))
+      .toThrow(/A planId is required/);
+  });
+
+  it('throws on an unknown option', () => {
+    expect(() => parsePlanDiffArgs(['node', 'run_plan_diff.ts', 'plan-xyz', '--bogus']))
+      .toThrow(/Unknown option/);
+  });
+
+  it('throws on a duplicate positional argument', () => {
+    expect(() => parsePlanDiffArgs(['node', 'run_plan_diff.ts', 'a', 'b']))
+      .toThrow(/Unexpected argument/);
+  });
+
+  it('documents the admin-url option', () => {
+    expect(planDiffUsage()).toContain('--admin-url');
   });
 });

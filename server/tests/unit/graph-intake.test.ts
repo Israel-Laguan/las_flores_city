@@ -319,6 +319,156 @@ describe('GraphIntakeService — unit tests (Neo4j mocked)', () => {
     });
   });
 
+  describe('buildPlanDiff', () => {
+    test('returns an empty diff when the plan has no deltas', async () => {
+      mockNeo4jEnabled.mockReturnValue(true);
+      mockGetDeltasForPlan.mockResolvedValueOnce([]);
+      mockGetDeltaEdgesForPlan.mockResolvedValueOnce([]);
+
+      const service = new GraphIntakeService();
+      const result = await service.buildPlanDiff(TEST_PLAN_ID);
+
+      expect(result.planId).toBe(TEST_PLAN_ID);
+      expect(result.deltas).toEqual([]);
+      expect(result.edges).toEqual([]);
+    });
+
+    test('ADD deltas show a null "before" and every field as added', async () => {
+      mockNeo4jEnabled.mockReturnValue(true);
+      mockGetDeltasForPlan.mockResolvedValueOnce([
+        {
+          id: 'd-add',
+          planId: TEST_PLAN_ID,
+          nodeType: 'Character',
+          nodeId: TEST_CHAR_ID,
+          op: 'ADD',
+          fields: { name: 'New Vendor', description: 'A stall keeper' },
+          createdAt: new Date().toISOString(),
+        },
+      ]);
+      mockGetDeltaEdgesForPlan.mockResolvedValueOnce([]);
+      // The canonical lookup must NOT be called for ADD deltas.
+      const runNeo4jSpy = runNeo4jQuery as unknown as Mock<(...a: any[]) => Promise<any[]>>;
+
+      const service = new GraphIntakeService();
+      const result = await service.buildPlanDiff(TEST_PLAN_ID);
+
+      expect(runNeo4jSpy).not.toHaveBeenCalled();
+      expect(result.deltas).toHaveLength(1);
+      const d = result.deltas[0];
+      expect(d.op).toBe('ADD');
+      expect(d.before).toBeNull();
+      expect(d.after).toEqual({ name: 'New Vendor', description: 'A stall keeper' });
+      expect(d.fields.every((f) => f.change === 'added')).toBe(true);
+      expect(d.name).toBe('New Vendor');
+    });
+
+    test('MODIFY deltas compare before (canonical) vs after (proposed) field-by-field', async () => {
+      mockNeo4jEnabled.mockReturnValue(true);
+      mockGetDeltasForPlan.mockResolvedValueOnce([
+        {
+          id: 'd-mod',
+          planId: TEST_PLAN_ID,
+          nodeType: 'Character',
+          nodeId: TEST_CHAR_ID,
+          op: 'MODIFY',
+          fields: {
+            name: 'Existing',
+            description: 'Updated lore',
+            metadata: { personality: 'Grumpy' },
+          },
+          createdAt: new Date().toISOString(),
+        },
+      ]);
+      mockGetDeltaEdgesForPlan.mockResolvedValueOnce([]);
+      // Canonical base node carries the before-field set.
+      const runNeo4jSpy = runNeo4jQuery as unknown as Mock<(...a: any[]) => Promise<any[]>>;
+      runNeo4jSpy.mockImplementation(async () => [
+        {
+          name: 'Existing',
+          fieldsJson: JSON.stringify({
+            name: 'Existing',
+            description: 'Old lore',
+            metadata: { personality: 'Cheerful', backstory: 'Old' },
+          }),
+        },
+      ]);
+
+      const service = new GraphIntakeService();
+      const result = await service.buildPlanDiff(TEST_PLAN_ID);
+
+      expect(result.deltas).toHaveLength(1);
+      const d = result.deltas[0];
+      expect(d.op).toBe('MODIFY');
+      expect(d.before).toEqual({
+        name: 'Existing',
+        description: 'Old lore',
+        metadata: { personality: 'Cheerful', backstory: 'Old' },
+      });
+      // description changed, metadata.personality changed, metadata.backstory removed
+      // (nested objects are flattened into dotted keys for a precise field diff).
+      const byField = Object.fromEntries(d.fields.map((f) => [f.field, f.change]));
+      expect(byField.description).toBe('modified');
+      expect(byField['metadata.personality']).toBe('modified');
+      expect(byField['metadata.backstory']).toBe('removed');
+    });
+
+    test('DELETE deltas show a null "after" and every field as removed', async () => {
+      mockNeo4jEnabled.mockReturnValue(true);
+      mockGetDeltasForPlan.mockResolvedValueOnce([
+        {
+          id: 'd-del',
+          planId: TEST_PLAN_ID,
+          nodeType: 'Scene',
+          nodeId: 'f0000000-e29b-41d4-a716-4466554400d1',
+          op: 'DELETE',
+          fields: {},
+          createdAt: new Date().toISOString(),
+        },
+      ]);
+      mockGetDeltaEdgesForPlan.mockResolvedValueOnce([]);
+      const runNeo4jSpy = runNeo4jQuery as unknown as Mock<(...a: any[]) => Promise<any[]>>;
+      runNeo4jSpy.mockImplementation(async () => [
+        { name: 'Rooftop Vigil', fieldsJson: JSON.stringify({ name: 'Rooftop Vigil', district: 'Industrial' }) },
+      ]);
+
+      const service = new GraphIntakeService();
+      const result = await service.buildPlanDiff(TEST_PLAN_ID);
+
+      const d = result.deltas[0];
+      expect(d.op).toBe('DELETE');
+      expect(d.after).toBeNull();
+      expect(d.before).toEqual({ name: 'Rooftop Vigil', district: 'Industrial' });
+      expect(d.fields.every((f) => f.change === 'removed')).toBe(true);
+    });
+
+    test('falls back to a null "before" when the canonical node is not found', async () => {
+      mockNeo4jEnabled.mockReturnValue(true);
+      mockGetDeltasForPlan.mockResolvedValueOnce([
+        {
+          id: 'd-mod',
+          planId: TEST_PLAN_ID,
+          nodeType: 'Character',
+          nodeId: TEST_CHAR_ID,
+          op: 'MODIFY',
+          fields: { name: 'X' },
+          createdAt: new Date().toISOString(),
+        },
+      ]);
+      mockGetDeltaEdgesForPlan.mockResolvedValueOnce([]);
+      // Canonical lookup returns nothing (node absent) → before is null.
+      const runNeo4jSpy = runNeo4jQuery as unknown as Mock<(...a: any[]) => Promise<any[]>>;
+      runNeo4jSpy.mockImplementation(async () => []);
+
+      const service = new GraphIntakeService();
+      const result = await service.buildPlanDiff(TEST_PLAN_ID);
+
+      expect(result.deltas[0].before).toBeNull();
+      // No canonical counterpart available, so the field reads as added.
+      expect(result.deltas[0].fields[0].change).toBe('added');
+    });
+  });
+
   describe('discardPlan', () => {
     test('does nothing when Neo4j is disabled', async () => {
       mockNeo4jEnabled.mockReturnValue(false);

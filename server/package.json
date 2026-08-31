@@ -28,6 +28,7 @@
     "seed:all": "npm run seed:dev && npm run seed:players",
     "plan:intake": "tsx scripts/run_plan_intake.ts",
     "plan:amend": "tsx scripts/run_plan_amend.ts",
+    "plan:diff": "tsx scripts/run_plan_diff.ts",
     "backfill:critique-graph": "tsx scripts/backfill-critique-graph.ts",
     "probe:content-urls": "tsx scripts/probe_content_url_coverage.ts",
     "flow:plan-template": "tsx scripts/run_plan_template_flow.ts"

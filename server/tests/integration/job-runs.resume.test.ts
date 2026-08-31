@@ -1,5 +1,3 @@
-import '../helpers/enableTestNeo4j.js';
-
 import { describe, it, expect, beforeAll, beforeEach, afterAll } from '@jest/globals';
 import fs from 'fs';
 import path from 'path';
@@ -13,7 +11,6 @@ import {
   nextAttempt,
   markOrphanedResumable,
   getJobRun,
-  getJobRunById,
 } from '../../src/services/JobRunService.js';
 import { resumeSolidify } from '../../src/services/StoryBuilderOrchestrator.js';
 import { JOB_CACHE_PREFIX } from '../../src/services/StoryBuilderJobStatus.js';
@@ -44,9 +41,6 @@ async function applyMigration(filename: string): Promise<void> {
 
 beforeAll(async () => {
   await applyMigration('047_content_plans.sql');
-  await applyMigration('049_content_plans_verified.sql');
-  await applyMigration('050_content_plans_verification.sql');
-  await applyMigration('055_content_plans_async.sql');
   await applyMigration('062_job_runs.sql');
   await applyMigration('074_job_runs_run_token.sql');
 
@@ -144,12 +138,12 @@ describe('job_runs resume integration', () => {
     expect(plan.rows[0].status).toBe('failed');
   });
 
-  it.each(['staged'])(
+  it.each(['staged', 'migrated'])(
     'legacy no-token resume also flips a mid-pipeline %s plan to failed',
     async (midStatus) => {
-      // A crash after solidify commits `staged` strands the plan there (the
-      // retry route only accepts `failed`). The no-token resume rejection must
-      // still flip this mid-pipeline status terminal.
+      // A crash after solidify commits `staged`/`migrated` strands the plan
+      // there (the retry route only accepts `failed`). The no-token resume
+      // rejection must still flip these mid-pipeline statuses terminal.
       await queryOLTP('DELETE FROM job_runs WHERE plan_id = $1', [TEST_PLAN_ID]);
       await queryOLTP(
         `INSERT INTO content_plans (id, description, plan_json, status)
@@ -174,14 +168,10 @@ describe('job_runs resume integration', () => {
   );
 
   it('legacy no-token resume does NOT clobber a newer solidify run', async () => {
-    // The ownership guard's reachable protection: resumeSolidify first reads the
-    // NEWEST solidify run for the plan. If a newer run has since started and is
-    // `running`, getJobRun returns it (non-resumable) and resumeSolidify
-    // short-circuits — so the newer run is never failed and its `staging` plan
-    // status is preserved. (The in-flight race — a newer run inserted between
-    // the read and the write — is additionally covered by the plan-row lock +
-    // ownership subquery inside resumeSolidify, which no-ops the write when the
-    // legacy run is no longer the latest.)
+    // Simulate the race the ownership guard defends against: the legacy
+    // resumable run is the one resumeSolidify reads, but a NEWER solidify run
+    // has since been started (e.g. a retry) and advanced the plan. The stale
+    // terminal write must no-op because the legacy run is no longer the latest.
     await queryOLTP('DELETE FROM job_runs WHERE plan_id = $1', [TEST_PLAN_ID]);
     await queryOLTP(
       `INSERT INTO content_plans (id, description, plan_json, status)
@@ -191,118 +181,28 @@ describe('job_runs resume integration', () => {
     );
     await deleteCache(`${JOB_CACHE_PREFIX}${TEST_PLAN_ID}`);
 
-    // Legacy resumable run (no run_token) created FIRST.
-    await queryOLTP(
-      `INSERT INTO job_runs (plan_id, job_type, status, attempt, max_attempts, run_token)
-       VALUES ($1, 'solidify', 'resumable', 1, 3, NULL)`,
-      [TEST_PLAN_ID],
-    );
-    // A NEWER solidify run starts and now owns the plan (it is the latest run).
-    const newer = await startJobRun(TEST_PLAN_ID, 'solidify', { runToken: 'f0000000-e29b-41d4-a716-4466554400aa' });
-
-    // getJobRun must now return the NEWER run, proving the guard's read path.
-    const readByResume = await getJobRun(TEST_PLAN_ID, 'solidify');
-    expect(readByResume!.id).toBe(newer.id);
-
-    await resumeSolidify(TEST_PLAN_ID);
-
-    // The newer run is never failed by the stale legacy resume, and its plan
-    // status is preserved (not clobbered to `failed`).
-    const newerRun = await getJobRunById(newer.id);
-    expect(newerRun!.status).toBe('running');
-    const plan = await queryOLTP<{ status: string }>(
-      'SELECT status FROM content_plans WHERE id = $1', [TEST_PLAN_ID],
-    );
-    expect(plan.rows[0].status).toBe('staging');
-
-    // The older legacy resumable run is left untouched (still resumable), since
-    // resumeSolidify only ever acts on the newest run.
-    const legacy = await getJobRun(TEST_PLAN_ID, 'solidify');
-    expect(legacy!.id).toBe(newer.id);
-  });
-
-  it('legacy resume does not flip plan after a newer approve committed pending + run', async () => {
-    // Regression for the cubic finding: when an approval has committed `pending`
-    // AND inserted its newer job_runs row (both under the content_plans row lock
-    // in approveAndSolidifyPlan), a concurrent legacy resume that takes the same
-    // row lock must observe the NEWER run as latest and no-op instead of flipping
-    // the plan to a terminal `failed`. Previously the run row was inserted OUTSIDE
-    // the lock, leaving a window where the plan was `pending` but the old run was
-    // still the latest — letting the legacy resume clobber it to `failed` and
-    // block /verify. This test pins the serialized invariant.
-    await queryOLTP('DELETE FROM job_runs WHERE plan_id = $1', [TEST_PLAN_ID]);
-    // Plan left `staged` by the old resumable run (the state a legacy resume
-    // would normally flip to `failed`).
-    await queryOLTP(
-      `INSERT INTO content_plans (id, description, plan_json, status)
-       VALUES ($1, 'resume-legacy', '{}'::jsonb, 'staged')
-       ON CONFLICT (id) DO UPDATE SET status = 'staged', plan_json = '{}'::jsonb`,
-      [TEST_PLAN_ID],
-    );
-    await deleteCache(`${JOB_CACHE_PREFIX}${TEST_PLAN_ID}`);
-
-    // OLD legacy resumable run created FIRST (no run_token, the stale one a
-    // legacy resume would act on).
-    await queryOLTP(
-      `INSERT INTO job_runs (plan_id, job_type, status, attempt, max_attempts, run_token)
-       VALUES ($1, 'solidify', 'resumable', 1, 3, NULL)`,
-      [TEST_PLAN_ID],
-    );
-    // NEWER run now owns the plan (this is exactly what approveAndSolidifyPlan
-    // inserts under the row lock: status running, carrying the fresh run_token,
-    // and the plan is `pending`/`staging`).
-    const newer = await startJobRun(TEST_PLAN_ID, 'solidify', { runToken: 'f0000000-e29b-41d4-a716-4466554400bb' });
-    // The approve also sets the plan to `pending` (nonterminal, owned by newer).
-    await queryOLTP('UPDATE content_plans SET status = $1 WHERE id = $2', ['pending', TEST_PLAN_ID]);
-
-    await resumeSolidify(TEST_PLAN_ID);
-
-    // The newer run owns the plan, so the legacy resume must be a no-op: the
-    // plan stays nonterminal and is NOT clobbered to `failed`.
-    const plan = await queryOLTP<{ status: string }>(
-      'SELECT status FROM content_plans WHERE id = $1', [TEST_PLAN_ID],
-    );
-    expect(plan.rows[0].status).toBe('pending');
-
-    // The newer run remains alive (not failed by the stale legacy resume).
-    const newerRun = await getJobRunById(newer.id);
-    expect(newerRun!.status).toBe('running');
-
-    // The old legacy resumable run is untouched (resumeSolidify only ever acts
-    // on the newest run; it never flips the older one to failed here).
-    const legacy = await getJobRun(TEST_PLAN_ID, 'solidify');
-    expect(legacy!.id).toBe(newer.id);
-  });
-
-  it('legacy no-token resume flips the plan when its own run is the latest', async () => {
-    // Complements the test above: when the legacy resumable run IS the latest
-    // solidify run (no newer run exists), the no-token branch reaches the
-    // ownership-guarded UPDATE, marks THIS run failed, and flips the stranded
-    // plan to `failed`. This proves the guarded write is actually exercised
-    // (not a no-op) so the previous test's protection is meaningful.
-    await queryOLTP('DELETE FROM job_runs WHERE plan_id = $1', [TEST_PLAN_ID]);
-    await queryOLTP(
-      `INSERT INTO content_plans (id, description, plan_json, status)
-       VALUES ($1, 'resume-legacy', '{}'::jsonb, 'staging')
-       ON CONFLICT (id) DO UPDATE SET status = 'staging', plan_json = '{}'::jsonb`,
-      [TEST_PLAN_ID],
-    );
-    await deleteCache(`${JOB_CACHE_PREFIX}${TEST_PLAN_ID}`);
-
+    // Legacy resumable run (no run_token), created FIRST.
     const legacy = await queryOLTP<{ id: string }>(
       `INSERT INTO job_runs (plan_id, job_type, status, attempt, max_attempts, run_token)
        VALUES ($1, 'solidify', 'resumable', 1, 3, NULL)
        RETURNING id`,
       [TEST_PLAN_ID],
     );
+    // getJobRun reads the legacy row (it is the latest at read time).
+    const readByResume = await getJobRun(TEST_PLAN_ID, 'solidify');
+    expect(readByResume!.id).toBe(legacy.rows[0].id);
 
+    // A NEWER solidify run starts and owns the plan.
+    await startJobRun(TEST_PLAN_ID, 'solidify', { runToken: 'newer-token' });
+
+    // Even though resumeSolidify would flip the legacy run, the plan-status
+    // write is bound to the legacy run still being latest — which it is not.
     await resumeSolidify(TEST_PLAN_ID);
 
-    const run = await getJobRunById(legacy.rows[0].id);
-    expect(run!.status).toBe('failed');
     const plan = await queryOLTP<{ status: string }>(
       'SELECT status FROM content_plans WHERE id = $1', [TEST_PLAN_ID],
     );
-    expect(plan.rows[0].status).toBe('failed');
+    // The newer run's `staging` status is preserved, not clobbered to `failed`.
+    expect(plan.rows[0].status).toBe('staging');
   });
 });

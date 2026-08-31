@@ -219,3 +219,49 @@ export function parseAmendArgs(argv: string[]): AmendCliOptions {
   if (userId && userEmail) throw new Error('Use either --user-id or --user-email, not both');
   return { planId, annotations, instruction, userId, userEmail, adminUrl };
 }
+
+// ---------------------------------------------------------------------------
+// plan:diff — render a plan's canonical-before vs proposed-after, field-by-field.
+//
+// Read-only: it never touches canonical content or re-runs an action against the
+// plan. New entities (ADD deltas) show as pure "proposed" with no "before" side.
+// ---------------------------------------------------------------------------
+
+export interface PlanDiffCliOptions {
+  planId: string;
+  adminUrl?: string;
+}
+
+export function planDiffUsage(): string {
+  return [
+    'Usage: npm run plan:diff --workspace=server -- <planId> [options]',
+    '',
+    'Options:',
+    '  --admin-url <url>      Review UI base URL (default http://localhost:3002)',
+  ].join('\n');
+}
+
+export function parsePlanDiffArgs(argv: string[]): PlanDiffCliOptions {
+  let planId: string | undefined;
+  let adminUrl: string | undefined;
+
+  for (let i = 2; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg === '--help' || arg === '-h') {
+      console.log(planDiffUsage());
+      process.exit(0);
+    }
+    if (arg === '--admin-url') {
+      adminUrl = argv[++i];
+      continue;
+    }
+    if (arg.startsWith('--')) {
+      throw new Error(`Unknown option: ${arg}\n\n${planDiffUsage()}`);
+    }
+    if (planId) throw new Error(`Unexpected argument: ${arg}\n\n${planDiffUsage()}`);
+    planId = arg;
+  }
+
+  if (!planId) throw new Error(`A planId is required.\n\n${planDiffUsage()}`);
+  return { planId, adminUrl };
+}

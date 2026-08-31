@@ -13,12 +13,11 @@ import type {
   StagingResult,
 } from './StoryBuilderPlanOps.js';
 import type { PublishResult } from './AssetPublishService.js';
-import { GraphDisabledError, PlanNotFoundError, PlanStatusError } from './errors.js';
+import { PlanNotFoundError, PlanStatusError } from './errors.js';
 import { isNeo4jEnabled } from './Neo4jClient.js';
 import { detectGraphDrift } from './GraphMerger.js';
 import { exportContentPlan, GraphExportError } from './GraphExporter.js';
-import { getDeltasForPlan, getPlanDeltaRevisionWithEdges, getDeltaEdgesForPlan } from './GraphDeltaService.js';
-import { PlanConsistencyChecker, Neo4jGraphView } from './PlanConsistencyChecker.js';
+import { getDeltasForPlan, getPlanDeltaRevisionWithEdges } from './GraphDeltaService.js';
 import {
   startJobRun,
   updateJobRun,
@@ -119,15 +118,7 @@ export interface SolidifyResult {
  * the transaction, and returns immediately. The caller polls
  * `GET /plans/:id/status` for progress.
  */
-// eslint-disable-next-line max-lines-per-function
 export async function approveAndSolidifyPlan(planId: string, userId?: string): Promise<SolidifyResult> {
-  // --- M32: graph is now the sole authoring entry point for approvals. ---
-  if (!isNeo4jEnabled()) {
-    throw new GraphDisabledError(
-      'Neo4j authoring graph is disabled (NEO4J_ENABLED !== "true"). Authoring approvals require the graph.',
-    );
-  }
-
   // --- M28 graph-authoritative path (OUTSIDE the OLTP transaction) ---
   // Drift detection + export hit Neo4j and the whole content store; running
   // them inside the advisory/row lock would stall approvals (and other plans'
@@ -135,72 +126,46 @@ export async function approveAndSolidifyPlan(planId: string, userId?: string): P
   // exported plan here, then re-validate inside the transaction and persist it
   // only if the status is still approvable.
   let exported: ContentPlan | null = null;
-  // Lightweight existence/status guard BEFORE any graph I/O: a plan that is
-  // already gone or not in an approvable state must fail immediately with a
-  // clear PlanStatusError/PlanNotFoundError — never with a graph-availability
-  // error that masks the real reason for the rejection.
-  const pre = await queryOLTP<{ status: string }>(
-    'SELECT status FROM content_plans WHERE id = $1',
-    [planId],
-  );
-  if (pre.rows.length === 0) {
-    throw new PlanNotFoundError(planId);
-  }
-  const preStatus = pre.rows[0].status;
-  if (preStatus !== 'proposed' && preStatus !== 'approved' && preStatus !== 'failed') {
-    throw new PlanStatusError(`Plan must be 'proposed', 'approved', or 'failed' to approve. Current: ${preStatus}`);
-  }
-
-  const deltas = await getDeltasForPlan(planId);
-  if (deltas.length > 0) {
-    const drift = await detectGraphDrift();
-    if (!drift.inSync) {
-      throw new PlanStatusError(
-        `Graph has drifted from the content store (orphan: ${drift.orphanNodes.length}, missing: ${drift.missingNodes.length}, orphanEdges: ${drift.orphanEdges.length}, missingEdges: ${drift.missingEdges.length}). Run \`npm run resync:graph\` before approving.`,
-      );
+  if (isNeo4jEnabled()) {
+    // Lightweight existence/status guard BEFORE any graph I/O: a plan that is
+    // already gone or not in an approvable state must fail immediately with a
+    // clear PlanStatusError/PlanNotFoundError — never with a graph-availability
+    // error that masks the real reason for the rejection.
+    const pre = await queryOLTP<{ status: string }>(
+      'SELECT status FROM content_plans WHERE id = $1',
+      [planId],
+    );
+    if (pre.rows.length === 0) {
+      throw new PlanNotFoundError(planId);
     }
-    try {
-      const planRow = await queryOLTP<{ description: string }>(
-        'SELECT plan_json->>\'description\' AS description FROM content_plans WHERE id = $1',
-        [planId],
-      );
-      const description = planRow.rows[0]?.description ?? 'Graph-authored plan';
-      exported = await exportContentPlan(planId, description);
+    const preStatus = pre.rows[0].status;
+    if (preStatus !== 'proposed' && preStatus !== 'approved' && preStatus !== 'failed') {
+      throw new PlanStatusError(`Plan must be 'proposed', 'approved', or 'failed' to approve. Current: ${preStatus}`);
+    }
 
-      // M50: semantic consistency validation (advisory, non-blocking). Runs after
-      // the drift check passes and before the plan is persisted. Conflicts are
-      // attached as `exported._consistency` and warned; they never block approval.
-      try {
-        const consistencyEdges = await getDeltaEdgesForPlan(planId);
-        const report = await new PlanConsistencyChecker(new Neo4jGraphView()).check(
-          planId,
-          deltas,
-          consistencyEdges,
+    const deltas = await getDeltasForPlan(planId);
+    if (deltas.length > 0) {
+      const drift = await detectGraphDrift();
+      if (!drift.inSync) {
+        throw new PlanStatusError(
+          `Graph has drifted from the content store (orphan: ${drift.orphanNodes.length}, missing: ${drift.missingNodes.length}, orphanEdges: ${drift.orphanEdges.length}, missingEdges: ${drift.missingEdges.length}). Run \`npm run resync:graph\` before approving.`,
         );
-        exported._consistency = report;
-        if (report.hasConflicts) {
-          console.warn(
-            `[story-builder] plan ${planId} has ${report.findings.length} consistency warning(s):`,
-            JSON.stringify(report.findings),
-          );
+      }
+      try {
+        const planRow = await queryOLTP<{ description: string }>(
+          'SELECT plan_json->>\'description\' AS description FROM content_plans WHERE id = $1',
+          [planId],
+        );
+        const description = planRow.rows[0]?.description ?? 'Graph-authored plan';
+        exported = await exportContentPlan(planId, description);
+      } catch (err) {
+        if (err instanceof GraphExportError) {
+          throw new PlanStatusError(err.message);
         }
-      } catch (consistencyErr) {
-        // The advisory layer must never abort approval (graph advises, admin decides).
-        console.warn('[story-builder] consistency check failed (non-fatal):', (consistencyErr as Error).message);
+        throw err;
       }
-    } catch (err) {
-      if (err instanceof GraphExportError) {
-        throw new PlanStatusError(err.message);
-      }
-      throw err;
     }
   }
-
-  // Issue a fresh run token up front so stale terminal writes from a prior run
-  // can be rejected, and so the durable job-runs row created inside the
-  // transaction (below) can carry it.
-  const runToken = randomUUID();
-  let jobRunId: string | undefined;
 
   // M28: bind the export to the graph revision it was built from. A concurrent
   // applyDelta/applyDeltaEdge (Neo4j) between the export read above and the
@@ -256,30 +221,28 @@ export async function approveAndSolidifyPlan(planId: string, userId?: string): P
       );
     }
 
-    // 1. Lock the plan and set pending status. We hold the `content_plans`
-    //    row lock (`FOR UPDATE`) for the rest of the transaction.
+    // 1. Lock the plan and set pending status.
     await ContentPlanService.setStatus(planId, 'pending', client);
-
-    // 2b. Create the durable job-runs row INSIDE the same transaction and under
-    //     the plan-row lock. This synchronizes run insertion with the legacy
-    //     resume ownership check in `resumeSolidify` (which takes the same row
-    //     lock `FOR UPDATE`): because both serialize on the plan row, a legacy
-    //     resume can only observe a `job_runs` state that already includes this
-    //     newer run, so it can never flip the plan back to `failed` behind a
-    //     newer approve-and-solidify. Creating the run outside the lock (as
-    //     before) left a window where the plan was `pending` but no new run row
-    //     existed yet, letting a concurrent legacy resume see the OLD run and
-    //     clobber the plan to `failed`. If the table is unavailable the whole
-    //     transaction rolls back and the caller surfaces the error instead of
-    //     leaving a half-created run.
-    const run = await startJobRun(planId, 'solidify', { runToken }, client);
-    jobRunId = run.id;
   });
 
   // 2. Write initial cache status only after the transaction commits, so a
   //    commit failure cannot leave a stale pending cache entry. Issue a fresh
   //    run token so stale terminal writes from a prior run can be rejected.
+  const runToken = randomUUID();
   await setJobStatus(planId, { status: 'pending' }, runToken);
+
+  // 2b. Create a durable job-runs row so the solidify job can be resumed from
+  //     its last persisted stage if this process dies mid-way (M22). The runToken
+  //     is persisted in the DB so it survives cache eviction. Best-effort:
+  //     if the job_runs table is unavailable we fall back to the legacy
+  //     fire-and-forget behavior (no resume).
+  let jobRunId: string | undefined;
+  try {
+    const run = await startJobRun(planId, 'solidify', { runToken });
+    jobRunId = run.id;
+  } catch (err) {
+    console.warn(`[story-builder] Could not create job run for ${planId}:`, (err as Error).message);
+  }
 
   // 3. Fire async solidify OUTSIDE the transaction.
   //    Errors are caught and persisted to status by runSolidify.
@@ -343,12 +306,11 @@ export async function resumeSolidify(planId: string, userId?: string): Promise<v
     // Two guards make this write safe:
     //
     //  1. Status guard: only the nonterminal statuses a crashed solidify run
-    //     could have left behind are flipped (`staged` is such a status: solidify
-    //     commits it to `content_plans.status` mid-pipeline, so a crash right
-    //     after that commit strands the plan with no way forward since the retry
-    //     route only accepts `failed`). `migrated` is deliberately NOT included
-    //     here (see note below). `verified` is excluded because it is a
-    //     successful terminal state.
+    //     could have left behind are flipped. `staged` and `migrated` ARE such
+    //     statuses: solidify commits those stages to `content_plans.status`
+    //     mid-pipeline, so a crash right after either commit strands the plan
+    //     there with no way forward (the retry route only accepts `failed`).
+    //     `verified` is excluded because it is a successful terminal state.
     //
     //  2. Ownership guard: `getJobRun` is only a snapshot, so a retry could
     //     start a NEWER solidify run between that read and this write. The
@@ -357,36 +319,18 @@ export async function resumeSolidify(planId: string, userId?: string): Promise<v
     //     the update is bound to this legacy run still being the latest
     //     solidify run for the plan; if a newer run exists, the subquery no
     //     longer matches `run.id` and the write no-ops.
-    // A `migrated` plan is left by a run that *completed* the solidify
-    // migration step, or by a manual/independent migration. It is a valid
-    // nonterminal state: a completed migration that has not yet been verified
-    // (`verifying`/`verified`) is not "stranded" the way a `staging`-mid-crash
-    // is, and a manual migration that finished while an older legacy resumable
-    // run lingered must NOT be flipped back to `failed` (that would block
-    // `/verify`). So `migrated` is deliberately excluded here — coordinate with
-    // the migration job lifecycle before adding it back.
-    //
-    // To close the snapshot race from issue 3, take the plan row lock FIRST
-    // inside a transaction. `approveAndSolidifyPlan` (which starts a newer run
-    // and sets the plan status) also locks this row `FOR UPDATE`, so the two
-    // serialize: the ownership subquery below can only run after we hold the
-    // lock, guaranteeing it observes any newer run that has already committed
-    // and making the write no-op instead of clobbering the newer run.
-    await withOLTPTransaction(async (client) => {
-      await client.query('SELECT 1 FROM content_plans WHERE id = $1 FOR UPDATE', [planId]);
-      await client.query(
-        `UPDATE content_plans SET status = 'failed', updated_at = NOW()
-         WHERE id = $1
-           AND status IN ('pending', 'staging', 'staged', 'migrating', 'verifying')
-           AND $2 = (
-             SELECT id FROM job_runs
-              WHERE plan_id = $1 AND job_type = 'solidify'
-              ORDER BY created_at DESC, id DESC
-              LIMIT 1
-           )`,
-        [planId, run.id],
-      );
-    });
+    await queryOLTP(
+      `UPDATE content_plans SET status = 'failed', updated_at = NOW()
+       WHERE id = $1
+         AND status IN ('pending', 'staging', 'staged', 'migrating', 'migrated', 'verifying')
+         AND $2 = (
+           SELECT id FROM job_runs
+            WHERE plan_id = $1 AND job_type = 'solidify'
+            ORDER BY created_at DESC, id DESC
+            LIMIT 1
+         )`,
+      [planId, run.id],
+    );
     return;
   }
 

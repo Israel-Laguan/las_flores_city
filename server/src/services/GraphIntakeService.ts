@@ -28,6 +28,7 @@ import {
   GraphDeltaEdgeSchema,
   type GraphDelta,
   type GraphDeltaEdge,
+  type GraphDeltaOp,
   type IntakeDiagnostic,
   type IntakeNote,
   type ResolutionBlock,
@@ -45,7 +46,7 @@ import { emitAdminEvent } from './AdminEventEmitter.js';
 import { contentPlanService } from './ContentPlanService.js';
 import { resolveContentDir } from './StoryBuilderLore.js';
 import { applyDelta, applyDeltaEdge, getDeltasForPlan, getDeltaEdgesForPlan, clearDeltasForPlan, partitionDeltas, partitionDeltaEdges, deltaKey, normalizeKeyComponent, resolveEdgeTargetNameValue } from './GraphDeltaService.js';
-import { isNeo4jEnabled, runNeo4jTransaction } from './Neo4jClient.js';
+import { isNeo4jEnabled, runNeo4jTransaction, runNeo4jQuery } from './Neo4jClient.js';
 import { EntityResolutionService } from './EntityResolutionService.js';
 import { Neo4jCandidateSource } from './Neo4jCandidateSource.js';
 import { PlanAwareCandidateSource } from './PlanAwareCandidateSource.js';
@@ -106,9 +107,44 @@ export interface AmendInstructionResult {
   reply: string;
   deltaCount: number;
   edgeCount: number;
+  /** Full delta list (fields + prose) for the refreshed plan. */
+  deltas: GraphDelta[];
+  /** Full edge list for the refreshed plan. */
+  edges: GraphDeltaEdge[];
   notes: IntakeNote[];
   reviewUrl?: string;
   next: string;
+}
+
+/** One field's canonical-before vs proposed-after comparison within a delta diff. */
+export interface PlanFieldDiff {
+  field: string;
+  before: unknown;
+  after: unknown;
+  change: 'added' | 'removed' | 'modified' | 'unchanged';
+}
+
+/** A single delta rendered as a canonical-before vs proposed-after comparison. */
+export interface PlanDeltaDiff {
+  nodeType: string;
+  nodeId: string;
+  op: GraphDeltaOp;
+  name: string;
+  /** Canonical field set (`null` for ADD deltas / when the graph is unavailable). */
+  before: Record<string, unknown> | null;
+  /** Proposed field set (`null` for DELETE deltas). */
+  after: Record<string, unknown> | null;
+  /** Field-by-field comparison, keyed over the union of before/after field names. */
+  fields: PlanFieldDiff[];
+  /** Resolution blocks carried on the delta (intake ambiguity surfacing). */
+  resolution?: ResolutionBlock[];
+}
+
+/** Full structured diff for a plan: per-delta before/after + the raw deltas/edges. */
+export interface PlanDiffResult {
+  planId: string;
+  deltas: PlanDeltaDiff[];
+  edges: GraphDeltaEdge[];
 }
 
 /** Reject DELETE deltas before synthesis — the legacy ContentPlanItem contract
@@ -1035,12 +1071,111 @@ export class GraphIntakeService {
       reply: proposal.reply,
       deltaCount: graph.deltas.length,
       edgeCount: graph.edges.length,
+      deltas: graph.deltas,
+      edges: graph.edges,
       notes,
       reviewUrl: adminUrl ?? process.env.ADMIN_URL ?? 'http://localhost:3002',
       next: notes.length > 0
         ? 'Some references are still unresolved — reply to the remaining notes below.'
         : 'Instruction applied. Review the plan before invoking approval/solidify; no content files or canonical rows were changed.',
     };
+  }
+
+  /**
+   * Resolve the canonical field set for a base `:Content` node (planId IS null).
+   * Returns `null` when the graph is off, the node does not exist, or the read
+   * fails — the diff callers treat a `null` "before" as "no canonical counterpart"
+   * (true for ADD deltas, or for an unexpected read error on a MODIFY/DELETE).
+   */
+  private async getCanonicalFields(
+    nodeType: string,
+    nodeId: string,
+  ): Promise<{ name: string; fields: Record<string, unknown> } | null> {
+    if (!isNeo4jEnabled()) return null;
+    try {
+      const rows = await runNeo4jQuery<{ name: unknown; fieldsJson: unknown }>(
+        `MATCH (c:Content { nodeType: $nodeType, nodeId: $nodeId })
+         WHERE c.planId IS null
+         RETURN c.name AS name, c.fieldsJson AS fieldsJson`,
+        { nodeType, nodeId: nodeId.toLowerCase() },
+      );
+      if (rows.length === 0) return null;
+      const fields: Record<string, unknown> = {};
+      const raw = rows[0].fieldsJson;
+      if (typeof raw === 'string') {
+        try { Object.assign(fields, JSON.parse(raw)); } catch { /* ignore malformed */ }
+      } else if (raw && typeof raw === 'object') {
+        Object.assign(fields, raw as Record<string, unknown>);
+      }
+      return {
+        name: typeof rows[0].name === 'string' ? rows[0].name : nodeId,
+        fields,
+      };
+    } catch (err) {
+      console.warn('[graph-intake] canonical field lookup failed:', (err as Error)?.message);
+      return null;
+    }
+  }
+
+/**
+ * M50 Part 2 (numeral 2) — structured canonical-before vs proposed-after diff for
+ * every delta currently in a plan, field-by-field including prose. New entities
+   * (ADD deltas) have no canonical counterpart, so their "before" is `null` and
+   * every field shows as `added`. DELETE deltas invert this: the "after" is `null`
+   * and every field is `removed`. MODIFY deltas compare the full proposed shadow
+   * against the canonical field set.
+   *
+   * This is the CLI-testable precursor to M52's diff rendering: it proves the
+   * data/shape (before/after per field), and the admin UI only needs to render it.
+   */
+  async buildPlanDiff(planId: string): Promise<PlanDiffResult> {
+    const { deltas, edges } = await this.getPlanDeltas(planId);
+    const result: PlanDeltaDiff[] = [];
+
+    for (const delta of deltas) {
+      const proposed = delta.op === 'DELETE' ? null : delta.fields;
+      let canonical: { name: string; fields: Record<string, unknown> } | null = null;
+      if (delta.op !== 'ADD') {
+        canonical = await this.getCanonicalFields(delta.nodeType, delta.nodeId);
+      }
+      const before = delta.op === 'ADD' ? null : (canonical?.fields ?? null);
+      const name = (typeof delta.fields?.name === 'string' && delta.fields.name.length > 0)
+        ? delta.fields.name
+        : (canonical?.name ?? delta.nodeId);
+
+      // Flatten nested objects (e.g. `metadata.personality`) into dotted keys so the
+      // diff surfaces the exact changed sub-field, not just "metadata changed". Arrays
+      // stay atomic (compared as a whole) so a reordered list reads as `modified`.
+      const flatBefore = flattenFields(before);
+      const flatAfter = flattenFields(proposed);
+      const keySet = new Set<string>([...Object.keys(flatBefore), ...Object.keys(flatAfter)]);
+      const fields: PlanFieldDiff[] = [];
+      for (const field of keySet) {
+        const beforeHas = Object.prototype.hasOwnProperty.call(flatBefore, field);
+        const afterHas = Object.prototype.hasOwnProperty.call(flatAfter, field);
+        const b = beforeHas ? flatBefore[field] : undefined;
+        const a = afterHas ? flatAfter[field] : undefined;
+        let change: PlanFieldDiff['change'];
+        if (!beforeHas && afterHas) change = 'added';
+        else if (beforeHas && !afterHas) change = 'removed';
+        else if (JSON.stringify(b) !== JSON.stringify(a)) change = 'modified';
+        else change = 'unchanged';
+        fields.push({ field, before: b, after: a, change });
+      }
+
+      result.push({
+        nodeType: delta.nodeType,
+        nodeId: delta.nodeId,
+        op: delta.op,
+        name,
+        before,
+        after: proposed,
+        fields,
+        ...(delta._resolution ? { resolution: delta._resolution } : {}),
+      });
+    }
+
+    return { planId, deltas: result, edges };
   }
 
   /**
@@ -1142,6 +1277,25 @@ export class GraphIntakeService {
   private async gatherContext(): Promise<ExistingContentContext> {
     return contentPlanService.gatherContext();
   }
+}
+
+/** Flatten nested objects into dotted keys (e.g. `metadata.personality`), keeping
+ *  arrays atomic, so a field-by-field diff can pinpoint the exact changed sub-field. */
+function flattenFields(
+  obj: Record<string, unknown> | null | undefined,
+  prefix = '',
+): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  if (!obj || typeof obj !== 'object') return out;
+  for (const [key, value] of Object.entries(obj)) {
+    const path = prefix ? `${prefix}.${key}` : key;
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      Object.assign(out, flattenFields(value as Record<string, unknown>, path));
+    } else {
+      out[path] = value;
+    }
+  }
+  return out;
 }
 
 /** Singleton export for route handlers. */
