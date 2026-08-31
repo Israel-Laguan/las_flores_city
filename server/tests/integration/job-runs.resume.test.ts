@@ -193,7 +193,7 @@ describe('job_runs resume integration', () => {
     expect(readByResume!.id).toBe(legacy.rows[0].id);
 
     // A NEWER solidify run starts and owns the plan.
-    await startJobRun(TEST_PLAN_ID, 'solidify', { runToken: 'newer-token' });
+    await startJobRun(TEST_PLAN_ID, 'solidify', { runToken: 'f0000000-e29b-41d4-a716-446655440099' });
 
     // Even though resumeSolidify would flip the legacy run, the plan-status
     // write is bound to the legacy run still being latest — which it is not.
