@@ -1258,7 +1258,7 @@ export class GraphIntakeService {
       // Canonical fields are stored as node properties (GraphBaseService.upsertContentNode
       // does `SET c = $props`), not as a fieldsJson blob. Read properties(c) and strip
       // the graph identity/partition properties so diffing compares author fields only.
-      const reserved = new Set(['key', 'nodeType', 'nodeId', 'planId', 'isEvidence', 'name']);
+      const reserved = new Set(['key', 'nodeType', 'nodeId', 'planId', 'isEvidence']);
       const fields: Record<string, unknown> = {};
       for (const [k, v] of Object.entries(rows[0].props ?? {})) {
         if (!reserved.has(k)) fields[k] = v;

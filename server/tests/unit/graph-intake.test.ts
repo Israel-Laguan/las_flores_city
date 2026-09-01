@@ -386,11 +386,11 @@ describe('GraphIntakeService — unit tests (Neo4j mocked)', () => {
       runNeo4jSpy.mockImplementation(async () => [
         {
           name: 'Existing',
-          fieldsJson: JSON.stringify({
+          props: {
             name: 'Existing',
             description: 'Old lore',
             metadata: { personality: 'Cheerful', backstory: 'Old' },
-          }),
+          },
         },
       ]);
 
@@ -429,7 +429,7 @@ describe('GraphIntakeService — unit tests (Neo4j mocked)', () => {
       mockGetDeltaEdgesForPlan.mockResolvedValueOnce([]);
       const runNeo4jSpy = runNeo4jQuery as unknown as Mock<(...a: any[]) => Promise<any[]>>;
       runNeo4jSpy.mockImplementation(async () => [
-        { name: 'Rooftop Vigil', fieldsJson: JSON.stringify({ name: 'Rooftop Vigil', district: 'Industrial' }) },
+        { name: 'Rooftop Vigil', props: { name: 'Rooftop Vigil', district: 'Industrial' } },
       ]);
 
       const service = new GraphIntakeService();

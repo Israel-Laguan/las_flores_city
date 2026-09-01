@@ -14,6 +14,7 @@ import {
   reviewUrl,
   type PlanDiffCliOptions,
 } from '../src/planIntakeCore.js';
+import { isNeo4jEnabled } from '../src/services/Neo4jClient.js';
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(SCRIPT_DIR, '../..');
@@ -36,6 +37,14 @@ async function main(): Promise<void> {
       throw new Error(`Plan ${options.planId} not found`);
     }
     const status = planRow.rows[0].status;
+
+    // buildPlanDiff returns empty arrays when the authoring graph is disabled; a
+    // populated plan must never be reported as a successful zero-delta diff just
+    // because the graph is off. Fail loudly so missing graph data is not mistaken
+    // for "no changes".
+    if (!isNeo4jEnabled()) {
+      throw new Error('Neo4j authoring graph is disabled — enable NEO4J_ENABLED to diff plan deltas.');
+    }
 
     const diff = await graphIntakeService.buildPlanDiff(options.planId);
 

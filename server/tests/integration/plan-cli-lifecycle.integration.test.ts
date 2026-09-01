@@ -48,6 +48,10 @@ import { GraphIntakeValidationError } from '../../src/services/GraphIntakeServic
 const USER_ID = 'b0500000-0000-4000-8000-0000000000a1';
 const USER_EMAIL = 'plan_cli_intake_t@example.com';
 
+// Second synthetic user used by the --created-by filter test; deleted in afterAll so a
+// mid-test assertion failure cannot leak its users row.
+const OTHER_USER_ID = 'b0500000-0000-4000-8000-0000000000a2';
+
 const PLAN_REJECT = 'b0500000-0000-4000-8000-0000000000b1';
 const PLAN_DELETE = 'b0500000-0000-4000-8000-0000000000b2';
 const PLAN_GET = 'b0500000-0000-4000-8000-0000000000b3';
@@ -180,7 +184,7 @@ afterAll(async () => {
     ]) {
       await cleanupPlanArtifacts(id);
     }
-    await queryOLTP('DELETE FROM critique_annotations WHERE id IN ($1, $2, $3, $4, $5)', [
+    await queryOLTP('DELETE FROM critique_annotations WHERE id IN ($1, $2, $3, $4, $5, $6)', [
       ANNOTATION_REJECT_A,
       ANNOTATION_REJECT_B,
       ANNOTATION_DELETE,
@@ -192,6 +196,7 @@ afterAll(async () => {
       PLAN_DIFF_PREFIX,
     ]).catch(() => {});
     await queryOLTP('DELETE FROM users WHERE id = $1', [USER_ID]).catch(() => {});
+    await queryOLTP('DELETE FROM users WHERE id = $1', [OTHER_USER_ID]).catch(() => {});
   } finally {
     await closeNeo4j();
   }
@@ -467,7 +472,7 @@ describe('M50 plan:list CLI — integration', () => {
     const service = new GraphIntakeService();
     // Insert another user-owned plan to ensure the filter is exact, not "at
     // least one match". Other-user plan is deleted in afterAll via cascade.
-    const OTHER_USER = 'b0500000-0000-4000-8000-0000000000a2';
+    const OTHER_USER = OTHER_USER_ID;
     await queryOLTP(
       `INSERT INTO users (id, username, email, display_name, password_hash)
        VALUES ($1, 'plan_cli_intake_t2', $2, 'Plan CLI Intake 2', 'x')
@@ -489,8 +494,6 @@ describe('M50 plan:list CLI — integration', () => {
     const theirs = await service.listPlans({ createdBy: OTHER_USER, status: 'proposed' });
     expect(theirs.map((r) => r.id)).toEqual([OTHER_PLAN]);
 
-    // Clean up the second user too.
-    await queryOLTP('DELETE FROM users WHERE id = $1', [OTHER_USER]).catch(() => {});
   });
 
   test('--since filter excludes plans created before the lower bound', async () => {

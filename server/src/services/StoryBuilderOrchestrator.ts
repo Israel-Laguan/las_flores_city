@@ -355,11 +355,20 @@ export async function resumeSolidify(planId: string, userId?: string): Promise<v
     // Two guards make this write safe:
     //
     //  1. Status guard: only the nonterminal statuses a crashed solidify run
-    //     could have left behind are flipped. `staged` and `migrated` ARE such
-    //     statuses: solidify commits those stages to `content_plans.status`
-    //     mid-pipeline, so a crash right after either commit strands the plan
-    //     there with no way forward (the retry route only accepts `failed`).
-    //     `verified` is excluded because it is a successful terminal state.
+    //     could have left behind are flipped. The transient statuses
+    //     (`pending`/`staging`/`migrating`/`verifying`) are written ONLY by
+    //     runSolidify (never by the manual /stage or /migrate routes), so a crash
+    //     mid-stage always strands the plan in one of them and they can be
+    //     flipped unconditionally. `staged` and `migrated`, however, are ALSO
+    //     set by the manual /stage and /migrate routes WITHOUT creating a
+    //     solidify job run. Flipping them purely on status would let a stale
+    //     legacy resumable run clobber a plan that was staged/migrated manually
+    //     (e.g. a valid `migrated` plan flipped to `failed`, blocking /verify).
+    //     So for those two we additionally require that THIS legacy run's own
+    //     lifecycle committed the matching stage (`run.committedStages`): a
+    //     crash right after solidify's own commit leaves the marker set, while a
+    //     manual migration leaves it unset. `verified` is excluded because it is
+    //     a successful terminal state.
     //
     //  2. Ownership guard: `getJobRun` is only a snapshot, so a retry could
     //     start a NEWER solidify run between that read and this write. The
@@ -381,14 +390,18 @@ export async function resumeSolidify(planId: string, userId?: string): Promise<v
       await client.query(
         `UPDATE content_plans SET status = 'failed', updated_at = NOW()
          WHERE id = $1
-           AND status IN ('pending', 'staging', 'staged', 'migrating', 'migrated', 'verifying')
+           AND (
+             status IN ('pending', 'staging', 'migrating', 'verifying')
+             OR (status = 'staged' AND COALESCE($3::jsonb, '[]') ? 'staged')
+             OR (status = 'migrated' AND COALESCE($3::jsonb, '[]') ? 'migrated')
+           )
            AND $2 = (
              SELECT id FROM job_runs
               WHERE plan_id = $1 AND job_type = 'solidify'
               ORDER BY created_at DESC, id DESC
               LIMIT 1
            )`,
-        [planId, run.id],
+        [planId, run.id, JSON.stringify(run.committedStages ?? [])],
       );
     });
     return;

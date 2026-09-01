@@ -152,12 +152,18 @@ describe('job_runs resume integration', () => {
         [TEST_PLAN_ID, midStatus],
       );
       await deleteCache(`${JOB_CACHE_PREFIX}${TEST_PLAN_ID}`);
+      // Record the run's own lifecycle up to the crashed stage. The status guard
+      // only flips `staged`/`migrated` when THIS run committed the matching stage
+      // (so a manual /stage or /migrate is never clobbered by a stale run).
+      const committedStages =
+        midStatus === 'staged'
+          ? '["staging","publish","staged"]'
+          : '["staging","publish","staged","migrated"]';
       await queryOLTP(
-        `INSERT INTO job_runs (plan_id, job_type, status, attempt, max_attempts, run_token)
-         VALUES ($1, 'solidify', 'resumable', 1, 3, NULL)`,
-        [TEST_PLAN_ID],
+        `INSERT INTO job_runs (plan_id, job_type, status, attempt, max_attempts, run_token, committed_stages)
+         VALUES ($1, 'solidify', 'resumable', 1, 3, NULL, $2::jsonb)`,
+        [TEST_PLAN_ID, committedStages],
       );
-
       await resumeSolidify(TEST_PLAN_ID);
 
       const plan = await queryOLTP<{ status: string }>(
@@ -167,11 +173,13 @@ describe('job_runs resume integration', () => {
     },
   );
 
-  it('legacy no-token resume does NOT clobber a newer solidify run', async () => {
-    // Simulate the race the ownership guard defends against: the legacy
-    // resumable run is the one resumeSolidify reads, but a NEWER solidify run
-    // has since been started (e.g. a retry) and advanced the plan. The stale
-    // terminal write must no-op because the legacy run is no longer the latest.
+  it('legacy no-token resume is a no-op when a newer running solidify run owns the plan', async () => {
+    // resumeSolidify resolves the LATEST solidify run first (getJobRun). When the
+    // newest run is a newer `running` run that owns the plan, resumeSolidify
+    // returns early on `run.status !== 'resumable'` — the legacy no-token branch
+    // (and its plan-status write) is never reached, so the newer run's `staging`
+    // status is preserved. This exercises the newest-run-wins READ gate; the
+    // ownership-guard WRITE path itself is covered by the mid-pipeline flip tests.
     await queryOLTP('DELETE FROM job_runs WHERE plan_id = $1', [TEST_PLAN_ID]);
     await queryOLTP(
       `INSERT INTO content_plans (id, description, plan_json, status)
@@ -182,23 +190,23 @@ describe('job_runs resume integration', () => {
     await deleteCache(`${JOB_CACHE_PREFIX}${TEST_PLAN_ID}`);
 
     // Legacy resumable run (no run_token), created FIRST.
-    const legacy = await queryOLTP<{ id: string }>(
+    await queryOLTP(
       `INSERT INTO job_runs (plan_id, job_type, status, attempt, max_attempts, run_token)
-       VALUES ($1, 'solidify', 'resumable', 1, 3, NULL)
-       RETURNING id`,
+       VALUES ($1, 'solidify', 'resumable', 1, 3, NULL)`,
       [TEST_PLAN_ID],
     );
-    // getJobRun reads the legacy row (it is the latest at read time).
-    const readByResume = await getJobRun(TEST_PLAN_ID, 'solidify');
-    expect(readByResume!.id).toBe(legacy.rows[0].id);
-
     // A NEWER solidify run starts and owns the plan.
     await startJobRun(TEST_PLAN_ID, 'solidify', { runToken: 'f0000000-e29b-41d4-a716-446655440099' });
 
-    // Even though resumeSolidify would flip the legacy run, the plan-status
-    // write is bound to the legacy run still being latest — which it is not.
     await resumeSolidify(TEST_PLAN_ID);
 
+    // resumeSolidify early-returned on the newer `running` run, so it neither
+    // flipped the legacy run to failed nor modified the plan status.
+    const runs = await queryOLTP<{ status: string }>(
+      'SELECT status FROM job_runs WHERE plan_id = $1 ORDER BY created_at ASC, id ASC',
+      [TEST_PLAN_ID],
+    );
+    expect(runs.rows.map((r) => r.status)).toEqual(['resumable', 'running']);
     const plan = await queryOLTP<{ status: string }>(
       'SELECT status FROM content_plans WHERE id = $1', [TEST_PLAN_ID],
     );
