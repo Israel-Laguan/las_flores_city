@@ -1147,13 +1147,57 @@ export class GraphIntakeService {
         .map((d) => deltaKey(d.nodeType, d.nodeId)),
     );
     const filteredDeltas = resolvedDeltas.filter((d) => !excludedKeys.has(deltaKey(d.nodeType, d.nodeId)));
-    const remainingKeys = new Set(filteredDeltas.map((d) => deltaKey(d.nodeType, d.nodeId)));
+    // Retain edges whose source is EITHER a newly-applied delta (filteredDeltas)
+    // OR a surviving existing delta (existingGraph.deltas). An amendment edge
+    // referencing an existing plan delta as its source must not be dropped just
+    // because that source isn't part of this amendment's new deltas.
+    const remainingKeys = new Set<string>([
+      ...filteredDeltas.map((d) => deltaKey(d.nodeType, d.nodeId)),
+      ...existingGraph.deltas.map((d) => deltaKey(d.nodeType, d.nodeId)),
+    ]);
     const filteredEdges = proposal.deltaEdges.filter((e) => remainingKeys.has(deltaKey(e.sourceNodeType, e.sourceNodeId)));
 
-    // applyDeltas is the fail-open write gate: a MODIFY/DELETE against a
-    // same-plan :ContentDelta now MERGEs in place (partitionDeltas accepts it);
-    // a genuinely missing base is dropped and reported as a diagnostic.
-    const result = await chatService.applyDeltas(planId, filteredDeltas, filteredEdges);
+    // Serialize the graph write with rejectPlan/deletePlan. A concurrent
+    // reject could clear the graph deltas and mark the row rejected after our
+    // status check but before applyDeltas — this amendment would then recreate
+    // graph deltas for a rejected plan. A concurrent delete could remove the row,
+    // after which this amendment creates orphaned graph deltas. Acquire the
+    // per-plan advisory lock BEFORE the graph write and revalidate status.
+    let applyResult: Awaited<ReturnType<typeof chatService.applyDeltas>> | null = null;
+    const lockResult = await queryOLTP<{ locked: boolean }>(
+      'SELECT pg_try_advisory_lock(hashtext($1)) AS locked',
+      [`plan-lifecycle:${planId}`],
+    );
+    if (!lockResult.rows[0]?.locked) {
+      // Could not acquire immediately — wait for the lock (blocking).
+      await queryOLTP('SELECT pg_advisory_lock(hashtext($1))', [`plan-lifecycle:${planId}`]);
+    }
+    try {
+      // Revalidate the plan still exists and is still proposed after acquiring
+      // the lock. A concurrent reject/delete may have changed state.
+      const recheck = await queryOLTP<{ status: string }>(
+        'SELECT status FROM content_plans WHERE id = $1',
+        [planId],
+      );
+      if (recheck.rows.length === 0) {
+        throw new GraphIntakeValidationError(`Plan ${planId} not found — it was deleted by another operation.`);
+      }
+      if (recheck.rows[0].status !== 'proposed') {
+        throw new GraphIntakeValidationError(
+          `Plan ${planId} has status '${recheck.rows[0].status}' — only a 'proposed' plan can be amended.`,
+        );
+      }
+
+      // applyDeltas is the fail-open write gate: a MODIFY/DELETE against a
+      // same-plan :ContentDelta now MERGEs in place (partitionDeltas accepts it);
+      // a genuinely missing base is dropped and reported as a diagnostic.
+      applyResult = await chatService.applyDeltas(planId, filteredDeltas, filteredEdges);
+    } finally {
+      await queryOLTP('SELECT pg_advisory_unlock(hashtext($1))', [`plan-lifecycle:${planId}`]);
+    }
+    // applyResult is guaranteed to be set because applyDeltas always returns;
+    // if it threw, we wouldn't reach this point.
+    const result = applyResult;
 
     // Serialize the graph refresh per plan. Two concurrent amendments to the same
     // plan can otherwise interleave: request A writes, request B writes and
@@ -1373,14 +1417,15 @@ export class GraphIntakeService {
   }
 
   /**
-   * Soft-terminal state set used by `plan:delete` (and checked by `plan:reject`)
-   * to refuse destroying a plan that has already entered the materialize
-   * pipeline. Only plans NOT in this set are deletable; `rejected` is explicitly
-   * deletable (re-drafting a declined plan from scratch).
+   * Status allowlists for lifecycle operations. Rejection is only valid for a
+   * `proposed` plan (the initial state); deletion is valid for `proposed` or
+   * `rejected` plans (both are pre-materialization). Any other status is
+   * refused — this is an explicit allowlist, not a blacklist, so newly added
+   * statuses (pending, staging, migrating, verifying, etc.) are refused by
+   * default rather than accidentally permitted.
    */
-  private static readonly IMMUTABLE_STATUSES = new Set([
-    'approved', 'staged', 'migrated', 'verified',
-  ]);
+  private static readonly REJECTABLE_STATUSES = new Set(['proposed']);
+  private static readonly DELETABLE_STATUSES = new Set(['proposed', 'rejected']);
 
   /**
    * Soft-reject a plan (`plan:reject`): keep the row (status = 'rejected', still
@@ -1390,54 +1435,66 @@ export class GraphIntakeService {
    * applies) when Neo4j is disabled.
    */
   async rejectPlan(planId: string): Promise<PlanLifecycleResult> {
-    const row = await queryOLTP<{ id: string; status: string }>(
-      'SELECT id, status FROM content_plans WHERE id = $1',
-      [planId],
-    );
-    if (row.rows.length === 0) {
-      throw new GraphIntakeValidationError(`Plan not found: ${planId}`);
-    }
-    const status = row.rows[0].status;
-    if (status === 'rejected') {
-      throw new GraphIntakeValidationError(`Plan ${planId} is already rejected`);
-    }
-    if (GraphIntakeService.IMMUTABLE_STATUSES.has(status)) {
-      throw new GraphIntakeValidationError(
-        `Plan ${planId} cannot be rejected — status '${status}' is past the point of rejection. `
-          + `Only proposed/rejected plans may be rejected; materialize-state plans require a rollback path (future M).`,
+    // Acquire the per-plan lifecycle lock to serialize against concurrent
+    // amendments. An amendment's applyDeltas could otherwise run concurrently
+    // with this rejection, creating graph deltas for a rejected plan.
+    await queryOLTP('SELECT pg_advisory_lock(hashtext($1))', [`plan-lifecycle:${planId}`]);
+    try {
+      const row = await queryOLTP<{ id: string; status: string }>(
+        'SELECT id, status FROM content_plans WHERE id = $1',
+        [planId],
       );
-    }
+      if (row.rows.length === 0) {
+        throw new GraphIntakeValidationError(`Plan not found: ${planId}`);
+      }
+      const status = row.rows[0].status;
+      if (status === 'rejected') {
+        throw new GraphIntakeValidationError(`Plan ${planId} is already rejected`);
+      }
+      if (!GraphIntakeService.REJECTABLE_STATUSES.has(status)) {
+        throw new GraphIntakeValidationError(
+          `Plan ${planId} cannot be rejected — status '${status}' is not rejectable. `
+            + `Only 'proposed' plans may be rejected.`,
+        );
+      }
 
-    // Count open intake annotations, then close them. Rejection closes them:
-    // the rationale lives in critique annotations, not the graph.
-    const countRow = await queryOLTP<{ count: string }>(
-      `SELECT COUNT(*)::text AS count FROM critique_annotations
-       WHERE plan_id = $1 AND scope = 'intake' AND status = 'open'`,
-      [planId],
-    );
-    const annotationCount = countRow.rows.length > 0 ? Number(countRow.rows[0].count) : 0;
-    if (annotationCount > 0) {
-      await queryOLTP(
-        `UPDATE critique_annotations SET status = 'addressed'
+      // Count open intake annotations, then close them. Rejection closes them:
+      // the rationale lives in critique annotations, not the graph.
+      const countRow = await queryOLTP<{ count: string }>(
+        `SELECT COUNT(*)::text AS count FROM critique_annotations
          WHERE plan_id = $1 AND scope = 'intake' AND status = 'open'`,
         [planId],
       );
+      const annotationCount = countRow.rows.length > 0 ? Number(countRow.rows[0].count) : 0;
+      if (annotationCount > 0) {
+        await queryOLTP(
+          `UPDATE critique_annotations SET status = 'addressed'
+           WHERE plan_id = $1 AND scope = 'intake' AND status = 'open'`,
+          [planId],
+        );
+      }
+
+      // Prune this plan's graph deltas. Best-effort when Neo4j is disabled.
+      let deltaPruned = false;
+      if (isNeo4jEnabled()) {
+        await clearDeltasForPlan(planId);
+        deltaPruned = true;
+      }
+
+      await queryOLTP(
+        `UPDATE content_plans
+         SET status = 'rejected',
+             updated_at = NOW(),
+             plan_json = jsonb_set(plan_json, '{status}', '"rejected"', true)
+         WHERE id = $1`,
+        [planId],
+      );
+      emitAdminEvent('plan_rejected', { planId }, planId);
+
+      return { planId, status: 'rejected', deltaPruned, annotationCount };
+    } finally {
+      await queryOLTP('SELECT pg_advisory_unlock(hashtext($1))', [`plan-lifecycle:${planId}`]);
     }
-
-    // Prune this plan's graph deltas. Best-effort when Neo4j is disabled.
-    let deltaPruned = false;
-    if (isNeo4jEnabled()) {
-      await clearDeltasForPlan(planId);
-      deltaPruned = true;
-    }
-
-    await queryOLTP(
-      `UPDATE content_plans SET status = 'rejected', updated_at = NOW() WHERE id = $1`,
-      [planId],
-    );
-    emitAdminEvent('plan_rejected', { planId }, planId);
-
-        return { planId, status: 'rejected', deltaPruned, annotationCount };
   }
 
   /**
@@ -1448,38 +1505,46 @@ export class GraphIntakeService {
    * are plan-scoped, never canonical).
    */
   async deletePlan(planId: string): Promise<PlanLifecycleResult> {
-    const row = await queryOLTP<{ id: string; status: string }>(
-      'SELECT id, status FROM content_plans WHERE id = $1',
-      [planId],
-    );
-    if (row.rows.length === 0) {
-      throw new GraphIntakeValidationError(`Plan not found: ${planId}`);
-    }
-    const status = row.rows[0].status;
-    if (GraphIntakeService.IMMUTABLE_STATUSES.has(status)) {
-      throw new GraphIntakeValidationError(
-        `Plan ${planId} cannot be deleted — status '${status}' is past the point of deletion. `
-          + `Only proposed/rejected plans are deletable.`,
+    // Acquire the per-plan lifecycle lock to serialize against concurrent
+    // amendments. An amendment's applyDeltas could otherwise run concurrently
+    // with this deletion, creating orphaned graph deltas.
+    await queryOLTP('SELECT pg_advisory_lock(hashtext($1))', [`plan-lifecycle:${planId}`]);
+    try {
+      const row = await queryOLTP<{ id: string; status: string }>(
+        'SELECT id, status FROM content_plans WHERE id = $1',
+        [planId],
       );
+      if (row.rows.length === 0) {
+        throw new GraphIntakeValidationError(`Plan not found: ${planId}`);
+      }
+      const status = row.rows[0].status;
+      if (!GraphIntakeService.DELETABLE_STATUSES.has(status)) {
+        throw new GraphIntakeValidationError(
+          `Plan ${planId} cannot be deleted — status '${status}' is not deletable. `
+            + `Only 'proposed' or 'rejected' plans are deletable.`,
+        );
+      }
+
+      // Order: prune the graph first (the row is the join key), then annotations,
+      // then the plan row. Each step is independent; a partial wipe leaves no
+      // dangling canonical references because plan-scoped deltas are never read
+      // without the plan row that scopes them.
+      if (isNeo4jEnabled()) {
+        await clearDeltasForPlan(planId);
+      }
+      const ann = await queryOLTP<{ id: string }>(
+        `DELETE FROM critique_annotations WHERE plan_id = $1 AND scope = 'intake' RETURNING id`,
+        [planId],
+      );
+      const annotationCount = ann.rows.length;
+
+      await queryOLTP('DELETE FROM content_plans WHERE id = $1', [planId]);
+      emitAdminEvent('plan_deleted', { planId, status }, planId);
+
+      return { planId, status, deltaPruned: isNeo4jEnabled(), annotationCount };
+    } finally {
+      await queryOLTP('SELECT pg_advisory_unlock(hashtext($1))', [`plan-lifecycle:${planId}`]);
     }
-
-    // Order: prune the graph first (the row is the join key), then annotations,
-    // then the plan row. Each step is independent; a partial wipe leaves no
-    // dangling canonical references because plan-scoped deltas are never read
-    // without the plan row that scopes them.
-    if (isNeo4jEnabled()) {
-      await clearDeltasForPlan(planId);
-    }
-    const ann = await queryOLTP<{ id: string }>(
-      `DELETE FROM critique_annotations WHERE plan_id = $1 AND scope = 'intake' RETURNING id`,
-      [planId],
-    );
-    const annotationCount = ann.rows.length;
-
-    await queryOLTP('DELETE FROM content_plans WHERE id = $1', [planId]);
-    emitAdminEvent('plan_deleted', { planId, status }, planId);
-
-    return { planId, status, deltaPruned: isNeo4jEnabled(), annotationCount };
   }
 
   /**

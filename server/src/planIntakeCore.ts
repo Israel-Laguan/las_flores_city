@@ -51,7 +51,11 @@ export function parseArgs(argv: string[]): CliOptions {
       continue;
     }
     if (arg === '--admin-url') {
-      adminUrl = argv[++i];
+      const url = argv[++i];
+      if (!url || url.startsWith('--')) {
+        throw new Error(`--admin-url requires a value\n\n${usage()}`);
+      }
+      adminUrl = url;
       continue;
     }
     if (arg.startsWith('--')) {
@@ -201,7 +205,11 @@ export function parseAmendArgs(argv: string[]): AmendCliOptions {
       continue;
     }
     if (arg === '--admin-url') {
-      adminUrl = argv[++i];
+      const url = argv[++i];
+      if (!url || url.startsWith('--')) {
+        throw new Error(`--admin-url requires a value\n\n${amendUsage()}`);
+      }
+      adminUrl = url;
       continue;
     }
     if (arg.startsWith('--')) {
@@ -254,7 +262,11 @@ export function parsePlanDiffArgs(argv: string[]): PlanDiffCliOptions {
       process.exit(0);
     }
     if (arg === '--admin-url') {
-      adminUrl = argv[++i];
+      const url = argv[++i];
+      if (!url || url.startsWith('--')) {
+        throw new Error(`--admin-url requires a value\n\n${planDiffUsage()}`);
+      }
+      adminUrl = url;
       continue;
     }
     if (arg.startsWith('--')) {
@@ -304,7 +316,11 @@ export function parseRejectArgs(argv: string[]): RejectCliOptions {
       process.exit(0);
     }
     if (arg === '--admin-url') {
-      adminUrl = argv[++i];
+      const url = argv[++i];
+      if (!url || url.startsWith('--')) {
+        throw new Error(`--admin-url requires a value\n\n${rejectUsage()}`);
+      }
+      adminUrl = url;
       continue;
     }
     if (arg.startsWith('--')) {
@@ -362,7 +378,11 @@ export function parseDeleteArgs(argv: string[]): DeleteCliOptions {
       continue;
     }
     if (arg === '--admin-url') {
-      adminUrl = argv[++i];
+      const url = argv[++i];
+      if (!url || url.startsWith('--')) {
+        throw new Error(`--admin-url requires a value\n\n${deleteUsage()}`);
+      }
+      adminUrl = url;
       continue;
     }
     if (arg.startsWith('--')) {
@@ -416,7 +436,11 @@ export function parseGetArgs(argv: string[]): GetCliOptions {
       process.exit(0);
     }
     if (arg === '--admin-url') {
-      adminUrl = argv[++i];
+      const url = argv[++i];
+      if (!url || url.startsWith('--')) {
+        throw new Error(`--admin-url requires a value\n\n${getUsage()}`);
+      }
+      adminUrl = url;
       continue;
     }
     if (arg.startsWith('--')) {
@@ -487,7 +511,11 @@ export function parseListArgs(argv: string[]): ListCliOptions {
       continue;
     }
     if (arg === '--admin-url') {
-      adminUrl = argv[++i];
+      const url = argv[++i];
+      if (!url || url.startsWith('--')) {
+        throw new Error(`--admin-url requires a value\n\n${listUsage()}`);
+      }
+      adminUrl = url;
       continue;
     }
     if (arg.startsWith('--')) {
