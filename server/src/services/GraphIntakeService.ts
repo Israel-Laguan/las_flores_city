@@ -35,7 +35,7 @@ import {
   type CritiqueAnnotationDraft,
   findEdgeMapping,
 } from '@las-flores/shared';
-import { queryOLTP, queryContent, oltpPool } from '@las-flores/infra';
+import { queryOLTP, queryContent, withOLTPTransaction } from '@las-flores/infra';
 import { uuidv4 } from '@las-flores/shared';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -1152,92 +1152,50 @@ export class GraphIntakeService {
     ]);
     const filteredEdges = proposal.deltaEdges.filter((e) => remainingKeys.has(deltaKey(e.sourceNodeType, e.sourceNodeId)));
 
-    // Serialize the ENTIRE amend lifecycle (graph write + plan_json persistence) under
-    // ONE session advisory lock on ONE pinned client, using the same
-    // `plan-lifecycle:<planId>` key rejectPlan/deletePlan acquire. The prior design
-    // split this into two segments with two gaps: (1) session locks via separate
-    // pool.query calls could land on different connections so the unlock might miss
-    // the session holding the lock; (2) the plan_json UPDATE used a different key
-    // (raw planId) reject/delete never acquire, so a concurrent reject/delete could
-    // interleave between applyDeltas and the persist. Holding one locked critical
-    // section across applyDeltas + persist, and revalidating status inside the
-    // persist transaction, removes both races.
-    let applyResult: Awaited<ReturnType<typeof chatService.applyDeltas>> | null = null;
-    // Definite-assigned inside the locked try; if a previous statement throws the
-    // function exits before these are read, so the `!` is a compile-time promise.
-    let result!: Awaited<ReturnType<typeof chatService.applyDeltas>>;
-    let graph!: { deltas: GraphDelta[]; edges: GraphDeltaEdge[] };
-    let synthesized!: Awaited<ReturnType<typeof synthesizePlanFromDeltas>>;
-    let planJson: ContentPlan | null = null;
+    // applyDeltas writes to Neo4j (not OLTP), so it runs before the OLTP
+    // transaction. A MODIFY/DELETE against a same-plan :ContentDelta now MERGEs
+    // in place (partitionDeltas accepts it); a genuinely missing base is dropped
+    // and reported as a diagnostic.
+    const result = await chatService.applyDeltas(planId, filteredDeltas, filteredEdges);
 
-    const client = await oltpPool.connect();
-    try {
-      await client.query('SELECT pg_advisory_lock(hashtext($1))', [`plan-lifecycle:${planId}`]);
+    // Refresh the snapshot from the post-apply graph and synthesize plan_json.
+    const graph = await this.getPlanDeltas(planId);
+    const synthesized = await synthesizePlanFromDeltas(planId, planRow.rows[0].description, graph.deltas, graph.edges, await this.gatherContext());
+    const parsedPlan = ContentPlanSchema.safeParse(synthesized.plan);
+    const planJson: ContentPlan | null = parsedPlan.success ? parsedPlan.data : null;
+    if (!planJson) {
+      console.warn(
+        `[graph-intake] amended plan ${planId} snapshot failed schema validation: ` +
+        (parsedPlan.success ? '' : parsedPlan.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; ')),
+      );
+    }
 
-      // Revalidate the plan still exists and is still proposed after acquiring the lock.
-      const recheck = await client.query<{ status: string }>(
-        'SELECT status FROM content_plans WHERE id = $1',
+    // Persist plan_json inside a transaction-scoped advisory lock so a concurrent
+    // reject/delete (which takes the same lock key) can never interleave between
+    // applyDeltas and this write. pg_advisory_xact_lock is automatically released
+    // at transaction end — no session pinning, no unlock-on-different-connection
+    // leaks. COALESCE keeps a schema-invalid snapshot from wiping the previous
+    // valid one.
+    await withOLTPTransaction(async (client) => {
+      await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`plan-lifecycle:${planId}`]);
+
+      const confirm = await client.query<{ status: string }>(
+        'SELECT status FROM content_plans WHERE id = $1 FOR UPDATE',
         [planId],
       );
-      if (recheck.rows.length === 0) {
+      if (confirm.rows.length === 0) {
         throw new GraphIntakeValidationError(`Plan ${planId} not found — it was deleted by another operation.`);
       }
-      if (recheck.rows[0].status !== 'proposed') {
+      if (confirm.rows[0].status !== 'proposed') {
         throw new GraphIntakeValidationError(
-          `Plan ${planId} has status '${recheck.rows[0].status}' — only a 'proposed' plan can be amended.`,
+          `Plan ${planId} has status '${confirm.rows[0].status}' — only a 'proposed' plan can be amended.`,
         );
       }
-
-      // applyDeltas is the fail-open write gate: a MODIFY/DELETE against a same-plan
-      // :ContentDelta now MERGEs in place (partitionDeltas accepts it); a genuinely
-      // missing base is dropped and reported as a diagnostic.
-      applyResult = await chatService.applyDeltas(planId, filteredDeltas, filteredEdges);
-      result = applyResult;
-
-      // Refresh the snapshot from the post-apply graph and synthesize plan_json INSIDE
-      // the same lock so the persisted snapshot reflects exactly our writes.
-      graph = await this.getPlanDeltas(planId);
-      synthesized = await synthesizePlanFromDeltas(planId, planRow.rows[0].description, graph.deltas, graph.edges, await this.gatherContext());
-      const parsedPlan = ContentPlanSchema.safeParse(synthesized.plan);
-      planJson = parsedPlan.success ? parsedPlan.data : null;
-      if (!planJson) {
-        console.warn(
-          `[graph-intake] amended plan ${planId} snapshot failed schema validation: ` +
-          (parsedPlan.success ? '' : parsedPlan.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; ')),
-        );
-      }
-
-      // Persist plan_json in a transaction on the SAME locked client, revalidating status
-      // under FOR UPDATE so a concurrent reject/delete (which also takes the plan-lifecycle
-      // lock) can never interleave between applyDeltas and this write. COALESCE keeps a
-      // schema-invalid snapshot from wiping the previous valid one.
-      await client.query('BEGIN');
-      try {
-        const confirm = await client.query<{ status: string }>(
-          'SELECT status FROM content_plans WHERE id = $1 FOR UPDATE',
-          [planId],
-        );
-        if (confirm.rows.length === 0) {
-          throw new GraphIntakeValidationError(`Plan ${planId} not found — it was deleted by another operation.`);
-        }
-        if (confirm.rows[0].status !== 'proposed') {
-          throw new GraphIntakeValidationError(
-            `Plan ${planId} has status '${confirm.rows[0].status}' — only a 'proposed' plan can be amended.`,
-          );
-        }
-        await client.query(
-          `UPDATE content_plans SET updated_at = now(), plan_json = COALESCE($2::jsonb, plan_json) WHERE id = $1`,
-          [planId, planJson],
-        );
-        await client.query('COMMIT');
-      } catch (persistErr) {
-        await client.query('ROLLBACK').catch(() => {});
-        throw persistErr;
-      }
-    } finally {
-      await client.query('SELECT pg_advisory_unlock(hashtext($1))', [`plan-lifecycle:${planId}`]).catch(() => {});
-      client.release();
-    }
+      await client.query(
+        `UPDATE content_plans SET updated_at = now(), plan_json = COALESCE($2::jsonb, plan_json) WHERE id = $1`,
+        [planId, planJson],
+      );
+    });
 
     const notes = await this.triageAndAnnotate(planId, graph.deltas, [...result.diagnostics, ...synthesized.diagnostics]);
 
@@ -1428,13 +1386,23 @@ export class GraphIntakeService {
    * applies) when Neo4j is disabled.
    */
   async rejectPlan(planId: string): Promise<PlanLifecycleResult> {
-    // Acquire the per-plan lifecycle lock to serialize against concurrent
-    // amendments. An amendment's applyDeltas could otherwise run concurrently
-    // with this rejection, creating graph deltas for a rejected plan.
-    await queryOLTP('SELECT pg_advisory_lock(hashtext($1))', [`plan-lifecycle:${planId}`]);
-    try {
-      const row = await queryOLTP<{ id: string; status: string }>(
-        'SELECT id, status FROM content_plans WHERE id = $1',
+    // Prune this plan's graph deltas first (Neo4j, not OLTP). Best-effort when
+    // Neo4j is disabled.
+    let deltaPruned = false;
+    if (isNeo4jEnabled()) {
+      await clearDeltasForPlan(planId);
+      deltaPruned = true;
+    }
+
+    // All OLTP mutations happen inside a transaction-scoped advisory lock so
+    // concurrent amendments/rejects/delete serialize on the same `plan-lifecycle:
+    // <planId>` key. pg_advisory_xact_lock is automatically released at
+    // transaction end — no session pinning, no unlock leaks.
+    const { annotationCount } = await withOLTPTransaction(async (client) => {
+      await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`plan-lifecycle:${planId}`]);
+
+      const row = await client.query<{ id: string; status: string }>(
+        'SELECT id, status FROM content_plans WHERE id = $1 FOR UPDATE',
         [planId],
       );
       if (row.rows.length === 0) {
@@ -1453,28 +1421,21 @@ export class GraphIntakeService {
 
       // Count open intake annotations, then close them. Rejection closes them:
       // the rationale lives in critique annotations, not the graph.
-      const countRow = await queryOLTP<{ count: string }>(
+      const countRow = await client.query<{ count: string }>(
         `SELECT COUNT(*)::text AS count FROM critique_annotations
          WHERE plan_id = $1 AND scope = 'intake' AND status = 'open'`,
         [planId],
       );
       const annotationCount = countRow.rows.length > 0 ? Number(countRow.rows[0].count) : 0;
       if (annotationCount > 0) {
-        await queryOLTP(
+        await client.query(
           `UPDATE critique_annotations SET status = 'addressed'
            WHERE plan_id = $1 AND scope = 'intake' AND status = 'open'`,
           [planId],
         );
       }
 
-      // Prune this plan's graph deltas. Best-effort when Neo4j is disabled.
-      let deltaPruned = false;
-      if (isNeo4jEnabled()) {
-        await clearDeltasForPlan(planId);
-        deltaPruned = true;
-      }
-
-      await queryOLTP(
+      await client.query(
         `UPDATE content_plans
          SET status = 'rejected',
              updated_at = NOW(),
@@ -1482,12 +1443,13 @@ export class GraphIntakeService {
          WHERE id = $1`,
         [planId],
       );
-      emitAdminEvent('plan_rejected', { planId }, planId);
 
-      return { planId, status: 'rejected', deltaPruned, annotationCount };
-    } finally {
-      await queryOLTP('SELECT pg_advisory_unlock(hashtext($1))', [`plan-lifecycle:${planId}`]);
-    }
+      return { annotationCount };
+    });
+
+    emitAdminEvent('plan_rejected', { planId }, planId);
+
+    return { planId, status: 'rejected', deltaPruned, annotationCount };
   }
 
   /**
@@ -1498,13 +1460,20 @@ export class GraphIntakeService {
    * are plan-scoped, never canonical).
    */
   async deletePlan(planId: string): Promise<PlanLifecycleResult> {
-    // Acquire the per-plan lifecycle lock to serialize against concurrent
-    // amendments. An amendment's applyDeltas could otherwise run concurrently
-    // with this deletion, creating orphaned graph deltas.
-    await queryOLTP('SELECT pg_advisory_lock(hashtext($1))', [`plan-lifecycle:${planId}`]);
-    try {
-      const row = await queryOLTP<{ id: string; status: string }>(
-        'SELECT id, status FROM content_plans WHERE id = $1',
+    // Prune graph deltas first (Neo4j, not OLTP). The row is the join key.
+    if (isNeo4jEnabled()) {
+      await clearDeltasForPlan(planId);
+    }
+
+    // All OLTP mutations happen inside a transaction-scoped advisory lock so
+    // concurrent amendments/rejects serialize on the same `plan-lifecycle:
+    // <planId>` key. pg_advisory_xact_lock is automatically released at
+    // transaction end — no session pinning, no unlock leaks.
+    const { status, annotationCount } = await withOLTPTransaction(async (client) => {
+      await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`plan-lifecycle:${planId}`]);
+
+      const row = await client.query<{ id: string; status: string }>(
+        'SELECT id, status FROM content_plans WHERE id = $1 FOR UPDATE',
         [planId],
       );
       if (row.rows.length === 0) {
@@ -1518,26 +1487,20 @@ export class GraphIntakeService {
         );
       }
 
-      // Order: prune the graph first (the row is the join key), then annotations,
-      // then the plan row. Each step is independent; a partial wipe leaves no
-      // dangling canonical references because plan-scoped deltas are never read
-      // without the plan row that scopes them.
-      if (isNeo4jEnabled()) {
-        await clearDeltasForPlan(planId);
-      }
-      const ann = await queryOLTP<{ id: string }>(
+      const ann = await client.query<{ id: string }>(
         `DELETE FROM critique_annotations WHERE plan_id = $1 AND scope = 'intake' RETURNING id`,
         [planId],
       );
       const annotationCount = ann.rows.length;
 
-      await queryOLTP('DELETE FROM content_plans WHERE id = $1', [planId]);
-      emitAdminEvent('plan_deleted', { planId, status }, planId);
+      await client.query('DELETE FROM content_plans WHERE id = $1', [planId]);
 
-      return { planId, status, deltaPruned: isNeo4jEnabled(), annotationCount };
-    } finally {
-      await queryOLTP('SELECT pg_advisory_unlock(hashtext($1))', [`plan-lifecycle:${planId}`]);
-    }
+      return { status, annotationCount };
+    });
+
+    emitAdminEvent('plan_deleted', { planId, status }, planId);
+
+    return { planId, status, deltaPruned: isNeo4jEnabled(), annotationCount };
   }
 
   /**
