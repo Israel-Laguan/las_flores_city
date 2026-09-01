@@ -83,8 +83,12 @@ async function applyMigration(filename: string): Promise<void> {
     await withSchemaLock(async (client) => {
       await client.query(sql);
     });
-  } catch {
-    // Table/column may already exist — that's fine (CI runs schema:migrate first)
+  } catch (err) {
+    const code = (err as { code?: string })?.code;
+    // Tolerate only "table/column already exists" — genuine failures must surface.
+    if (code !== '42P07' && code !== '42701') {
+      throw err;
+    }
   }
 }
 

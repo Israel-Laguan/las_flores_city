@@ -271,20 +271,30 @@ ${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
         createdAt: new Date().toISOString(),
       })];
     } else if (existingDeltas && existingDeltas.length > 0) {
-      // Deterministic remake: if a plan-local delta's name fuzzy-includes a token
-      // from the instruction, MODIFY that delta in place (reuse its nodeId so
+      // Deterministic remake: if a plan-local delta's name matches a token from
+      // the instruction, MODIFY that delta in place (reuse its nodeId so
       // applyDelta MERGEs). Otherwise ADD a fresh entity. This exercises the
       // unscoped amend path offline without a real LLM.
+      const instr = (messages[messages.length - 1]?.content ?? '').toLowerCase();
       const instrTokens = new Set(
-        (messages[messages.length - 1]?.content ?? '').toLowerCase().split(/\W+/).filter((t) => t.length >= 3),
+        instr.split(/\W+/).filter((t) => t.length >= 3),
       );
-      // Match meaningful name tokens (word-boundary aware) so shorthand such as
-      // `rewrite Diego` remakes an existing plan-local delta instead of adding a
-      // new Paco entity once the full-name substring overlap misses.
+      // Match name tokens (word-boundary aware). For names with tokens >= 3 chars,
+      // require a token-level match (avoids false positives from common words).
+      // For short names (1-2 chars), require an exact substring match so `rewrite
+      // Al` remakes the delta for "Al" instead of adding Paco.
       const match = existingDeltas.find((d) => {
         const name = String((d.fields as Record<string, any> | undefined)?.name ?? '').toLowerCase();
         if (name.trim().length === 0) return false;
-        return name.split(/\W+/).filter((t) => t.length >= 3).some((t) => instrTokens.has(t));
+        const nameTokens = name.split(/\W+/).filter((t) => t.length > 0);
+        // If the name has a "long" token (>= 3 chars), require token-level match
+        // to avoid false positives from common words like "the", "add", etc.
+        const longTokens = nameTokens.filter((t) => t.length >= 3);
+        if (longTokens.length > 0) {
+          return longTokens.some((t) => instrTokens.has(t));
+        }
+        // Short name (all tokens < 3 chars): require exact substring match.
+        return instr.includes(name);
       });
       if (match) {
         const mergedFields = { ...(match.fields as Record<string, any>) };

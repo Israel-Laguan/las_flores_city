@@ -392,33 +392,34 @@ describe('M50 graph-intake alias + resolution integration', () => {
 // no surviving artifact. Intake now drops the offending delta/edge and reports it
 // as a note, so submitting a plan always returns a plan.
 // ---------------------------------------------------------------------------
+// Shared helper used by both the fail-open describe and the amendPlanWithInstruction
+// describe. Hoisted to module scope so it isn't trapped inside one describe callback.
+async function intakeWith(deltas: any[], edges: any[]): Promise<any> {
+  const { GraphIntakeService } = await import('../../src/services/GraphIntakeService.js');
+  const chatService = await import('../../src/services/ChatService.js');
+  const originalPropose = chatService.chatService.propose;
+  try {
+    chatService.chatService.propose = jest.fn(async () => ({
+      reply: 'Proposal generated',
+      deltas,
+      deltaEdges: edges,
+      usage: null,
+    })) as never;
+    const service = new GraphIntakeService();
+    const result = await service.createPlanFromDescription('Create a test character');
+    createdPlanIds.push(result.planId);
+    return result;
+  } finally {
+    chatService.chatService.propose = originalPropose;
+  }
+}
+
 describe('fail-open graph intake (unresolvable references)', () => {
   // Dedicated synthetic UUIDs for this block — deliberately absent from the graph.
   const MISSING_CHAR_ID = '63200003-e29b-41d4-a716-446655440004';
   const MISSING_SCENE_ID = '63200004-e29b-41d4-a716-446655440005';
   const DELTA_GOOD_ADD = 'd3200005-0000-4000-8000-000000000005';
   const DELTA_BAD_MODIFY = 'd3200006-0000-4000-8000-000000000006';
-
-  /** Run createPlanFromDescription with a stubbed proposal. */
-  async function intakeWith(deltas: any[], edges: any[]): Promise<any> {
-    const { GraphIntakeService } = await import('../../src/services/GraphIntakeService.js');
-    const chatService = await import('../../src/services/ChatService.js');
-    const originalPropose = chatService.chatService.propose;
-    try {
-      chatService.chatService.propose = jest.fn(async () => ({
-        reply: 'Proposal generated',
-        deltas,
-        deltaEdges: edges,
-        usage: null,
-      })) as never;
-      const service = new GraphIntakeService();
-      const result = await service.createPlanFromDescription('Create a test character');
-      createdPlanIds.push(result.planId);
-      return result;
-    } finally {
-      chatService.chatService.propose = originalPropose;
-    }
-  }
 
   test('a MODIFY against a non-existent base node is dropped, and the plan SURVIVES', async () => {
     if (!neo4jLive) return;

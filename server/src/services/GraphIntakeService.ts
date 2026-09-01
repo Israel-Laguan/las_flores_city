@@ -182,7 +182,10 @@ export interface OpenAnnotationInfo {
   relatedField?: string;
   relatedNodeId?: string;
   status: 'open' | 'addressed' | 'dismissed';
-  suggestion?: string | null;
+  description?: string | null;
+  severity?: 'error' | 'warning' | 'info';
+  evidence?: unknown[];
+  relatedEntities?: unknown[];
   createdAt: string;
 }
 
@@ -1152,30 +1155,22 @@ export class GraphIntakeService {
     ]);
     const filteredEdges = proposal.deltaEdges.filter((e) => remainingKeys.has(deltaKey(e.sourceNodeType, e.sourceNodeId)));
 
-    // applyDeltas writes to Neo4j (not OLTP), so it runs before the OLTP
-    // transaction. A MODIFY/DELETE against a same-plan :ContentDelta now MERGEs
-    // in place (partitionDeltas accepts it); a genuinely missing base is dropped
-    // and reported as a diagnostic.
-    const result = await chatService.applyDeltas(planId, filteredDeltas, filteredEdges);
-
-    // Refresh the snapshot from the post-apply graph and synthesize plan_json.
-    const graph = await this.getPlanDeltas(planId);
-    const synthesized = await synthesizePlanFromDeltas(planId, planRow.rows[0].description, graph.deltas, graph.edges, await this.gatherContext());
-    const parsedPlan = ContentPlanSchema.safeParse(synthesized.plan);
-    const planJson: ContentPlan | null = parsedPlan.success ? parsedPlan.data : null;
-    if (!planJson) {
-      console.warn(
-        `[graph-intake] amended plan ${planId} snapshot failed schema validation: ` +
-        (parsedPlan.success ? '' : parsedPlan.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; ')),
-      );
-    }
-
-    // Persist plan_json inside a transaction-scoped advisory lock so a concurrent
-    // reject/delete (which takes the same lock key) can never interleave between
-    // applyDeltas and this write. pg_advisory_xact_lock is automatically released
-    // at transaction end — no session pinning, no unlock-on-different-connection
+    // All graph writes + the OLTP snapshot persist happen inside a
+    // transaction-scoped advisory lock so a concurrent reject/delete (which takes
+    // the same lock key) can never interleave between applyDeltas and the plan_json
+    // write. Without this, a reject could clear deltas first, then the failed
+    // amendment recreates them for the now-rejected plan — or a later amendment
+    // could persist an older plan_json snapshot because the graph read happened
+    // before the lock. pg_advisory_xact_lock is automatically released at
+    // transaction end — no session pinning, no unlock-on-different-connection
     // leaks. COALESCE keeps a schema-invalid snapshot from wiping the previous
     // valid one.
+    let result!: Awaited<ReturnType<typeof chatService.applyDeltas>>;
+    let notes: Awaited<ReturnType<typeof this.triageAndAnnotate>> = [];
+    let deltaCount = 0;
+    let edgeCount = 0;
+    let deltas: GraphDelta[] = [];
+    let edges: GraphDeltaEdge[] = [];
     await withOLTPTransaction(async (client) => {
       await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`plan-lifecycle:${planId}`]);
 
@@ -1191,20 +1186,46 @@ export class GraphIntakeService {
           `Plan ${planId} has status '${confirm.rows[0].status}' — only a 'proposed' plan can be amended.`,
         );
       }
+
+      // applyDeltas writes to Neo4j (not OLTP), but it runs inside the lock so a
+      // concurrent reject/delete can't clear deltas between this write and the
+      // plan_json persist below. A MODIFY/DELETE against a same-plan :ContentDelta
+      // MERGEs in place (partitionDeltas accepts it); a genuinely missing base is
+      // dropped and reported as a diagnostic.
+      result = await chatService.applyDeltas(planId, filteredDeltas, filteredEdges);
+
+      // Refresh the snapshot from the post-apply graph and synthesize plan_json
+      // under the lock, so a concurrent amendment can't interleave and persist a
+      // stale snapshot.
+      const graph = await this.getPlanDeltas(planId);
+      const synthesized = await synthesizePlanFromDeltas(planId, planRow.rows[0].description, graph.deltas, graph.edges, await this.gatherContext());
+      const parsedPlan = ContentPlanSchema.safeParse(synthesized.plan);
+      const planJson: ContentPlan | null = parsedPlan.success ? parsedPlan.data : null;
+      if (!planJson) {
+        console.warn(
+          `[graph-intake] amended plan ${planId} snapshot failed schema validation: ` +
+          (parsedPlan.success ? '' : parsedPlan.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; ')),
+        );
+      }
+
       await client.query(
         `UPDATE content_plans SET updated_at = now(), plan_json = COALESCE($2::jsonb, plan_json) WHERE id = $1`,
         [planId, planJson],
       );
-    });
 
-    const notes = await this.triageAndAnnotate(planId, graph.deltas, [...result.diagnostics, ...synthesized.diagnostics]);
+      notes = await this.triageAndAnnotate(planId, graph.deltas, [...result.diagnostics, ...synthesized.diagnostics]);
+      deltaCount = graph.deltas.length;
+      edgeCount = graph.edges.length;
+      deltas = graph.deltas;
+      edges = graph.edges;
+    });
 
     emitAdminEvent(
       'plan_refined',
       {
         instruction: instruction.trim().length > 0 ? instruction : '(empty)',
-        deltaCount: graph.deltas.length,
-        edgeCount: graph.edges.length,
+        deltaCount,
+        edgeCount,
         appliedCount: result.appliedCount,
         droppedCount: (resolvedDeltas.length - filteredDeltas.length) + result.diagnostics.length,
         noteCount: notes.length,
@@ -1224,10 +1245,10 @@ export class GraphIntakeService {
       appliedCount: result.appliedCount,
       droppedCount: (resolvedDeltas.length - filteredDeltas.length) + result.diagnostics.length,
       reply: proposal.reply,
-      deltaCount: graph.deltas.length,
-      edgeCount: graph.edges.length,
-      deltas: graph.deltas,
-      edges: graph.edges,
+      deltaCount,
+      edgeCount,
+      deltas,
+      edges,
       notes,
       reviewUrl: adminUrl ?? process.env.ADMIN_URL ?? 'http://localhost:3002',
       next: notes.length > 0
@@ -1386,18 +1407,10 @@ export class GraphIntakeService {
    * applies) when Neo4j is disabled.
    */
   async rejectPlan(planId: string): Promise<PlanLifecycleResult> {
-    // Prune this plan's graph deltas first (Neo4j, not OLTP). Best-effort when
-    // Neo4j is disabled.
+    // Validate the row and status under the lifecycle lock BEFORE pruning the
+    // graph, so a reject against a non-rejectable plan never leaves deltas
+    // pruned while the OLTP row is unchanged.
     let deltaPruned = false;
-    if (isNeo4jEnabled()) {
-      await clearDeltasForPlan(planId);
-      deltaPruned = true;
-    }
-
-    // All OLTP mutations happen inside a transaction-scoped advisory lock so
-    // concurrent amendments/rejects/delete serialize on the same `plan-lifecycle:
-    // <planId>` key. pg_advisory_xact_lock is automatically released at
-    // transaction end — no session pinning, no unlock leaks.
     const { annotationCount } = await withOLTPTransaction(async (client) => {
       await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`plan-lifecycle:${planId}`]);
 
@@ -1417,6 +1430,13 @@ export class GraphIntakeService {
           `Plan ${planId} cannot be rejected — status '${status}' is not rejectable. `
             + `Only 'proposed' plans may be rejected.`,
         );
+      }
+
+      // Prune this plan's graph deltas (Neo4j, not OLTP) only after the status
+      // validation passes. Best-effort when Neo4j is disabled.
+      if (isNeo4jEnabled()) {
+        await clearDeltasForPlan(planId);
+        deltaPruned = true;
       }
 
       // Count open intake annotations, then close them. Rejection closes them:
@@ -1460,15 +1480,9 @@ export class GraphIntakeService {
    * are plan-scoped, never canonical).
    */
   async deletePlan(planId: string): Promise<PlanLifecycleResult> {
-    // Prune graph deltas first (Neo4j, not OLTP). The row is the join key.
-    if (isNeo4jEnabled()) {
-      await clearDeltasForPlan(planId);
-    }
-
-    // All OLTP mutations happen inside a transaction-scoped advisory lock so
-    // concurrent amendments/rejects serialize on the same `plan-lifecycle:
-    // <planId>` key. pg_advisory_xact_lock is automatically released at
-    // transaction end — no session pinning, no unlock leaks.
+    // Validate the row and status under the lifecycle lock BEFORE pruning the
+    // graph, so a delete against a non-deletable plan never leaves deltas pruned
+    // while the OLTP row is unchanged.
     const { status, annotationCount } = await withOLTPTransaction(async (client) => {
       await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`plan-lifecycle:${planId}`]);
 
@@ -1485,6 +1499,12 @@ export class GraphIntakeService {
           `Plan ${planId} cannot be deleted — status '${status}' is not deletable. `
             + `Only 'proposed' or 'rejected' plans are deletable.`,
         );
+      }
+
+      // Prune graph deltas (Neo4j, not OLTP) only after the status validation
+      // passes. The row is the join key.
+      if (isNeo4jEnabled()) {
+        await clearDeltasForPlan(planId);
       }
 
       const ann = await client.query<{ id: string }>(
@@ -1596,8 +1616,10 @@ export class GraphIntakeService {
   private async getPlanOpenAnnotations(planId: string): Promise<OpenAnnotationInfo[]> {
     const rows = await queryOLTP<{
       id: string; type: string; status: string; created_at: string;
+      description: string | null; severity: string | null;
+      evidence: unknown; related_entities: unknown;
     }>(
-      `SELECT id, type, status, created_at
+      `SELECT id, type, status, created_at, description, severity, evidence, related_entities
        FROM critique_annotations
        WHERE plan_id = $1 AND scope = 'intake' AND status = 'open'
        ORDER BY created_at ASC`,
@@ -1607,6 +1629,10 @@ export class GraphIntakeService {
       id: r.id,
       type: r.type,
       status: r.status as 'open' | 'addressed' | 'dismissed',
+      description: r.description,
+      severity: r.severity as 'error' | 'warning' | 'info' | undefined,
+      evidence: (r.evidence ?? []) as unknown[],
+      relatedEntities: (r.related_entities ?? []) as unknown[],
       createdAt: r.created_at,
     }));
   }
