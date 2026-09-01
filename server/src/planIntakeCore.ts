@@ -495,18 +495,18 @@ export function parseListArgs(argv: string[]): ListCliOptions {
     }
     if (arg === '--status') {
       status = argv[++i];
-      if (!status) throw new Error(`--status requires a value\n\n${listUsage()}`);
+      if (!status || status.startsWith('--')) throw new Error(`--status requires a value\n\n${listUsage()}`);
       continue;
     }
     if (arg === '--created-by') {
       const email = argv[++i];
-      if (!email) throw new Error(`--created-by requires a value\n\n${listUsage()}`);
+      if (!email || email.startsWith('--')) throw new Error(`--created-by requires a value\n\n${listUsage()}`);
       createdByEmail = email;
       continue;
     }
     if (arg === '--since') {
       const value = argv[++i];
-      if (!value) throw new Error(`--since requires a value\n\n${listUsage()}`);
+      if (!value || value.startsWith('--')) throw new Error(`--since requires a value\n\n${listUsage()}`);
       since = value;
       continue;
     }

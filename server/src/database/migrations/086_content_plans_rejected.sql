@@ -20,6 +20,8 @@
 -- CHECK; this migration only widens the content_plans status CHECK.
 -- ============================================================
 
+BEGIN;
+
 ALTER TABLE content_plans DROP CONSTRAINT IF EXISTS content_plans_status_check;
 
 ALTER TABLE content_plans
@@ -33,3 +35,5 @@ ALTER TABLE content_plans VALIDATE CONSTRAINT content_plans_status_check;
 
 COMMENT ON CONSTRAINT content_plans_status_check ON content_plans IS
   'content_plans status enum — rejected is a soft terminal state preserved for audit (plan:reject), never advanced to materialize.';
+
+COMMIT;

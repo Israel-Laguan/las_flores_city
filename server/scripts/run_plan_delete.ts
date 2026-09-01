@@ -11,6 +11,7 @@ import { fileURLToPath } from 'node:url';
 import {
   parseDeleteArgs,
   deleteUsage,
+  reviewUrl,
   type DeleteCliOptions,
 } from '../src/planIntakeCore.js';
 
@@ -34,6 +35,10 @@ async function main(): Promise<void> {
       status: result.status,
       deltaPruned: result.deltaPruned,
       annotationCount: result.annotationCount,
+      reviewUrl: reviewUrl(
+        options.adminUrl ?? process.env.ADMIN_URL ?? 'http://localhost:3002',
+        result.planId,
+      ),
       next: 'Plan permanently deleted. This cannot be undone.',
     }, null, 2));
 

@@ -35,7 +35,7 @@ import {
   type CritiqueAnnotationDraft,
   findEdgeMapping,
 } from '@las-flores/shared';
-import { queryOLTP, queryContent, withOLTPTransaction } from '@las-flores/infra';
+import { queryOLTP, queryContent, oltpPool } from '@las-flores/infra';
 import { uuidv4 } from '@las-flores/shared';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -45,7 +45,7 @@ import { chatService } from './ChatService.js';
 import { emitAdminEvent } from './AdminEventEmitter.js';
 import { contentPlanService } from './ContentPlanService.js';
 import { resolveContentDir } from './StoryBuilderLore.js';
-import { applyDelta, applyDeltaEdge, getDeltasForPlan, getDeltaEdgesForPlan, clearDeltasForPlan, countDeltasForPlan, partitionDeltas, partitionDeltaEdges, deltaKey, normalizeKeyComponent, resolveEdgeTargetNameValue, getPlanDeltaRevisionWithEdges } from './GraphDeltaService.js';
+import { applyDelta, applyDeltaEdge, getDeltasForPlan, getDeltaEdgesForPlan, clearDeltasForPlan, countDeltasForPlan, partitionDeltas, partitionDeltaEdges, deltaKey, normalizeKeyComponent, resolveEdgeTargetNameValue } from './GraphDeltaService.js';
 import { isNeo4jEnabled, runNeo4jTransaction, runNeo4jQuery } from './Neo4jClient.js';
 import { reviewUrl } from '../planIntakeCore.js';
 import { EntityResolutionService } from './EntityResolutionService.js';
@@ -1127,11 +1127,6 @@ export class GraphIntakeService {
       );
     }
 
-    // Capture the graph revision BEFORE applyDeltas so we can detect a concurrent
-    // amendment (optimistic check). The advisory lock + revision re-check ensures
-    // that the snapshot we persist reflects our own writes, not an interleaving
-    // amendment from a parallel request.
-    const preRevision = await getPlanDeltaRevisionWithEdges(planId);
 
     // Preflight synthesis: identify which new deltas would be excluded by
     // synthesizePlanFromDeltas (e.g. unresolvable canonical slugs) so we can
@@ -1157,25 +1152,30 @@ export class GraphIntakeService {
     ]);
     const filteredEdges = proposal.deltaEdges.filter((e) => remainingKeys.has(deltaKey(e.sourceNodeType, e.sourceNodeId)));
 
-    // Serialize the graph write with rejectPlan/deletePlan. A concurrent
-    // reject could clear the graph deltas and mark the row rejected after our
-    // status check but before applyDeltas — this amendment would then recreate
-    // graph deltas for a rejected plan. A concurrent delete could remove the row,
-    // after which this amendment creates orphaned graph deltas. Acquire the
-    // per-plan advisory lock BEFORE the graph write and revalidate status.
+    // Serialize the ENTIRE amend lifecycle (graph write + plan_json persistence) under
+    // ONE session advisory lock on ONE pinned client, using the same
+    // `plan-lifecycle:<planId>` key rejectPlan/deletePlan acquire. The prior design
+    // split this into two segments with two gaps: (1) session locks via separate
+    // pool.query calls could land on different connections so the unlock might miss
+    // the session holding the lock; (2) the plan_json UPDATE used a different key
+    // (raw planId) reject/delete never acquire, so a concurrent reject/delete could
+    // interleave between applyDeltas and the persist. Holding one locked critical
+    // section across applyDeltas + persist, and revalidating status inside the
+    // persist transaction, removes both races.
     let applyResult: Awaited<ReturnType<typeof chatService.applyDeltas>> | null = null;
-    const lockResult = await queryOLTP<{ locked: boolean }>(
-      'SELECT pg_try_advisory_lock(hashtext($1)) AS locked',
-      [`plan-lifecycle:${planId}`],
-    );
-    if (!lockResult.rows[0]?.locked) {
-      // Could not acquire immediately — wait for the lock (blocking).
-      await queryOLTP('SELECT pg_advisory_lock(hashtext($1))', [`plan-lifecycle:${planId}`]);
-    }
+    // Definite-assigned inside the locked try; if a previous statement throws the
+    // function exits before these are read, so the `!` is a compile-time promise.
+    let result!: Awaited<ReturnType<typeof chatService.applyDeltas>>;
+    let graph!: { deltas: GraphDelta[]; edges: GraphDeltaEdge[] };
+    let synthesized!: Awaited<ReturnType<typeof synthesizePlanFromDeltas>>;
+    let planJson: ContentPlan | null = null;
+
+    const client = await oltpPool.connect();
     try {
-      // Revalidate the plan still exists and is still proposed after acquiring
-      // the lock. A concurrent reject/delete may have changed state.
-      const recheck = await queryOLTP<{ status: string }>(
+      await client.query('SELECT pg_advisory_lock(hashtext($1))', [`plan-lifecycle:${planId}`]);
+
+      // Revalidate the plan still exists and is still proposed after acquiring the lock.
+      const recheck = await client.query<{ status: string }>(
         'SELECT status FROM content_plans WHERE id = $1',
         [planId],
       );
@@ -1188,64 +1188,56 @@ export class GraphIntakeService {
         );
       }
 
-      // applyDeltas is the fail-open write gate: a MODIFY/DELETE against a
-      // same-plan :ContentDelta now MERGEs in place (partitionDeltas accepts it);
-      // a genuinely missing base is dropped and reported as a diagnostic.
+      // applyDeltas is the fail-open write gate: a MODIFY/DELETE against a same-plan
+      // :ContentDelta now MERGEs in place (partitionDeltas accepts it); a genuinely
+      // missing base is dropped and reported as a diagnostic.
       applyResult = await chatService.applyDeltas(planId, filteredDeltas, filteredEdges);
-    } finally {
-      await queryOLTP('SELECT pg_advisory_unlock(hashtext($1))', [`plan-lifecycle:${planId}`]);
-    }
-    // applyResult is guaranteed to be set because applyDeltas always returns;
-    // if it threw, we wouldn't reach this point.
-    const result = applyResult;
+      result = applyResult;
 
-    // Serialize the graph refresh per plan. Two concurrent amendments to the same
-    // plan can otherwise interleave: request A writes, request B writes and
-    // persists a newer plan_json, then request A persists its older snapshot,
-    // clobbering B. The advisory lock + revision re-check prevents this: if the
-    // graph revision changed since preRevision, we re-synthesize from the current
-    // graph state (which includes A's own writes) and retry the persistence.
-    let graph: { deltas: GraphDelta[]; edges: GraphDeltaEdge[] } = await this.getPlanDeltas(planId);
-    let synthesized = await synthesizePlanFromDeltas(planId, planRow.rows[0].description, graph.deltas, graph.edges, await this.gatherContext());
-    let parsedPlan = ContentPlanSchema.safeParse(synthesized.plan);
-    let planJson = parsedPlan.success ? parsedPlan.data : null;
-    if (!planJson) {
-      console.warn(
-        `[graph-intake] amended plan ${planId} snapshot failed schema validation: ` +
-        (parsedPlan.success ? '' : parsedPlan.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; ')),
-      );
-    }
-
-    await withOLTPTransaction(async (client) => {
-      await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [planId]);
-
-      // Re-check the revision after acquiring the lock. If a concurrent
-      // amendment changed the graph since preRevision, re-synthesize from the
-      // current graph state (which includes our applies) before persisting.
-      const postRevision = await getPlanDeltaRevisionWithEdges(planId);
-      if (postRevision !== preRevision) {
-        graph = await this.getPlanDeltas(planId);
-        synthesized = await synthesizePlanFromDeltas(
-          planId, planRow.rows[0].description, graph.deltas, graph.edges, await this.gatherContext(),
+      // Refresh the snapshot from the post-apply graph and synthesize plan_json INSIDE
+      // the same lock so the persisted snapshot reflects exactly our writes.
+      graph = await this.getPlanDeltas(planId);
+      synthesized = await synthesizePlanFromDeltas(planId, planRow.rows[0].description, graph.deltas, graph.edges, await this.gatherContext());
+      const parsedPlan = ContentPlanSchema.safeParse(synthesized.plan);
+      planJson = parsedPlan.success ? parsedPlan.data : null;
+      if (!planJson) {
+        console.warn(
+          `[graph-intake] amended plan ${planId} snapshot failed schema validation: ` +
+          (parsedPlan.success ? '' : parsedPlan.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; ')),
         );
-        parsedPlan = ContentPlanSchema.safeParse(synthesized.plan);
-        planJson = parsedPlan.success ? parsedPlan.data : null;
-        if (!planJson) {
-          console.warn(
-            `[graph-intake] amended plan ${planId} snapshot failed schema validation after retry: ` +
-            (parsedPlan.success ? '' : parsedPlan.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; ')),
-          );
-        }
       }
 
-      // plan_json is persisted via COALESCE so a schema-invalid snapshot never
-      // wipes the previous valid one — preview/stage/approve surface the issue
-      // rather than failing opaquely later.
-      await client.query(
-        `UPDATE content_plans SET updated_at = now(), plan_json = COALESCE($2::jsonb, plan_json) WHERE id = $1`,
-        [planId, planJson],
-      );
-    });
+      // Persist plan_json in a transaction on the SAME locked client, revalidating status
+      // under FOR UPDATE so a concurrent reject/delete (which also takes the plan-lifecycle
+      // lock) can never interleave between applyDeltas and this write. COALESCE keeps a
+      // schema-invalid snapshot from wiping the previous valid one.
+      await client.query('BEGIN');
+      try {
+        const confirm = await client.query<{ status: string }>(
+          'SELECT status FROM content_plans WHERE id = $1 FOR UPDATE',
+          [planId],
+        );
+        if (confirm.rows.length === 0) {
+          throw new GraphIntakeValidationError(`Plan ${planId} not found — it was deleted by another operation.`);
+        }
+        if (confirm.rows[0].status !== 'proposed') {
+          throw new GraphIntakeValidationError(
+            `Plan ${planId} has status '${confirm.rows[0].status}' — only a 'proposed' plan can be amended.`,
+          );
+        }
+        await client.query(
+          `UPDATE content_plans SET updated_at = now(), plan_json = COALESCE($2::jsonb, plan_json) WHERE id = $1`,
+          [planId, planJson],
+        );
+        await client.query('COMMIT');
+      } catch (persistErr) {
+        await client.query('ROLLBACK').catch(() => {});
+        throw persistErr;
+      }
+    } finally {
+      await client.query('SELECT pg_advisory_unlock(hashtext($1))', [`plan-lifecycle:${planId}`]).catch(() => {});
+      client.release();
+    }
 
     const notes = await this.triageAndAnnotate(planId, graph.deltas, [...result.diagnostics, ...synthesized.diagnostics]);
 
@@ -1256,7 +1248,7 @@ export class GraphIntakeService {
         deltaCount: graph.deltas.length,
         edgeCount: graph.edges.length,
         appliedCount: result.appliedCount,
-        droppedCount: result.diagnostics.length,
+        droppedCount: (resolvedDeltas.length - filteredDeltas.length) + result.diagnostics.length,
         noteCount: notes.length,
         source: 'graph-intake',
       },
@@ -1272,7 +1264,7 @@ export class GraphIntakeService {
         : undefined,
       instruction,
       appliedCount: result.appliedCount,
-      droppedCount: result.diagnostics.length,
+      droppedCount: (resolvedDeltas.length - filteredDeltas.length) + result.diagnostics.length,
       reply: proposal.reply,
       deltaCount: graph.deltas.length,
       edgeCount: graph.edges.length,
@@ -1298,19 +1290,20 @@ export class GraphIntakeService {
   ): Promise<{ name: string; fields: Record<string, unknown> } | null> {
     if (!isNeo4jEnabled()) return null;
     try {
-      const rows = await runNeo4jQuery<{ name: unknown; fieldsJson: unknown }>(
+      const rows = await runNeo4jQuery<{ name: unknown; props: Record<string, unknown> }>(
         `MATCH (c:Content { nodeType: $nodeType, nodeId: $nodeId })
          WHERE c.planId IS null
-         RETURN c.name AS name, c.fieldsJson AS fieldsJson`,
+         RETURN c.name AS name, properties(c) AS props`,
          { nodeType, nodeId: normalizeKeyComponent(nodeId) },
       );
       if (rows.length === 0) return null;
+      // Canonical fields are stored as node properties (GraphBaseService.upsertContentNode
+      // does `SET c = $props`), not as a fieldsJson blob. Read properties(c) and strip
+      // the graph identity/partition properties so diffing compares author fields only.
+      const reserved = new Set(['key', 'nodeType', 'nodeId', 'planId', 'isEvidence', 'name']);
       const fields: Record<string, unknown> = {};
-      const raw = rows[0].fieldsJson;
-      if (typeof raw === 'string') {
-        try { Object.assign(fields, JSON.parse(raw)); } catch { /* ignore malformed */ }
-      } else if (raw && typeof raw === 'object') {
-        Object.assign(fields, raw as Record<string, unknown>);
+      for (const [k, v] of Object.entries(rows[0].props ?? {})) {
+        if (!reserved.has(k)) fields[k] = v;
       }
       return {
         name: typeof rows[0].name === 'string' ? rows[0].name : nodeId,
@@ -1639,11 +1632,9 @@ export class GraphIntakeService {
    */
   private async getPlanOpenAnnotations(planId: string): Promise<OpenAnnotationInfo[]> {
     const rows = await queryOLTP<{
-      id: string; type: string; related_field: string | null;
-      related_node_id: string | null; status: string; suggestion: string | null;
-      created_at: string;
+      id: string; type: string; status: string; created_at: string;
     }>(
-      `SELECT id, type, related_field, related_node_id, status, suggestion, created_at
+      `SELECT id, type, status, created_at
        FROM critique_annotations
        WHERE plan_id = $1 AND scope = 'intake' AND status = 'open'
        ORDER BY created_at ASC`,
@@ -1652,10 +1643,7 @@ export class GraphIntakeService {
     return rows.rows.map((r) => ({
       id: r.id,
       type: r.type,
-      relatedField: r.related_field ?? undefined,
-      relatedNodeId: r.related_node_id ?? undefined,
       status: r.status as 'open' | 'addressed' | 'dismissed',
-      suggestion: r.suggestion,
       createdAt: r.created_at,
     }));
   }

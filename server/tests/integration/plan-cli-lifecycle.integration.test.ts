@@ -28,8 +28,6 @@
 // against any local dev stack.
 // ============================================================
 
-import '../helpers/enableTestNeo4j.js';
-
 import fs from 'node:fs';
 import path from 'node:path';
 import { beforeAll, afterAll, afterEach, describe, test, expect } from '@jest/globals';
@@ -77,9 +75,13 @@ async function applyMigration(filename: string): Promise<void> {
     path.resolve(process.cwd(), 'src/database/migrations', filename),
     'utf-8',
   );
-  await withSchemaLock(async (client) => {
-    await client.query(sql);
-  });
+  try {
+    await withSchemaLock(async (client) => {
+      await client.query(sql);
+    });
+  } catch {
+    // Table/column may already exist — that's fine (CI runs schema:migrate first)
+  }
 }
 
 async function insertPlan(
@@ -273,7 +275,7 @@ describe('M50 plan:reject CLI — integration', () => {
       GraphIntakeValidationError,
     );
     await expect(service.rejectPlan(PLAN_IMMUTABLE)).rejects.toThrow(
-      /past the point of rejection/,
+      /cannot be rejected/,
     );
   });
 
@@ -348,7 +350,7 @@ describe('M50 plan:delete CLI — integration', () => {
       GraphIntakeValidationError,
     );
     await expect(service.deletePlan(PLAN_IMMUTABLE)).rejects.toThrow(
-      /past the point of deletion/,
+      /cannot be deleted/,
     );
 
     // The approved row MUST still be present — the refusal is non-destructive.

@@ -11,6 +11,7 @@ import { fileURLToPath } from 'node:url';
 import {
   parseRejectArgs,
   rejectUsage,
+  reviewUrl,
   type RejectCliOptions,
 } from '../src/planIntakeCore.js';
 
@@ -34,6 +35,10 @@ async function main(): Promise<void> {
       status: result.status,
       deltaPruned: result.deltaPruned,
       annotationCount: result.annotationCount,
+      reviewUrl: reviewUrl(
+        options.adminUrl ?? process.env.ADMIN_URL ?? 'http://localhost:3002',
+        result.planId,
+      ),
       next: 'Plan rejected. Its row is retained for audit (visible in plan:get/plan:list); graph deltas were pruned and intake annotations closed.',
     }, null, 2));
 

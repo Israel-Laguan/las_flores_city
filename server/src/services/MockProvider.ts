@@ -275,10 +275,16 @@ ${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
       // from the instruction, MODIFY that delta in place (reuse its nodeId so
       // applyDelta MERGEs). Otherwise ADD a fresh entity. This exercises the
       // unscoped amend path offline without a real LLM.
-      const instr = (messages[messages.length - 1]?.content ?? '').toLowerCase();
+      const instrTokens = new Set(
+        (messages[messages.length - 1]?.content ?? '').toLowerCase().split(/\W+/).filter((t) => t.length >= 3),
+      );
+      // Match meaningful name tokens (word-boundary aware) so shorthand such as
+      // `rewrite Diego` remakes an existing plan-local delta instead of adding a
+      // new Paco entity once the full-name substring overlap misses.
       const match = existingDeltas.find((d) => {
-        const name = ((d.fields as Record<string, any> | undefined)?.name ?? '').toLowerCase();
-        return name.length > 0 && instr.includes(name);
+        const name = String((d.fields as Record<string, any> | undefined)?.name ?? '').toLowerCase();
+        if (name.trim().length === 0) return false;
+        return name.split(/\W+/).filter((t) => t.length >= 3).some((t) => instrTokens.has(t));
       });
       if (match) {
         const mergedFields = { ...(match.fields as Record<string, any>) };
@@ -294,11 +300,19 @@ ${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
           createdAt: new Date().toISOString(),
         })];
       } else {
+        // A genuinely new proposal must use a fresh identity absent from the
+        // plan's existing deltas — otherwise the graph upsert replaces the prior
+        // fallback entity instead of adding a distinct new one.
+        const usedIds = new Set(existingDeltas.map((d) => d.nodeId));
+        let fallbackId = 'vendor_npc';
+        while (usedIds.has(fallbackId)) {
+          fallbackId = `vendor_npc_${crypto.randomUUID().replace(/-/g, '')}`;
+        }
         deltas = [GraphDeltaSchema.parse({
           id: crypto.randomUUID(),
           planId,
           nodeType: 'Character',
-          nodeId: 'vendor_npc',
+          nodeId: fallbackId,
           op: 'ADD',
           fields: {
             name: 'Paco the Vendor',
