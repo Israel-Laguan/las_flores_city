@@ -248,8 +248,10 @@ describe('GraphIntakeService — unit tests (Neo4j mocked)', () => {
         deltaCount: 1,
         // The fixture edge's target Scene does not exist, so the edge is dropped
         // and reported as a note instead of aborting the plan.
+        // M50c: a mock-provider transparency note is also appended (this unit
+        // suite runs with the default mock provider).
         edgeCount: 0,
-        notes: [
+        notes: expect.arrayContaining([
           expect.objectContaining({
             nodeType: 'Scene',
             nodeId: 'scene-001',
@@ -257,10 +259,16 @@ describe('GraphIntakeService — unit tests (Neo4j mocked)', () => {
             kind: 'dangling_edge_target',
             status: 'unresolved',
           }),
-        ],
+          expect.objectContaining({
+            kind: 'mock_provider',
+            severity: 'info',
+          }),
+        ]),
         usage: null,
         timestamp: expect.any(String),
       });
+      // M50c: dangling-edge note + mock-provider transparency note.
+      expect(result.notes).toHaveLength(2);
     });
 
     test('rejects when chatPropose returns no deltas', async () => {

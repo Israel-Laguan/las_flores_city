@@ -35,13 +35,19 @@ export interface CanonicalCandidate {
   neighbors?: Array<{ nodeType: string; nodeId: string }>;
 }
 
+/** A whole-canon name match for a proposed entity (M50c duplicate check). */
+export interface EntityNameMatch {
+  candidate: CanonicalCandidate;
+  confidence: number;
+}
+
 /** Supplies the canonical candidate set the resolver matches against. */
 export interface CandidateSource {
   listCandidates(): Promise<CanonicalCandidate[]>;
 }
 
 // Match confidence thresholds.
-const MATCH_THRESHOLD = 0.7; // anything at/above is a "candidate match"
+export const MATCH_THRESHOLD = 0.7; // anything at/above is a "candidate match"
 const RESOLVE_THRESHOLD = 0.85; // a unique match at/above is auto-`resolved`
 
 /** Role words stripped during normalization (milestone strategy #2). */
@@ -115,6 +121,33 @@ export function similarity(ref: string, candidate: string): number {
   const minLen = Math.min(a.length, b.length);
   if (dist <= 2 && minLen >= 6) score = Math.max(score, 0.92);
   return Math.min(1, score);
+}
+
+/**
+ * Floor similarity in [0,1] — the same signals as `similarity()` MINUS the
+ * substring and small-edit-distance boosts. M50c uses this for the plan-level
+ * "no match anywhere" probe: a one-token canon name that merely appears inside
+ * a longer proposed name (e.g. canon "Diego" inside proposed "Diego el Mock")
+ * must not count as a real canon match there.
+ */
+export function floorSimilarity(a: string, b: string): number {
+  const na = normalizeText(a);
+  const nb = normalizeText(b);
+  if (na.length > 0 && na === nb) return 1;
+
+  const tokensA = new Set(na.split(/\s+/).filter(Boolean));
+  const tokensB = new Set(nb.split(/\s+/).filter(Boolean));
+  let jaccard = 0;
+  if (tokensA.size > 0 && tokensB.size > 0) {
+    let inter = 0;
+    for (const t of tokensA) if (tokensB.has(t)) inter += 1;
+    jaccard = inter / (tokensA.size + tokensB.size - inter);
+  }
+
+  const maxLen = Math.max(a.length, b.length);
+  const dist = levenshtein(a.toLowerCase(), b.toLowerCase());
+  const ratio = maxLen === 0 ? 1 : 1 - dist / maxLen;
+  return Math.min(1, Math.max(jaccard, ratio));
 }
 
 /** Fields on a delta that carry a natural-language reference to another entity. */
@@ -243,6 +276,54 @@ export class EntityResolutionService {
       status,
       candidates: scored.slice(0, 5).map((s) => toCandidate(s.candidate, s.confidence)),
     };
+  }
+  /**
+   * M50c — whole-canon duplicate check: match a PROPOSED entity's own name
+   * against all existing canon of the given node type (names + aliases).
+   * Returns the best match at/above `threshold` (default MATCH_THRESHOLD), or
+   * null. This is what the ADD-delta "consider MODIFY instead" concern is built
+   * from — the REFERENCE_FIELDS path above never looks at a delta's own name.
+   */
+  async matchEntityName(
+    name: string,
+    nodeType: string,
+    opts: { candidates?: CanonicalCandidate[]; threshold?: number } = {},
+  ): Promise<EntityNameMatch | null> {
+    const candidates = opts.candidates ?? (await this.source.listCandidates());
+    const threshold = opts.threshold ?? MATCH_THRESHOLD;
+    let best: EntityNameMatch | null = null;
+    for (const c of candidates) {
+      if (c.nodeType !== nodeType) continue;
+      for (const n of [c.name, ...(c.aliasNames ?? [])]) {
+        const s = similarity(name, n);
+        if (s >= threshold && (!best || s > best.confidence)) {
+          best = { candidate: c, confidence: s };
+        }
+      }
+    }
+    return best;
+  }
+
+  /**
+   * M50c — highest floor similarity between a proposed name and any existing
+   * canon of the given node type. Powers the plan-level "no match anywhere"
+   * probe: the caller treats 0 as "zero canon matches above the floor".
+   */
+  async maxNameSimilarity(
+    name: string,
+    nodeType: string,
+    opts: { candidates?: CanonicalCandidate[] } = {},
+  ): Promise<number> {
+    const candidates = opts.candidates ?? (await this.source.listCandidates());
+    let max = 0;
+    for (const c of candidates) {
+      if (c.nodeType !== nodeType) continue;
+      for (const n of [c.name, ...(c.aliasNames ?? [])]) {
+        const s = floorSimilarity(name, n);
+        if (s > max) max = s;
+      }
+    }
+    return max;
   }
 }
 

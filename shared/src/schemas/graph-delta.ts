@@ -210,6 +210,9 @@ export const IntakeNoteSchema = z.object({
   reason: z.string(),
   suggestion: z.string().optional(),
   candidates: z.array(ResolutionCandidateSchema).default([]),
+  /** M50c: severity the note persists as ('warning' default; 'info' for the
+   * mock-provider transparency note). Absent on pre-M50c producers. */
+  severity: z.enum(['warning', 'info']).optional(),
   /** Durable handle for `plan:amend --annotation <id>:"<comment>"`; absent only
    * if persisting the annotation degraded (the note is still reported). */
   annotationId: z.string().optional(),

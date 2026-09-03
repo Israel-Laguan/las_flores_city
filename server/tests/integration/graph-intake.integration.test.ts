@@ -17,6 +17,10 @@ import { adminStoryBuilderRouter } from '../../src/routes/admin-story-builder.js
 import { seedAliases, pruneOrphanAliases, loadSeedAliases } from '../../src/services/GraphAliasService.js';
 import { EntityResolutionService } from '../../src/services/EntityResolutionService.js';
 import { Neo4jCandidateSource } from '../../src/services/Neo4jCandidateSource.js';
+// M50c — M50c semantic-validation fixture tests
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
+import { GraphDeltaSchema, type IntakeNote } from '@las-flores/shared';
 
 // The parent router applies authAndAdminMiddleware to every sub-route (including
 // the graph-intake routes), so HTTP tests must bypass it. Other graph
@@ -58,6 +62,7 @@ async function cleanupPlan(planId: string): Promise<void> {
     /* ignore */
   }
   try {
+    await queryOLTP('DELETE FROM critique_annotations WHERE plan_id = $1 AND scope = $2', [planId, 'intake']);
     await queryOLTP('DELETE FROM content_plans WHERE id = $1', [planId]);
   } catch {
     /* ignore */
@@ -708,4 +713,130 @@ describe('GraphIntakeService.amendPlanWithInstruction — unscoped free-form ame
       chatService.chatService.propose = originalPropose;
     }
   }, 30000);
+});
+
+// ---------------------------------------------------------------------------
+// M50c — intake semantic validation & concern flagging (fail-open).
+//
+// Asserts the concern surface that the 2026-09-02 live-stack run was missing:
+//   - an ADD delta whose name matches canon → "consider MODIFY" duplicate note
+//   - a plan with NO canon match AND no input-grounding overlap → exactly one
+//     plan-level "this plan may not belong to this content graph" concern
+//   - every mock-provider run → a mock-provider transparency info note
+//
+// Determinism: chatService.propose is stubbed (so the deltas are authored by the
+// test, not the model), and the canonical-match calls are spied on the
+// EntityResolutionService prototype so results do not depend on what canon
+// happens to be seeded in the live graph.
+// ---------------------------------------------------------------------------
+describe('M50c intake semantic validation (fail-open concern flagging)', () => {
+  const originalLLMProvider = process.env.LLM_PROVIDER;
+
+  beforeAll(() => {
+    // Deterministic: this suite always asserts the mock-provider note fires.
+    process.env.LLM_PROVIDER = 'mock';
+  });
+
+  afterAll(() => {
+    if (originalLLMProvider === undefined) delete process.env.LLM_PROVIDER;
+    else process.env.LLM_PROVIDER = originalLLMProvider;
+  });
+
+  async function readFixture(name: string): Promise<string> {
+    return readFile(path.resolve(__dirname, `../fixtures/intake/${name}`), 'utf8');
+  }
+
+  async function intakeFromFixture(
+    fixtureName: string,
+    deltas: any[],
+    edges: any[] = [],
+  ): Promise<any> {
+    const { GraphIntakeService } = await import('../../src/services/GraphIntakeService.js');
+    const chatService = await import('../../src/services/ChatService.js');
+    const originalPropose = chatService.chatService.propose;
+    const input = await readFixture(fixtureName);
+    try {
+      chatService.chatService.propose = jest.fn(async () => ({
+        reply: 'Mock proposal',
+        deltas,
+        deltaEdges: edges,
+        usage: null,
+      })) as never;
+      const service = new GraphIntakeService();
+      const result = await service.createPlanFromDescription(input);
+      createdPlanIds.push(result.planId);
+      return result;
+    } finally {
+      chatService.chatService.propose = originalPropose;
+    }
+  }
+
+  test('off-universe input produces plan-level concern + mock-provider transparency note', async () => {
+    if (!neo4jLive) return;
+    // Deterministic canon: no matches, no floor similarity — isolates the
+    // grounding signal from whatever happens to be seeded in the live graph.
+    const matchSpy = jest.spyOn(EntityResolutionService.prototype, 'matchEntityName').mockResolvedValue(null);
+    const floorSpy = jest.spyOn(EntityResolutionService.prototype, 'maxNameSimilarity').mockResolvedValue(0);
+    try {
+      const offDelta = GraphDeltaSchema.parse({
+        id: 'd3200020-0000-4000-8000-000000000020',
+        planId: '',
+        nodeType: 'Character',
+        nodeId: 'vendor_npc',
+        op: 'ADD',
+        fields: {
+          name: 'Diego el Mock',
+          description: 'A deterministic mock proposal: add a new character to demonstrate the propose→apply loop.',
+          role: 'bartender',
+        },
+        createdAt: new Date().toISOString(),
+      });
+      const result = await intakeFromFixture('off-universe-input.txt', [offDelta]);
+
+      const concernKinds = result.notes
+        .filter((n: IntakeNote) => n.kind === 'ungrounded_plan' || n.kind === 'mock_provider')
+        .map((n: IntakeNote) => n.kind);
+      // Exactly one plan-level "may not belong to this content graph" concern.
+      expect(concernKinds.filter((k: string) => k === 'ungrounded_plan')).toHaveLength(1);
+      // And the fail-open mock-provider transparency note is always present.
+      expect(concernKinds.filter((k: string) => k === 'mock_provider')).toHaveLength(1);
+    } finally {
+      matchSpy.mockRestore();
+      floorSpy.mockRestore();
+    }
+  }, 15000);
+
+  test('in-universe input with input-grounded deltas produces NO plan-level concern', async () => {
+    if (!neo4jLive) return;
+    const matchSpy = jest.spyOn(EntityResolutionService.prototype, 'matchEntityName').mockResolvedValue(null);
+    const floorSpy = jest.spyOn(EntityResolutionService.prototype, 'maxNameSimilarity').mockResolvedValue(0);
+    try {
+      const inDelta = GraphDeltaSchema.parse({
+        id: 'd3200021-0000-4000-8000-000000000021',
+        planId: '',
+        nodeType: 'Character',
+        nodeId: 'camila_reyes',
+        op: 'ADD',
+        fields: {
+          name: 'Camila Reyes',
+          // Tokens here (fixer, contraband, electronics, neon, markets, distrito,
+          // popular, las flores) are drawn verbatim from the in-universe fixture,
+          // so the grounding-overlap check passes and the plan-level concern is
+          // suppressed.
+          description: 'Camila Reyes is a fixer running contraband electronics through the neon markets of Distrito Popular in Las Flores.',
+          role: 'fixer',
+        },
+        createdAt: new Date().toISOString(),
+      });
+      const result = await intakeFromFixture('in-universe-input.txt', [inDelta]);
+
+      // No "may not belong to this content graph" concern for grounded input.
+      expect(result.notes.filter((n: IntakeNote) => n.kind === 'ungrounded_plan')).toHaveLength(0);
+      // Mock-provider note still fires (fail-open transparency is unconditional).
+      expect(result.notes.filter((n: IntakeNote) => n.kind === 'mock_provider')).toHaveLength(1);
+    } finally {
+      matchSpy.mockRestore();
+      floorSpy.mockRestore();
+    }
+  }, 15000);
 });

@@ -49,6 +49,10 @@ import { applyDelta, applyDeltaEdge, getDeltasForPlan, getDeltaEdgesForPlan, cle
 import { isNeo4jEnabled, runNeo4jTransaction, runNeo4jQuery } from './Neo4jClient.js';
 import { reviewUrl } from '../planIntakeCore.js';
 import { EntityResolutionService } from './EntityResolutionService.js';
+import {
+  semanticConcernNotes,
+  isMockProviderConfigured,
+} from './IntakeSemanticValidator.js';
 import { Neo4jCandidateSource } from './Neo4jCandidateSource.js';
 import { PlanAwareCandidateSource } from './PlanAwareCandidateSource.js';
 import { aiCritiqueService } from './AICritiqueService.js';
@@ -930,7 +934,10 @@ export class GraphIntakeService {
 
     // Turn every unresolved reference + dropped delta/edge into reviewable notes
     // (suggestions + `CritiqueAnnotation`s) the author can reply to via plan:amend.
-    const notes = await this.triageAndAnnotate(planId, safeDeltas, partitionDiagnostics);
+    // M50c: fail-open semantic concerns (whole-canon ADD duplicate check,
+    // plan-level grounding probe, mock-provider transparency).
+    const semanticNotes = await this.semanticNotes(description, safeDeltas);
+    const notes = await this.triageAndAnnotate(planId, safeDeltas, partitionDiagnostics, semanticNotes);
 
     emitAdminEvent(
       'plan_created',
@@ -974,10 +981,41 @@ export class GraphIntakeService {
    * Entirely best-effort. A suggestion is cosmetic and an annotation is a review
    * aid; neither may abort a plan that has already been persisted.
    */
+  /**
+   * M50c — compute the fail-open semantic-concern notes for a plan write set.
+   *
+   * Returns pre-formed `IntakeNote`s that ride in the SAME annotation-attach
+   * pass as the rest of triage (`triageAndAnnotate`), so a second pass never
+   * retires them. Canonical canon-matching is best-effort: if the candidate
+   * source is unavailable the plan-level concern is suppressed (we cannot assert
+   * "zero matches" without the canon), but the mock-provider note is always on.
+   */
+  private async semanticNotes(description: string, deltas: GraphDelta[]): Promise<IntakeNote[]> {
+    if (deltas.length === 0) return [];
+    try {
+      return await semanticConcernNotes({
+        description,
+        deltas,
+        matcher: entityResolutionService,
+        isMockProvider: isMockProviderConfigured(),
+      });
+    } catch (err) {
+      console.warn('[graph-intake] semantic concern checks failed; skipping:', (err as Error).message);
+      return [];
+    }
+  }
+
   async triageAndAnnotate(
     planId: string,
     deltas: GraphDelta[],
     diagnostics: IntakeDiagnostic[],
+    /**
+     * M50c: pre-formed semantic-concern notes (duplicate ADD, plan-level
+     * grounding probe, mock-provider transparency). MUST be supplied here rather
+     * than via a second attach pass — `attachDiagnosticAnnotations` retires
+     * open 'intake' annotations on write, so a second pass would erase these.
+     */
+    preFormedNotes: IntakeNote[] = [],
   ): Promise<IntakeNote[]> {
     // Keep resolution blocks paired with their owning delta so a note can name the
     // entity it belongs to (a ResolutionBlock alone has no nodeType/nodeId).
@@ -992,20 +1030,21 @@ export class GraphIntakeService {
       ...resolutionNotes.map((r) => r.block),
       ...diagnostics,
     ];
-    if (items.length === 0) return [];
 
-    // One batched LLM call for the whole plan. Mirrors the best-effort treatment of
-    // `resolvePlanDeltas`: on any failure fall back to the templated string.
-    let suggestions: string[];
-    try {
-      const result = await this.provider.suggestDiagnostics(items);
-      suggestions = items.map((item, i) => result.suggestions[i] || templatedSuggestion(item));
-    } catch (err) {
-      console.warn('[graph-intake] suggestion generation failed; using templated fallbacks:', (err as Error).message);
-      suggestions = items.map(templatedSuggestion);
+    let suggestions: string[] = [];
+    if (items.length > 0) {
+      // One batched LLM call for the whole plan. Mirrors the best-effort treatment of
+      // `resolvePlanDeltas`: on any failure fall back to the templated string.
+      try {
+        const result = await this.provider.suggestDiagnostics(items);
+        suggestions = items.map((item, i) => result.suggestions[i] || templatedSuggestion(item));
+      } catch (err) {
+        console.warn('[graph-intake] suggestion generation failed; using templated fallbacks:', (err as Error).message);
+        suggestions = items.map(templatedSuggestion);
+      }
     }
 
-    const notes: IntakeNote[] = [
+    const baseNotes: IntakeNote[] = items.length > 0 ? [
       ...resolutionNotes.map(({ delta, block }, i) => ({
         nodeType: delta.nodeType,
         nodeId: delta.nodeId,
@@ -1030,7 +1069,12 @@ export class GraphIntakeService {
         candidates: d.candidates,
         annotationId: undefined as string | undefined,
       })),
-    ];
+    ] : [];
+
+    // M50c: merge in the pre-formed semantic-concern notes so they share this
+    // single annotation-attach pass (a second pass would retire them).
+    const notes: IntakeNote[] = [...baseNotes, ...preFormedNotes];
+    if (notes.length === 0) return [];
 
     // Persist as annotations so `plan:amend --annotation <id>:"<comment>"` has a
     // durable handle to reply to. Best-effort: losing the annotation only costs the
@@ -1038,7 +1082,7 @@ export class GraphIntakeService {
     try {
       const drafts: CritiqueAnnotationDraft[] = notes.map((note) => ({
         type: 'suggestion' as const,
-        severity: 'warning' as const,
+        severity: (note.severity ?? 'warning') as 'warning' | 'info',
         description: `${note.reason} ${note.suggestion ?? ''}`.trim(),
         // `suggestion` annotations carry no evidence requirement, so nothing has to
         // be fabricated to satisfy the anti-hallucination refinement.
@@ -1213,7 +1257,8 @@ export class GraphIntakeService {
         [planId, planJson],
       );
 
-      notes = await this.triageAndAnnotate(planId, graph.deltas, [...result.diagnostics, ...synthesized.diagnostics]);
+      const semanticNotes = await this.semanticNotes(planRow.rows[0].description ?? '', graph.deltas);
+      notes = await this.triageAndAnnotate(planId, graph.deltas, [...result.diagnostics, ...synthesized.diagnostics], semanticNotes);
       deltaCount = graph.deltas.length;
       edgeCount = graph.edges.length;
       deltas = graph.deltas;
