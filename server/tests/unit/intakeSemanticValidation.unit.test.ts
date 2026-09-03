@@ -143,9 +143,32 @@ describe('semanticConcernNotes — concern construction', () => {
       matcher, isMockProvider: false,
     });
     expect(notes.filter((n) => n.kind === 'duplicate_entity')).toHaveLength(0);
-    // A MODIFY with no grounding would still hit the plan-level path — but
-    // anyCanonMatch is true (floor 0.9 >= floor), so no plan concern either.
+    // MODIFY deltas never go through name-matching, so the matcher stub above
+    // is never actually called here — anyCanonMatch is true because a
+    // surviving MODIFY targets real canon by construction (see the next test).
     expect(notes.filter((n) => n.kind === 'ungrounded_plan')).toHaveLength(0);
+  });
+
+  it('a MODIFY-only plan with no input-grounding overlap is NOT flagged as a mismatch', async () => {
+    // Regression: a plan that only edits an existing entity is proof-of-canon-
+    // membership on its own — it must never be flagged as "may not belong to
+    // this content graph", even when the edited field(s) share no vocabulary
+    // with the input description. The matcher is never expected to be
+    // consulted for a MODIFY delta, so it throws if it ever is.
+    const matcher = {
+      matchEntityName: async () => { throw new Error('must not be called for a MODIFY delta'); },
+      maxNameSimilarity: async () => { throw new Error('must not be called for a MODIFY delta'); },
+    };
+    const modifyDelta = makeDelta('Mercado Popular Las Flores', 'mood: tense', 'MODIFY');
+    const notes = await semanticConcernNotes({
+      // Deliberately disjoint vocabulary from the delta's own fields.
+      description: 'Make the ambush scene feel tenser.',
+      deltas: [modifyDelta],
+      matcher,
+      isMockProvider: false,
+    });
+    expect(notes.filter((n) => n.kind === 'ungrounded_plan')).toHaveLength(0);
+    expect(notes.filter((n) => n.kind === 'duplicate_entity')).toHaveLength(0);
   });
 
   it('emits exactly one plan-level concern when canon + grounding are both empty', async () => {

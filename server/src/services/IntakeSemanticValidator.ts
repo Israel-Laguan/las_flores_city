@@ -136,7 +136,15 @@ export async function semanticConcernNotes(params: SemanticConcernParams): Promi
 
   // 1. Whole-canon duplicate check on every ADD delta's own name.
   let canonAvailable = true;
-  let anyCanonMatch = false;
+  // A MODIFY/DELETE delta that reached this point already survived partition-time
+  // base-node resolution (GraphIntakeService drops any MODIFY/DELETE targeting a
+  // missing node before semanticNotes() runs), so it targets a real, existing
+  // canon entity by construction. That alone proves the plan belongs to this
+  // graph, even though only ADD deltas go through name-matching below — without
+  // this, an edit-only plan whose fields don't happen to echo the input's
+  // vocabulary would be wrongly flagged as "may not belong to this content
+  // graph" for the ordinary act of editing something that already exists.
+  let anyCanonMatch = deltas.some((d) => d.op !== 'ADD');
   try {
     for (const delta of deltas.filter((d) => d.op === 'ADD')) {
       const name = (delta.fields as Record<string, unknown> | undefined)?.name;
