@@ -200,7 +200,11 @@ adminStoryBuilderPlansRouter.put('/plans/:id', async (req, res) => {
       return;
     }
 
-    const validStatuses = ['draft', 'proposed', 'approved', 'staged', 'migrated', 'verified', 'failed'];
+    // `rejected` is a soft terminal state preserved for audit (see M50 plan:reject).
+    // It must be preserved on save, not silently reverted to `draft` — a rejected
+    // plan stays visible for review and can only be re-opened by an explicit admin
+    // status flip (a future M52 action), never by an unguarded save fallback.
+    const validStatuses = ['draft', 'proposed', 'approved', 'staged', 'migrated', 'verified', 'failed', 'pending', 'staging', 'migrating', 'verifying', 'rejected'];
     const finalStatus = validStatuses.includes(status) ? status : 'draft';
     validatedPlan.status = finalStatus;
 

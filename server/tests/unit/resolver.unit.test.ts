@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { describe, it, expect, afterAll } from '@jest/globals';
 import { deepMergeNodes } from '../../src/services/dialogueResolverUtils.js';
 import type { DialogueNode } from '@las-flores/shared';

@@ -151,7 +151,7 @@ export async function closeConnections(): Promise<void> {
     await _contentPool.end();
     _contentPool = null;
   }
-  console.log('🔌 Database connections closed');
+  console.error('🔌 Database connections closed');
 }
 
 // Query helpers

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Manual "Time Travel" Gate Test — automated verification
  * Runs the full mystery → breakthrough → leaderboard flow via API + SQL.

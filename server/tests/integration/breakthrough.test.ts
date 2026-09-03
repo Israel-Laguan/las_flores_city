@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { queryOLTP, queryOLAP, withOLTPTransaction, closeConnections } from '@las-flores/infra';
 import { closeRedis } from '@las-flores/infra';
 import {

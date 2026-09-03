@@ -30,7 +30,7 @@ import {
 } from '../../src/services/PlanTemplateBuilders.js';
 import type { ContentPlan } from '@las-flores/shared';
 import { executePlan } from '../../src/services/StoryBuilderPlanOps.js';
-import { generateLoreStubs, resolveContentDir } from '../../src/services/StoryBuilderLore.js';
+import { generateLoreStubs } from '../../src/services/StoryBuilderLore.js';
 import { verifyPlanCrossReferences } from '../../src/services/PlanVerificationService.js';
 
 // Dedicated synthetic IDs (collision-avoidance per AGENTS.md).
@@ -39,23 +39,10 @@ const LOCATION_ID = 'e4300000-0000-4000-8000-0000000000a2';
 const BAD_MISSION_ID = 'e4300000-0000-4000-8000-0000000000a3';
 const DISTRICT_NAME = 'M43 Pipeline Fixture District';
 
-const SLUGS = ['m43_pipeline_mission', 'm43_pipeline_location', 'm43_pipeline_bad'];
-
 // Shared lazy OLTP pool from @las-flores/infra (sanctioned access pattern).
 let tmpDir: string;
 let contentDir: string;
 let cwdSpy: any;
-
-function missionPlan(): ContentPlan {
-  const plan = buildMissionTemplatePlan({
-    name: 'M43 Pipeline Mission',
-    slug: 'm43_pipeline_mission',
-    description: 'Recover the ledger before the syndicate notices.',
-  });
-  // Pin deterministic ids so DB assertions are stable across runs.
-  plan.items[0].id = MISSION_ID;
-  return plan;
-}
 
 function combinedPlan(): ContentPlan {
   const mission = buildMissionTemplatePlan({

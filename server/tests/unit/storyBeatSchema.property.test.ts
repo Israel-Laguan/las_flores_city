@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { describe, it, expect, jest } from '@jest/globals';
 import fc from 'fast-check';
 import { stringOf } from './__utils__/fastCheckV4';

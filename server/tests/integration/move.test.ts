@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { describe, test, expect, beforeAll, afterAll, beforeEach } from '@jest/globals';
 import pg from 'pg';
 import fs from 'fs';

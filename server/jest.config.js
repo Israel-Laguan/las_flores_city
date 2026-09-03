@@ -1,6 +1,5 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 export default {
-  preset: 'ts-jest/presets/default',
   testEnvironment: 'node',
   roots: ['<rootDir>/tests'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'json'],
@@ -18,6 +17,7 @@ export default {
           module: 'CommonJS',
           moduleResolution: 'node',
           esModuleInterop: true,
+          isolatedModules: true,
         },
       },
     ],

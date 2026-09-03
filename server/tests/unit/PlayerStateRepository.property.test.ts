@@ -1,4 +1,5 @@
-import { describe, it, expect, jest, beforeEach } from '@jest/globals';
+/* eslint-disable max-lines-per-function */
+import { describe, it, expect, jest } from '@jest/globals';
 import fc from 'fast-check';
 import { stringOf } from './__utils__/fastCheckV4';
 

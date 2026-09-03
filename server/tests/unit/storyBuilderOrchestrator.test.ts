@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { describe, it, expect, jest as jestGlobals, beforeEach, afterEach } from '@jest/globals';
 import path from 'node:path';
 import fs from 'node:fs/promises';

@@ -1,3 +1,5 @@
+/* eslint-disable max-lines-per-function */
+/* eslint-disable max-lines */
 import { createHash } from 'node:crypto';
 import { queryOLTP, queryOLAP, queryContent, withOLTPTransaction, closeConnections } from '@las-flores/infra';
 import { getCache, invalidatePattern, closeRedis } from '@las-flores/infra';

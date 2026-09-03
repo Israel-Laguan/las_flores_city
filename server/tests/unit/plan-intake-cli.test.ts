@@ -1,11 +1,22 @@
+/* eslint-disable max-lines-per-function */
 import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
 import {
   parseArgs,
   parseAmendArgs,
+  parsePlanDiffArgs,
+  parseRejectArgs,
+  parseDeleteArgs,
+  parseGetArgs,
+  parseListArgs,
   resolveActor,
   reviewUrl,
   usage,
   amendUsage,
+  planDiffUsage,
+  rejectUsage,
+  deleteUsage,
+  getUsage,
+  listUsage,
   DEFAULT_DEV_ADMIN_ID,
 } from '../../src/planIntakeCore.js';
 import type { QueryOLTP } from '../../src/planIntakeCore.js';
@@ -283,14 +294,262 @@ describe('plan:amend CLI argument parsing', () => {
       '--user-email', 'admin@example.com',
     ])).toThrow(/not both/);
   });
+
+  it('parses a planId with --instruction (unscoped free-form directive)', () => {
+    const opts = parseAmendArgs([
+      'node', 'run_plan_amend.ts', PLAN_ID,
+      '--instruction', 'add a vendor NPC to Mercado Popular',
+    ]);
+    expect(opts.planId).toBe(PLAN_ID);
+    expect(opts.instruction).toBe('add a vendor NPC to Mercado Popular');
+    expect(opts.annotations).toEqual([]);
+  });
+
+  it('trims surrounding whitespace from --instruction', () => {
+    const opts = parseAmendArgs([
+      'node', 'run_plan_amend.ts', PLAN_ID,
+      '--instruction', '  rewrite Scene X entirely  ',
+    ]);
+    expect(opts.instruction).toBe('rewrite Scene X entirely');
+  });
+
+  it('accepts --instruction as an alternative to --annotation', () => {
+    expect(() => parseAmendArgs(['node', 'run_plan_amend.ts', PLAN_ID]))
+      .toThrow(/At least one --annotation <id>:<comment> or --instruction/);
+  });
+
+  it('throws when --instruction is empty', () => {
+    expect(() => parseAmendArgs([
+      'node', 'run_plan_amend.ts', PLAN_ID, '--instruction', '   ',
+    ])).toThrow(/non-empty string/);
+  });
+
+  it('throws when --instruction is missing a value', () => {
+    expect(() => parseAmendArgs([
+      'node', 'run_plan_amend.ts', PLAN_ID, '--instruction',
+    ])).toThrow(/non-empty string/);
+  });
+
+  it('rejects combining --instruction with --annotation', () => {
+    expect(() => parseAmendArgs([
+      'node', 'run_plan_amend.ts', PLAN_ID,
+      '--annotation', `${ANNOTATION_ID}:fix it`,
+      '--instruction', 'add a vendor NPC',
+    ])).toThrow(/cannot be combined/);
+  });
+
+  it('rejects more than one --instruction', () => {
+    expect(() => parseAmendArgs([
+      'node', 'run_plan_amend.ts', PLAN_ID,
+      '--instruction', 'first',
+      '--instruction', 'second',
+    ])).toThrow(/Only one --instruction/);
+  });
 });
 
 describe('plan:amend usage', () => {
   it('documents the annotation flag and actor options', () => {
     const text = amendUsage();
     expect(text).toContain('--annotation');
+    expect(text).toContain('--instruction');
     expect(text).toContain('--user-id');
     expect(text).toContain('--user-email');
     expect(text).toContain('--admin-url');
+  });
+});
+
+describe('plan:diff CLI argument parsing', () => {
+  it('parses a positional planId', () => {
+    const opts = parsePlanDiffArgs(['node', 'run_plan_diff.ts', 'plan-xyz']);
+    expect(opts.planId).toBe('plan-xyz');
+    expect(opts.adminUrl).toBeUndefined();
+  });
+
+  it('parses --admin-url', () => {
+    const opts = parsePlanDiffArgs([
+      'node', 'run_plan_diff.ts', 'plan-xyz',
+      '--admin-url', 'http://localhost:4000',
+    ]);
+    expect(opts.adminUrl).toBe('http://localhost:4000');
+  });
+
+  it('throws when no planId is given', () => {
+    expect(() => parsePlanDiffArgs(['node', 'run_plan_diff.ts']))
+      .toThrow(/A planId is required/);
+  });
+
+  it('throws on an unknown option', () => {
+    expect(() => parsePlanDiffArgs(['node', 'run_plan_diff.ts', 'plan-xyz', '--bogus']))
+      .toThrow(/Unknown option/);
+  });
+
+  it('throws on a duplicate positional argument', () => {
+    expect(() => parsePlanDiffArgs(['node', 'run_plan_diff.ts', 'a', 'b']))
+      .toThrow(/Unexpected argument/);
+  });
+
+  it('documents the admin-url option', () => {
+    expect(planDiffUsage()).toContain('--admin-url');
+  });
+});
+
+describe('plan:reject CLI argument parsing', () => {
+  it('parses a positional planId', () => {
+    const opts = parseRejectArgs(['node', 'run_plan_reject.ts', 'plan-xyz']);
+    expect(opts.planId).toBe('plan-xyz');
+  });
+
+  it('throws when no planId is given', () => {
+    expect(() => parseRejectArgs(['node', 'run_plan_reject.ts'])).toThrow(/A planId is required/);
+  });
+
+  it('throws on unknown options', () => {
+    expect(() => parseRejectArgs(['node', 'run_plan_reject.ts', 'plan-xyz', '--bogus']))
+      .toThrow(/Unknown option/);
+  });
+
+  it('throws on a duplicate positional argument', () => {
+    expect(() => parseRejectArgs(['node', 'run_plan_reject.ts', 'a', 'b']))
+      .toThrow(/Unexpected argument/);
+  });
+
+  it('documents the command', () => {
+    expect(rejectUsage()).toContain('rejected');
+  });
+});
+
+describe('plan:delete CLI argument parsing', () => {
+  it('parses a positional planId with --yes', () => {
+    const opts = parseDeleteArgs(['node', 'run_plan_delete.ts', 'plan-xyz', '--yes']);
+    expect(opts.planId).toBe('plan-xyz');
+    expect(opts.yes).toBe(true);
+  });
+
+  it('throws when --yes is missing', () => {
+    expect(() => parseDeleteArgs(['node', 'run_plan_delete.ts', 'plan-xyz']))
+      .toThrow(/--yes/);
+  });
+
+  it('throws when no planId is given', () => {
+    expect(() => parseDeleteArgs(['node', 'run_plan_delete.ts'])).toThrow(/A planId is required/);
+  });
+
+  it('throws on unknown options', () => {
+    expect(() => parseDeleteArgs(['node', 'run_plan_delete.ts', 'plan-xyz', '--yes', '--bogus']))
+      .toThrow(/Unknown option/);
+  });
+
+  it('documents the --yes guard', () => {
+    expect(deleteUsage()).toContain('--yes');
+  });
+});
+
+describe('plan:get CLI argument parsing', () => {
+  it('parses a positional planId', () => {
+    const opts = parseGetArgs(['node', 'run_plan_get.ts', 'plan-xyz']);
+    expect(opts.planId).toBe('plan-xyz');
+    expect(opts.adminUrl).toBeUndefined();
+  });
+
+  it('parses --admin-url', () => {
+    const opts = parseGetArgs([
+      'node', 'run_plan_get.ts', 'plan-xyz',
+      '--admin-url', 'http://localhost:4000',
+    ]);
+    expect(opts.adminUrl).toBe('http://localhost:4000');
+  });
+
+  it('throws when no planId is given', () => {
+    expect(() => parseGetArgs(['node', 'run_plan_get.ts'])).toThrow(/A planId is required/);
+  });
+
+  it('throws on unknown options', () => {
+    expect(() => parseGetArgs(['node', 'run_plan_get.ts', 'plan-xyz', '--bogus']))
+      .toThrow(/Unknown option/);
+  });
+
+  it('throws on a duplicate positional argument', () => {
+    expect(() => parseGetArgs(['node', 'run_plan_get.ts', 'a', 'b']))
+      .toThrow(/Unexpected argument/);
+  });
+
+  it('documents the admin-url option', () => {
+    expect(getUsage()).toContain('--admin-url');
+  });
+});
+
+describe('plan:list CLI argument parsing', () => {
+  it('parses no arguments (default listing)', () => {
+    const opts = parseListArgs(['node', 'run_plan_list.ts']);
+    expect(opts.status).toBeUndefined();
+    expect(opts.createdByEmail).toBeUndefined();
+    expect(opts.since).toBeUndefined();
+  });
+
+  it('parses --status', () => {
+    const opts = parseListArgs(['node', 'run_plan_list.ts', '--status', 'proposed']);
+    expect(opts.status).toBe('proposed');
+  });
+
+  it('parses --created-by', () => {
+    const opts = parseListArgs(['node', 'run_plan_list.ts', '--created-by', 'admin@example.com']);
+    expect(opts.createdByEmail).toBe('admin@example.com');
+  });
+
+  it('parses --since', () => {
+    const opts = parseListArgs(['node', 'run_plan_list.ts', '--since', '2025-01-01T00:00:00Z']);
+    expect(opts.since).toBe('2025-01-01T00:00:00Z');
+  });
+
+  it('parses --admin-url', () => {
+    const opts = parseListArgs([
+      'node', 'run_plan_list.ts',
+      '--admin-url', 'http://localhost:4000',
+    ]);
+    expect(opts.adminUrl).toBe('http://localhost:4000');
+  });
+
+  it('parses multiple filters together', () => {
+    const opts = parseListArgs([
+      'node', 'run_plan_list.ts',
+      '--status', 'rejected',
+      '--created-by', 'dev@example.com',
+      '--since', '2025-06-01T00:00:00Z',
+    ]);
+    expect(opts.status).toBe('rejected');
+    expect(opts.createdByEmail).toBe('dev@example.com');
+    expect(opts.since).toBe('2025-06-01T00:00:00Z');
+  });
+
+  it('throws when --status is missing a value', () => {
+    expect(() => parseListArgs(['node', 'run_plan_list.ts', '--status']))
+      .toThrow(/--status requires a value/);
+  });
+
+  it('throws when --created-by is missing a value', () => {
+    expect(() => parseListArgs(['node', 'run_plan_list.ts', '--created-by']))
+      .toThrow(/--created-by requires a value/);
+  });
+
+  it('throws when --since is missing a value', () => {
+    expect(() => parseListArgs(['node', 'run_plan_list.ts', '--since']))
+      .toThrow(/--since requires a value/);
+  });
+
+  it('throws on unexpected positional arguments', () => {
+    expect(() => parseListArgs(['node', 'run_plan_list.ts', 'plan-xyz']))
+      .toThrow(/Unexpected argument/);
+  });
+
+  it('throws on unknown options', () => {
+    expect(() => parseListArgs(['node', 'run_plan_list.ts', '--bogus']))
+      .toThrow(/Unknown option/);
+  });
+
+  it('documents the filter options', () => {
+    const text = listUsage();
+    expect(text).toContain('--status');
+    expect(text).toContain('--created-by');
+    expect(text).toContain('--since');
   });
 });

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Integration test — StoryBuilderMigration partial-failure audit coverage (M24).
  *
@@ -15,6 +16,7 @@ import { describe, test, expect, beforeAll, afterAll, beforeEach, jest } from '@
 import fs from 'fs';
 import path from 'path';
 import pg from 'pg';
+import { closeConnections } from '@las-flores/infra';
 import { withSchemaLock } from '../helpers/schemaLock.js';
 import { migrateStagedPlan } from '../../src/services/StoryBuilderMigration.js';
 
@@ -106,6 +108,7 @@ describe('story-builder-migration — partial failure audit', () => {
   afterAll(async () => {
     await clearState();
     await pool.end();
+    await closeConnections();
   });
 
   // Each migration test needs independent plan state. The first test flips

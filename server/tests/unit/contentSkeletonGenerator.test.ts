@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { generateYaml, resolveFilePath } from '../../src/services/ContentSkeletonGenerator.js';
 import type { ContentPlanItem } from '@las-flores/shared';
 

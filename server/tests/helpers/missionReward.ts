@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Shared integration harness for mission-reward dialogue tests (M34).
  *

@@ -65,11 +65,11 @@ describe('revision-rollback', () => {
         process.env.DATABASE_URL || 'postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores',
       connectionTimeoutMillis: 5000,
     });
-    // Ensure the M24 tables + extended admin_events CHECK exist.
+    // Ensure the M24 tables exist. The admin_events CHECK constraint is
+    // already widened by later migrations (087/088); re-running 067/068
+    // would narrow-then-validate it against newer event types and fail.
     await applyMigration('064_patch_versioning.sql');
     await applyMigration('066_claims.sql');
-    await applyMigration('067_admin_events_audit.sql');
-    await applyMigration('068_admin_events_audit_validate.sql');
 
     // Clean any prior state for our synthetic ids.
     await clearState();

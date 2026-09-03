@@ -254,6 +254,7 @@ ${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
     _context: ExistingContentContext,
     conflict?: ConflictChatContext,
     _planDescription?: string,
+    existingDeltas?: GraphDelta[],
   ): Promise<{ reply: string; deltas: GraphDelta[]; deltaEdges: GraphDeltaEdge[]; usage: LLMUsage | null }> {
     const ev = conflict?.evidence?.[0];
     let deltas: GraphDelta[];
@@ -269,6 +270,68 @@ ${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
         },
         createdAt: new Date().toISOString(),
       })];
+    } else if (existingDeltas && existingDeltas.length > 0) {
+      // Deterministic remake: if a plan-local delta's name matches a token from
+      // the instruction, MODIFY that delta in place (reuse its nodeId so
+      // applyDelta MERGEs). Otherwise ADD a fresh entity. This exercises the
+      // unscoped amend path offline without a real LLM.
+      const instr = (messages[messages.length - 1]?.content ?? '').toLowerCase();
+      const instrTokens = new Set(
+        instr.split(/\W+/).filter((t) => t.length >= 3),
+      );
+      // Match name tokens (word-boundary aware). For names with tokens >= 3 chars,
+      // require a token-level match (avoids false positives from common words).
+      // For short names (1-2 chars), require an exact substring match so `rewrite
+      // Al` remakes the delta for "Al" instead of adding Paco.
+      const match = existingDeltas.find((d) => {
+        const name = String((d.fields as Record<string, any> | undefined)?.name ?? '').toLowerCase();
+        if (name.trim().length === 0) return false;
+        const nameTokens = name.split(/\W+/).filter((t) => t.length > 0);
+        // If the name has a "long" token (>= 3 chars), require token-level match
+        // to avoid false positives from common words like "the", "add", etc.
+        const longTokens = nameTokens.filter((t) => t.length >= 3);
+        if (longTokens.length > 0) {
+          return longTokens.some((t) => instrTokens.has(t));
+        }
+        // Short name (all tokens < 3 chars): require exact substring match.
+        return instr.includes(name);
+      });
+      if (match) {
+        const mergedFields = { ...(match.fields as Record<string, any>) };
+        mergedFields.role = mergedFields.role ? `${mergedFields.role}-remade` : 'remade';
+        mergedFields.description = `Mock-remade: ${mergedFields.description ?? 'rewritten per instruction'}.`;
+        deltas = [GraphDeltaSchema.parse({
+          id: crypto.randomUUID(),
+          planId,
+          nodeType: mockNodeType(match.nodeType) as GraphDelta['nodeType'],
+          nodeId: match.nodeId,
+          op: 'MODIFY',
+          fields: mergedFields,
+          createdAt: new Date().toISOString(),
+        })];
+      } else {
+        // A genuinely new proposal must use a fresh identity absent from the
+        // plan's existing deltas — otherwise the graph upsert replaces the prior
+        // fallback entity instead of adding a distinct new one.
+        const usedIds = new Set(existingDeltas.map((d) => d.nodeId));
+        let fallbackId = 'vendor_npc';
+        while (usedIds.has(fallbackId)) {
+          fallbackId = `vendor_npc_${crypto.randomUUID().replace(/-/g, '')}`;
+        }
+        deltas = [GraphDeltaSchema.parse({
+          id: crypto.randomUUID(),
+          planId,
+          nodeType: 'Character',
+          nodeId: fallbackId,
+          op: 'ADD',
+          fields: {
+            name: 'Paco the Vendor',
+            description: 'A deterministic mock proposal: add a new character per the free-form instruction.',
+            role: 'vendor',
+          },
+          createdAt: new Date().toISOString(),
+        })];
+      }
     } else {
       deltas = [GraphDeltaSchema.parse({
         id: crypto.randomUUID(),

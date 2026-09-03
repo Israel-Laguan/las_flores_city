@@ -48,7 +48,6 @@ jest.mock('@las-flores/infra', () => ({
 // Import the route module (it re-exports validateContentPath too).
 // The route handler is NOT exported directly, so we test via a
 // lightweight fake Express request/response pair.
-import express from 'express';
 import type { Request, Response, NextFunction } from 'express';
 import { adminContentRouter } from '../../src/routes/admin-content.js';
 
@@ -204,7 +203,6 @@ async function fakePutRequest(
 
 let writeFileSpy: ReturnType<typeof jest.spyOn>;
 let renameSpy: ReturnType<typeof jest.spyOn>;
-let mkdirSpy: ReturnType<typeof jest.spyOn>;
 
 beforeEach(() => {
   writeFileSpy = jest
@@ -213,9 +211,7 @@ beforeEach(() => {
   renameSpy = jest
     .spyOn(fs.promises, 'rename')
     .mockResolvedValue(undefined);
-  mkdirSpy = jest
-    .spyOn(fs.promises, 'mkdir')
-    .mockResolvedValue(undefined);
+  jest.spyOn(fs.promises, 'mkdir').mockResolvedValue(undefined);
   // Also mock stat for the success path (not needed for invalid-YAML tests,
   // but keeps things clean if any test accidentally reaches that code)
   jest.spyOn(fs.promises, 'stat').mockResolvedValue({

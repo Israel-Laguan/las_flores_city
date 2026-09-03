@@ -22,6 +22,9 @@ ALTER TABLE admin_events DROP CONSTRAINT IF EXISTS admin_events_event_type_check
 ALTER TABLE admin_events ADD CONSTRAINT admin_events_event_type_check CHECK (event_type IN (
     'plan_created', 'plan_refined', 'plan_staged',
     'plan_migrated', 'plan_verified', 'plan_failed', 'plan_solidified',
+    'plan_analyzed', 'plan_annotation_status',
+    'plan_chat_reply', 'plan_delta_applied', 'plan_delta_discarded',
+    'plan_rejected', 'plan_deleted',
     'user_role_changed', 'settings_updated',
     'placeholders_filled',
     'patch_created', 'patch_applied', 'patch_rejected', 'patch_rolled_back',

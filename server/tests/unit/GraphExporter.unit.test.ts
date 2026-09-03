@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { describe, test, expect, jest, beforeEach } from '@jest/globals';
 import type { Mock } from 'jest-mock';
 import {

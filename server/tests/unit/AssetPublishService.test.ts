@@ -6,7 +6,7 @@
  * `content/` tree with a staged YAML that publishChosenDrafts reads back to
  * append the `label:'dev'` cascade entry.
  */
-import { describe, it, expect, jest as jestGlobals, beforeEach, afterEach } from '@jest/globals';
+import { describe, it, expect, jest as jestGlobals, beforeEach, afterEach, beforeAll } from '@jest/globals';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import os from 'node:os';
@@ -139,7 +139,6 @@ describe('AssetPublishService', () => {
 
     await publishChosenDrafts(TEST_PLAN_ID);
 
-    // eslint-disable-next-line no-console
     console.log('SQLS', JSON.stringify(mockQueryOLTP.mock.calls.map((c: any[]) => String(c[0]))));
     const updateCalls = mockQueryOLTP.mock.calls.filter((c: any[]) => String(c[0]).includes('UPDATE'));
     expect(updateCalls.length).toBeGreaterThan(0);

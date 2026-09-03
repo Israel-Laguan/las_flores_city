@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 // ============================================================
 // M30 Snapshots Integration Test - Phase A
 //
@@ -13,7 +14,7 @@
 // - Collision-avoidance comment below
 // ============================================================
 
-import { describe, it, expect, jest as jestGlobals, beforeAll, afterAll, beforeEach } from '@jest/globals';
+import { describe, it, expect, beforeAll, afterAll, beforeEach } from '@jest/globals';
 import { queryOLTP, withOLTPTransaction, closeConnections, getRedis, invalidatePattern } from '@las-flores/infra';
 import { DialogueResolver } from '../../src/services/DialogueResolver.js';
 import {
@@ -22,7 +23,6 @@ import {
   buildSnapshotChunkKey,
   buildSetHash,
 } from '../../src/services/SnapshotService.js';
-import { compileDialogueTree } from '../../src/content/compiler.js';
 import { publishDialogueTree } from '../../src/services/ContentPublishService.js';
 
 // ⚠️ COLLISION-AVOIDANCE: All test fixtures use dedicated 'c0'-prefixed UUID namespace
@@ -191,7 +191,7 @@ describe('M30 Snapshots Integration Test', () => {
   beforeEach(async () => {
     // Clear Redis cache before each test
     try {
-      const redis = getRedis();
+      getRedis();
       await invalidatePattern('dialogue:resolved:*');
     } catch {
       // Ignore Redis errors

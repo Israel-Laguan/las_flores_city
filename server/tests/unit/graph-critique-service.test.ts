@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Unit test for GraphCritiqueService (M27-b) — the graph write/read/cache
  * authority for `:Conflict`/`:Suggestion` nodes. Mocks the Neo4jClient seam so

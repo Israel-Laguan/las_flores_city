@@ -1,6 +1,8 @@
+/* eslint-disable max-lines-per-function */
+/* eslint-disable max-lines */
 import { describe, test, expect, jest, beforeEach, afterEach } from '@jest/globals';
 import type { Mock } from 'jest-mock';
-import { GraphDeltaSchema, GraphDeltaEdgeSchema, type GraphDelta, type GraphDeltaEdge, type ChatMessage } from '@las-flores/shared';
+import { type GraphDelta, type GraphDeltaEdge, type ChatMessage } from '@las-flores/shared';
 
 // M32 — mock all external seams for unit testing (AGENTS.md rule: unit tests
 // must never open real Neo4j/Redis/DB TCP connections).
@@ -86,9 +88,7 @@ jest.mock('../../src/services/ContentPlanService.js', () => ({
 
 import { isNeo4jEnabled, runNeo4jQuery, runNeo4jTransaction } from '../../src/services/Neo4jClient.js';
 import { queryOLTP } from '@las-flores/infra';
-import { chatService } from '../../src/services/ChatService.js';
 import { GraphIntakeService, GraphIntakeDisabledError, GraphIntakeValidationError, graphIntakeService } from '../../src/services/GraphIntakeService.js';
-import { applyDelta, applyDeltaEdge, getDeltasForPlan, getDeltaEdgesForPlan, clearDeltasForPlan, preflightDeltas, preflightDeltaEdges } from '../../src/services/GraphDeltaService.js';
 
 const mockNeo4jEnabled = isNeo4jEnabled as unknown as Mock<() => boolean>;
 const mockQueryOLTP = queryOLTP as unknown as Mock<(sql: string, params: any[]) => Promise<{ rows: any[] }>>;
@@ -97,7 +97,7 @@ const mockQueryOLTP = queryOLTP as unknown as Mock<(sql: string, params: any[]) 
 let mockTx: {
   run: Mock<(cypher: string, params?: Record<string, unknown>) => Promise<{ records: Array<{ toObject: () => Record<string, unknown> }> }>>;
   [k: string]: unknown;
-} = { run: jest.fn(async (cypher: string, _params?: Record<string, unknown>) => ({ records: [] })) };
+} = { run: jest.fn(async (_cypher: string, _params?: Record<string, unknown>) => ({ records: [] })) };
 
 const mockChatProposeFn = mockChatPropose as unknown as Mock<(planId: string, messages: ChatMessage[], context: any, conflict?: any, description?: string) => Promise<{ reply: string; deltas: GraphDelta[]; deltaEdges: GraphDeltaEdge[]; usage: any }>>;
 const mockGatherContextFn = mockGatherContext as unknown as Mock<() => Promise<any>>;
@@ -248,8 +248,10 @@ describe('GraphIntakeService — unit tests (Neo4j mocked)', () => {
         deltaCount: 1,
         // The fixture edge's target Scene does not exist, so the edge is dropped
         // and reported as a note instead of aborting the plan.
+        // M50c: a mock-provider transparency note is also appended (this unit
+        // suite runs with the default mock provider).
         edgeCount: 0,
-        notes: [
+        notes: expect.arrayContaining([
           expect.objectContaining({
             nodeType: 'Scene',
             nodeId: 'scene-001',
@@ -257,10 +259,16 @@ describe('GraphIntakeService — unit tests (Neo4j mocked)', () => {
             kind: 'dangling_edge_target',
             status: 'unresolved',
           }),
-        ],
+          expect.objectContaining({
+            kind: 'mock_provider',
+            severity: 'info',
+          }),
+        ]),
         usage: null,
         timestamp: expect.any(String),
       });
+      // M50c: dangling-edge note + mock-provider transparency note.
+      expect(result.notes).toHaveLength(2);
     });
 
     test('rejects when chatPropose returns no deltas', async () => {
@@ -316,6 +324,156 @@ describe('GraphIntakeService — unit tests (Neo4j mocked)', () => {
         deltas: [expect.objectContaining({ id: 'd1' })],
         edges: [expect.objectContaining({ sourceNodeId: 'c1' })],
       });
+    });
+  });
+
+  describe('buildPlanDiff', () => {
+    test('returns an empty diff when the plan has no deltas', async () => {
+      mockNeo4jEnabled.mockReturnValue(true);
+      mockGetDeltasForPlan.mockResolvedValueOnce([]);
+      mockGetDeltaEdgesForPlan.mockResolvedValueOnce([]);
+
+      const service = new GraphIntakeService();
+      const result = await service.buildPlanDiff(TEST_PLAN_ID);
+
+      expect(result.planId).toBe(TEST_PLAN_ID);
+      expect(result.deltas).toEqual([]);
+      expect(result.edges).toEqual([]);
+    });
+
+    test('ADD deltas show a null "before" and every field as added', async () => {
+      mockNeo4jEnabled.mockReturnValue(true);
+      mockGetDeltasForPlan.mockResolvedValueOnce([
+        {
+          id: 'd-add',
+          planId: TEST_PLAN_ID,
+          nodeType: 'Character',
+          nodeId: TEST_CHAR_ID,
+          op: 'ADD',
+          fields: { name: 'New Vendor', description: 'A stall keeper' },
+          createdAt: new Date().toISOString(),
+        },
+      ]);
+      mockGetDeltaEdgesForPlan.mockResolvedValueOnce([]);
+      // The canonical lookup must NOT be called for ADD deltas.
+      const runNeo4jSpy = runNeo4jQuery as unknown as Mock<(...a: any[]) => Promise<any[]>>;
+
+      const service = new GraphIntakeService();
+      const result = await service.buildPlanDiff(TEST_PLAN_ID);
+
+      expect(runNeo4jSpy).not.toHaveBeenCalled();
+      expect(result.deltas).toHaveLength(1);
+      const d = result.deltas[0];
+      expect(d.op).toBe('ADD');
+      expect(d.before).toBeNull();
+      expect(d.after).toEqual({ name: 'New Vendor', description: 'A stall keeper' });
+      expect(d.fields.every((f) => f.change === 'added')).toBe(true);
+      expect(d.name).toBe('New Vendor');
+    });
+
+    test('MODIFY deltas compare before (canonical) vs after (proposed) field-by-field', async () => {
+      mockNeo4jEnabled.mockReturnValue(true);
+      mockGetDeltasForPlan.mockResolvedValueOnce([
+        {
+          id: 'd-mod',
+          planId: TEST_PLAN_ID,
+          nodeType: 'Character',
+          nodeId: TEST_CHAR_ID,
+          op: 'MODIFY',
+          fields: {
+            name: 'Existing',
+            description: 'Updated lore',
+            metadata: { personality: 'Grumpy' },
+          },
+          createdAt: new Date().toISOString(),
+        },
+      ]);
+      mockGetDeltaEdgesForPlan.mockResolvedValueOnce([]);
+      // Canonical base node carries the before-field set.
+      const runNeo4jSpy = runNeo4jQuery as unknown as Mock<(...a: any[]) => Promise<any[]>>;
+      runNeo4jSpy.mockImplementation(async () => [
+        {
+          name: 'Existing',
+          props: {
+            name: 'Existing',
+            description: 'Old lore',
+            metadata: { personality: 'Cheerful', backstory: 'Old' },
+          },
+        },
+      ]);
+
+      const service = new GraphIntakeService();
+      const result = await service.buildPlanDiff(TEST_PLAN_ID);
+
+      expect(result.deltas).toHaveLength(1);
+      const d = result.deltas[0];
+      expect(d.op).toBe('MODIFY');
+      expect(d.before).toEqual({
+        name: 'Existing',
+        description: 'Old lore',
+        metadata: { personality: 'Cheerful', backstory: 'Old' },
+      });
+      // description changed, metadata.personality changed, metadata.backstory
+      // is preserved from canonical (unchanged) since the MODIFY patch omits it.
+      const byField = Object.fromEntries(d.fields.map((f) => [f.field, f.change]));
+      expect(byField.description).toBe('modified');
+      expect(byField['metadata.personality']).toBe('modified');
+      expect(byField['metadata.backstory']).toBe('unchanged');
+    });
+
+    test('DELETE deltas show a null "after" and every field as removed', async () => {
+      mockNeo4jEnabled.mockReturnValue(true);
+      mockGetDeltasForPlan.mockResolvedValueOnce([
+        {
+          id: 'd-del',
+          planId: TEST_PLAN_ID,
+          nodeType: 'Scene',
+          nodeId: 'f0000000-e29b-41d4-a716-4466554400d1',
+          op: 'DELETE',
+          fields: {},
+          createdAt: new Date().toISOString(),
+        },
+      ]);
+      mockGetDeltaEdgesForPlan.mockResolvedValueOnce([]);
+      const runNeo4jSpy = runNeo4jQuery as unknown as Mock<(...a: any[]) => Promise<any[]>>;
+      runNeo4jSpy.mockImplementation(async () => [
+        { name: 'Rooftop Vigil', props: { name: 'Rooftop Vigil', district: 'Industrial' } },
+      ]);
+
+      const service = new GraphIntakeService();
+      const result = await service.buildPlanDiff(TEST_PLAN_ID);
+
+      const d = result.deltas[0];
+      expect(d.op).toBe('DELETE');
+      expect(d.after).toBeNull();
+      expect(d.before).toEqual({ name: 'Rooftop Vigil', district: 'Industrial' });
+      expect(d.fields.every((f) => f.change === 'removed')).toBe(true);
+    });
+
+    test('falls back to a null "before" when the canonical node is not found', async () => {
+      mockNeo4jEnabled.mockReturnValue(true);
+      mockGetDeltasForPlan.mockResolvedValueOnce([
+        {
+          id: 'd-mod',
+          planId: TEST_PLAN_ID,
+          nodeType: 'Character',
+          nodeId: TEST_CHAR_ID,
+          op: 'MODIFY',
+          fields: { name: 'X' },
+          createdAt: new Date().toISOString(),
+        },
+      ]);
+      mockGetDeltaEdgesForPlan.mockResolvedValueOnce([]);
+      // Canonical lookup returns nothing (node absent) → before is null.
+      const runNeo4jSpy = runNeo4jQuery as unknown as Mock<(...a: any[]) => Promise<any[]>>;
+      runNeo4jSpy.mockImplementation(async () => []);
+
+      const service = new GraphIntakeService();
+      const result = await service.buildPlanDiff(TEST_PLAN_ID);
+
+      expect(result.deltas[0].before).toBeNull();
+      // No canonical counterpart available, so the field reads as added.
+      expect(result.deltas[0].fields[0].change).toBe('added');
     });
   });
 

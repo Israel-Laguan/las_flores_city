@@ -59,6 +59,8 @@ const FOUND = [{ anyExists: true, canonical: true }];
 const ABSENT = [{ anyExists: false, canonical: false }];
 /** Base node exists ONLY as critique evidence. */
 const EVIDENCE_ONLY = [{ anyExists: true, canonical: false }];
+/** No canonical base, but a same-plan :ContentDelta exists (remake target). */
+const PLAN_LOCAL = [{ anyExists: false, canonical: false, planLocal: true }];
 
 describe('partitionDeltas — fail-open delta triage', () => {
   beforeEach(() => {
@@ -155,6 +157,28 @@ describe('partitionDeltas — fail-open delta triage', () => {
     expect(result.safe).toEqual([modify]);
     expect(result.diagnostics).toEqual([]);
     expect(mockQuery).not.toHaveBeenCalled();
+  });
+
+  test('a MODIFY whose base is a same-plan :ContentDelta is safe (remake merges in place)', async () => {
+    mockQuery.mockResolvedValue(PLAN_LOCAL);
+    const modify = delta({ nodeId: 'diego', op: 'MODIFY', fields: { name: 'Diego el Mock', role: 'bouncer' } });
+
+    const result = await partitionDeltas([modify]);
+
+    // A plan-local-only base must NOT be dropped: the amend path remakes the
+    // delta and applyDelta MERGEs on (nodeType, nodeId, planId).
+    expect(result.safe).toEqual([modify]);
+    expect(result.diagnostics).toEqual([]);
+  });
+
+  test('a MODIFY to a node that is neither canonical nor plan-local is still dropped', async () => {
+    mockQuery.mockResolvedValue(ABSENT);
+    const modify = delta({ nodeId: MISSING_ID });
+
+    const result = await partitionDeltas([modify]);
+
+    expect(result.safe).toEqual([]);
+    expect(result.diagnostics[0].kind).toBe('missing_base_node');
   });
 });
 

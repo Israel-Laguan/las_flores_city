@@ -1,3 +1,5 @@
+/* eslint-disable max-lines-per-function */
+/* eslint-disable max-lines */
 /**
  * Assets Integration Tests
  */
@@ -205,7 +207,7 @@ afterAll(async () => {
     await new Promise<void>((resolve, reject) =>
       server.close((e) => (e ? reject(e) : resolve()))
     );
-  } catch (e: any) {}
+  } catch (e: any) { void e; }
   
   await oltpPool.query('DELETE FROM asset_variants WHERE prompt_text LIKE $1 OR variant_name LIKE $1', ['%test%']);
   await oltpPool.query('DELETE FROM asset_bases WHERE prompt_rel = $1', [TEST_PROMPT_REL]);

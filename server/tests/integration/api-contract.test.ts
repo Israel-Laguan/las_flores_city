@@ -1,9 +1,10 @@
+/* eslint-disable max-lines-per-function */
+/* eslint-disable max-lines */
 import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 import pg from 'pg';
 import express from 'express';
 import fs from 'fs';
 import path from 'path';
-import { queryOLTP, closeConnections } from '@las-flores/infra';
 import { withSchemaLock } from '../helpers/schemaLock.js';
 import { commsRouter } from '../../src/routes/comms.js';
 import '../../src/routes/comms-reply.js';

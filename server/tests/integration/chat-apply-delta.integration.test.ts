@@ -23,7 +23,7 @@ import { closeRedis } from '@las-flores/infra';
 import { GraphDeltaSchema, GraphDeltaEdgeSchema } from '@las-flores/shared';
 import { ChatService, ChatDeltaValidationError, ChatGraphDisabledError } from '../../src/services/ChatService.js';
 import { MockProvider } from '../../src/services/MockProvider.js';
-import { getDeltasForPlan, getDeltaEdgesForPlan } from '../../src/services/GraphDeltaService.js';
+import { getDeltasForPlan } from '../../src/services/GraphDeltaService.js';
 import { isNeo4jEnabled, verifyNeo4j, closeNeo4j, runNeo4jQuery } from '../../src/services/Neo4jClient.js';
 import { ensureGraphConstraints, upsertContentNode } from '../../src/services/GraphBaseService.js';
 import { aiCritiqueService } from '../../src/services/AICritiqueService.js';

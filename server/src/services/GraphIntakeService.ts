@@ -28,13 +28,14 @@ import {
   GraphDeltaEdgeSchema,
   type GraphDelta,
   type GraphDeltaEdge,
+  type GraphDeltaOp,
   type IntakeDiagnostic,
   type IntakeNote,
   type ResolutionBlock,
   type CritiqueAnnotationDraft,
   findEdgeMapping,
 } from '@las-flores/shared';
-import { queryOLTP, queryContent } from '@las-flores/infra';
+import { queryOLTP, queryContent, withOLTPTransaction } from '@las-flores/infra';
 import { uuidv4 } from '@las-flores/shared';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -44,10 +45,16 @@ import { chatService } from './ChatService.js';
 import { emitAdminEvent } from './AdminEventEmitter.js';
 import { contentPlanService } from './ContentPlanService.js';
 import { resolveContentDir } from './StoryBuilderLore.js';
-import { applyDelta, applyDeltaEdge, getDeltasForPlan, getDeltaEdgesForPlan, clearDeltasForPlan, partitionDeltas, partitionDeltaEdges, deltaKey, normalizeKeyComponent, resolveEdgeTargetNameValue } from './GraphDeltaService.js';
-import { isNeo4jEnabled, runNeo4jTransaction } from './Neo4jClient.js';
+import { applyDelta, applyDeltaEdge, getDeltasForPlan, getDeltaEdgesForPlan, clearDeltasForPlan, countDeltasForPlan, partitionDeltas, partitionDeltaEdges, deltaKey, normalizeKeyComponent, resolveEdgeTargetNameValue } from './GraphDeltaService.js';
+import { isNeo4jEnabled, runNeo4jTransaction, runNeo4jQuery } from './Neo4jClient.js';
+import { reviewUrl } from '../planIntakeCore.js';
 import { EntityResolutionService } from './EntityResolutionService.js';
+import {
+  semanticConcernNotes,
+  isMockProviderConfigured,
+} from './IntakeSemanticValidator.js';
 import { Neo4jCandidateSource } from './Neo4jCandidateSource.js';
+import { PlanAwareCandidateSource } from './PlanAwareCandidateSource.js';
 import { aiCritiqueService } from './AICritiqueService.js';
 import { createLLMProvider } from './LLMService.js';
 import { templatedSuggestion } from './llmPromptsIntakeDiagnostics.js';
@@ -93,6 +100,117 @@ export interface CreatePlanFromDescriptionResult {
   notes: IntakeNote[];
   usage: LLMUsage | null;
   timestamp: string;
+}
+
+export interface AmendInstructionResult {
+  planId: string;
+  status: string;
+  actor?: { id: string; email: string; role: string };
+  instruction: string;
+  appliedCount: number;
+  droppedCount: number;
+  reply: string;
+  deltaCount: number;
+  edgeCount: number;
+  /** Full delta list (fields + prose) for the refreshed plan. */
+  deltas: GraphDelta[];
+  /** Full edge list for the refreshed plan. */
+  edges: GraphDeltaEdge[];
+  notes: IntakeNote[];
+  reviewUrl?: string;
+  next: string;
+}
+
+/** One field's canonical-before vs proposed-after comparison within a delta diff. */
+export interface PlanFieldDiff {
+  field: string;
+  before: unknown;
+  after: unknown;
+  change: 'added' | 'removed' | 'modified' | 'unchanged';
+}
+
+/** A single delta rendered as a canonical-before vs proposed-after comparison. */
+export interface PlanDeltaDiff {
+  nodeType: string;
+  nodeId: string;
+  op: GraphDeltaOp;
+  name: string;
+  /** Canonical field set (`null` for ADD deltas / when the graph is unavailable). */
+  before: Record<string, unknown> | null;
+  /** Proposed field set (`null` for DELETE deltas). */
+  after: Record<string, unknown> | null;
+  /** Field-by-field comparison, keyed over the union of before/after field names. */
+  fields: PlanFieldDiff[];
+  /** Resolution blocks carried on the delta (intake ambiguity surfacing). */
+  resolution?: ResolutionBlock[];
+}
+
+/** Full structured diff for a plan: per-delta before/after + the raw deltas/edges. */
+export interface PlanDiffResult {
+  planId: string;
+  deltas: PlanDeltaDiff[];
+  edges: GraphDeltaEdge[];
+}
+
+/**
+ * Full resumable state of a plan (M50 Part 2 `plan:get`). Read-only: it never
+ * mutates the plan or its deltas — it is the "what was I doing?" surface for a
+ * plan created in a prior process/terminal.
+ */
+export interface PlanState {
+  planId: string;
+  status: string;
+  created_by: string | null;
+  description: string | null;
+  created_at: string;
+  updated_at: string;
+  deltaCount: number;
+  edgeCount: number;
+  deltas: GraphDelta[];
+  edges: GraphDeltaEdge[];
+  /** Full canonical-before vs proposed-after diff (prose + fields). */
+  diff: PlanDeltaDiff[];
+  /** Open intake notes + `IntakeDiagnostic` annotations the author can reply to. */
+  openAnnotations: OpenAnnotationInfo[];
+  reviewUrl: string;
+}
+
+/**
+ * A critique annotation scoped to intake, surfaced in `plan:get`/`plan:diff`.
+ * This is the advisory surface — the approve gate does not block on `open` notes
+ * (the graph advises), the admin decides.
+ */
+export interface OpenAnnotationInfo {
+  id: string;
+  type: string;
+  relatedField?: string;
+  relatedNodeId?: string;
+  status: 'open' | 'addressed' | 'dismissed';
+  description?: string | null;
+  severity?: 'error' | 'warning' | 'info';
+  evidence?: unknown[];
+  relatedEntities?: unknown[];
+  createdAt: string;
+}
+
+/** Lightweight listing entry for `plan:list`. */
+export interface PlanListing {
+  id: string;
+  status: string;
+  created_by: string | null;
+  creatorEmail?: string | null;
+  description: string | null;
+  created_at: string;
+  updated_at: string;
+  deltaCount: number;
+}
+
+/** Result of a plan lifecycle op (reject/delete) for CLI rendering. */
+export interface PlanLifecycleResult {
+  planId: string;
+  status: string;
+  deltaPruned: boolean;
+  annotationCount: number;
 }
 
 /** Reject DELETE deltas before synthesis — the legacy ContentPlanItem contract
@@ -816,7 +934,10 @@ export class GraphIntakeService {
 
     // Turn every unresolved reference + dropped delta/edge into reviewable notes
     // (suggestions + `CritiqueAnnotation`s) the author can reply to via plan:amend.
-    const notes = await this.triageAndAnnotate(planId, safeDeltas, partitionDiagnostics);
+    // M50c: fail-open semantic concerns (whole-canon ADD duplicate check,
+    // plan-level grounding probe, mock-provider transparency).
+    const semanticNotes = await this.semanticNotes(description, safeDeltas);
+    const notes = await this.triageAndAnnotate(planId, safeDeltas, partitionDiagnostics, semanticNotes);
 
     emitAdminEvent(
       'plan_created',
@@ -860,10 +981,41 @@ export class GraphIntakeService {
    * Entirely best-effort. A suggestion is cosmetic and an annotation is a review
    * aid; neither may abort a plan that has already been persisted.
    */
+  /**
+   * M50c — compute the fail-open semantic-concern notes for a plan write set.
+   *
+   * Returns pre-formed `IntakeNote`s that ride in the SAME annotation-attach
+   * pass as the rest of triage (`triageAndAnnotate`), so a second pass never
+   * retires them. Canonical canon-matching is best-effort: if the candidate
+   * source is unavailable the plan-level concern is suppressed (we cannot assert
+   * "zero matches" without the canon), but the mock-provider note is always on.
+   */
+  private async semanticNotes(description: string, deltas: GraphDelta[]): Promise<IntakeNote[]> {
+    if (deltas.length === 0) return [];
+    try {
+      return await semanticConcernNotes({
+        description,
+        deltas,
+        matcher: entityResolutionService,
+        isMockProvider: isMockProviderConfigured(),
+      });
+    } catch (err) {
+      console.warn('[graph-intake] semantic concern checks failed; skipping:', (err as Error).message);
+      return [];
+    }
+  }
+
   async triageAndAnnotate(
     planId: string,
     deltas: GraphDelta[],
     diagnostics: IntakeDiagnostic[],
+    /**
+     * M50c: pre-formed semantic-concern notes (duplicate ADD, plan-level
+     * grounding probe, mock-provider transparency). MUST be supplied here rather
+     * than via a second attach pass — `attachDiagnosticAnnotations` retires
+     * open 'intake' annotations on write, so a second pass would erase these.
+     */
+    preFormedNotes: IntakeNote[] = [],
   ): Promise<IntakeNote[]> {
     // Keep resolution blocks paired with their owning delta so a note can name the
     // entity it belongs to (a ResolutionBlock alone has no nodeType/nodeId).
@@ -878,20 +1030,21 @@ export class GraphIntakeService {
       ...resolutionNotes.map((r) => r.block),
       ...diagnostics,
     ];
-    if (items.length === 0) return [];
 
-    // One batched LLM call for the whole plan. Mirrors the best-effort treatment of
-    // `resolvePlanDeltas`: on any failure fall back to the templated string.
-    let suggestions: string[];
-    try {
-      const result = await this.provider.suggestDiagnostics(items);
-      suggestions = items.map((item, i) => result.suggestions[i] || templatedSuggestion(item));
-    } catch (err) {
-      console.warn('[graph-intake] suggestion generation failed; using templated fallbacks:', (err as Error).message);
-      suggestions = items.map(templatedSuggestion);
+    let suggestions: string[] = [];
+    if (items.length > 0) {
+      // One batched LLM call for the whole plan. Mirrors the best-effort treatment of
+      // `resolvePlanDeltas`: on any failure fall back to the templated string.
+      try {
+        const result = await this.provider.suggestDiagnostics(items);
+        suggestions = items.map((item, i) => result.suggestions[i] || templatedSuggestion(item));
+      } catch (err) {
+        console.warn('[graph-intake] suggestion generation failed; using templated fallbacks:', (err as Error).message);
+        suggestions = items.map(templatedSuggestion);
+      }
     }
 
-    const notes: IntakeNote[] = [
+    const baseNotes: IntakeNote[] = items.length > 0 ? [
       ...resolutionNotes.map(({ delta, block }, i) => ({
         nodeType: delta.nodeType,
         nodeId: delta.nodeId,
@@ -916,7 +1069,12 @@ export class GraphIntakeService {
         candidates: d.candidates,
         annotationId: undefined as string | undefined,
       })),
-    ];
+    ] : [];
+
+    // M50c: merge in the pre-formed semantic-concern notes so they share this
+    // single annotation-attach pass (a second pass would retire them).
+    const notes: IntakeNote[] = [...baseNotes, ...preFormedNotes];
+    if (notes.length === 0) return [];
 
     // Persist as annotations so `plan:amend --annotation <id>:"<comment>"` has a
     // durable handle to reply to. Best-effort: losing the annotation only costs the
@@ -924,7 +1082,7 @@ export class GraphIntakeService {
     try {
       const drafts: CritiqueAnnotationDraft[] = notes.map((note) => ({
         type: 'suggestion' as const,
-        severity: 'warning' as const,
+        severity: (note.severity ?? 'warning') as 'warning' | 'info',
         description: `${note.reason} ${note.suggestion ?? ''}`.trim(),
         // `suggestion` annotations carry no evidence requirement, so nothing has to
         // be fabricated to satisfy the anti-hallucination refinement.
@@ -949,6 +1107,303 @@ export class GraphIntakeService {
   }
 
   /**
+   * M50 Part 2 (numeral 1) — apply a free-form, unscoped instruction against an
+   * existing plan. Re-enters the propose→apply loop targeting the existing planId
+   * (no annotation anchor): the LLM sees the plan's current deltas so a remake can
+   * reuse a plan-local nodeId and MERGE in place, while a genuinely new entity is
+   * added with a fresh nodeId. New deltas get the standard `_resolution` treatment
+   * via a plan-aware candidate source. Stops at `proposed` — never stages, migrates,
+   * or solidifies.
+   */
+  async amendPlanWithInstruction(
+    planId: string,
+    instruction: string,
+    createdBy?: string,
+    adminUrl?: string,
+  ): Promise<AmendInstructionResult> {
+    if (!instruction || typeof instruction !== 'string' || instruction.trim().length === 0) {
+      throw new GraphIntakeValidationError('Instruction is required and must be a non-empty string');
+    }
+    if (!isNeo4jEnabled()) {
+      throw new GraphIntakeDisabledError('Neo4j authoring graph is disabled — cannot amend graph-based plan. Enable NEO4J_ENABLED first.');
+    }
+
+    const planRow = await queryOLTP<{ status: string; description: string }>(
+      `SELECT status, description FROM content_plans WHERE id = $1`,
+      [planId],
+    );
+    if (planRow.rows.length === 0) {
+      throw new GraphIntakeValidationError(`Plan ${planId} not found`);
+    }
+    const status = planRow.rows[0].status;
+    if (status !== 'proposed') {
+      throw new GraphIntakeValidationError(
+        `Plan ${planId} has status '${status}' — only a 'proposed' plan can be amended.`,
+      );
+    }
+
+    const existing = await this.getPlanDeltas(planId);
+
+    const proposal = await chatService.propose(
+      planId,
+      [{ role: 'user', content: instruction }],
+      undefined,
+      undefined,
+      existing.deltas,
+    );
+
+    // Plan-aware resolution: let references in the new deltas resolve against
+    // both canonical nodes and the plan's own pending deltas, so a remake that
+    // references a plan-local entity is not flagged ambiguous/unresolved.
+    let resolvedDeltas = proposal.deltas;
+    try {
+      const resolver = new EntityResolutionService(new PlanAwareCandidateSource(planId));
+      resolvedDeltas = await resolver.resolvePlanDeltas(proposal.deltas);
+    } catch (resErr) {
+      console.warn('[graph-intake] entity resolution failed during instruction amend; skipping _resolution attachment:', (resErr as Error).message);
+    }
+
+    // Reject DELETE deltas before any graph write, mirroring persistPlanWithDeltas:
+    // a DELETE against the canonical graph has no materialization in the legacy
+    // plan_json contract, so it must be rejected early rather than written and
+    // then surfacing a synthesis failure after the fact.
+    const deleteDelta = resolvedDeltas.find((delta) => delta.op === 'DELETE');
+    if (deleteDelta) {
+      throw new GraphIntakeValidationError(
+        `Cannot synthesize a plan item from a DELETE delta for [${deleteDelta.nodeType}:${deleteDelta.nodeId}] — delete materialization is not supported by the legacy plan contract. Remove the tombstone before approving.`,
+      );
+    }
+
+
+    // Preflight synthesis: identify which new deltas would be excluded by
+    // synthesizePlanFromDeltas (e.g. unresolvable canonical slugs) so we can
+    // drop them from the write set. This keeps the applied graph set exactly
+    // equal to the synthesized snapshot, matching persistPlanWithDeltas.
+    const existingGraph = await this.getPlanDeltas(planId);
+    const preflightDeltas = [...existingGraph.deltas, ...resolvedDeltas];
+    const preflightEdges = [...existingGraph.edges, ...proposal.deltaEdges];
+    const preflight = await synthesizePlanFromDeltas(planId, planRow.rows[0].description, preflightDeltas, preflightEdges, await this.gatherContext());
+    const excludedKeys = new Set(
+      preflight.diagnostics
+        .filter((d) => d.kind === 'unresolvable_canonical_slug')
+        .map((d) => deltaKey(d.nodeType, d.nodeId)),
+    );
+    const filteredDeltas = resolvedDeltas.filter((d) => !excludedKeys.has(deltaKey(d.nodeType, d.nodeId)));
+    // Retain edges whose source is EITHER a newly-applied delta (filteredDeltas)
+    // OR a surviving existing delta (existingGraph.deltas). An amendment edge
+    // referencing an existing plan delta as its source must not be dropped just
+    // because that source isn't part of this amendment's new deltas.
+    const remainingKeys = new Set<string>([
+      ...filteredDeltas.map((d) => deltaKey(d.nodeType, d.nodeId)),
+      ...existingGraph.deltas.map((d) => deltaKey(d.nodeType, d.nodeId)),
+    ]);
+    const filteredEdges = proposal.deltaEdges.filter((e) => remainingKeys.has(deltaKey(e.sourceNodeType, e.sourceNodeId)));
+
+    // All graph writes + the OLTP snapshot persist happen inside a
+    // transaction-scoped advisory lock so a concurrent reject/delete (which takes
+    // the same lock key) can never interleave between applyDeltas and the plan_json
+    // write. Without this, a reject could clear deltas first, then the failed
+    // amendment recreates them for the now-rejected plan — or a later amendment
+    // could persist an older plan_json snapshot because the graph read happened
+    // before the lock. pg_advisory_xact_lock is automatically released at
+    // transaction end — no session pinning, no unlock-on-different-connection
+    // leaks. COALESCE keeps a schema-invalid snapshot from wiping the previous
+    // valid one.
+    let result!: Awaited<ReturnType<typeof chatService.applyDeltas>>;
+    let notes: Awaited<ReturnType<typeof this.triageAndAnnotate>> = [];
+    let deltaCount = 0;
+    let edgeCount = 0;
+    let deltas: GraphDelta[] = [];
+    let edges: GraphDeltaEdge[] = [];
+    await withOLTPTransaction(async (client) => {
+      await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`plan-lifecycle:${planId}`]);
+
+      const confirm = await client.query<{ status: string }>(
+        'SELECT status FROM content_plans WHERE id = $1 FOR UPDATE',
+        [planId],
+      );
+      if (confirm.rows.length === 0) {
+        throw new GraphIntakeValidationError(`Plan ${planId} not found — it was deleted by another operation.`);
+      }
+      if (confirm.rows[0].status !== 'proposed') {
+        throw new GraphIntakeValidationError(
+          `Plan ${planId} has status '${confirm.rows[0].status}' — only a 'proposed' plan can be amended.`,
+        );
+      }
+
+      // applyDeltas writes to Neo4j (not OLTP), but it runs inside the lock so a
+      // concurrent reject/delete can't clear deltas between this write and the
+      // plan_json persist below. A MODIFY/DELETE against a same-plan :ContentDelta
+      // MERGEs in place (partitionDeltas accepts it); a genuinely missing base is
+      // dropped and reported as a diagnostic.
+      result = await chatService.applyDeltas(planId, filteredDeltas, filteredEdges);
+
+      // Refresh the snapshot from the post-apply graph and synthesize plan_json
+      // under the lock, so a concurrent amendment can't interleave and persist a
+      // stale snapshot.
+      const graph = await this.getPlanDeltas(planId);
+      const synthesized = await synthesizePlanFromDeltas(planId, planRow.rows[0].description, graph.deltas, graph.edges, await this.gatherContext());
+      const parsedPlan = ContentPlanSchema.safeParse(synthesized.plan);
+      const planJson: ContentPlan | null = parsedPlan.success ? parsedPlan.data : null;
+      if (!planJson) {
+        console.warn(
+          `[graph-intake] amended plan ${planId} snapshot failed schema validation: ` +
+          (parsedPlan.success ? '' : parsedPlan.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; ')),
+        );
+      }
+
+      await client.query(
+        `UPDATE content_plans SET updated_at = now(), plan_json = COALESCE($2::jsonb, plan_json) WHERE id = $1`,
+        [planId, planJson],
+      );
+
+      const semanticNotes = await this.semanticNotes(planRow.rows[0].description ?? '', graph.deltas);
+      notes = await this.triageAndAnnotate(planId, graph.deltas, [...result.diagnostics, ...synthesized.diagnostics], semanticNotes);
+      deltaCount = graph.deltas.length;
+      edgeCount = graph.edges.length;
+      deltas = graph.deltas;
+      edges = graph.edges;
+    });
+
+    emitAdminEvent(
+      'plan_refined',
+      {
+        instruction: instruction.trim().length > 0 ? instruction : '(empty)',
+        deltaCount,
+        edgeCount,
+        appliedCount: result.appliedCount,
+        droppedCount: (resolvedDeltas.length - filteredDeltas.length) + result.diagnostics.length,
+        noteCount: notes.length,
+        source: 'graph-intake',
+      },
+      planId,
+      createdBy,
+    );
+
+    return {
+      planId,
+      status,
+      actor: createdBy
+        ? { id: createdBy, email: createdBy, role: 'admin' }
+        : undefined,
+      instruction,
+      appliedCount: result.appliedCount,
+      droppedCount: (resolvedDeltas.length - filteredDeltas.length) + result.diagnostics.length,
+      reply: proposal.reply,
+      deltaCount,
+      edgeCount,
+      deltas,
+      edges,
+      notes,
+      reviewUrl: adminUrl ?? process.env.ADMIN_URL ?? 'http://localhost:3002',
+      next: notes.length > 0
+        ? 'Some references are still unresolved — reply to the remaining notes below.'
+        : 'Instruction applied. Review the plan before invoking approval/solidify; no content files or canonical rows were changed.',
+    };
+  }
+
+  /**
+   * Resolve the canonical field set for a base `:Content` node (planId IS null).
+   * Returns `null` when the graph is off, the node does not exist, or the read
+   * fails — the diff callers treat a `null` "before" as "no canonical counterpart"
+   * (true for ADD deltas, or for an unexpected read error on a MODIFY/DELETE).
+   */
+  private async getCanonicalFields(
+    nodeType: string,
+    nodeId: string,
+  ): Promise<{ name: string; fields: Record<string, unknown> } | null> {
+    if (!isNeo4jEnabled()) return null;
+    try {
+      const rows = await runNeo4jQuery<{ name: unknown; props: Record<string, unknown> }>(
+        `MATCH (c:Content { nodeType: $nodeType, nodeId: $nodeId })
+         WHERE c.planId IS null
+         RETURN c.name AS name, properties(c) AS props`,
+         { nodeType, nodeId: normalizeKeyComponent(nodeId) },
+      );
+      if (rows.length === 0) return null;
+      // Canonical fields are stored as node properties (GraphBaseService.upsertContentNode
+      // does `SET c = $props`), not as a fieldsJson blob. Read properties(c) and strip
+      // the graph identity/partition properties so diffing compares author fields only.
+      const reserved = new Set(['key', 'nodeType', 'nodeId', 'planId', 'isEvidence']);
+      const fields: Record<string, unknown> = {};
+      for (const [k, v] of Object.entries(rows[0].props ?? {})) {
+        if (!reserved.has(k)) fields[k] = v;
+      }
+      return {
+        name: typeof rows[0].name === 'string' ? rows[0].name : nodeId,
+        fields,
+      };
+    } catch (err) {
+      console.warn('[graph-intake] canonical field lookup failed:', (err as Error)?.message);
+      return null;
+    }
+  }
+
+/**
+ * M50 Part 2 (numeral 2) — structured canonical-before vs proposed-after diff for
+ * every delta currently in a plan, field-by-field including prose. New entities
+   * (ADD deltas) have no canonical counterpart, so their "before" is `null` and
+   * every field shows as `added`. DELETE deltas invert this: the "after" is `null`
+   * and every field is `removed`. MODIFY deltas compare the full proposed shadow
+   * against the canonical field set.
+   *
+   * This is the CLI-testable precursor to M52's diff rendering: it proves the
+   * data/shape (before/after per field), and the admin UI only needs to render it.
+   */
+  async buildPlanDiff(planId: string): Promise<PlanDiffResult> {
+    const { deltas, edges } = await this.getPlanDeltas(planId);
+    const result: PlanDeltaDiff[] = [];
+
+    for (const delta of deltas) {
+      const canonical = delta.op !== 'ADD'
+        ? await this.getCanonicalFields(delta.nodeType, delta.nodeId)
+        : null;
+      const before = delta.op === 'ADD' ? null : (canonical?.fields ?? null);
+      const proposed = delta.op === 'DELETE'
+        ? null
+        : delta.op === 'MODIFY' && canonical
+          ? deepMergeObjects(canonical.fields, delta.fields)
+          : delta.fields;
+      const name = (typeof delta.fields?.name === 'string' && delta.fields.name.length > 0)
+        ? delta.fields.name
+        : (canonical?.name ?? delta.nodeId);
+
+      // Flatten nested objects (e.g. `metadata.personality`) into dotted keys so the
+      // diff surfaces the exact changed sub-field, not just "metadata changed". Arrays
+      // stay atomic (compared as a whole) so a reordered list reads as `modified`.
+      const flatBefore = flattenFields(before);
+      const flatAfter = flattenFields(proposed);
+      const keySet = new Set<string>([...Object.keys(flatBefore), ...Object.keys(flatAfter)]);
+      const fields: PlanFieldDiff[] = [];
+      for (const field of keySet) {
+        const beforeHas = Object.prototype.hasOwnProperty.call(flatBefore, field);
+        const afterHas = Object.prototype.hasOwnProperty.call(flatAfter, field);
+        const b = beforeHas ? flatBefore[field] : undefined;
+        const a = afterHas ? flatAfter[field] : undefined;
+        let change: PlanFieldDiff['change'];
+        if (!beforeHas && afterHas) change = 'added';
+        else if (beforeHas && !afterHas) change = 'removed';
+        else if (JSON.stringify(b) !== JSON.stringify(a)) change = 'modified';
+        else change = 'unchanged';
+        fields.push({ field, before: b, after: a, change });
+      }
+
+      result.push({
+        nodeType: delta.nodeType,
+        nodeId: delta.nodeId,
+        op: delta.op,
+        name,
+        before,
+        after: proposed,
+        fields,
+        ...(delta._resolution ? { resolution: delta._resolution } : {}),
+      });
+    }
+
+    return { planId, deltas: result, edges };
+  }
+
+  /**
    * Get the deltas and edges for an existing graph-based plan.
    * Returns empty arrays when Neo4j is disabled.
    */
@@ -963,7 +1418,7 @@ export class GraphIntakeService {
     return { deltas, edges };
   }
 
-  /**
+    /**
    * Delete a graph-based plan and its associated deltas.
    */
   async discardPlan(planId: string): Promise<void> {
@@ -979,7 +1434,255 @@ export class GraphIntakeService {
   }
 
   /**
-   * Synthesize a legacy ContentPlan from a plan's deltas+edges.
+   * Status allowlists for lifecycle operations. Rejection is only valid for a
+   * `proposed` plan (the initial state); deletion is valid for `proposed` or
+   * `rejected` plans (both are pre-materialization). Any other status is
+   * refused — this is an explicit allowlist, not a blacklist, so newly added
+   * statuses (pending, staging, migrating, verifying, etc.) are refused by
+   * default rather than accidentally permitted.
+   */
+  private static readonly REJECTABLE_STATUSES = new Set(['proposed']);
+  private static readonly DELETABLE_STATUSES = new Set(['proposed', 'rejected']);
+
+  /**
+   * Soft-reject a plan (`plan:reject`): keep the row (status = 'rejected', still
+   * visible in `plan:get`/`plan:list` for audit), prune its authoring-graph
+   * deltas/edges, and close open intake annotations. Never touches canonical
+   * content. Graph pruning is a no-op (but the status/annotation flip still
+   * applies) when Neo4j is disabled.
+   */
+  async rejectPlan(planId: string): Promise<PlanLifecycleResult> {
+    // Validate the row and status under the lifecycle lock BEFORE pruning the
+    // graph, so a reject against a non-rejectable plan never leaves deltas
+    // pruned while the OLTP row is unchanged.
+    let deltaPruned = false;
+    const { annotationCount } = await withOLTPTransaction(async (client) => {
+      await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`plan-lifecycle:${planId}`]);
+
+      const row = await client.query<{ id: string; status: string }>(
+        'SELECT id, status FROM content_plans WHERE id = $1 FOR UPDATE',
+        [planId],
+      );
+      if (row.rows.length === 0) {
+        throw new GraphIntakeValidationError(`Plan not found: ${planId}`);
+      }
+      const status = row.rows[0].status;
+      if (status === 'rejected') {
+        throw new GraphIntakeValidationError(`Plan ${planId} is already rejected`);
+      }
+      if (!GraphIntakeService.REJECTABLE_STATUSES.has(status)) {
+        throw new GraphIntakeValidationError(
+          `Plan ${planId} cannot be rejected — status '${status}' is not rejectable. `
+            + `Only 'proposed' plans may be rejected.`,
+        );
+      }
+
+      // Prune this plan's graph deltas (Neo4j, not OLTP) only after the status
+      // validation passes. Best-effort when Neo4j is disabled.
+      if (isNeo4jEnabled()) {
+        await clearDeltasForPlan(planId);
+        deltaPruned = true;
+      }
+
+      // Count open intake annotations, then close them. Rejection closes them:
+      // the rationale lives in critique annotations, not the graph.
+      const countRow = await client.query<{ count: string }>(
+        `SELECT COUNT(*)::text AS count FROM critique_annotations
+         WHERE plan_id = $1 AND scope = 'intake' AND status = 'open'`,
+        [planId],
+      );
+      const annotationCount = countRow.rows.length > 0 ? Number(countRow.rows[0].count) : 0;
+      if (annotationCount > 0) {
+        await client.query(
+          `UPDATE critique_annotations SET status = 'addressed'
+           WHERE plan_id = $1 AND scope = 'intake' AND status = 'open'`,
+          [planId],
+        );
+      }
+
+      await client.query(
+        `UPDATE content_plans
+         SET status = 'rejected',
+             updated_at = NOW(),
+             plan_json = jsonb_set(plan_json, '{status}', '"rejected"', true)
+         WHERE id = $1`,
+        [planId],
+      );
+
+      return { annotationCount };
+    });
+
+    emitAdminEvent('plan_rejected', { planId }, planId);
+
+    return { planId, status: 'rejected', deltaPruned, annotationCount };
+  }
+
+  /**
+   * Hard-delete a plan (`plan:delete`): remove the content_plans row, its graph
+   * deltas/edges, and its scope='intake' critique annotations. Irreversible —
+   * the CLI refuses to run without `--yes` and refuses plans already in the
+   * materialize pipeline. Canonical content is never touched (a plan's deltas
+   * are plan-scoped, never canonical).
+   */
+  async deletePlan(planId: string): Promise<PlanLifecycleResult> {
+    // Validate the row and status under the lifecycle lock BEFORE pruning the
+    // graph, so a delete against a non-deletable plan never leaves deltas pruned
+    // while the OLTP row is unchanged.
+    const { status, annotationCount } = await withOLTPTransaction(async (client) => {
+      await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`plan-lifecycle:${planId}`]);
+
+      const row = await client.query<{ id: string; status: string }>(
+        'SELECT id, status FROM content_plans WHERE id = $1 FOR UPDATE',
+        [planId],
+      );
+      if (row.rows.length === 0) {
+        throw new GraphIntakeValidationError(`Plan not found: ${planId}`);
+      }
+      const status = row.rows[0].status;
+      if (!GraphIntakeService.DELETABLE_STATUSES.has(status)) {
+        throw new GraphIntakeValidationError(
+          `Plan ${planId} cannot be deleted — status '${status}' is not deletable. `
+            + `Only 'proposed' or 'rejected' plans are deletable.`,
+        );
+      }
+
+      // Prune graph deltas (Neo4j, not OLTP) only after the status validation
+      // passes. The row is the join key.
+      if (isNeo4jEnabled()) {
+        await clearDeltasForPlan(planId);
+      }
+
+      const ann = await client.query<{ id: string }>(
+        `DELETE FROM critique_annotations WHERE plan_id = $1 AND scope = 'intake' RETURNING id`,
+        [planId],
+      );
+      const annotationCount = ann.rows.length;
+
+      await client.query('DELETE FROM content_plans WHERE id = $1', [planId]);
+
+      return { status, annotationCount };
+    });
+
+    emitAdminEvent('plan_deleted', { planId, status }, planId);
+
+    return { planId, status, deltaPruned: isNeo4jEnabled(), annotationCount };
+  }
+
+  /**
+   * Full resumable state of a plan (`plan:get`). Read-only — never mutates the
+   * plan or its deltas. Surfaces the canonical-before/proposed-after diff plus
+   * the open intake annotations an author can reply to.
+   */
+  async getPlanState(planId: string): Promise<PlanState | null> {
+    const row = await queryOLTP<{
+      id: string; status: string; created_by: string | null;
+      description: string | null; created_at: string; updated_at: string;
+    }>(
+      `SELECT id, status, created_by, description, created_at, updated_at
+       FROM content_plans WHERE id = $1`,
+      [planId],
+    );
+    if (row.rows.length === 0) {
+      return null;
+    }
+    const plan = row.rows[0];
+    const { deltas, edges } = await this.getPlanDeltas(planId);
+    const planDiff = await this.buildPlanDiff(planId);
+    const openAnnotations = await this.getPlanOpenAnnotations(planId);
+
+    return {
+      planId: plan.id,
+      status: plan.status,
+      created_by: plan.created_by,
+      description: plan.description,
+      created_at: plan.created_at,
+      updated_at: plan.updated_at,
+      deltaCount: deltas.length,
+      edgeCount: edges.length,
+      deltas,
+      edges,
+      diff: planDiff.deltas,
+      openAnnotations,
+      reviewUrl: reviewUrl(process.env.ADMIN_URL ?? 'http://localhost:3002', planId),
+    };
+  }
+
+  /**
+   * List plans with optional filters (`plan:list`). Defaults to non-materialized
+   * plans (proposed + rejected) so a routine "what's open" check isn't buried
+   * under history. `deltaCount` is computed from Neo4j per plan; 0 when disabled.
+   */
+  async listPlans(opts: { status?: string; createdBy?: string; since?: string } = {}): Promise<PlanListing[]> {
+    const where: string[] = [];
+    const params: unknown[] = [];
+    let i = 1;
+    if (opts.status) {
+      where.push(`status = $${i}`);
+      params.push(opts.status);
+      i += 1;
+    } else {
+      where.push(`status IN ('proposed', 'rejected')`);
+    }
+    if (opts.createdBy) {
+      where.push(`created_by = $${i}`);
+      params.push(opts.createdBy);
+      i += 1;
+    }
+    if (opts.since) {
+      where.push(`created_at >= $${i}::timestamptz`);
+      params.push(opts.since);
+      i += 1;
+    }
+    const rows = await queryOLTP<{
+      id: string; status: string; created_by: string | null;
+      description: string | null; created_at: string; updated_at: string;
+    }>(
+      `SELECT id, status, created_by, description, created_at, updated_at
+       FROM content_plans${where.length ? ` WHERE ${where.join(' AND ')}` : ''}
+       ORDER BY created_at DESC`,
+      params,
+    );
+
+    return Promise.all(rows.rows.map(async (r) => ({
+      id: r.id,
+      status: r.status,
+      created_by: r.created_by,
+      description: r.description,
+      created_at: r.created_at,
+      updated_at: r.updated_at,
+      deltaCount: await countDeltasForPlan(r.id),
+    })));
+  }
+
+  /**
+   * Open intake annotations for a plan, used by `plan:get`/`plan:diff` so an
+   * author can see what still needs replying to.
+   */
+  private async getPlanOpenAnnotations(planId: string): Promise<OpenAnnotationInfo[]> {
+    const rows = await queryOLTP<{
+      id: string; type: string; status: string; created_at: string;
+      description: string | null; severity: string | null;
+      evidence: unknown; related_entities: unknown;
+    }>(
+      `SELECT id, type, status, created_at, description, severity, evidence, related_entities
+       FROM critique_annotations
+       WHERE plan_id = $1 AND scope = 'intake' AND status = 'open'
+       ORDER BY created_at ASC`,
+      [planId],
+    );
+    return rows.rows.map((r) => ({
+      id: r.id,
+      type: r.type,
+      status: r.status as 'open' | 'addressed' | 'dismissed',
+      description: r.description,
+      severity: r.severity as 'error' | 'warning' | 'info' | undefined,
+      evidence: (r.evidence ?? []) as unknown[],
+      relatedEntities: (r.related_entities ?? []) as unknown[],
+      createdAt: r.created_at,
+    }));
+  }
+
+  /** Synthesize a legacy ContentPlan from a plan's deltas+edges.
    * This allows the legacy materialize pipeline (stagePlan → migrateContent)
    * to consume graph-based plans.
    */
@@ -1047,6 +1750,25 @@ export class GraphIntakeService {
   private async gatherContext(): Promise<ExistingContentContext> {
     return contentPlanService.gatherContext();
   }
+}
+
+/** Flatten nested objects into dotted keys (e.g. `metadata.personality`), keeping
+ *  arrays atomic, so a field-by-field diff can pinpoint the exact changed sub-field. */
+function flattenFields(
+  obj: Record<string, unknown> | null | undefined,
+  prefix = '',
+): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  if (!obj || typeof obj !== 'object') return out;
+  for (const [key, value] of Object.entries(obj)) {
+    const path = prefix ? `${prefix}.${key}` : key;
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      Object.assign(out, flattenFields(value as Record<string, unknown>, path));
+    } else {
+      out[path] = value;
+    }
+  }
+  return out;
 }
 
 /** Singleton export for route handlers. */

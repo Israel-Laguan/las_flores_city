@@ -121,7 +121,6 @@ describe('computeRelationshipDecay — linear decay (not compounding)', () => {
   it('decays by exactly 2 more on second run with 1 day elapsed since last decay', () => {
     const now = new Date();
     const sevenDaysAgo = daysAgo(7, now);
-    const oneDayAgo = daysAgo(1, now);
 
     // First run: 7 days since encounter
     const firstInput: DecayInput = {
@@ -166,7 +165,6 @@ describe('computeRelationshipDecay — linear decay (not compounding)', () => {
     //
     // Fix: last_encounter_at (Day 6) is NEWER than last_decay_at (Day 5),
     //   so referenceDate = Day 6, daysElapsed = 2 → only 2 days of decay.
-    const day0 = daysAgo(8, new Date('2026-01-15T00:00:00Z'));
     const day5 = daysAgo(3, new Date('2026-01-15T00:00:00Z'));
     const day6 = daysAgo(2, new Date('2026-01-15T00:00:00Z'));
     const day8 = new Date('2026-01-15T00:00:00Z');

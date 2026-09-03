@@ -70,10 +70,13 @@ export const GraphDeltaSchema = z.object({
   // `z.lazy` defers evaluation so the schema can be declared later in this file.
   _resolution: z.array(z.lazy(() => ResolutionBlockSchema)).optional(),
 }).superRefine((delta, ctx) => {
-  // `nodeId` is a UUID for any op, or a stable lowercase slug ONLY for a new
-  // ADD entity. A MODIFY/DELETE `nodeId` must be the base `:Content` node's
-  // UUID — a slug could never match the canonical (UUID-keyed) node, so the
-  // shadow would silently fail to shadow (accepted schema, invisible breakage).
+  // `nodeId` is a UUID or a stable lowercase slug. A slug is the stable identity
+  // of a new ADD entity, or of a same-plan MODIFY/DELETE that remakes that
+  // plan-local entity (keyed `nodeType:slug:planId`). A plain canonical
+  // MODIFY/DELETE uses the base `:Content` node's UUID keyed against the canonical
+  // node — a slug can never match the canonical (UUID-keyed) node, so a
+  // canonical MODIFY must use a UUID or applyDelta will refuse it as a missing
+  // base.
   const uuid = UUID_REGEX.test(delta.nodeId);
   const slug = /^[a-z0-9_]+$/.test(delta.nodeId);
   if (!uuid && !slug) {
@@ -83,13 +86,11 @@ export const GraphDeltaSchema = z.object({
       message: 'nodeId must be a UUID or a lowercase slug (a-z0-9_)',
     });
   }
-  if (delta.op !== 'ADD' && !uuid) {
-    ctx.addIssue({
-      code: 'custom',
-      path: ['nodeId'],
-      message: `${delta.op} nodeId must be a UUID that references a base :Content node`,
-    });
-  }
+  // A MODIFY/DELETE `nodeId` must reference a valid base. That base may be the
+  // canonical `:Content` node's UUID OR a same-plan `:ContentDelta` (a lowercase
+  // slug) when the delta remakes an entity authored in this plan — both are
+  // accepted here, and applyDelta/partitionDeltas confirm at write time that the
+  // referenced base (canonical or plan-local) actually exists before MERGEing.
 });
 
 export type GraphDelta = z.infer<typeof GraphDeltaSchema>;
@@ -209,6 +210,9 @@ export const IntakeNoteSchema = z.object({
   reason: z.string(),
   suggestion: z.string().optional(),
   candidates: z.array(ResolutionCandidateSchema).default([]),
+  /** M50c: severity the note persists as ('warning' default; 'info' for the
+   * mock-provider transparency note). Absent on pre-M50c producers. */
+  severity: z.enum(['warning', 'info']).optional(),
   /** Durable handle for `plan:amend --annotation <id>:"<comment>"`; absent only
    * if persisting the annotation degraded (the note is still reported). */
   annotationId: z.string().optional(),

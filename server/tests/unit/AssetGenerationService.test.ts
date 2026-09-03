@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 process.env.NVIDIA_API_KEY = 'test-key';
 
 // Mock the dynamically imported StorageService using ESM mock
@@ -47,7 +48,7 @@ describe('AssetGenerationService', () => {
     // This prevents the mocked setTimeout from causing immediate aborts
     (global as any).AbortSignal = {
       ...global.AbortSignal,
-      timeout: (ms: number) => {
+      timeout: (_ms: number) => {
         const controller = new AbortController();
         return controller.signal;
       },

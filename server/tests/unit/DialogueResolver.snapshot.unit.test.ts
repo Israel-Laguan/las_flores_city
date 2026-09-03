@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 // ============================================================
 // DialogueResolver Snapshot Fast Path Unit Tests - M30 Phase A
 //
@@ -162,7 +163,7 @@ describe('DialogueResolver - Snapshot Fast Path (M30 Phase A)', () => {
   describe('snapshot fast path', () => {
     it('should try snapshot path when Redis cache misses', async () => {
       // Setup: mock DB queries
-      (queryOLTP as jest.Mock).mockImplementation(async (sql: string, params?: any[]) => {
+      (queryOLTP as jest.Mock).mockImplementation(async (sql: string, _params?: any[]) => {
         if (sql.includes('player_mysteries') && sql.includes('INVESTIGATING')) {
           return { rows: [] };
         }
@@ -178,7 +179,7 @@ describe('DialogueResolver - Snapshot Fast Path (M30 Phase A)', () => {
         return { rows: [] };
       });
 
-      (queryContent as jest.Mock).mockImplementation(async (sql: string, params?: any[]) => {
+      (queryContent as jest.Mock).mockImplementation(async (sql: string, _params?: any[]) => {
         if (sql.includes('dialogue_trees')) {
           return { rows: [MOCK_BASE_TREE] };
         }
@@ -224,7 +225,7 @@ describe('DialogueResolver - Snapshot Fast Path (M30 Phase A)', () => {
 
     it('should fall back to live merge when no snapshot exists', async () => {
       // Setup: mock DB queries
-      (queryOLTP as jest.Mock).mockImplementation(async (sql: string, params?: any[]) => {
+      (queryOLTP as jest.Mock).mockImplementation(async (sql: string, _params?: any[]) => {
         if (sql.includes('player_mysteries') && sql.includes('INVESTIGATING')) {
           return { rows: [] };
         }
@@ -240,7 +241,7 @@ describe('DialogueResolver - Snapshot Fast Path (M30 Phase A)', () => {
         return { rows: [] };
       });
 
-      (queryContent as jest.Mock).mockImplementation(async (sql: string, params?: any[]) => {
+      (queryContent as jest.Mock).mockImplementation(async (sql: string, _params?: any[]) => {
         if (sql.includes('dialogue_trees')) {
           return { rows: [MOCK_BASE_TREE] };
         }
@@ -272,7 +273,7 @@ describe('DialogueResolver - Snapshot Fast Path (M30 Phase A)', () => {
 
     it('should fall back to live merge when snapshot fetch fails', async () => {
       // Setup: mock DB queries
-      (queryOLTP as jest.Mock).mockImplementation(async (sql: string, params?: any[]) => {
+      (queryOLTP as jest.Mock).mockImplementation(async (sql: string, _params?: any[]) => {
         if (sql.includes('player_mysteries') && sql.includes('INVESTIGATING')) {
           return { rows: [] };
         }
@@ -288,7 +289,7 @@ describe('DialogueResolver - Snapshot Fast Path (M30 Phase A)', () => {
         return { rows: [] };
       });
 
-      (queryContent as jest.Mock).mockImplementation(async (sql: string, params?: any[]) => {
+      (queryContent as jest.Mock).mockImplementation(async (sql: string, _params?: any[]) => {
         if (sql.includes('dialogue_trees')) {
           return { rows: [MOCK_BASE_TREE] };
         }
@@ -337,7 +338,7 @@ describe('DialogueResolver - Snapshot Fast Path (M30 Phase A)', () => {
 
     it('should handle empty mystery set correctly', async () => {
       // Setup: mock DB queries with no overlays
-      (queryOLTP as jest.Mock).mockImplementation(async (sql: string, params?: any[]) => {
+      (queryOLTP as jest.Mock).mockImplementation(async (sql: string, _params?: any[]) => {
         if (sql.includes('player_mysteries') && sql.includes('INVESTIGATING')) {
           return { rows: [] };
         }
@@ -353,7 +354,7 @@ describe('DialogueResolver - Snapshot Fast Path (M30 Phase A)', () => {
         return { rows: [] };
       });
 
-      (queryContent as jest.Mock).mockImplementation(async (sql: string, params?: any[]) => {
+      (queryContent as jest.Mock).mockImplementation(async (sql: string, _params?: any[]) => {
         if (sql.includes('dialogue_trees')) {
           return { rows: [MOCK_BASE_TREE] };
         }
@@ -367,8 +368,8 @@ describe('DialogueResolver - Snapshot Fast Path (M30 Phase A)', () => {
       (getSnapshotContentUrl as jest.Mock).mockImplementation(async (
         treeId: string,
         setHash: string,
-        nsfw: boolean,
-        alignment: string
+        _nsfw: boolean,
+        _alignment: string
       ) => {
         // With empty set, setHash should be 'empty'
         if (setHash === 'empty') {

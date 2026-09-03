@@ -1,4 +1,5 @@
-import { queryOLTP, queryOLAP, withOLTPTransaction, closeConnections } from '@las-flores/infra';
+/* eslint-disable max-lines-per-function */
+import { queryOLTP, queryOLAP, closeConnections } from '@las-flores/infra';
 import { closeRedis } from '@las-flores/infra';
 import { LeaderboardWorker } from '../../src/workers/LeaderboardWorker.js';
 import fs from 'fs';
@@ -63,7 +64,7 @@ async function applyMigration(filename: string): Promise<void> {
   }
 }
 
-async function ensurePublicProfile(userId: string, username: string): Promise<void> {
+async function ensurePublicProfile(userId: string, _username: string): Promise<void> {
   await queryOLTP(
     `INSERT INTO public_profiles (user_id, badges)
      VALUES ($1, '[]'::jsonb)

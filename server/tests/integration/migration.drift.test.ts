@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 import path from 'path';
 import { withSchemaLock } from '../helpers/schemaLock.js';

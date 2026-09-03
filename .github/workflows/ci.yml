@@ -167,7 +167,9 @@ jobs:
         run: npm run validate --workspace=server
 
       - name: Start API server (background)
-        run: npm run start --workspace=server > /tmp/server.log 2>&1 &
+        run: |
+          nohup npm run start --workspace=server > /tmp/server.log 2>&1 &
+          disown
         env:
           PORT: 3000
           CLIENT_ORIGIN_URL: http://localhost:5173
@@ -195,7 +197,9 @@ jobs:
           exit 1
 
       - name: Start Vite dev server (background)
-        run: npm run dev > /tmp/client.log 2>&1 &
+        run: |
+          nohup npm run dev > /tmp/client.log 2>&1 &
+          disown
         working-directory: client
         env:
           VITE_API_PROXY_TARGET: http://localhost:3000

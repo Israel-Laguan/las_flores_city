@@ -60,6 +60,11 @@ async function main(): Promise<void> {
       descriptionLength: description.length,
       deltaCount: graph.deltas.length,
       edgeCount: graph.edges.length,
+      // The full delta list (fields + prose) so the effect of intake is inspectable
+      // without a separate call. Each delta carries its `_resolution` notes when the
+      // LLM referenced a natural-language entity the graph could not pin down.
+      deltas: graph.deltas,
+      edges: graph.edges,
       // Everything the graph could not confidently resolve. Intake is fail-open:
       // these are advisory, the plan is already persisted, and each one carries an
       // `annotationId` you can reply to with `plan:amend`.

@@ -93,7 +93,6 @@ jest.mock('@las-flores/infra', () => ({
 import {
   startJobRun,
   getJobRun,
-  getJobRunById,
   updateJobRun,
   commitStage,
   hasCommittedStage,

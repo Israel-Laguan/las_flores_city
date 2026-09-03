@@ -32,10 +32,8 @@ jest.mock('../../src/middleware/adminAuth.js', () => ({
 jest.mock('../../src/services/StoryBuilderOrchestrator.js');
 
 import { adminStoryBuilderActionsRouter } from '../../src/routes/admin-story-builder-actions.js';
-import { queryOLTP } from '@las-flores/infra';
 import { approveAndSolidifyPlan } from '../../src/services/StoryBuilderOrchestrator.js';
 
-const mockQueryOLTP = queryOLTP as jest.MockedFunction<typeof queryOLTP>;
 const mockApprove = approveAndSolidifyPlan as jest.MockedFunction<typeof approveAndSolidifyPlan>;
 
 const TEST_PLAN_ID = '11111111-1111-1111-1111-111111111111';

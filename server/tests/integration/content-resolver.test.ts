@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /**
  * Integration tests for the admin content resolver routes (Plan 00).
  *
@@ -6,7 +7,7 @@
  * - 400/404 handling for unknown type / missing id / missing match
  * - cache behavior and cache invalidation on writes
  */
-import { describe, it, expect, jest, beforeAll, beforeEach, afterEach, afterAll } from '@jest/globals';
+import { describe, it, expect, jest, beforeAll, beforeEach, afterEach } from '@jest/globals';
 import request from 'supertest';
 import express from 'express';
 import path from 'node:path';

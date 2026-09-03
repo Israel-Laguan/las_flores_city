@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import fs from 'fs';
 import path from 'path';
 import { withSchemaLock } from '../helpers/schemaLock.js';
