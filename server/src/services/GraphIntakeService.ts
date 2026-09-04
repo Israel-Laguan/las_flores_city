@@ -1005,6 +1005,17 @@ export class GraphIntakeService {
     }
   }
 
+  /**
+   * M50d — public wrapper over the private M50c `semanticNotes` so the
+   * `plan:amend --annotation` CLI path (which cannot reach privates) can
+   * compute the same pre-formed semantic-concern notes as create/amend-with-
+   * instruction and pass them to `triageAndAnnotate`. Same best-effort
+   * semantics: never throws, returns [] on failure/empty.
+   */
+  async semanticNotesForPlan(description: string, deltas: GraphDelta[]): Promise<IntakeNote[]> {
+    return this.semanticNotes(description, deltas);
+  }
+
   async triageAndAnnotate(
     planId: string,
     deltas: GraphDelta[],

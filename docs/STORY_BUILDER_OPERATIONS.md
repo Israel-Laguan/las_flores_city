@@ -115,6 +115,12 @@ state — including a fresh note when the amendment only partially resolved the
 ambiguity. An annotation whose comment resolved its delta is auto-marked
 `'addressed'`; an empty/again-unresolvable correction leaves it `'open'`.
 
+M50d parity: an `--annotation` reply passes the plan's current deltas into the
+re-proposal (so a rename/remake comment actually lands on the flagged delta,
+same as `--instruction`) and recomputes the M50c semantic-concern notes below
+against the post-amend delta set — the concern surface no longer goes blank
+after a reply.
+
 ```bash
 # After an intake run, reply to one note:
 npm run plan:amend --workspace=server -- <planId> \
