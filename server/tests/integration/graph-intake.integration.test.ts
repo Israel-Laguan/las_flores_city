@@ -779,7 +779,7 @@ describe('M50c intake semantic validation (fail-open concern flagging)', () => {
     try {
       const offDelta = GraphDeltaSchema.parse({
         id: 'd3200020-0000-4000-8000-000000000020',
-        planId: '',
+        planId: 'd3200020-0000-4000-8000-000000000020',
         nodeType: 'Character',
         nodeId: 'vendor_npc',
         op: 'ADD',
@@ -812,7 +812,7 @@ describe('M50c intake semantic validation (fail-open concern flagging)', () => {
     try {
       const inDelta = GraphDeltaSchema.parse({
         id: 'd3200021-0000-4000-8000-000000000021',
-        planId: '',
+        planId: 'd3200021-0000-4000-8000-000000000021',
         nodeType: 'Character',
         nodeId: 'camila_reyes',
         op: 'ADD',
