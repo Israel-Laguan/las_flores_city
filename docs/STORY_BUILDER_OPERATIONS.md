@@ -115,6 +115,12 @@ state — including a fresh note when the amendment only partially resolved the
 ambiguity. An annotation whose comment resolved its delta is auto-marked
 `'addressed'`; an empty/again-unresolvable correction leaves it `'open'`.
 
+M50d parity: an `--annotation` reply passes the plan's current deltas into the
+re-proposal (so a rename/remake comment actually lands on the flagged delta,
+same as `--instruction`) and recomputes the M50c semantic-concern notes below
+against the post-amend delta set — the concern surface no longer goes blank
+after a reply.
+
 ```bash
 # After an intake run, reply to one note:
 npm run plan:amend --workspace=server -- <planId> \
@@ -133,6 +139,46 @@ Unit coverage: `server/tests/unit/plan-intake-cli.test.ts` (`parseAmendArgs`,
 `server/tests/integration/graph-intake.integration.test.ts` (the "fail-open graph
 intake" block forces a missing base node + dangling edge and asserts the plan is
 created, not deleted, with `notes`/annotations present).
+
+#### 1.1.2 M50c — semantic concern flagging (fail-open, intake-time)
+
+M50c adds three purely advisory note kinds that surface at **intake** and
+**amend** time, before approval. They never block a plan from reaching
+`proposed`; each becomes a `critique_annotations` row scoped `'intake'`
+(`type: 'suggestion'`) with `severity` carried on the note itself (`warning`
+by default; `info` for the mock-provider note), so the existing
+comment/amend runbook above applies unchanged.
+
+| note `kind` | triggers when | `severity` | operator action |
+|---|---|---|---| 
+| `duplicate_entity` | an `ADD` delta's `name` closely matches an existing canon entity of the same node type (whole-canon Levenshtein/alias match at confidence ≥ 0.7), but was authored as `ADD` not `MODIFY`. | `warning` | Confirm intent: if the delta should enrich the existing entity, amend the plan and re-submit it as `MODIFY` targeting that entity id; otherwise rename it to something distinct. |
+| `ungrounded_plan` | a plan's deltas collectively have **zero** canon matches above a low similarity floor (0.45) **and** zero input-grounding token overlap (no substantive word shared between the source text and the delta name/description). Exactly one such note is emitted per plan. | `warning` | Read the input text: if it does not describe Las Flores 2077 content (e.g. an off-universe prompt slipped into the intake slot), discard the plan — it does not belong in this graph. If it *does* describe canon content but produced no matches, the author should re-run with a description that names the entities to create or edit. |
+| `mock_provider` | `LLM_PROVIDER` is unset or `'mock'`, so `MockProvider` authored the deltas. | `info` | This is a transparency marker, not a validation failure — the plan is `proposed` but no real language-model validation of the input occurred. Re-run `plan:intake` with `LLM_PROVIDER=litellm` (once host LiteLLM credentials from §Prerequisites are configured) before promoting the plan toward approval. |
+
+**How the grounding check works:** substantive tokens (lowercase, accent-folded,
+length ≥ 4, stopwords removed) from the plan *description* are compared against
+the name/title/description tokens of every delta. A single shared token grounds
+the plan, which is why the `ungrounded_plan` concern is suppressed for any plan
+that is clearly input-derived. The check is intentional token-overlap, not
+semantic understanding — it exists to make a no-op provider (mock or real) that
+silently ignores the input indistinguishable from a real proposal.
+
+**Determinism note:** canonical-name matching runs against the full Neo4j base
+graph (unlike the `CANON_ENTITY_CAP=40` context the LLM is shown), so a
+duplicate concern fires even when the proposing model guessed wrong from a
+truncated context. If the canonical candidate source is unavailable, the
+canon-derived concerns are suppressed rather than speculatively raised — you
+will only see the `mock_provider` note in that case.
+
+Unit coverage: `server/tests/unit/intakeSemanticValidation.unit.test.ts`
+(`substantiveTokens`, `inputGroundingOverlap`, `floorSimilarity` vs `similarity`,
+whole-canon `matchEntityName`/`maxNameSimilarity`, and every semantic-concern
+branch incl. canon-unavailable suppression and the `LLM_PROVIDER` mock toggle).
+Integration coverage: the "M50c intake semantic validation" block in
+`server/tests/integration/graph-intake.integration.test.ts` feeds the off-universe
+fixture (`backups/Real Heroism in Latam.txt` excerpt) vs. an in-universe fixture
+through `createPlanFromDescription` and asserts the plan-level concern fires for
+the mismatched input and does not for the grounded input.
 
 ### M50 — Graph-assisted entity resolution + consistency validation (2026-08-28)
 
@@ -229,6 +275,14 @@ migrate → verify pipeline to materialize authored content.
 
 5. **`outline_source` not set for non-repaired plans** (`ContentPlanService.ts:153-159`)
    - **Fix**: Always set `outline_source` to `'llm'` by default in `validateAndRepairOutline`
+
+6. **`closeConnections()` never nulled `_oltpPool`** (`infra/src/connection.ts:142-148`)
+   - **Root Cause**: `closeConnections()` had `_olapPool = null` twice (lines 147–148) and never assigned `_oltpPool = null`, so `getOltpPool()` could return a stale ended pool on next access.
+   - **Fix**: Replaced the duplicate `_olapPool = null` with `_oltpPool = null`.
+
+7. **`story-builder-migration-audit.test.ts` missing `closeConnections()` in `afterAll`** (`tests/integration/story-builder-migration-audit.test.ts:107-110`)
+   - **Root Cause**: The test fixture uses its own `new Pool(...)` but also calls `withSchemaLock` (which uses `oltpPool`). Without `closeConnections()` in `afterAll`, the global pool state was left dirty for subsequent suites. The test runs last alphabetically, so it was the most exposed to pool corruption from earlier suites.
+   - **Fix**: Added `await closeConnections()` to `afterAll` to reset global pool state.
 
 ### Plan Quality Check
 

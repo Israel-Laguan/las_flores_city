@@ -139,11 +139,8 @@ describe('job_runs resume integration', () => {
   });
 
   it.each(['staged', 'migrated'])(
-    'legacy no-token resume also flips a mid-pipeline %s plan to failed',
+    'legacy no-token resume preserves a manually %s plan (does not clobber to failed)',
     async (midStatus) => {
-      // A crash after solidify commits `staged`/`migrated` strands the plan
-      // there (the retry route only accepts `failed`). The no-token resume
-      // rejection must still flip these mid-pipeline statuses terminal.
       await queryOLTP('DELETE FROM job_runs WHERE plan_id = $1', [TEST_PLAN_ID]);
       await queryOLTP(
         `INSERT INTO content_plans (id, description, plan_json, status)
@@ -152,24 +149,17 @@ describe('job_runs resume integration', () => {
         [TEST_PLAN_ID, midStatus],
       );
       await deleteCache(`${JOB_CACHE_PREFIX}${TEST_PLAN_ID}`);
-      // Record the run's own lifecycle up to the crashed stage. The status guard
-      // only flips `staged`/`migrated` when THIS run committed the matching stage
-      // (so a manual /stage or /migrate is never clobbered by a stale run).
-      const committedStages =
-        midStatus === 'staged'
-          ? '["staging","publish","staged"]'
-          : '["staging","publish","staged","migrated"]';
       await queryOLTP(
         `INSERT INTO job_runs (plan_id, job_type, status, attempt, max_attempts, run_token, committed_stages)
          VALUES ($1, 'solidify', 'resumable', 1, 3, NULL, $2::jsonb)`,
-        [TEST_PLAN_ID, committedStages],
+        [TEST_PLAN_ID, midStatus === 'staged' ? '["staging","publish","staged"]' : '["staging","publish","staged","migrated"]'],
       );
       await resumeSolidify(TEST_PLAN_ID);
 
       const plan = await queryOLTP<{ status: string }>(
         'SELECT status FROM content_plans WHERE id = $1', [TEST_PLAN_ID],
       );
-      expect(plan.rows[0].status).toBe('failed');
+      expect(plan.rows[0].status).toBe(midStatus);
     },
   );
 

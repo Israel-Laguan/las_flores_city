@@ -719,7 +719,6 @@ describe('GraphIntakeService.amendPlanWithInstruction — unscoped free-form ame
 // M50c — intake semantic validation & concern flagging (fail-open).
 //
 // Asserts the concern surface that the 2026-09-02 live-stack run was missing:
-//   - an ADD delta whose name matches canon → "consider MODIFY" duplicate note
 //   - a plan with NO canon match AND no input-grounding overlap → exactly one
 //     plan-level "this plan may not belong to this content graph" concern
 //   - every mock-provider run → a mock-provider transparency info note
@@ -780,7 +779,7 @@ describe('M50c intake semantic validation (fail-open concern flagging)', () => {
     try {
       const offDelta = GraphDeltaSchema.parse({
         id: 'd3200020-0000-4000-8000-000000000020',
-        planId: '',
+        planId: 'd3200020-0000-4000-8000-000000000020',
         nodeType: 'Character',
         nodeId: 'vendor_npc',
         op: 'ADD',
@@ -813,7 +812,7 @@ describe('M50c intake semantic validation (fail-open concern flagging)', () => {
     try {
       const inDelta = GraphDeltaSchema.parse({
         id: 'd3200021-0000-4000-8000-000000000021',
-        planId: '',
+        planId: 'd3200021-0000-4000-8000-000000000021',
         nodeType: 'Character',
         nodeId: 'camila_reyes',
         op: 'ADD',
