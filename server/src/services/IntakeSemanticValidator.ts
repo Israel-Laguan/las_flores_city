@@ -53,6 +53,7 @@ const STOPWORDS = new Set([
   'done', 'doing', 'onto', 'upon', 'same', 'such', 'only', 'own', 'again',
   'further', 'once', 'both', 'all', 'any', 'few', 'nor', 'not', 'too', 'can',
   'cannot', 'could', 'should', 'shall', 'may', 'might', 'must',
+  'plan', 'adds', 'new', 'character',
 ]);
 
 /**
@@ -95,8 +96,9 @@ export function inputGroundingOverlap(description: string, deltas: GraphDelta[])
  * graph); unit tests supply stubs.
  */
 export interface SemanticCanonMatcher {
-  matchEntityName(name: string, nodeType: string): Promise<import('./EntityResolutionService.js').EntityNameMatch | null>;
-  maxNameSimilarity(name: string, nodeType: string): Promise<number>;
+  matchEntityName(name: string, nodeType: string, opts?: { candidates?: CanonicalCandidate[]; threshold?: number }): Promise<import('./EntityResolutionService.js').EntityNameMatch | null>;
+  maxNameSimilarity(name: string, nodeType: string, opts?: { candidates?: CanonicalCandidate[] }): Promise<number>;
+  listCandidates?(): Promise<CanonicalCandidate[]>;
 }
 
 export interface SemanticConcernParams {
@@ -134,22 +136,25 @@ export async function semanticConcernNotes(params: SemanticConcernParams): Promi
   const anchor = deltas[0];
   const notes: IntakeNote[] = [];
 
+  const allCandidates = matcher.listCandidates ? await matcher.listCandidates() : [];
+  const candidatesByNodeType = new Map<string, CanonicalCandidate[]>();
+  for (const c of allCandidates) {
+    const arr = candidatesByNodeType.get(c.nodeType) ?? [];
+    arr.push(c);
+    candidatesByNodeType.set(c.nodeType, arr);
+  }
+
   // 1. Whole-canon duplicate check on every ADD delta's own name.
   let canonAvailable = true;
-  // A MODIFY/DELETE delta that reached this point already survived partition-time
-  // base-node resolution (GraphIntakeService drops any MODIFY/DELETE targeting a
-  // missing node before semanticNotes() runs), so it targets a real, existing
-  // canon entity by construction. That alone proves the plan belongs to this
-  // graph, even though only ADD deltas go through name-matching below — without
-  // this, an edit-only plan whose fields don't happen to echo the input's
-  // vocabulary would be wrongly flagged as "may not belong to this content
-  // graph" for the ordinary act of editing something that already exists.
   let anyCanonMatch = deltas.some((d) => d.op !== 'ADD');
   try {
     for (const delta of deltas.filter((d) => d.op === 'ADD')) {
       const name = (delta.fields as Record<string, unknown> | undefined)?.name;
       if (typeof name !== 'string' || name.trim().length === 0) continue;
-      const match = await matcher.matchEntityName(name, delta.nodeType);
+      const nodeCandidates = candidatesByNodeType.get(delta.nodeType);
+      const match = nodeCandidates
+        ? await matcher.matchEntityName(name, delta.nodeType, { candidates: nodeCandidates })
+        : await matcher.matchEntityName(name, delta.nodeType);
       if (match) {
         anyCanonMatch = true;
         notes.push({
@@ -165,7 +170,9 @@ export async function semanticConcernNotes(params: SemanticConcernParams): Promi
           severity: 'warning',
         });
       } else {
-        const floor = await matcher.maxNameSimilarity(name, delta.nodeType);
+        const floor = nodeCandidates
+          ? await matcher.maxNameSimilarity(name, delta.nodeType, { candidates: nodeCandidates })
+          : await matcher.maxNameSimilarity(name, delta.nodeType);
         if (floor >= LOW_FLOOR_SIMILARITY) anyCanonMatch = true;
       }
     }
@@ -209,7 +216,7 @@ export async function semanticConcernNotes(params: SemanticConcernParams): Promi
 
 /** True when the configured LLM provider is the mock (LLM_PROVIDER unset or 'mock'). */
 export function isMockProviderConfigured(): boolean {
-  return (process.env.LLM_PROVIDER ?? 'mock') === 'mock';
+  return (process.env.LLM_PROVIDER || 'mock') === 'mock';
 }
 
 // Re-exported so callers (and tests) can reference the threshold without a

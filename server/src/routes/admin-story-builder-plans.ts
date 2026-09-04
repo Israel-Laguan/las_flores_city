@@ -6,6 +6,7 @@ import { emitAdminEvent } from '../services/AdminEventEmitter.js';
 import { isNeo4jEnabled } from '../services/Neo4jClient.js';
 import { getDeltasForPlan, clearDeltasForPlan } from '../services/GraphDeltaService.js';
 import { buildPlanFromTemplate, UnknownTemplateError } from '../services/PlanTemplateBuilders.js';
+import { GraphIntakeService } from '../services/GraphIntakeService.js';
 
 export const adminStoryBuilderPlansRouter = express.Router();
 
@@ -200,12 +201,28 @@ adminStoryBuilderPlansRouter.put('/plans/:id', async (req, res) => {
       return;
     }
 
-    // `rejected` is a soft terminal state preserved for audit (see M50 plan:reject).
-    // It must be preserved on save, not silently reverted to `draft` — a rejected
-    // plan stays visible for review and can only be re-opened by an explicit admin
-    // status flip (a future M52 action), never by an unguarded save fallback.
-    const validStatuses = ['draft', 'proposed', 'approved', 'staged', 'migrated', 'verified', 'failed', 'pending', 'staging', 'migrating', 'verifying', 'rejected'];
-    const finalStatus = validStatuses.includes(status) ? status : 'draft';
+    const currentPlanRow = await queryOLTP<{ status: string }>(
+      'SELECT status FROM content_plans WHERE id = $1',
+      [id],
+    );
+    const currentStatus = currentPlanRow.rows[0]?.status ?? 'draft';
+
+    // Rejection must go through the lifecycle action so graph deltas and intake
+    // annotations are cleaned up and a rejection audit event is emitted.
+    if (status === 'rejected' && currentStatus !== 'rejected') {
+      const graphIntakeService = new GraphIntakeService();
+      await graphIntakeService.rejectPlan(id);
+      return res.json({
+        success: true,
+        data: { planId: id, status: 'rejected' },
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    // Transient pipeline statuses are server-owned — only stable user-editable
+    // statuses are accepted here. `rejected` is preserved for ordinary saves.
+    const validStatuses = ['draft', 'proposed', 'approved', 'staged', 'migrated', 'verified', 'failed', 'rejected'];
+    const finalStatus = validStatuses.includes(status) ? status : (currentStatus === 'rejected' ? 'rejected' : 'draft');
     validatedPlan.status = finalStatus;
 
     const result = await queryOLTP(

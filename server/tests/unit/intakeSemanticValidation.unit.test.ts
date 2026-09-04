@@ -70,7 +70,7 @@ describe('IntakeSemanticValidator — floor vs boosted similarity', () => {
     // one-token canon name living inside a longer proposed name.
     const proposed = 'Diego el Mock';
     const canon = 'Diego';
-    expect(floorSimilarity(proposed, canon)).toBe(0.5);
+    expect(floorSimilarity(proposed, canon)).toBeLessThan(LOW_FLOOR_SIMILARITY);
     expect(floorSimilarity(proposed, canon)).toBeLessThan(MATCH_THRESHOLD);
     expect(similarity(proposed, canon)).toBeGreaterThanOrEqual(0.9);
   });

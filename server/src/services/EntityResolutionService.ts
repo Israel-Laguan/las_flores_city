@@ -147,7 +147,16 @@ export function floorSimilarity(a: string, b: string): number {
   const maxLen = Math.max(a.length, b.length);
   const dist = levenshtein(a.toLowerCase(), b.toLowerCase());
   const ratio = maxLen === 0 ? 1 : 1 - dist / maxLen;
-  return Math.min(1, Math.max(jaccard, ratio));
+
+  let score = Math.max(jaccard, ratio);
+  // Strict token-subset: a one-token canon inside a longer proposed name is
+  // not a strong enough match to suppress ungrounded_plan. Cap well below
+  // the LOW_FLOOR_SIMILARITY probe floor (0.45).
+  const isStrictSubset =
+    (tokensA.size > 0 && tokensA.size < tokensB.size && [...tokensA].every(t => tokensB.has(t))) ||
+    (tokensB.size > 0 && tokensB.size < tokensA.size && [...tokensB].every(t => tokensA.has(t)));
+  if (isStrictSubset) score = Math.min(score, 0.4);
+  return Math.min(1, score);
 }
 
 /** Fields on a delta that carry a natural-language reference to another entity. */
@@ -161,12 +170,16 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 export class EntityResolutionService {
   constructor(private readonly source: CandidateSource) {}
 
+  async listCandidates(): Promise<CanonicalCandidate[]> {
+    return this.source.listCandidates();
+  }
+
   /**
-   * Attach a `_resolution` block to every delta that contains a natural-language
-   * reference in one of its `REFERENCE_FIELDS`. References that are raw UUIDs are
-   * skipped (already canonical identity). Returns new delta objects (does not
-   * mutate inputs). `referencedNodeIds` feeds graph-context disambiguation.
-   */
+    * Attach a `_resolution` block to every delta that contains a natural-language
+    * reference in one of its `REFERENCE_FIELDS`. References that are raw UUIDs are
+    * skipped (already canonical identity). Returns new delta objects (does not
+    * mutate inputs). `referencedNodeIds` feeds graph-context disambiguation.
+    */
   async resolvePlanDeltas(deltas: GraphDelta[]): Promise<GraphDelta[]> {
     const referenced = new Set<string>();
     for (const d of deltas) {

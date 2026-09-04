@@ -719,7 +719,6 @@ describe('GraphIntakeService.amendPlanWithInstruction — unscoped free-form ame
 // M50c — intake semantic validation & concern flagging (fail-open).
 //
 // Asserts the concern surface that the 2026-09-02 live-stack run was missing:
-//   - an ADD delta whose name matches canon → "consider MODIFY" duplicate note
 //   - a plan with NO canon match AND no input-grounding overlap → exactly one
 //     plan-level "this plan may not belong to this content graph" concern
 //   - every mock-provider run → a mock-provider transparency info note

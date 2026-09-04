@@ -1215,6 +1215,9 @@ export class GraphIntakeService {
     let edgeCount = 0;
     let deltas: GraphDelta[] = [];
     let edges: GraphDeltaEdge[] = [];
+    let graphDeltas: GraphDelta[] = [];
+    let graphEdges: GraphDeltaEdge[] = [];
+    let synthesizedDiagnostics: IntakeDiagnostic[] = [];
     await withOLTPTransaction(async (client) => {
       await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`plan-lifecycle:${planId}`]);
 
@@ -1231,18 +1234,13 @@ export class GraphIntakeService {
         );
       }
 
-      // applyDeltas writes to Neo4j (not OLTP), but it runs inside the lock so a
-      // concurrent reject/delete can't clear deltas between this write and the
-      // plan_json persist below. A MODIFY/DELETE against a same-plan :ContentDelta
-      // MERGEs in place (partitionDeltas accepts it); a genuinely missing base is
-      // dropped and reported as a diagnostic.
       result = await chatService.applyDeltas(planId, filteredDeltas, filteredEdges);
 
-      // Refresh the snapshot from the post-apply graph and synthesize plan_json
-      // under the lock, so a concurrent amendment can't interleave and persist a
-      // stale snapshot.
       const graph = await this.getPlanDeltas(planId);
-      const synthesized = await synthesizePlanFromDeltas(planId, planRow.rows[0].description, graph.deltas, graph.edges, await this.gatherContext());
+      graphDeltas = graph.deltas;
+      graphEdges = graph.edges;
+      const synthesized = await synthesizePlanFromDeltas(planId, planRow.rows[0].description, graphDeltas, graphEdges, await this.gatherContext());
+      synthesizedDiagnostics = synthesized.diagnostics;
       const parsedPlan = ContentPlanSchema.safeParse(synthesized.plan);
       const planJson: ContentPlan | null = parsedPlan.success ? parsedPlan.data : null;
       if (!planJson) {
@@ -1256,14 +1254,14 @@ export class GraphIntakeService {
         `UPDATE content_plans SET updated_at = now(), plan_json = COALESCE($2::jsonb, plan_json) WHERE id = $1`,
         [planId, planJson],
       );
-
-      const semanticNotes = await this.semanticNotes(planRow.rows[0].description ?? '', graph.deltas);
-      notes = await this.triageAndAnnotate(planId, graph.deltas, [...result.diagnostics, ...synthesized.diagnostics], semanticNotes);
-      deltaCount = graph.deltas.length;
-      edgeCount = graph.edges.length;
-      deltas = graph.deltas;
-      edges = graph.edges;
     });
+
+    const semanticNotes = await this.semanticNotes(planRow.rows[0].description ?? '', graphDeltas);
+    notes = await this.triageAndAnnotate(planId, graphDeltas, [...result.diagnostics, ...synthesizedDiagnostics], semanticNotes);
+    deltaCount = graphDeltas.length;
+    edgeCount = graphEdges.length;
+    deltas = graphDeltas;
+    edges = graphEdges;
 
     emitAdminEvent(
       'plan_refined',

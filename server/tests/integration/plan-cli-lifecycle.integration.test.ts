@@ -475,7 +475,8 @@ describe('M50 plan:list CLI — integration', () => {
   test('--created-by filter scopes to the provided user id', async () => {
     const service = new GraphIntakeService();
     // Insert another user-owned plan to ensure the filter is exact, not "at
-    // least one match". Other-user plan is deleted in afterAll via cascade.
+    // least one match". OTHER_PLAN is cleaned in afterEach via
+    // createdPlanIds/cleanupPlanArtifacts; OTHER_USER is cleaned in afterAll.
     const OTHER_USER = OTHER_USER_ID;
     await queryOLTP(
       `INSERT INTO users (id, username, email, display_name, password_hash)
