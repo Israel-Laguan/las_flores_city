@@ -27,6 +27,7 @@ interface CritiqueApiResult {
  * aborted and a bump of the request sequence ensures a slow response for an old
  * plan can never overwrite the new plan's annotations/error/loading state.
  */
+// eslint-disable-next-line max-lines-per-function -- critique state + actions cohesively grouped
 export function useCritique(planId: string | null): CritiqueApiResult {
   const [annotations, setAnnotations] = useState<CritiqueAnnotation[]>([]);
   const [loading, setLoading] = useState(false);

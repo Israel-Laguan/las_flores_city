@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- single barrel export module for all shared types */
 // Re-exports from schema modules (no inline definitions)
 export {
   DialogueChoiceSchema,

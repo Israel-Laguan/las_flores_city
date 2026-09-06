@@ -54,6 +54,7 @@ function buildHandlers(
   };
 }
 
+// eslint-disable-next-line max-lines-per-function -- story builder state + handlers cohesively grouped
 export function useStoryBuilder(initialPlanId: string | null) {
   const [step, setStep] = useState<Step>(1);
   const [description, setDescription] = useState('');

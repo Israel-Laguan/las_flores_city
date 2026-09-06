@@ -265,7 +265,7 @@
 }
 
 .btn--success {
-  background: var(--status-success, #10b981);
+  background: var(--status-success);
   color: white;
   border: none;
 }
@@ -275,7 +275,7 @@
 }
 
 .btn--warning {
-  background: var(--status-warning, #f59e0b);
+  background: var(--status-warning);
   color: white;
   border: none;
 }

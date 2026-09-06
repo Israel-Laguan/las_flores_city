@@ -58,6 +58,7 @@ beforeEach(() => {
   });
 });
 
+// eslint-disable-next-line max-lines-per-function -- plans page test suite spans many scenarios
 describe('StoryBuilderPlans', () => {
   it('should show loading state initially', () => {
     vi.mocked(listPlans).mockImplementation(() => new Promise(() => {}));

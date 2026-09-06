@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- plans page is a cohesive component module */
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -414,6 +415,7 @@ function PlansTable({
   );
 }
 
+// eslint-disable-next-line max-lines-per-function -- plans list view with table, filters, pagination, modals
 export default function StoryBuilderPlans() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
