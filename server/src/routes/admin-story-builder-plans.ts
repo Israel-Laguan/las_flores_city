@@ -176,6 +176,36 @@ adminStoryBuilderPlansRouter.put('/plans/:id', async (req, res) => {
       return;
     }
 
+    // Fetch the current plan status early — needed for both rejection handling
+    // (below, before the graph-authoring edit guard) and for preserving the
+    // 'rejected' terminal state on ordinary saves. A missing plan returns 404.
+    const currentPlanRow = await queryOLTP<{ status: string }>(
+      'SELECT status FROM content_plans WHERE id = $1',
+      [id],
+    );
+
+    if (currentPlanRow.rows.length === 0) {
+      res.status(404).json({ success: false, error: 'Plan not found', timestamp: new Date().toISOString() });
+      return;
+    }
+
+    const currentStatus = currentPlanRow.rows[0].status;
+
+    // Rejection must go through the lifecycle action so graph deltas and intake
+    // annotations are cleaned up and a rejection audit event is emitted. This
+    // is handled BEFORE the graph-authoring edit guard so that graph-authored
+    // plans can also be rejected through this route — otherwise they would
+    // receive a 400 from the guard below before rejection is processed.
+    if (status === 'rejected' && currentStatus !== 'rejected') {
+      const graphIntakeService = new GraphIntakeService();
+      await graphIntakeService.rejectPlan(id);
+      return res.json({
+        success: true,
+        data: { planId: id, status: 'rejected' },
+        timestamp: new Date().toISOString(),
+      });
+    }
+
     // Graph-authored plans must be edited through the canvas. Legacy plans may
     // still be edited directly when graph authoring is disabled.
     if (isNeo4jEnabled()) {
@@ -201,40 +231,26 @@ adminStoryBuilderPlansRouter.put('/plans/:id', async (req, res) => {
       return;
     }
 
-    const currentPlanRow = await queryOLTP<{ status: string }>(
-      'SELECT status FROM content_plans WHERE id = $1',
-      [id],
-    );
-    const currentStatus = currentPlanRow.rows[0]?.status ?? 'draft';
-
-    // Rejection must go through the lifecycle action so graph deltas and intake
-    // annotations are cleaned up and a rejection audit event is emitted.
-    if (status === 'rejected' && currentStatus !== 'rejected') {
-      const graphIntakeService = new GraphIntakeService();
-      await graphIntakeService.rejectPlan(id);
-      return res.json({
-        success: true,
-        data: { planId: id, status: 'rejected' },
-        timestamp: new Date().toISOString(),
-      });
-    }
-
     // Transient pipeline statuses are server-owned — only stable user-editable
     // statuses are accepted here. `rejected` is preserved for ordinary saves.
     const validStatuses = ['draft', 'proposed', 'approved', 'staged', 'migrated', 'verified', 'failed', 'rejected'];
     const finalStatus = validStatuses.includes(status) ? status : (currentStatus === 'rejected' ? 'rejected' : 'draft');
     validatedPlan.status = finalStatus;
 
+    // Conditional UPDATE: the `status <> 'rejected'` guard ensures a concurrent
+    // rejection cannot be overwritten by a stale proposed/draft status from this
+    // request. If a concurrent rejection wins the race, this UPDATE is a no-op
+    // and returns 0 rows, surfacing a 409 so the caller can re-fetch.
     const result = await queryOLTP(
       `UPDATE content_plans
        SET plan_json = $1, description = $2, status = $3, updated_at = NOW()
-       WHERE id = $4
+       WHERE id = $4 AND status <> 'rejected'
        RETURNING id`,
       [validatedPlan, validatedPlan.description, finalStatus, id]
     );
 
     if (result.rows.length === 0) {
-      res.status(404).json({ success: false, error: 'Plan not found', timestamp: new Date().toISOString() });
+      res.status(409).json({ success: false, error: 'Plan state changed concurrently — please re-fetch and retry', timestamp: new Date().toISOString() });
       return;
     }
 

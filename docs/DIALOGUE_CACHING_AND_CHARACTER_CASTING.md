@@ -67,6 +67,18 @@ reveals). Everyday barks/filler get bucket-only variants, no contextual
 multiplier. See "Named vs. generic" below — this mirrors the same two-tier
 split as character casting.
 
+> **Cast-aware chunk contract (must be resolved before named variants ship):**
+> `publishDialogueChunk` and the dialogue route/resolver select artifacts by
+> `tree_id` + `chunk_key` — the cache key has **no cast or character-profile
+> component**. If cast or contextual state changes named dialogue, the runtime
+> can select content compiled for another cast or find no matching content.
+> Before enabling named contextual variants, either (a) extend the variant key
+> to include **all cast and character-profile state that can affect content**
+> and publish every allowed artifact under that complete key, or (b) keep
+> chunks **cast-neutral** and apply deterministic role-slot substitution at
+> render time. Do **not** allow the existing `tree_id`/`chunk_key` cache key
+> to select cast-dependent artifacts.
+
 ### Delivery model: CDN chunks, not per-node fetches
 
 Content is published as **chunks**: a chunk is a run of dialogue that ends at
@@ -76,6 +88,14 @@ the option chosen, rather than the server resolving and streaming one node at
 a time. This is what makes CDN caching actually pay off — chunks are static,
 content-addressable artifacts.
 
+> **Chunk payload and lookup contract:** Each CDN chunk **must preserve the
+> compiler's `{ nodes, leaves }` shape** required by `fetchChunkFromContentUrl`
+> and `DialogueResolver.loadBaseChunkRow` — including a non-empty `nodes` map
+> and a present `leaves` map. A CDN blob containing only dialogue text and a
+> next-chunk reference will make chunk resolution fail. Clients **always** go
+> through `DialogueResolver` (never fetch CDN objects directly) so the resolver
+> can enforce the active-tree-revision contract below.
+
 ### Answer identity vs. presentation
 
 **The contract is an answer ID, not transformed text.** The server/content
@@ -83,6 +103,21 @@ layer picks a branch and returns its ID; all effects (`relationship_effect`,
 flag/stat mutations) resolve from that ID only. LLM personalization is a
 **presentation-only rewrite pass** on top of the chosen ID's default text —
 it never influences which branch was taken or which effects fire.
+
+> **Tree-revision scoping:** `handleChoose` and boundary traversal **must**
+> scope `current_chunk_id`, `choice_id`, `target_chunk`, CDN URLs, and cache
+> keys to the player's **active immutable tree revision**. Validate that the
+> submitted chunk and answer are reachable in that active tree **before**
+> loading the leaf or applying effects. Replace the unscoped
+> `WHERE chunk_key = $1 LIMIT 1` lookup with a tree/revision-constrained
+> resolution so a client cannot load a chunk from a different tree or an
+> older revision.
+
+> **Choice reachability validation:** `handleIntraChunkChoice` **must** verify
+> that the submitted `choice_id` belongs to the player's **current dialogue
+> node** before calling `processChoiceInTransaction`. Reject unreachable or
+> sibling choices without applying any effects — a client must not be able to
+> trigger an effect from a node it has not reached.
 
 Implication for the personalization call: it should receive only the chosen
 ID's default text plus tone/voice context — never the surrounding state
@@ -119,6 +154,15 @@ branches the player didn't actually reach.
   - Corollary: previewing/browsing a mission briefing before accepting must
     **not** burn a cast allocation, or the effective pool shrinks over time
     from abandoned previews.
+
+> **Atomic, idempotent first-fetch cast operation:** The first committed
+> dialogue fetch must save slot-to-character assignments as an **atomic,
+> idempotent server-side transaction** using a per-player/mission/slot
+> idempotency key — concurrent requests must preserve exactly one
+> slot-to-character assignment. Preview requests and CDN artifact access
+> remain **strictly read-only**; no cast allocations are persisted before
+> the commit point. This prevents a race where concurrent fetches select
+> different eligible characters for the same slot.
 - **Migration:** cast-assignment records are versioned against the template
   version they were cast from, so a later content edit to the template (or
   removal of a swapped-in character) can detect stale casts and either

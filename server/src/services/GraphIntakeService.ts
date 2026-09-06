@@ -1117,21 +1117,10 @@ export class GraphIntakeService {
     return notes;
   }
 
-  /**
-   * M50 Part 2 (numeral 1) — apply a free-form, unscoped instruction against an
-   * existing plan. Re-enters the propose→apply loop targeting the existing planId
-   * (no annotation anchor): the LLM sees the plan's current deltas so a remake can
-   * reuse a plan-local nodeId and MERGE in place, while a genuinely new entity is
-   * added with a fresh nodeId. New deltas get the standard `_resolution` treatment
-   * via a plan-aware candidate source. Stops at `proposed` — never stages, migrates,
-   * or solidifies.
-   */
-  async amendPlanWithInstruction(
+  private async validateAmendablePlan(
     planId: string,
     instruction: string,
-    createdBy?: string,
-    adminUrl?: string,
-  ): Promise<AmendInstructionResult> {
+  ): Promise<{ planRow: { status: string; description: string }; existing: { deltas: GraphDelta[]; edges: GraphDeltaEdge[] } }> {
     if (!instruction || typeof instruction !== 'string' || instruction.trim().length === 0) {
       throw new GraphIntakeValidationError('Instruction is required and must be a non-empty string');
     }
@@ -1154,18 +1143,22 @@ export class GraphIntakeService {
     }
 
     const existing = await this.getPlanDeltas(planId);
+    return { planRow: planRow.rows[0], existing };
+  }
 
+  private async buildAmendmentProposal(
+    planId: string,
+    instruction: string,
+    existingDeltas: GraphDelta[],
+  ): Promise<{ proposal: Awaited<ReturnType<typeof chatService.propose>>; resolvedDeltas: GraphDelta[] }> {
     const proposal = await chatService.propose(
       planId,
       [{ role: 'user', content: instruction }],
       undefined,
       undefined,
-      existing.deltas,
+      existingDeltas,
     );
 
-    // Plan-aware resolution: let references in the new deltas resolve against
-    // both canonical nodes and the plan's own pending deltas, so a remake that
-    // references a plan-local entity is not flagged ambiguous/unresolved.
     let resolvedDeltas = proposal.deltas;
     try {
       const resolver = new EntityResolutionService(new PlanAwareCandidateSource(planId));
@@ -1174,10 +1167,6 @@ export class GraphIntakeService {
       console.warn('[graph-intake] entity resolution failed during instruction amend; skipping _resolution attachment:', (resErr as Error).message);
     }
 
-    // Reject DELETE deltas before any graph write, mirroring persistPlanWithDeltas:
-    // a DELETE against the canonical graph has no materialization in the legacy
-    // plan_json contract, so it must be rejected early rather than written and
-    // then surfacing a synthesis failure after the fact.
     const deleteDelta = resolvedDeltas.find((delta) => delta.op === 'DELETE');
     if (deleteDelta) {
       throw new GraphIntakeValidationError(
@@ -1185,50 +1174,52 @@ export class GraphIntakeService {
       );
     }
 
+    return { proposal, resolvedDeltas };
+  }
 
-    // Preflight synthesis: identify which new deltas would be excluded by
-    // synthesizePlanFromDeltas (e.g. unresolvable canonical slugs) so we can
-    // drop them from the write set. This keeps the applied graph set exactly
-    // equal to the synthesized snapshot, matching persistPlanWithDeltas.
-    const existingGraph = await this.getPlanDeltas(planId);
+  private async buildFilteredAmendment(
+    planId: string,
+    resolvedDeltas: GraphDelta[],
+    proposal: { deltaEdges: GraphDeltaEdge[] },
+    existingGraph: { deltas: GraphDelta[]; edges: GraphDeltaEdge[] },
+    description: string,
+  ): Promise<{ filteredDeltas: GraphDelta[]; filteredEdges: GraphDeltaEdge[] }> {
     const preflightDeltas = [...existingGraph.deltas, ...resolvedDeltas];
-    const preflightEdges = [...existingGraph.edges, ...proposal.deltaEdges];
-    const preflight = await synthesizePlanFromDeltas(planId, planRow.rows[0].description, preflightDeltas, preflightEdges, await this.gatherContext());
+    const preflightEdges: GraphDeltaEdge[] = [...existingGraph.edges, ...proposal.deltaEdges];
+    const preflight = await synthesizePlanFromDeltas(planId, description, preflightDeltas, preflightEdges, await this.gatherContext());
     const excludedKeys = new Set(
       preflight.diagnostics
         .filter((d) => d.kind === 'unresolvable_canonical_slug')
         .map((d) => deltaKey(d.nodeType, d.nodeId)),
     );
     const filteredDeltas = resolvedDeltas.filter((d) => !excludedKeys.has(deltaKey(d.nodeType, d.nodeId)));
-    // Retain edges whose source is EITHER a newly-applied delta (filteredDeltas)
-    // OR a surviving existing delta (existingGraph.deltas). An amendment edge
-    // referencing an existing plan delta as its source must not be dropped just
-    // because that source isn't part of this amendment's new deltas.
     const remainingKeys = new Set<string>([
       ...filteredDeltas.map((d) => deltaKey(d.nodeType, d.nodeId)),
       ...existingGraph.deltas.map((d) => deltaKey(d.nodeType, d.nodeId)),
     ]);
     const filteredEdges = proposal.deltaEdges.filter((e) => remainingKeys.has(deltaKey(e.sourceNodeType, e.sourceNodeId)));
 
-    // All graph writes + the OLTP snapshot persist happen inside a
-    // transaction-scoped advisory lock so a concurrent reject/delete (which takes
-    // the same lock key) can never interleave between applyDeltas and the plan_json
-    // write. Without this, a reject could clear deltas first, then the failed
-    // amendment recreates them for the now-rejected plan — or a later amendment
-    // could persist an older plan_json snapshot because the graph read happened
-    // before the lock. pg_advisory_xact_lock is automatically released at
-    // transaction end — no session pinning, no unlock-on-different-connection
-    // leaks. COALESCE keeps a schema-invalid snapshot from wiping the previous
-    // valid one.
+    return { filteredDeltas, filteredEdges };
+  }
+
+  private async persistAmendment(
+    planId: string,
+    planRow: { description: string },
+    filteredDeltas: GraphDelta[],
+    filteredEdges: GraphDeltaEdge[],
+  ): Promise<{
+    result: Awaited<ReturnType<typeof chatService.applyDeltas>>;
+    graphDeltas: GraphDelta[];
+    graphEdges: GraphDeltaEdge[];
+    synthesizedDiagnostics: IntakeDiagnostic[];
+    planJson: ContentPlan | null;
+  }> {
     let result!: Awaited<ReturnType<typeof chatService.applyDeltas>>;
-    let notes: Awaited<ReturnType<typeof this.triageAndAnnotate>> = [];
-    let deltaCount = 0;
-    let edgeCount = 0;
-    let deltas: GraphDelta[] = [];
-    let edges: GraphDeltaEdge[] = [];
     let graphDeltas: GraphDelta[] = [];
     let graphEdges: GraphDeltaEdge[] = [];
     let synthesizedDiagnostics: IntakeDiagnostic[] = [];
+    let planJson: ContentPlan | null = null;
+
     await withOLTPTransaction(async (client) => {
       await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`plan-lifecycle:${planId}`]);
 
@@ -1250,10 +1241,10 @@ export class GraphIntakeService {
       const graph = await this.getPlanDeltas(planId);
       graphDeltas = graph.deltas;
       graphEdges = graph.edges;
-      const synthesized = await synthesizePlanFromDeltas(planId, planRow.rows[0].description, graphDeltas, graphEdges, await this.gatherContext());
+      const synthesized = await synthesizePlanFromDeltas(planId, planRow.description, graphDeltas, graphEdges, await this.gatherContext());
       synthesizedDiagnostics = synthesized.diagnostics;
       const parsedPlan = ContentPlanSchema.safeParse(synthesized.plan);
-      const planJson: ContentPlan | null = parsedPlan.success ? parsedPlan.data : null;
+      planJson = parsedPlan.success ? parsedPlan.data : null;
       if (!planJson) {
         console.warn(
           `[graph-intake] amended plan ${planId} snapshot failed schema validation: ` +
@@ -1267,12 +1258,62 @@ export class GraphIntakeService {
       );
     });
 
-    const semanticNotes = await this.semanticNotes(planRow.rows[0].description ?? '', graphDeltas);
-    notes = await this.triageAndAnnotate(planId, graphDeltas, [...result.diagnostics, ...synthesizedDiagnostics], semanticNotes);
-    deltaCount = graphDeltas.length;
-    edgeCount = graphEdges.length;
-    deltas = graphDeltas;
-    edges = graphEdges;
+    return { result, graphDeltas, graphEdges, synthesizedDiagnostics, planJson };
+  }
+
+  private async refreshAmendmentAnnotations(
+    planId: string,
+    planRow: { description: string },
+    graphDeltas: GraphDelta[],
+    result: { diagnostics: IntakeDiagnostic[] },
+    synthesizedDiagnostics: IntakeDiagnostic[],
+  ): Promise<IntakeNote[]> {
+    let notes: IntakeNote[] = [];
+    await withOLTPTransaction(async (client) => {
+      await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`plan-lifecycle:${planId}`]);
+
+      const confirm = await client.query<{ status: string }>(
+        'SELECT status FROM content_plans WHERE id = $1',
+        [planId],
+      );
+      if (confirm.rows.length === 0) {
+        console.warn(`[graph-intake] post-commit annotation refresh skipped: plan ${planId} no longer exists`);
+        return;
+      }
+      if (confirm.rows[0].status === 'rejected') {
+        console.warn(`[graph-intake] post-commit annotation refresh skipped: plan ${planId} was rejected`);
+        return;
+      }
+
+      const semanticNotes = await this.semanticNotes(planRow.description ?? '', graphDeltas);
+      notes = await this.triageAndAnnotate(planId, graphDeltas, [...result.diagnostics, ...synthesizedDiagnostics], semanticNotes);
+    });
+    return notes;
+  }
+
+  /**
+   * M50 Part 2 (numeral 1) — apply a free-form, unscoped instruction against an
+   * existing plan. Re-enters the propose→apply loop targeting the existing planId
+   * (no annotation anchor): the LLM sees the plan's current deltas so a remake can
+   * reuse a plan-local nodeId and MERGE in place, while a genuinely new entity is
+   * added with a fresh nodeId. New deltas get the standard `_resolution` treatment
+   * via a plan-aware candidate source. Stops at `proposed` — never stages, migrates,
+   * or solidifies.
+   */
+  async amendPlanWithInstruction(
+    planId: string,
+    instruction: string,
+    createdBy?: string,
+    adminUrl?: string,
+  ): Promise<AmendInstructionResult> {
+    const { planRow, existing } = await this.validateAmendablePlan(planId, instruction);
+    const { proposal, resolvedDeltas } = await this.buildAmendmentProposal(planId, instruction, existing.deltas);
+    const { filteredDeltas, filteredEdges } = await this.buildFilteredAmendment(planId, resolvedDeltas, proposal, existing, planRow.description);
+    const { result, graphDeltas, graphEdges, synthesizedDiagnostics } = await this.persistAmendment(planId, planRow, filteredDeltas, filteredEdges);
+    const notes = await this.refreshAmendmentAnnotations(planId, planRow, graphDeltas, result, synthesizedDiagnostics);
+
+    const deltaCount = graphDeltas.length;
+    const edgeCount = graphEdges.length;
 
     emitAdminEvent(
       'plan_refined',
@@ -1291,7 +1332,7 @@ export class GraphIntakeService {
 
     return {
       planId,
-      status,
+      status: planRow.status,
       actor: createdBy
         ? { id: createdBy, email: createdBy, role: 'admin' }
         : undefined,
@@ -1301,8 +1342,8 @@ export class GraphIntakeService {
       reply: proposal.reply,
       deltaCount,
       edgeCount,
-      deltas,
-      edges,
+      deltas: graphDeltas,
+      edges: graphEdges,
       notes,
       reviewUrl: adminUrl ?? process.env.ADMIN_URL ?? 'http://localhost:3002',
       next: notes.length > 0

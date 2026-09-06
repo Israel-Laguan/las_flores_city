@@ -136,18 +136,18 @@ export async function semanticConcernNotes(params: SemanticConcernParams): Promi
   const anchor = deltas[0];
   const notes: IntakeNote[] = [];
 
-  const allCandidates = matcher.listCandidates ? await matcher.listCandidates() : [];
-  const candidatesByNodeType = new Map<string, CanonicalCandidate[]>();
-  for (const c of allCandidates) {
-    const arr = candidatesByNodeType.get(c.nodeType) ?? [];
-    arr.push(c);
-    candidatesByNodeType.set(c.nodeType, arr);
-  }
-
   // 1. Whole-canon duplicate check on every ADD delta's own name.
   let canonAvailable = true;
   let anyCanonMatch = deltas.some((d) => d.op !== 'ADD');
   try {
+    const allCandidates = matcher.listCandidates ? await matcher.listCandidates() : [];
+    const candidatesByNodeType = new Map<string, CanonicalCandidate[]>();
+    for (const c of allCandidates) {
+      const arr = candidatesByNodeType.get(c.nodeType) ?? [];
+      arr.push(c);
+      candidatesByNodeType.set(c.nodeType, arr);
+    }
+
     for (const delta of deltas.filter((d) => d.op === 'ADD')) {
       const name = (delta.fields as Record<string, unknown> | undefined)?.name;
       if (typeof name !== 'string' || name.trim().length === 0) continue;
