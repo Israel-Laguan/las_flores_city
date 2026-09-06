@@ -100,8 +100,8 @@ async function main(): Promise<void> {
   try {
     const actor = await resolveActor(infra.queryOLTP, options);
 
-    const planRow = await infra.queryOLTP<{ id: string; status: string }>(
-      `SELECT id, status FROM content_plans WHERE id = $1`,
+    const planRow = await infra.queryOLTP<{ id: string; status: string; description: string | null }>(
+      `SELECT id, status, description FROM content_plans WHERE id = $1`,
       [options.planId],
     );
     if (planRow.rows.length === 0) {
@@ -117,7 +117,9 @@ async function main(): Promise<void> {
       return;
     }
 
-    // Scoped annotation-reply path (existing behavior, unchanged).
+    // Scoped annotation-reply path (M50d: parity with amendPlanWithInstruction —
+    // pass existing deltas so the model/mock sees current plan content, and
+    // re-run semantic checks so notes don't go blank after a reply).
     const applied: Array<{
       annotationId: string;
       comment: string;
@@ -132,11 +134,17 @@ async function main(): Promise<void> {
       // One amendment failing must not abandon the others — each note is an
       // independent correction, and the plan survives either way.
       try {
+        // M50d parity: fetch current deltas so propose (mock remake logic and
+        // real-LLM "Current plan deltas" block) sees the plan being amended —
+        // same 5th arg amendPlanWithInstruction passes. Refreshed per note so
+        // a multi-annotation run sees earlier replies in the same invocation.
+        const existing = await graphIntakeService.getPlanDeltas(options.planId);
         const proposal = await chatService.propose(
           options.planId,
           [{ role: 'user', content: comment }],
           undefined,
           annotationId,
+          existing.deltas,
         );
         const result = await chatService.applyDeltas(
           options.planId,
@@ -168,8 +176,15 @@ async function main(): Promise<void> {
 
     // Re-triage from the refreshed graph so the printed notes reflect reality —
     // including a FRESH note if an amendment only partially resolved the ambiguity.
+    // M50d parity: recompute semantic-concern notes (duplicate/ungrounded/mock)
+    // like createPlanFromDescription and amendPlanWithInstruction do — otherwise
+    // the concern surface goes blank exactly when a human replies to a note.
     const graph = await graphIntakeService.getPlanDeltas(options.planId);
-    const notes = await graphIntakeService.triageAndAnnotate(options.planId, graph.deltas, amendmentDiagnostics);
+    const semanticNotes = await graphIntakeService.semanticNotesForPlan(
+      planRow.rows[0].description ?? '',
+      graph.deltas,
+    );
+    const notes = await graphIntakeService.triageAndAnnotate(options.planId, graph.deltas, amendmentDiagnostics, semanticNotes);
 
     console.log(JSON.stringify({
       planId: options.planId,

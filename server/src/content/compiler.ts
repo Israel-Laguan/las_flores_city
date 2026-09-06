@@ -268,14 +268,19 @@ export async function compileDialogueTree(treeId: string): Promise<CompiledChunk
 /**
  * Compile all dialogue trees. Tolerates per-tree failure (logs
  * error, increments failed count, does not abort the run).
+ *
+ * @param onlyTreeIds — when provided, compiles just these trees instead of
+ * the whole table. Integration tests use a 1-tree fixture scope so a
+ * migration exercise doesn't pay for all canon trees.
  */
-export async function compileAllDialogueTrees(): Promise<{
+export async function compileAllDialogueTrees(onlyTreeIds?: readonly string[]): Promise<{
   trees: number;
   chunks: number;
   failed: number;
 }> {
-  const result = await queryOLTP<{ id: string }>('SELECT id FROM dialogue_trees');
-  const treeIds = result.rows.map((r) => r.id);
+  const treeIds =
+    onlyTreeIds ??
+    (await queryOLTP<{ id: string }>('SELECT id FROM dialogue_trees')).rows.map((r) => r.id);
 
   let totalChunks = 0;
   let failed = 0;

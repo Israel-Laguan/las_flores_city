@@ -4,7 +4,7 @@ import fs from 'node:fs/promises';
 import type { ContentPlan, ContentPlanItem, AssetNeed, GraphDelta } from '@las-flores/shared';
 import { generateYaml, resolveFilePath } from './ContentSkeletonGenerator.js';
 import { validateContent } from '../content/validate.js';
-import { migrateContent } from '../content/migrate.js';
+import { migrateContent, type MigrateContentOptions } from '../content/migrate.js';
 import {
   writePlanItems,
   rollbackFiles,
@@ -68,7 +68,7 @@ export interface StagingResult {
   error?: string;
 }
 
-export async function executePlan(plan: ContentPlan): Promise<ExecutionResult> {
+export async function executePlan(plan: ContentPlan, options?: MigrateContentOptions): Promise<ExecutionResult> {
   const createdFiles: string[] = [];
   const updatedFiles: string[] = [];
   const fileSnapshots = new Map<string, string | null>(); // fullPath -> original content (null for created)
@@ -122,7 +122,7 @@ export async function executePlan(plan: ContentPlan): Promise<ExecutionResult> {
       console.warn('[story-builder] Missing dependencies:', depErrors);
     }
 
-    const migrationResult = await migrateContent(contentDir);
+    const migrationResult = await migrateContent(contentDir, undefined, options);
     if (!migrationResult.success) {
       return {
         success: false,

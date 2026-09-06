@@ -139,11 +139,8 @@ describe('job_runs resume integration', () => {
   });
 
   it.each(['staged', 'migrated'])(
-    'legacy no-token resume also flips a mid-pipeline %s plan to failed',
+    'legacy no-token resume preserves a manually %s plan (does not clobber to failed)',
     async (midStatus) => {
-      // A crash after solidify commits `staged`/`migrated` strands the plan
-      // there (the retry route only accepts `failed`). The no-token resume
-      // rejection must still flip these mid-pipeline statuses terminal.
       await queryOLTP('DELETE FROM job_runs WHERE plan_id = $1', [TEST_PLAN_ID]);
       await queryOLTP(
         `INSERT INTO content_plans (id, description, plan_json, status)
@@ -152,9 +149,35 @@ describe('job_runs resume integration', () => {
         [TEST_PLAN_ID, midStatus],
       );
       await deleteCache(`${JOB_CACHE_PREFIX}${TEST_PLAN_ID}`);
-      // Record the run's own lifecycle up to the crashed stage. The status guard
-      // only flips `staged`/`migrated` when THIS run committed the matching stage
-      // (so a manual /stage or /migrate is never clobbered by a stale run).
+      await queryOLTP(
+        `INSERT INTO job_runs (plan_id, job_type, status, attempt, max_attempts, run_token, committed_stages)
+         VALUES ($1, 'solidify', 'resumable', 1, 3, NULL, $2::jsonb)`,
+        [TEST_PLAN_ID, '[]'],
+      );
+      await resumeSolidify(TEST_PLAN_ID);
+
+      const plan = await queryOLTP<{ status: string }>(
+        'SELECT status FROM content_plans WHERE id = $1', [TEST_PLAN_ID],
+      );
+      expect(plan.rows[0].status).toBe(midStatus);
+    },
+  );
+
+  it.each(['staged', 'migrated'])(
+    'legacy no-token resume flips a %s plan to failed when this run committed the marker',
+    async (midStatus) => {
+      // Same setup as the preserve test above, except the legacy run's own
+      // lifecycle committed the matching stage marker (a crash right after
+      // solidify's own commit). The OR-branch must flip these to `failed` so
+      // the retry route accepts the plan again.
+      await queryOLTP('DELETE FROM job_runs WHERE plan_id = $1', [TEST_PLAN_ID]);
+      await queryOLTP(
+        `INSERT INTO content_plans (id, description, plan_json, status)
+         VALUES ($1, 'resume-legacy', '{}'::jsonb, $2)
+         ON CONFLICT (id) DO UPDATE SET status = $2, plan_json = '{}'::jsonb`,
+        [TEST_PLAN_ID, midStatus],
+      );
+      await deleteCache(`${JOB_CACHE_PREFIX}${TEST_PLAN_ID}`);
       const committedStages =
         midStatus === 'staged'
           ? '["staging","publish","staged"]'
@@ -166,6 +189,8 @@ describe('job_runs resume integration', () => {
       );
       await resumeSolidify(TEST_PLAN_ID);
 
+      const run = await getJobRun(TEST_PLAN_ID, 'solidify');
+      expect(run!.status).toBe('failed');
       const plan = await queryOLTP<{ status: string }>(
         'SELECT status FROM content_plans WHERE id = $1', [TEST_PLAN_ID],
       );

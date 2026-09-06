@@ -77,7 +77,8 @@
         "085_critique_scope_intake_validate.sql",
     "086_content_plans_rejected.sql",
     "087_admin_events_plan_lifecycle.sql",
-    "088_admin_events_plan_lifecycle_validate.sql"
+    "088_admin_events_plan_lifecycle_validate.sql",
+    "089_content_plans_graph_revision.sql"
   ],
   "nontransactional": {
     "075_job_runs_run_token_backfill.sql": "las_flores"

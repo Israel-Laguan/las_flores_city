@@ -47,6 +47,16 @@ export interface AppliedMigration {
   action: 'created' | 'updated' | 'skipped';
 }
 
+export interface MigrateContentOptions {
+  /**
+   * Restricts post-migration dialogue compile + snapshot pre-computation to
+   * these tree IDs. `undefined` (default) compiles all trees — the production
+   * path. Integration tests pass a 1-tree fixture scope so a migration
+   * exercise doesn't pay for all canon trees.
+   */
+  dialogueTreeIds?: readonly string[];
+}
+
 async function calculateChecksum(filePath: string): Promise<string> {
   const content = await fs.readFile(filePath);
   return crypto.createHash('sha256').update(content).digest('hex');
@@ -257,7 +267,11 @@ async function invalidateCaches(): Promise<void> {
   }
 }
 
-export async function migrateContent(contentDir: string, files?: string[]): Promise<MigrationResult> {
+export async function migrateContent(
+  contentDir: string,
+  files?: string[],
+  options?: MigrateContentOptions,
+): Promise<MigrationResult> {
   console.log(`🚀 Starting content migration from: ${contentDir}`);
 
   const result: MigrationResult = {
@@ -364,7 +378,7 @@ export async function migrateContent(contentDir: string, files?: string[]): Prom
       }
     }
 
-    await runPostMigrationTasks(result);
+    await runPostMigrationTasks(result, options?.dialogueTreeIds);
     return result;
   } catch (error: any) {
     result.success = false;
@@ -376,7 +390,7 @@ export async function migrateContent(contentDir: string, files?: string[]): Prom
   }
 }
 
-async function runPostMigrationTasks(result: MigrationResult): Promise<void> {
+async function runPostMigrationTasks(result: MigrationResult, dialogueTreeIds?: readonly string[]): Promise<void> {
   console.log('\n📊 Migration Summary:');
   console.log(`  ✅ Processed: ${result.filesProcessed}`);
   console.log(`  ⏭️  Skipped: ${result.filesSkipped}`);
@@ -389,7 +403,7 @@ async function runPostMigrationTasks(result: MigrationResult): Promise<void> {
 
   try {
     console.log('\n🔄 Compiling dialogue chunks...');
-    const compileResult = await compileAllDialogueTrees();
+    const compileResult = await compileAllDialogueTrees(dialogueTreeIds);
     console.log(`   ${compileResult.trees} trees → ${compileResult.chunks} chunks (${compileResult.failed} failed)`);
     if (compileResult.failed > 0) {
       result.errors.push(`Chunk compiler: ${compileResult.failed} tree(s) failed to compile`);
@@ -403,7 +417,7 @@ async function runPostMigrationTasks(result: MigrationResult): Promise<void> {
   // This runs under the same content_migration advisory lock held by the caller.
   try {
     console.log('\n📸 Building pre-resolved overlay snapshots (M30 Phase A)...');
-    const snapshotResult = await buildSnapshotsForAllTrees();
+    const snapshotResult = await buildSnapshotsForAllTrees(dialogueTreeIds);
     console.log(
       `   ${snapshotResult.totalTrees} trees → ${snapshotResult.totalSnapshots} snapshots (${snapshotResult.errors.length} errors)`
     );

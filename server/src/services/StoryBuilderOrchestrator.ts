@@ -402,7 +402,7 @@ export async function resumeSolidify(planId: string, userId?: string): Promise<v
               LIMIT 1
            )`,
         [planId, run.id, JSON.stringify(run.committedStages ?? [])],
-      );
+       );
     });
     return;
   }

@@ -28,16 +28,32 @@ import {
   buildMissionTemplatePlan,
   buildLocationTemplatePlan,
 } from '../../src/services/PlanTemplateBuilders.js';
-import type { ContentPlan } from '@las-flores/shared';
+import type { ContentPlan, DialogueNode } from '@las-flores/shared';
 import { executePlan } from '../../src/services/StoryBuilderPlanOps.js';
 import { generateLoreStubs } from '../../src/services/StoryBuilderLore.js';
 import { verifyPlanCrossReferences } from '../../src/services/PlanVerificationService.js';
+import { publishDialogueTree } from '../../src/services/ContentPublishService.js';
+import { deleteFromMinio } from '../../src/services/StorageService.js';
 
 // Dedicated synthetic IDs (collision-avoidance per AGENTS.md).
 const MISSION_ID = 'e4300000-0000-4000-8000-0000000000a1';
 const LOCATION_ID = 'e4300000-0000-4000-8000-0000000000a2';
 const BAD_MISSION_ID = 'e4300000-0000-4000-8000-0000000000a3';
+const FIXTURE_TREE_ID = 'e4300000-0000-4000-8000-0000000000a4';
 const DISTRICT_NAME = 'M43 Pipeline Fixture District';
+
+// Controlled dialogue set: a single 2-node tree with no overlays, so the
+// post-migration compile + snapshot work in executePlan costs 1 chunk + 6
+// snapshots instead of all ~59 canon trees (~1400 snapshots).
+const FIXTURE_NODES: Record<string, DialogueNode> = {
+  start: {
+    id: 'start',
+    type: 'narrator',
+    text: 'Fixture start',
+    choices: [{ id: 'c1', text: 'Go', next_node_id: 'end' }],
+  },
+  end: { id: 'end', type: 'narrator', text: 'Fixture end', is_end: true },
+};
 
 // Shared lazy OLTP pool from @las-flores/infra (sanctioned access pattern).
 let tmpDir: string;
@@ -81,14 +97,58 @@ async function listFilesRecursive(dir: string): Promise<string[]> {
 }
 
 async function clearDbState(): Promise<void> {
+  // Collect MinIO pointers BEFORE deleting rows so the content-addressed
+  // blobs (fixture tree blob, compiled chunks, snapshots) can be removed as
+  // well — otherwise each run orphans them in MinIO. All keys are namespaced
+  // by FIXTURE_TREE_ID (dialogues/<id>__, chunks/<id>/, snapshots/<id>__),
+  // so this only touches objects owned by this test.
+  const treeUrls = await oltpPool.query<{ content_url: string | null }>(
+    `SELECT content_url FROM dialogue_trees WHERE id = $1::uuid`,
+    [FIXTURE_TREE_ID],
+  );
+  const chunkUrls = await oltpPool.query<{ content_url: string | null }>(
+    `SELECT content_url FROM dialogue_chunks WHERE tree_id = $1::uuid`,
+    [FIXTURE_TREE_ID],
+  );
   await oltpPool.query(`DELETE FROM mysteries WHERE id = ANY($1::uuid[])`, [
     [MISSION_ID, BAD_MISSION_ID],
   ]);
   await oltpPool.query(`DELETE FROM scenes WHERE id = $1::uuid`, [LOCATION_ID]);
+  // Fixture dialogue tree: chunks (incl. snapshots) reference the tree, so
+  // delete chunks first.
+  await oltpPool.query(`DELETE FROM dialogue_chunks WHERE tree_id = $1::uuid`, [FIXTURE_TREE_ID]);
+  await oltpPool.query(`DELETE FROM dialogue_trees WHERE id = $1::uuid`, [FIXTURE_TREE_ID]);
   // Scenes are deleted above, so the fixture district has no remaining dependents.
   await oltpPool.query(`DELETE FROM districts WHERE name = $1`, [DISTRICT_NAME]);
   await oltpPool.query(
     `DELETE FROM migration_log WHERE file_path LIKE '%m43_pipeline%'`,
+  );
+  // Best-effort blob cleanup: dedupe (content-addressing can repeat keys;
+  // DeleteObject is idempotent anyway) and never fail the suite if MinIO is
+  // unreachable during teardown.
+  const urls = new Set(
+    [...treeUrls.rows, ...chunkUrls.rows]
+      .map((r) => r.content_url)
+      .filter((u): u is string => typeof u === 'string' && u.length > 0),
+  );
+  await Promise.all(
+    [...urls].map((url) =>
+      deleteFromMinio(url).catch((err: any) =>
+        console.warn(`[m43-pipeline] MinIO cleanup skipped for ${url}: ${err?.message ?? err}`),
+      ),
+    ),
+  );
+}
+
+async function seedFixtureTree(): Promise<void> {
+  // M32: the node map is externalized to the CDN; the tree row stores only
+  // the content_url pointer (same pattern as compiler.test.ts).
+  const treeContentUrl = await publishDialogueTree(FIXTURE_TREE_ID, JSON.stringify({ nodes: FIXTURE_NODES }));
+  await oltpPool.query(
+    `INSERT INTO dialogue_trees (id, name, start_node_id, content_url)
+     VALUES ($1, 'M43 Pipeline Fixture Tree', 'start', $2)
+     ON CONFLICT (id) DO UPDATE SET content_url = EXCLUDED.content_url, start_node_id = EXCLUDED.start_node_id, updated_at = NOW()`,
+    [FIXTURE_TREE_ID, treeContentUrl],
   );
 }
 
@@ -98,6 +158,7 @@ beforeAll(async () => {
   // resolveContentDir() resolves ../content when cwd basename is 'server'.
   await fs.mkdir(path.join(tmpDir, 'server'), { recursive: true });
   contentDir = path.join(tmpDir, 'content');
+  await seedFixtureTree();
 });
 
 afterAll(async () => {
@@ -105,7 +166,7 @@ afterAll(async () => {
   await clearDbState();
   await closeConnections();
   await fs.rm(tmpDir, { recursive: true, force: true });
-});
+}, 60000);
 
 beforeEach(() => {
   // restoreMocks strips spies before each test — re-create the cwd redirect.
@@ -116,7 +177,9 @@ describe('plan → file write → migrateContent → verification (mission + loc
   test('solidifies a mission+location plan into linked canon rows', async () => {
     const plan = combinedPlan();
 
-    const result = await executePlan(plan);
+    // Scoped to the 1-tree fixture set: post-migration compile + snapshots
+    // cost seconds, not the full ~59 canon trees.
+    const result = await executePlan(plan, { dialogueTreeIds: [FIXTURE_TREE_ID] });
     expect(result.success).toBe(true);
 
     // Files written at the canonical per-folder paths.
@@ -145,6 +208,25 @@ describe('plan → file write → migrateContent → verification (mission + loc
     expect(scene.rows[0].district_name).toBe(DISTRICT_NAME);
     expect(scene.rows[0].metadata?.type).toBe('location');
 
+    // Controlled dialogue scope: the fixture tree compiled (chunks written),
+    // proving post-migration tasks ran on the scoped set.
+    const fixtureChunks = await oltpPool.query(
+      'SELECT chunk_key FROM dialogue_chunks WHERE tree_id = $1::uuid',
+      [FIXTURE_TREE_ID],
+    );
+    expect(fixtureChunks.rows.length).toBeGreaterThanOrEqual(1);
+
+    // Snapshot pre-resolution (M30): verify at least one __snapshot_% chunk
+    // was created for the scoped tree. Read through oltpPool to match
+    // SnapshotService's queryOLTP write path — queryContent routes through
+    // contentPool (CONTENT_DATABASE_URL), which can point at a read replica
+    // and miss freshly-written snapshots.
+    const snapshotChunks = await oltpPool.query<{ chunk_key: string }>(
+      `SELECT chunk_key FROM dialogue_chunks WHERE tree_id = $1::uuid AND chunk_key LIKE $2`,
+      [FIXTURE_TREE_ID, '__snapshot\\_%'],
+    );
+    expect(snapshotChunks.rows.length).toBeGreaterThanOrEqual(1);
+
     // Lore stubs + verification report pass (read-only gate after migration).
     await generateLoreStubs(plan.items, contentDir);
     const report = await verifyPlanCrossReferences(plan, contentDir);
@@ -159,7 +241,7 @@ describe('plan → file write → migrateContent → verification (mission + loc
       `SELECT file_path FROM migration_log WHERE file_path LIKE '%m43_pipeline%' ORDER BY file_path`,
     );
 
-    const result = await executePlan(plan);
+    const result = await executePlan(plan, { dialogueTreeIds: [FIXTURE_TREE_ID] });
     expect(result.success).toBe(true);
 
     // No ghost files: same file set, nothing appended or duplicated.

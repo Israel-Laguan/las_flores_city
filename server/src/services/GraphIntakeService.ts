@@ -1005,6 +1005,17 @@ export class GraphIntakeService {
     }
   }
 
+  /**
+   * M50d — public wrapper over the private M50c `semanticNotes` so the
+   * `plan:amend --annotation` CLI path (which cannot reach privates) can
+   * compute the same pre-formed semantic-concern notes as create/amend-with-
+   * instruction and pass them to `triageAndAnnotate`. Same best-effort
+   * semantics: never throws, returns [] on failure/empty.
+   */
+  async semanticNotesForPlan(description: string, deltas: GraphDelta[]): Promise<IntakeNote[]> {
+    return this.semanticNotes(description, deltas);
+  }
+
   async triageAndAnnotate(
     planId: string,
     deltas: GraphDelta[],
@@ -1106,21 +1117,10 @@ export class GraphIntakeService {
     return notes;
   }
 
-  /**
-   * M50 Part 2 (numeral 1) — apply a free-form, unscoped instruction against an
-   * existing plan. Re-enters the propose→apply loop targeting the existing planId
-   * (no annotation anchor): the LLM sees the plan's current deltas so a remake can
-   * reuse a plan-local nodeId and MERGE in place, while a genuinely new entity is
-   * added with a fresh nodeId. New deltas get the standard `_resolution` treatment
-   * via a plan-aware candidate source. Stops at `proposed` — never stages, migrates,
-   * or solidifies.
-   */
-  async amendPlanWithInstruction(
+  private async validateAmendablePlan(
     planId: string,
     instruction: string,
-    createdBy?: string,
-    adminUrl?: string,
-  ): Promise<AmendInstructionResult> {
+  ): Promise<{ planRow: { status: string; description: string }; existing: { deltas: GraphDelta[]; edges: GraphDeltaEdge[] } }> {
     if (!instruction || typeof instruction !== 'string' || instruction.trim().length === 0) {
       throw new GraphIntakeValidationError('Instruction is required and must be a non-empty string');
     }
@@ -1143,18 +1143,22 @@ export class GraphIntakeService {
     }
 
     const existing = await this.getPlanDeltas(planId);
+    return { planRow: planRow.rows[0], existing };
+  }
 
+  private async buildAmendmentProposal(
+    planId: string,
+    instruction: string,
+    existingDeltas: GraphDelta[],
+  ): Promise<{ proposal: Awaited<ReturnType<typeof chatService.propose>>; resolvedDeltas: GraphDelta[] }> {
     const proposal = await chatService.propose(
       planId,
       [{ role: 'user', content: instruction }],
       undefined,
       undefined,
-      existing.deltas,
+      existingDeltas,
     );
 
-    // Plan-aware resolution: let references in the new deltas resolve against
-    // both canonical nodes and the plan's own pending deltas, so a remake that
-    // references a plan-local entity is not flagged ambiguous/unresolved.
     let resolvedDeltas = proposal.deltas;
     try {
       const resolver = new EntityResolutionService(new PlanAwareCandidateSource(planId));
@@ -1163,10 +1167,6 @@ export class GraphIntakeService {
       console.warn('[graph-intake] entity resolution failed during instruction amend; skipping _resolution attachment:', (resErr as Error).message);
     }
 
-    // Reject DELETE deltas before any graph write, mirroring persistPlanWithDeltas:
-    // a DELETE against the canonical graph has no materialization in the legacy
-    // plan_json contract, so it must be rejected early rather than written and
-    // then surfacing a synthesis failure after the fact.
     const deleteDelta = resolvedDeltas.find((delta) => delta.op === 'DELETE');
     if (deleteDelta) {
       throw new GraphIntakeValidationError(
@@ -1174,47 +1174,58 @@ export class GraphIntakeService {
       );
     }
 
+    return { proposal, resolvedDeltas };
+  }
 
-    // Preflight synthesis: identify which new deltas would be excluded by
-    // synthesizePlanFromDeltas (e.g. unresolvable canonical slugs) so we can
-    // drop them from the write set. This keeps the applied graph set exactly
-    // equal to the synthesized snapshot, matching persistPlanWithDeltas.
-    const existingGraph = await this.getPlanDeltas(planId);
+  private async buildFilteredAmendment(
+    planId: string,
+    resolvedDeltas: GraphDelta[],
+    proposal: { deltaEdges: GraphDeltaEdge[] },
+    existingGraph: { deltas: GraphDelta[]; edges: GraphDeltaEdge[] },
+    description: string,
+  ): Promise<{ filteredDeltas: GraphDelta[]; filteredEdges: GraphDeltaEdge[] }> {
     const preflightDeltas = [...existingGraph.deltas, ...resolvedDeltas];
-    const preflightEdges = [...existingGraph.edges, ...proposal.deltaEdges];
-    const preflight = await synthesizePlanFromDeltas(planId, planRow.rows[0].description, preflightDeltas, preflightEdges, await this.gatherContext());
+    const preflightEdges: GraphDeltaEdge[] = [...existingGraph.edges, ...proposal.deltaEdges];
+    const preflight = await synthesizePlanFromDeltas(planId, description, preflightDeltas, preflightEdges, await this.gatherContext());
     const excludedKeys = new Set(
       preflight.diagnostics
         .filter((d) => d.kind === 'unresolvable_canonical_slug')
         .map((d) => deltaKey(d.nodeType, d.nodeId)),
     );
     const filteredDeltas = resolvedDeltas.filter((d) => !excludedKeys.has(deltaKey(d.nodeType, d.nodeId)));
-    // Retain edges whose source is EITHER a newly-applied delta (filteredDeltas)
-    // OR a surviving existing delta (existingGraph.deltas). An amendment edge
-    // referencing an existing plan delta as its source must not be dropped just
-    // because that source isn't part of this amendment's new deltas.
     const remainingKeys = new Set<string>([
       ...filteredDeltas.map((d) => deltaKey(d.nodeType, d.nodeId)),
       ...existingGraph.deltas.map((d) => deltaKey(d.nodeType, d.nodeId)),
     ]);
     const filteredEdges = proposal.deltaEdges.filter((e) => remainingKeys.has(deltaKey(e.sourceNodeType, e.sourceNodeId)));
 
-    // All graph writes + the OLTP snapshot persist happen inside a
-    // transaction-scoped advisory lock so a concurrent reject/delete (which takes
-    // the same lock key) can never interleave between applyDeltas and the plan_json
-    // write. Without this, a reject could clear deltas first, then the failed
-    // amendment recreates them for the now-rejected plan — or a later amendment
-    // could persist an older plan_json snapshot because the graph read happened
-    // before the lock. pg_advisory_xact_lock is automatically released at
-    // transaction end — no session pinning, no unlock-on-different-connection
-    // leaks. COALESCE keeps a schema-invalid snapshot from wiping the previous
-    // valid one.
+    return { filteredDeltas, filteredEdges };
+  }
+
+  private async persistAmendment(
+    planId: string,
+    planRow: { description: string },
+    filteredDeltas: GraphDelta[],
+    filteredEdges: GraphDeltaEdge[],
+  ): Promise<{
+    result: Awaited<ReturnType<typeof chatService.applyDeltas>>;
+    graphDeltas: GraphDelta[];
+    graphEdges: GraphDeltaEdge[];
+    synthesizedDiagnostics: IntakeDiagnostic[];
+    planJson: ContentPlan | null;
+    committedXmin: string;
+    committedPlanJson: unknown;
+    committedGraphRevision: number | null;
+  }> {
     let result!: Awaited<ReturnType<typeof chatService.applyDeltas>>;
-    let notes: Awaited<ReturnType<typeof this.triageAndAnnotate>> = [];
-    let deltaCount = 0;
-    let edgeCount = 0;
-    let deltas: GraphDelta[] = [];
-    let edges: GraphDeltaEdge[] = [];
+    let graphDeltas: GraphDelta[] = [];
+    let graphEdges: GraphDeltaEdge[] = [];
+    let synthesizedDiagnostics: IntakeDiagnostic[] = [];
+    let planJson: ContentPlan | null = null;
+    let committedXmin = '';
+    let committedPlanJson: unknown = null;
+    let committedGraphRevision: number | null = null;
+
     await withOLTPTransaction(async (client) => {
       await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`plan-lifecycle:${planId}`]);
 
@@ -1231,20 +1242,15 @@ export class GraphIntakeService {
         );
       }
 
-      // applyDeltas writes to Neo4j (not OLTP), but it runs inside the lock so a
-      // concurrent reject/delete can't clear deltas between this write and the
-      // plan_json persist below. A MODIFY/DELETE against a same-plan :ContentDelta
-      // MERGEs in place (partitionDeltas accepts it); a genuinely missing base is
-      // dropped and reported as a diagnostic.
       result = await chatService.applyDeltas(planId, filteredDeltas, filteredEdges);
 
-      // Refresh the snapshot from the post-apply graph and synthesize plan_json
-      // under the lock, so a concurrent amendment can't interleave and persist a
-      // stale snapshot.
       const graph = await this.getPlanDeltas(planId);
-      const synthesized = await synthesizePlanFromDeltas(planId, planRow.rows[0].description, graph.deltas, graph.edges, await this.gatherContext());
+      graphDeltas = graph.deltas;
+      graphEdges = graph.edges;
+      const synthesized = await synthesizePlanFromDeltas(planId, planRow.description, graphDeltas, graphEdges, await this.gatherContext());
+      synthesizedDiagnostics = synthesized.diagnostics;
       const parsedPlan = ContentPlanSchema.safeParse(synthesized.plan);
-      const planJson: ContentPlan | null = parsedPlan.success ? parsedPlan.data : null;
+      planJson = parsedPlan.success ? parsedPlan.data : null;
       if (!planJson) {
         console.warn(
           `[graph-intake] amended plan ${planId} snapshot failed schema validation: ` +
@@ -1252,18 +1258,110 @@ export class GraphIntakeService {
         );
       }
 
-      await client.query(
-        `UPDATE content_plans SET updated_at = now(), plan_json = COALESCE($2::jsonb, plan_json) WHERE id = $1`,
+      // Capture the row's `xmin`, the canonical `plan_json`, and the monotonic
+      // `graph_revision` as revision markers: a later concurrent amendment
+      // commits its own UPDATE, so the refresh pass below can detect it and
+      // skip writing stale diagnostics. `graph_revision` (+1 on EVERY
+      // amendment commit, even when the snapshot is schema-invalid and
+      // `plan_json` is kept via COALESCE) is the comparison key in the
+      // refresh — `plan_json` alone misses consecutive schema-invalid
+      // amendments (value unchanged), while `xmin` bumps on ANY column touch
+      // (status, verification_report, updated_at) and would over-skip.
+      const committed = await client.query<{ xmin: string; plan_json: unknown; graph_revision: number }>(
+        `UPDATE content_plans SET updated_at = now(), plan_json = COALESCE($2::jsonb, plan_json), graph_revision = graph_revision + 1 WHERE id = $1 RETURNING (xmin::text) AS xmin, plan_json, graph_revision`,
         [planId, planJson],
       );
-
-      const semanticNotes = await this.semanticNotes(planRow.rows[0].description ?? '', graph.deltas);
-      notes = await this.triageAndAnnotate(planId, graph.deltas, [...result.diagnostics, ...synthesized.diagnostics], semanticNotes);
-      deltaCount = graph.deltas.length;
-      edgeCount = graph.edges.length;
-      deltas = graph.deltas;
-      edges = graph.edges;
+      committedXmin = committed.rows[0]?.xmin ?? '';
+      committedPlanJson = committed.rows[0]?.plan_json ?? null;
+      const rawRevision = committed.rows[0]?.graph_revision;
+      committedGraphRevision = typeof rawRevision === 'number' ? rawRevision : rawRevision != null ? Number(rawRevision) : null;
     });
+
+    return { result, graphDeltas, graphEdges, synthesizedDiagnostics, planJson, committedXmin, committedPlanJson, committedGraphRevision };
+  }
+
+  private async refreshAmendmentAnnotations(
+    planId: string,
+    planRow: { description: string },
+    graphDeltas: GraphDelta[],
+    result: { diagnostics: IntakeDiagnostic[] },
+    synthesizedDiagnostics: IntakeDiagnostic[],
+    committedXmin: string,
+    committedPlanJson: unknown,
+    committedGraphRevision: number | null,
+  ): Promise<IntakeNote[]> {
+    let notes: IntakeNote[] = [];
+    await withOLTPTransaction(async (client) => {
+      await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`plan-lifecycle:${planId}`]);
+
+      const confirm = await client.query<{ status: string; xmin: string; plan_json: unknown; graph_revision: number | null }>(
+        'SELECT status, (xmin::text) AS xmin, plan_json, graph_revision FROM content_plans WHERE id = $1 FOR UPDATE',
+        [planId],
+      );
+      if (confirm.rows.length === 0) {
+        console.warn(`[graph-intake] post-commit annotation refresh skipped: plan ${planId} no longer exists`);
+        return;
+      }
+      if (confirm.rows[0].status === 'rejected') {
+        console.warn(`[graph-intake] post-commit annotation refresh skipped: plan ${planId} was rejected`);
+        return;
+      }
+      // A later amendment committed after this one (graph moved on): its own
+      // refresh owns the annotations now. Writing this stale snapshot would
+      // retire the newer amendment's open intake annotations.
+      // Compare `graph_revision` — bumped +1 on every amendment commit, even
+      // when the snapshot was schema-invalid and `plan_json` was kept — so a
+      // superseding amendment is always detected. Touch-only updates to other
+      // columns (status, verification_report, updated_at) never bump the
+      // revision and don't skip this amendment's valid annotations.
+      // `plan_json`/`xmin` comparisons below are legacy fallbacks for rows
+      // read without the revision (e.g. mocked clients in unit tests); on a
+      // migrated DB the revision comparison always decides.
+      const currentRevision = confirm.rows[0].graph_revision;
+      if (committedGraphRevision !== null && committedGraphRevision !== undefined && currentRevision !== null && currentRevision !== undefined) {
+        if (Number(currentRevision) !== Number(committedGraphRevision)) {
+          console.warn(`[graph-intake] post-commit annotation refresh skipped: plan ${planId} was amended again after this commit`);
+          return;
+        }
+      } else if (committedPlanJson !== null && committedPlanJson !== undefined) {
+        if (JSON.stringify(confirm.rows[0].plan_json ?? null) !== JSON.stringify(committedPlanJson)) {
+          console.warn(`[graph-intake] post-commit annotation refresh skipped: plan ${planId} was amended again after this commit`);
+          return;
+        }
+      } else if (committedXmin !== '' && confirm.rows[0].xmin !== committedXmin) {
+        console.warn(`[graph-intake] post-commit annotation refresh skipped: plan ${planId} was amended again after this commit`);
+        return;
+      }
+
+      const semanticNotes = await this.semanticNotes(planRow.description ?? '', graphDeltas);
+      notes = await this.triageAndAnnotate(planId, graphDeltas, [...result.diagnostics, ...synthesizedDiagnostics], semanticNotes);
+    });
+    return notes;
+  }
+
+  /**
+   * M50 Part 2 (numeral 1) — apply a free-form, unscoped instruction against an
+   * existing plan. Re-enters the propose→apply loop targeting the existing planId
+   * (no annotation anchor): the LLM sees the plan's current deltas so a remake can
+   * reuse a plan-local nodeId and MERGE in place, while a genuinely new entity is
+   * added with a fresh nodeId. New deltas get the standard `_resolution` treatment
+   * via a plan-aware candidate source. Stops at `proposed` — never stages, migrates,
+   * or solidifies.
+   */
+  async amendPlanWithInstruction(
+    planId: string,
+    instruction: string,
+    createdBy?: string,
+    adminUrl?: string,
+  ): Promise<AmendInstructionResult> {
+    const { planRow, existing } = await this.validateAmendablePlan(planId, instruction);
+    const { proposal, resolvedDeltas } = await this.buildAmendmentProposal(planId, instruction, existing.deltas);
+    const { filteredDeltas, filteredEdges } = await this.buildFilteredAmendment(planId, resolvedDeltas, proposal, existing, planRow.description);
+    const { result, graphDeltas, graphEdges, synthesizedDiagnostics, committedXmin, committedPlanJson, committedGraphRevision } = await this.persistAmendment(planId, planRow, filteredDeltas, filteredEdges);
+    const notes = await this.refreshAmendmentAnnotations(planId, planRow, graphDeltas, result, synthesizedDiagnostics, committedXmin, committedPlanJson, committedGraphRevision);
+
+    const deltaCount = graphDeltas.length;
+    const edgeCount = graphEdges.length;
 
     emitAdminEvent(
       'plan_refined',
@@ -1282,7 +1380,7 @@ export class GraphIntakeService {
 
     return {
       planId,
-      status,
+      status: planRow.status,
       actor: createdBy
         ? { id: createdBy, email: createdBy, role: 'admin' }
         : undefined,
@@ -1292,8 +1390,8 @@ export class GraphIntakeService {
       reply: proposal.reply,
       deltaCount,
       edgeCount,
-      deltas,
-      edges,
+      deltas: graphDeltas,
+      edges: graphEdges,
       notes,
       reviewUrl: adminUrl ?? process.env.ADMIN_URL ?? 'http://localhost:3002',
       next: notes.length > 0

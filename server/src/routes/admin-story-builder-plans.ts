@@ -6,6 +6,7 @@ import { emitAdminEvent } from '../services/AdminEventEmitter.js';
 import { isNeo4jEnabled } from '../services/Neo4jClient.js';
 import { getDeltasForPlan, clearDeltasForPlan } from '../services/GraphDeltaService.js';
 import { buildPlanFromTemplate, UnknownTemplateError } from '../services/PlanTemplateBuilders.js';
+import { GraphIntakeService, GraphIntakeValidationError } from '../services/GraphIntakeService.js';
 
 export const adminStoryBuilderPlansRouter = express.Router();
 
@@ -175,6 +176,51 @@ adminStoryBuilderPlansRouter.put('/plans/:id', async (req, res) => {
       return;
     }
 
+    // Fetch the current plan status early — needed for both rejection handling
+    // (below, before the graph-authoring edit guard) and for preserving the
+    // 'rejected' terminal state on ordinary saves. A missing plan returns 404.
+    const currentPlanRow = await queryOLTP<{ status: string }>(
+      'SELECT status FROM content_plans WHERE id = $1',
+      [id],
+    );
+
+    if (currentPlanRow.rows.length === 0) {
+      res.status(404).json({ success: false, error: 'Plan not found', timestamp: new Date().toISOString() });
+      return;
+    }
+
+    const currentStatus = currentPlanRow.rows[0].status;
+
+    // Rejection must go through the lifecycle action so graph deltas and intake
+    // annotations are cleaned up and a rejection audit event is emitted. This
+    // is handled BEFORE the graph-authoring edit guard so that graph-authored
+    // plans can also be rejected through this route — otherwise they would
+    // receive a 400 from the guard below before rejection is processed.
+    if (status === 'rejected' && currentStatus !== 'rejected') {
+      const graphIntakeService = new GraphIntakeService();
+      try {
+        await graphIntakeService.rejectPlan(id);
+      } catch (err: any) {
+        if (err instanceof GraphIntakeValidationError) {
+          // Lifecycle validation errors are expected client errors, not server faults.
+          // A missing plan is a 404; conflicts (already rejected, non-rejectable
+          // status) are 409 so the admin UI can show a meaningful message.
+          if (/Plan not found/i.test(err.message)) {
+            res.status(404).json({ success: false, error: err.message, timestamp: new Date().toISOString() });
+            return;
+          }
+          res.status(409).json({ success: false, error: err.message, timestamp: new Date().toISOString() });
+          return;
+        }
+        throw err;
+      }
+      return res.json({
+        success: true,
+        data: { planId: id, status: 'rejected' },
+        timestamp: new Date().toISOString(),
+      });
+    }
+
     // Graph-authored plans must be edited through the canvas. Legacy plans may
     // still be edited directly when graph authoring is disabled.
     if (isNeo4jEnabled()) {
@@ -200,24 +246,37 @@ adminStoryBuilderPlansRouter.put('/plans/:id', async (req, res) => {
       return;
     }
 
-    // `rejected` is a soft terminal state preserved for audit (see M50 plan:reject).
-    // It must be preserved on save, not silently reverted to `draft` — a rejected
-    // plan stays visible for review and can only be re-opened by an explicit admin
-    // status flip (a future M52 action), never by an unguarded save fallback.
-    const validStatuses = ['draft', 'proposed', 'approved', 'staged', 'migrated', 'verified', 'failed', 'pending', 'staging', 'migrating', 'verifying', 'rejected'];
-    const finalStatus = validStatuses.includes(status) ? status : 'draft';
+    // Transient pipeline statuses are server-owned — only stable user-editable
+    // statuses are accepted here. `rejected` is preserved for ordinary saves.
+    // If the plan is already in a transient pipeline status (pending/staging/
+    // migrating/verifying), preserve it rather than clobbering to draft — the
+    // pipeline owns these statuses and a plain save must not regress them.
+    const validStatuses = ['draft', 'proposed', 'approved', 'staged', 'migrated', 'verified', 'failed', 'rejected'];
+    const transientStatuses = ['pending', 'staging', 'migrating', 'verifying'];
+    const finalStatus = transientStatuses.includes(currentStatus)
+      ? currentStatus
+      : validStatuses.includes(status) ? status : (currentStatus === 'rejected' ? 'rejected' : 'draft');
     validatedPlan.status = finalStatus;
 
+    // Conditional UPDATE: the `status <> 'rejected'` guard ensures a concurrent
+    // rejection cannot be overwritten by a stale proposed/draft status from this
+    // request, and the `status = $5` guard ensures the row still matches the
+    // status observed at read time — so a concurrent pipeline transition
+    // (e.g. pending → staging) cannot be clobbered by this stale save.
+    // If either guard fails, this UPDATE is a no-op and returns 0 rows,
+    // surfacing a 409 so the caller can re-fetch.
     const result = await queryOLTP(
       `UPDATE content_plans
        SET plan_json = $1, description = $2, status = $3, updated_at = NOW()
        WHERE id = $4
+         AND status = $5
+         AND status <> 'rejected'
        RETURNING id`,
-      [validatedPlan, validatedPlan.description, finalStatus, id]
+      [validatedPlan, validatedPlan.description, finalStatus, id, currentStatus]
     );
 
     if (result.rows.length === 0) {
-      res.status(404).json({ success: false, error: 'Plan not found', timestamp: new Date().toISOString() });
+      res.status(409).json({ success: false, error: 'Plan state changed concurrently — please re-fetch and retry', timestamp: new Date().toISOString() });
       return;
     }
 
