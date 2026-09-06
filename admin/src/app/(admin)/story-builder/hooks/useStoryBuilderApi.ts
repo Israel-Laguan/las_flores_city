@@ -326,10 +326,39 @@ export async function regenerateLore(planId: string, itemId: string) {
   );
 }
 
-export async function listPlans(limit?: number, offset?: number) {
+export interface ListPlansFilters {
+  limit?: number;
+  offset?: number;
+  status?: string;
+  createdBy?: string;
+  since?: string;
+  q?: string;
+  sortBy?: 'created_at' | 'updated_at';
+  order?: 'asc' | 'desc';
+}
+
+export async function listPlans(
+  filtersOrLimit?: ListPlansFilters | number,
+  offsetParam?: number,
+) {
   const params = new URLSearchParams();
-  if (limit) params.set('limit', String(limit));
-  if (offset) params.set('offset', String(offset));
+  let filters: ListPlansFilters;
+  if (typeof filtersOrLimit === 'number') {
+    filters = { limit: filtersOrLimit, offset: offsetParam };
+  } else if (filtersOrLimit && typeof filtersOrLimit === 'object') {
+    filters = filtersOrLimit;
+  } else {
+    filters = {};
+  }
+  if (filters.limit) params.set('limit', String(filters.limit));
+  if (filters.offset) params.set('offset', String(filters.offset));
+  if (filters.status) params.set('status', filters.status);
+  if (filters.createdBy) params.set('createdBy', filters.createdBy);
+  if (filters.since) params.set('since', filters.since);
+  if (filters.q) params.set('q', filters.q);
+  if (filters.sortBy) params.set('sortBy', filters.sortBy);
+  if (filters.order) params.set('order', filters.order);
+  const qs = params.toString();
   return adminFetch<{
     success: boolean;
     data?: {
@@ -337,14 +366,16 @@ export async function listPlans(limit?: number, offset?: number) {
         id: string;
         description: string;
         status: string;
+        created_by?: string | null;
         created_at: string;
         updated_at: string;
         item_count: number;
       }>;
       total: number;
+      filters?: Record<string, string>;
     };
     error?: string;
-  }>(`/admin/story-builder/plans?${params.toString()}`);
+  }>(`/admin/story-builder/plans${qs ? `?${qs}` : ''}`);
 }
 
 export async function deletePlan(planId: string) {

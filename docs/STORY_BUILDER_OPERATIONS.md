@@ -80,6 +80,111 @@ content, publish assets, approve the plan, or run solidify. Review the plan in t
 admin UI and inspect its Neo4j deltas before a later approval step. `proposed` is
 the existing review-ready state; no separate `working` status is needed.
 
+### 1.2. HTTP Plan Intake Endpoint (M51)
+
+M51 generalizes the validated CLI intake flow into a supported admin HTTP endpoint:
+`POST /admin/story-builder/plans/intake`.
+
+#### Request
+
+```json
+{
+  "description": "Create a new character named Alice who is a detective in City Center",
+  "messages": [
+    {"role": "user", "content": "Additional context for the LLM"}
+  ]
+}
+```
+
+- `description` (required, string, non-empty): The natural-language plan description.
+- `messages` (optional, array): Additional chat history to seed the LLM context.
+  Each message must have `role` (`'user'` or `'assistant'`) and `content` (non-empty string).
+
+#### Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "planId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "description": "Create a new character named Alice who is a detective in City Center",
+    "deltaCount": 2,
+    "edgeCount": 1,
+    "notes": [],
+    "usage": {
+      "promptTokens": 1200,
+      "completionTokens": 450,
+      "totalTokens": 1650
+    },
+    "timestamp": "2026-09-06T10:00:00.000Z"
+  },
+  "timestamp": "2026-09-06T10:00:00.000Z"
+}
+```
+
+- Returns the same JSON shape as `POST /admin/story-builder/plans/graph-intake`.
+- The plan is created with status `proposed` and `created_by` set to the authenticated
+  admin/developer.
+- Deltas and edges are written to Neo4j under the returned `planId`.
+
+#### Prerequisites
+
+- Same as CLI intake: `npm run seed:dev`, Neo4j enabled, LiteLLM reachable.
+- Admin/developer authentication (the endpoint is mounted under
+  `/admin/story-builder` with `authAndAdminMiddleware`).
+
+#### Error Responses
+
+| Status | Error | Cause |
+|--------|-------|-------|
+| 400 | `Description is required and must be a non-empty string` | Missing or empty `description` |
+| 400 | `messages must be an array when provided` | `messages` is not an array |
+| 400 | `messages[i]: ...` | A message fails `ChatMessageSchema` validation |
+| 409 | `Neo4j authoring graph is disabled` | `NEO4J_ENABLED` is false |
+| 500 | Server error | Internal failure during plan creation |
+
+#### Listing & Query (filters + search)
+
+`GET /admin/story-builder/plans` now supports RESTful filtering, search, and pagination. All params are validated (400 on bad input) and applied to both the page and the `total` count.
+
+```
+GET /admin/story-builder/plans?status=proposed&createdBy=<uuid>&since=2026-09-01T00:00:00Z&q=alice&limit=20&offset=0&sortBy=updated_at&order=desc
+```
+
+| Param | Type | Validation | Semantics |
+|-------|------|------------|-----------|
+| `status` | string | must be one of `draft, proposed, approved, staged, migrated, verified, failed, pending, staging, migrating, verifying, rejected` (12 values from `content_plans_status_check`) | exact `status = $1` |
+| `createdBy` (alias `created_by`) | UUID | `^[0-9a-f]{8}-...$` | `created_by = $1` |
+| `since` | ISO 8601 | parseable by `Date` | `created_at >= $1::timestamptz` inclusive |
+| `q` (aliases `query`, `search`) | string 1..200 | trimmed, `%`/`_` escaped | `description ILIKE '%q%' ESCAPE '\'` case-insensitive substring |
+| `limit` | int | 1..100, default 50 | pagination |
+| `offset` | int | ≥0, default 0 | pagination |
+| `sortBy` (alias `sort`) | `created_at` \| `updated_at` | default `updated_at` | `ORDER BY` |
+| `order` | `asc` \| `desc` | default `desc` | sort direction |
+
+Response adds echoed `filters` to `data`:
+
+```json
+{ "success": true, "data": { "plans": [...], "total": 42, "limit": 20, "offset": 0, "filters": { "status": "proposed", "q": "alice", "sortBy": "updated_at", "order": "desc" } } }
+```
+
+Empty / whitespace-only `q` is treated as no filter (not an error). Unknown `status`, malformed UUID, unparseable `since`, `q` >200, or bad `sortBy`/`order` return `400 { success:false, error, timestamp }`. Auth is still `authAndAdminMiddleware` (401/403). Admin helper: `listPlans({ status, createdBy, since, q, sortBy, order, limit, offset })` (legacy `listPlans(limit, offset)` still works).
+
+#### Integration Tests
+
+`server/tests/integration/plans-intake.integration.test.ts` covers:
+- Success path with valid actor attribution
+- Missing description
+- Invalid messages shape
+- Neo4j disabled → 409
+- Returned JSON shape matches graph-intake endpoint
+
+Run with:
+
+```bash
+npm run test:integration --workspace=server -- plans-intake.integration.test.ts
+```
+
 #### 1.1.1 Fail-open intake: a plan full of notes + the amend loop
 
 Intake is **lenient by contract**. If the LLM cannot confidently resolve a

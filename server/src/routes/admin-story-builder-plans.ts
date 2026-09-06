@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import express from 'express';
 import type { AuthRequest } from '../middleware/auth.js';
 import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
@@ -106,22 +107,119 @@ adminStoryBuilderPlansRouter.post('/plans', async (req: AuthRequest, res) => {
   }
 });
 
-// GET /admin/story-builder/plans — List all plans
+// GET /admin/story-builder/plans — List all plans (with filters + search)
+// Query params:
+//   status      — exact match; whitelisted against content_plans_status_check (12 values)
+//   createdBy | created_by — filter by author UUID
+//   since       — ISO 8601 timestamptz; inclusive lower bound on created_at
+//   q | query | search — case-insensitive substring search on description (ILIKE)
+//   limit, offset — pagination (1..100, default 50; offset >=0)
+//   sortBy      — created_at | updated_at (default updated_at)
+//   order       — asc | desc (default desc)
+const ALLOWED_PLAN_STATUSES = new Set([
+  'draft', 'proposed', 'approved', 'staged', 'migrated', 'verified', 'failed',
+  'pending', 'staging', 'migrating', 'verifying', 'rejected',
+]);
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function escapeLikePattern(raw: string): string {
+  return raw.replace(/\\/g, '\\\\').replace(/%/g, '\\%').replace(/_/g, '\\_');
+}
+
 adminStoryBuilderPlansRouter.get('/plans', async (req, res) => {
   try {
     const limit = Math.max(1, Math.min(Number(req.query.limit) || 50, 100));
     const offset = Math.max(0, Number(req.query.offset) || 0);
 
+    // --- status filter ---
+    const rawStatus = typeof req.query.status === 'string' ? req.query.status.trim() : undefined;
+    if (rawStatus !== undefined && rawStatus.length > 0 && !ALLOWED_PLAN_STATUSES.has(rawStatus)) {
+      res.status(400).json({
+        success: false,
+        error: `Invalid status: '${rawStatus}'. Allowed: ${[...ALLOWED_PLAN_STATUSES].join(', ')}`,
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+    const status = rawStatus && rawStatus.length > 0 ? rawStatus : undefined;
+
+    // --- createdBy filter (accept both camelCase and snake_case) ---
+    const rawCreatedBy = typeof req.query.createdBy === 'string'
+      ? req.query.createdBy.trim()
+      : typeof req.query.created_by === 'string' ? (req.query.created_by as string).trim() : undefined;
+    if (rawCreatedBy !== undefined && rawCreatedBy.length > 0 && !UUID_RE.test(rawCreatedBy)) {
+      res.status(400).json({ success: false, error: 'Invalid createdBy: must be a UUID', timestamp: new Date().toISOString() });
+      return;
+    }
+    const createdBy = rawCreatedBy && rawCreatedBy.length > 0 ? rawCreatedBy : undefined;
+
+    // --- since filter ---
+    const rawSince = typeof req.query.since === 'string' ? req.query.since.trim() : undefined;
+    let since: string | undefined;
+    if (rawSince !== undefined && rawSince.length > 0) {
+      const d = new Date(rawSince);
+      if (Number.isNaN(d.getTime())) {
+        res.status(400).json({ success: false, error: 'Invalid since: must be an ISO 8601 timestamp', timestamp: new Date().toISOString() });
+        return;
+      }
+      since = d.toISOString();
+    }
+
+    // --- search (q / query / search) ---
+    const rawQ = typeof req.query.q === 'string' ? req.query.q
+      : typeof req.query.query === 'string' ? req.query.query as string
+      : typeof req.query.search === 'string' ? req.query.search as string : undefined;
+    let q: string | undefined;
+    if (rawQ !== undefined) {
+      const trimmed = rawQ.trim();
+      if (trimmed.length > 0) {
+        if (trimmed.length > 200) {
+          res.status(400).json({ success: false, error: 'Invalid q: must be 1..200 characters', timestamp: new Date().toISOString() });
+          return;
+        }
+        q = trimmed;
+      }
+    }
+
+    // --- sort ---
+    const rawSortBy = typeof req.query.sortBy === 'string' ? req.query.sortBy.trim() : typeof req.query.sort === 'string' ? (req.query.sort as string).trim() : undefined;
+    const sortBy = rawSortBy === 'created_at' ? 'created_at' : 'updated_at';
+    if (rawSortBy !== undefined && rawSortBy.length > 0 && rawSortBy !== 'created_at' && rawSortBy !== 'updated_at') {
+      res.status(400).json({ success: false, error: "Invalid sortBy: must be 'created_at' or 'updated_at'", timestamp: new Date().toISOString() });
+      return;
+    }
+    const rawOrder = typeof req.query.order === 'string' ? req.query.order.trim().toLowerCase() : undefined;
+    if (rawOrder !== undefined && rawOrder !== 'asc' && rawOrder !== 'desc') {
+      res.status(400).json({ success: false, error: "Invalid order: must be 'asc' or 'desc'", timestamp: new Date().toISOString() });
+      return;
+    }
+    const order = rawOrder === 'asc' ? 'ASC' : 'DESC';
+
+    // Build dynamic WHERE clauses with parameterized indices
+    const where: string[] = [];
+    const params: unknown[] = [];
+    let idx = 1;
+    if (status) { where.push(`status = $${idx}`); params.push(status); idx += 1; }
+    if (createdBy) { where.push(`created_by = $${idx}`); params.push(createdBy); idx += 1; }
+    if (since) { where.push(`created_at >= $${idx}::timestamptz`); params.push(since); idx += 1; }
+    if (q) { where.push(`description ILIKE $${idx} ESCAPE '\\'`); params.push(`%${escapeLikePattern(q)}%`); idx += 1; }
+
+    const whereSql = where.length ? `WHERE ${where.join(' AND ')}` : '';
+
     const result = await queryOLTP(
-      `SELECT id, description, status, created_at, updated_at,
+      `SELECT id, description, status, created_by, created_at, updated_at,
               jsonb_array_length(plan_json->'items') as item_count
        FROM content_plans
-       ORDER BY updated_at DESC
-       LIMIT $1 OFFSET $2`,
-      [limit, offset]
+       ${whereSql}
+       ORDER BY ${sortBy} ${order}
+       LIMIT $${idx} OFFSET $${idx + 1}`,
+      [...params, limit, offset]
     );
 
-    const countResult = await queryOLTP('SELECT COUNT(*)::int as total FROM content_plans');
+    const countResult = await queryOLTP(
+      `SELECT COUNT(*)::int as total FROM content_plans ${whereSql}`,
+      params
+    );
 
     res.json({
       success: true,
@@ -130,6 +228,14 @@ adminStoryBuilderPlansRouter.get('/plans', async (req, res) => {
         total: countResult.rows[0].total,
         limit,
         offset,
+        filters: {
+          ...(status ? { status } : {}),
+          ...(createdBy ? { createdBy } : {}),
+          ...(since ? { since } : {}),
+          ...(q ? { q } : {}),
+          sortBy,
+          order: order.toLowerCase(),
+        },
       },
       timestamp: new Date().toISOString(),
     });
