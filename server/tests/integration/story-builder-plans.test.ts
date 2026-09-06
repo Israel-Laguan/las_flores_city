@@ -1,4 +1,4 @@
-import { describe, test, expect, jest, afterAll } from '@jest/globals';
+import { describe, test, expect, jest, afterAll, beforeEach } from '@jest/globals';
 import request from 'supertest';
 import express from 'express';
 
@@ -241,6 +241,10 @@ describe('PUT /admin/story-builder/plans/:id', () => {
 
 describe('DELETE /admin/story-builder/plans/:id', () => {
   const app = makeApp();
+
+  beforeEach(() => {
+    mockDeletePlan.mockReset();
+  });
 
   test('returns 404 for non-existent plan', async () => {
     mockDeletePlan.mockRejectedValueOnce(
