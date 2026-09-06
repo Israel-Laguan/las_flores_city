@@ -1215,6 +1215,7 @@ export class GraphIntakeService {
     planJson: ContentPlan | null;
     committedXmin: string;
     committedPlanJson: unknown;
+    committedGraphRevision: number | null;
   }> {
     let result!: Awaited<ReturnType<typeof chatService.applyDeltas>>;
     let graphDeltas: GraphDelta[] = [];
@@ -1223,6 +1224,7 @@ export class GraphIntakeService {
     let planJson: ContentPlan | null = null;
     let committedXmin = '';
     let committedPlanJson: unknown = null;
+    let committedGraphRevision: number | null = null;
 
     await withOLTPTransaction(async (client) => {
       await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`plan-lifecycle:${planId}`]);
@@ -1256,21 +1258,26 @@ export class GraphIntakeService {
         );
       }
 
-      // Capture the row's `xmin` plus the canonical `plan_json` as revision
-      // markers: a later concurrent amendment commits its own UPDATE, so the
-      // refresh pass below can detect it and skip writing stale diagnostics.
-      // `plan_json` (not `xmin`) is the comparison key in the refresh — `xmin`
-      // bumps on ANY column touch (status, verification_report, updated_at),
-      // while only a `plan_json` change means the graph snapshot moved on.
-      const committed = await client.query<{ xmin: string; plan_json: unknown }>(
-        `UPDATE content_plans SET updated_at = now(), plan_json = COALESCE($2::jsonb, plan_json) WHERE id = $1 RETURNING (xmin::text) AS xmin, plan_json`,
+      // Capture the row's `xmin`, the canonical `plan_json`, and the monotonic
+      // `graph_revision` as revision markers: a later concurrent amendment
+      // commits its own UPDATE, so the refresh pass below can detect it and
+      // skip writing stale diagnostics. `graph_revision` (+1 on EVERY
+      // amendment commit, even when the snapshot is schema-invalid and
+      // `plan_json` is kept via COALESCE) is the comparison key in the
+      // refresh — `plan_json` alone misses consecutive schema-invalid
+      // amendments (value unchanged), while `xmin` bumps on ANY column touch
+      // (status, verification_report, updated_at) and would over-skip.
+      const committed = await client.query<{ xmin: string; plan_json: unknown; graph_revision: number }>(
+        `UPDATE content_plans SET updated_at = now(), plan_json = COALESCE($2::jsonb, plan_json), graph_revision = graph_revision + 1 WHERE id = $1 RETURNING (xmin::text) AS xmin, plan_json, graph_revision`,
         [planId, planJson],
       );
       committedXmin = committed.rows[0]?.xmin ?? '';
       committedPlanJson = committed.rows[0]?.plan_json ?? null;
+      const rawRevision = committed.rows[0]?.graph_revision;
+      committedGraphRevision = typeof rawRevision === 'number' ? rawRevision : rawRevision != null ? Number(rawRevision) : null;
     });
 
-    return { result, graphDeltas, graphEdges, synthesizedDiagnostics, planJson, committedXmin, committedPlanJson };
+    return { result, graphDeltas, graphEdges, synthesizedDiagnostics, planJson, committedXmin, committedPlanJson, committedGraphRevision };
   }
 
   private async refreshAmendmentAnnotations(
@@ -1281,13 +1288,14 @@ export class GraphIntakeService {
     synthesizedDiagnostics: IntakeDiagnostic[],
     committedXmin: string,
     committedPlanJson: unknown,
+    committedGraphRevision: number | null,
   ): Promise<IntakeNote[]> {
     let notes: IntakeNote[] = [];
     await withOLTPTransaction(async (client) => {
       await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`plan-lifecycle:${planId}`]);
 
-      const confirm = await client.query<{ status: string; xmin: string; plan_json: unknown }>(
-        'SELECT status, (xmin::text) AS xmin, plan_json FROM content_plans WHERE id = $1 FOR UPDATE',
+      const confirm = await client.query<{ status: string; xmin: string; plan_json: unknown; graph_revision: number | null }>(
+        'SELECT status, (xmin::text) AS xmin, plan_json, graph_revision FROM content_plans WHERE id = $1 FOR UPDATE',
         [planId],
       );
       if (confirm.rows.length === 0) {
@@ -1298,17 +1306,24 @@ export class GraphIntakeService {
         console.warn(`[graph-intake] post-commit annotation refresh skipped: plan ${planId} was rejected`);
         return;
       }
-      // A later amendment committed after this one (plan content moved on):
-      // its own refresh owns the annotations now. Writing this stale snapshot
-      // would retire the newer amendment's open intake annotations.
-      // Compare `plan_json` — not `xmin` — so touch-only updates to other
-      // columns (status, verification_report, updated_at) between commit and
-      // refresh don't silently drop this amendment's valid annotations.
-      // Both sides are DB-canonical JSONB (RETURNING vs SELECT), so a plain
-      // stringify comparison is stable. When this commit wrote no plan_json
-      // (schema-invalid snapshot → COALESCE kept the old value), fall back to
-      // the xmin guard.
-      if (committedPlanJson !== null && committedPlanJson !== undefined) {
+      // A later amendment committed after this one (graph moved on): its own
+      // refresh owns the annotations now. Writing this stale snapshot would
+      // retire the newer amendment's open intake annotations.
+      // Compare `graph_revision` — bumped +1 on every amendment commit, even
+      // when the snapshot was schema-invalid and `plan_json` was kept — so a
+      // superseding amendment is always detected. Touch-only updates to other
+      // columns (status, verification_report, updated_at) never bump the
+      // revision and don't skip this amendment's valid annotations.
+      // `plan_json`/`xmin` comparisons below are legacy fallbacks for rows
+      // read without the revision (e.g. mocked clients in unit tests); on a
+      // migrated DB the revision comparison always decides.
+      const currentRevision = confirm.rows[0].graph_revision;
+      if (committedGraphRevision !== null && committedGraphRevision !== undefined && currentRevision !== null && currentRevision !== undefined) {
+        if (Number(currentRevision) !== Number(committedGraphRevision)) {
+          console.warn(`[graph-intake] post-commit annotation refresh skipped: plan ${planId} was amended again after this commit`);
+          return;
+        }
+      } else if (committedPlanJson !== null && committedPlanJson !== undefined) {
         if (JSON.stringify(confirm.rows[0].plan_json ?? null) !== JSON.stringify(committedPlanJson)) {
           console.warn(`[graph-intake] post-commit annotation refresh skipped: plan ${planId} was amended again after this commit`);
           return;
@@ -1342,8 +1357,8 @@ export class GraphIntakeService {
     const { planRow, existing } = await this.validateAmendablePlan(planId, instruction);
     const { proposal, resolvedDeltas } = await this.buildAmendmentProposal(planId, instruction, existing.deltas);
     const { filteredDeltas, filteredEdges } = await this.buildFilteredAmendment(planId, resolvedDeltas, proposal, existing, planRow.description);
-    const { result, graphDeltas, graphEdges, synthesizedDiagnostics, committedXmin, committedPlanJson } = await this.persistAmendment(planId, planRow, filteredDeltas, filteredEdges);
-    const notes = await this.refreshAmendmentAnnotations(planId, planRow, graphDeltas, result, synthesizedDiagnostics, committedXmin, committedPlanJson);
+    const { result, graphDeltas, graphEdges, synthesizedDiagnostics, committedXmin, committedPlanJson, committedGraphRevision } = await this.persistAmendment(planId, planRow, filteredDeltas, filteredEdges);
+    const notes = await this.refreshAmendmentAnnotations(planId, planRow, graphDeltas, result, synthesizedDiagnostics, committedXmin, committedPlanJson, committedGraphRevision);
 
     const deltaCount = graphDeltas.length;
     const edgeCount = graphEdges.length;
