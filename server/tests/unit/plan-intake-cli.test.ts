@@ -330,6 +330,44 @@ describe('plan:amend CLI argument parsing', () => {
     ])).toThrow(/non-empty string/);
   });
 
+  it('rejects an option-like --instruction value instead of consuming the next flag', () => {
+    expect(() => parseAmendArgs([
+      'node', 'run_plan_amend.ts', PLAN_ID, '--instruction', '--bogus',
+    ])).toThrow(/non-empty string/);
+  });
+
+  it('throws when --user-id is missing a value', () => {
+    expect(() => parseAmendArgs([
+      'node', 'run_plan_amend.ts', PLAN_ID,
+      '--annotation', `${ANNOTATION_ID}:fix it`,
+      '--user-id',
+    ])).toThrow(/--user-id requires a value/);
+  });
+
+  it('throws when --user-email is missing a value', () => {
+    expect(() => parseAmendArgs([
+      'node', 'run_plan_amend.ts', PLAN_ID,
+      '--annotation', `${ANNOTATION_ID}:fix it`,
+      '--user-email',
+    ])).toThrow(/--user-email requires a value/);
+  });
+
+  it('rejects an option-like --user-id value instead of falling back to the default actor', () => {
+    expect(() => parseAmendArgs([
+      'node', 'run_plan_amend.ts', PLAN_ID,
+      '--annotation', `${ANNOTATION_ID}:fix it`,
+      '--user-id', '--user-email',
+    ])).toThrow(/--user-id requires a value/);
+  });
+
+  it('rejects an option-like --user-email value instead of falling back to the default actor', () => {
+    expect(() => parseAmendArgs([
+      'node', 'run_plan_amend.ts', PLAN_ID,
+      '--annotation', `${ANNOTATION_ID}:fix it`,
+      '--user-email', '--admin-url',
+    ])).toThrow(/--user-email requires a value/);
+  });
+
   it('rejects combining --instruction with --annotation', () => {
     expect(() => parseAmendArgs([
       'node', 'run_plan_amend.ts', PLAN_ID,

@@ -43,11 +43,19 @@ export function parseArgs(argv: string[]): CliOptions {
       process.exit(0);
     }
     if (arg === '--user-id') {
-      userId = argv[++i];
+      const value = argv[++i];
+      if (!value || value.startsWith('--')) {
+        throw new Error(`--user-id requires a value\n\n${usage()}`);
+      }
+      userId = value;
       continue;
     }
     if (arg === '--user-email') {
-      userEmail = argv[++i];
+      const value = argv[++i];
+      if (!value || value.startsWith('--')) {
+        throw new Error(`--user-email requires a value\n\n${usage()}`);
+      }
+      userEmail = value;
       continue;
     }
     if (arg === '--admin-url') {

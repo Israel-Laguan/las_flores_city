@@ -55,7 +55,7 @@ export function parseAmendArgs(argv: string[]): AmendCliOptions {
     }
     if (arg === '--instruction') {
       const text = argv[++i];
-      if (!text || text.trim().length === 0) {
+      if (!text || text.startsWith('--') || text.trim().length === 0) {
         throw new Error(`--instruction requires a non-empty string\n\n${amendUsage()}`);
       }
       if (instruction) throw new Error(`Only one --instruction is allowed\n\n${amendUsage()}`);
@@ -63,11 +63,19 @@ export function parseAmendArgs(argv: string[]): AmendCliOptions {
       continue;
     }
     if (arg === '--user-id') {
-      userId = argv[++i];
+      const value = argv[++i];
+      if (!value || value.startsWith('--')) {
+        throw new Error(`--user-id requires a value\n\n${amendUsage()}`);
+      }
+      userId = value;
       continue;
     }
     if (arg === '--user-email') {
-      userEmail = argv[++i];
+      const value = argv[++i];
+      if (!value || value.startsWith('--')) {
+        throw new Error(`--user-email requires a value\n\n${amendUsage()}`);
+      }
+      userEmail = value;
       continue;
     }
     if (arg === '--admin-url') {
