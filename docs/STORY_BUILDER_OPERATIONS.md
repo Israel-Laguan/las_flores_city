@@ -80,6 +80,11 @@ content, publish assets, approve the plan, or run solidify. Review the plan in t
 admin UI and inspect its Neo4j deltas before a later approval step. `proposed` is
 the existing review-ready state; no separate `working` status is needed.
 
+##### Delete vs Discard (Graph Delta Cleanup)
+
+- **Delete button** → `DELETE /admin/story-builder/plans/:id` — Removes the `content_plans` row and performs best-effort cleanup of associated `:ContentDelta` nodes via `GraphIntakeService` delta removal. Use when you want to permanently remove a plan and its authored changes.
+- **Reject button** → `PUT /admin/story-builder/plans/:id` with `status: 'rejected'` — Marks the plan as rejected (row preserved for audit) and calls `GraphIntakeService.rejectPlan()` which cleans up graph deltas and emits a `plan_rejected` audit event. Use when a plan fails review but should remain in the system for record-keeping.
+
 #### 1.1.1 Fail-open intake: a plan full of notes + the amend loop
 
 Intake is **lenient by contract**. If the LLM cannot confidently resolve a
