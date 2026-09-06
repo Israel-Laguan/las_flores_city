@@ -4,6 +4,7 @@ import { adminStoryBuilderPlansRouter } from './admin-story-builder-plans.js';
 import { adminStoryBuilderActionsRouter } from './admin-story-builder-actions.js';
 import { adminStoryBuilderLoreRouter } from './admin-story-builder-lore.js';
 import { adminStoryBuilderGraphIntakeRouter } from './admin-story-builder-graph-intake.js';
+import { adminStoryBuilderPlansIntakeRouter } from './admin-story-builder-plans-intake.js';
 
 export const adminStoryBuilderRouter = express.Router();
 
@@ -20,3 +21,6 @@ adminStoryBuilderRouter.use(adminStoryBuilderLoreRouter);
 
 // Mount graph-based intake routes (M32)
 adminStoryBuilderRouter.use(adminStoryBuilderGraphIntakeRouter);
+
+// Mount simplified plan intake route (M51) — mirrors CLI intake flow
+adminStoryBuilderRouter.use(adminStoryBuilderPlansIntakeRouter);
