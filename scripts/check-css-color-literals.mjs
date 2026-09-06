@@ -36,8 +36,7 @@ const ALLOWLIST_FILES = [
 // - plans.module.css: modal overlay, modal shadow, detail overlay, detail panel shadow
 const ALLOWLIST_RGBA_PATTERNS = [
   /rgba\(0,\s*0,\s*0,\s*0\.6\)/,  // AdminShell backdrop
-  /rgba\(0,\s*0,\s*0,\s*0\.5\)/,  // Sidebar mobile shadow
-  /rgba\(0,\s*0,\s*0,\s*0\.5\)/,  // plans modal overlay
+  /rgba\(0,\s*0,\s*0,\s*0\.5\)/,  // Sidebar mobile shadow + plans modal overlay
   /rgba\(0,\s*0,\s*0,\s*0\.2\)/,  // plans modal shadow
   /rgba\(0,\s*0,\s*0,\s*0\.3\)/,  // plans detail overlay
   /rgba\(0,\s*0,\s*0,\s*0\.15\)/, // plans detail panel shadow

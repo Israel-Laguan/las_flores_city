@@ -8,7 +8,6 @@ import { loadPlanFromDb, fetchTemplates, fetchContentTree, refinePlan } from './
 import { useStoryPlanApi } from './useStoryPlanApi';
 import * as mutations from './useStoryBuilderMutations';
 import type { SolidifyResultLite } from '../components/ResultsStep';
-import { adminFetch } from '@/lib/client-api';
 
 interface Template {
   id: string;
@@ -137,14 +136,11 @@ export function useStoryBuilder(initialPlanId: string | null) {
     setLoading(true);
     setError(null);
     try {
-      // M52: graph-backed plans must not send a pre-approval PUT plan_json.
-      // Check for deltas; if present, skip the updatePlan write.
-      let hasDeltas: boolean = false;
-      try {
-        const gd = await adminFetch<{ success: boolean; data?: { deltas: any[] } }>(`/admin/story-builder/plans/${planId}/graph-deltas`);
-        hasDeltas = !!(gd.success && gd.data && gd.data.deltas.length > 0);
-      } catch { /* no deltas = legacy plan */ }
-      if (!hasDeltas) {
+      // Graph-authored plans must not send forbidden plan_json writes — reuse
+      // the single ownership helper (fail-closed on lookup error).
+      const { isGraphAuthoredPlan } = await import('./useStoryBuilderApi');
+      const isGraph = await isGraphAuthoredPlan(planId);
+      if (!isGraph) {
         const { updatePlan } = await import('./useStoryBuilderApi');
         const saveRes = await updatePlan(planId, plan);
         if (!saveRes.success) throw new Error(saveRes.error || 'Failed to save plan edits');

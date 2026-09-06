@@ -73,6 +73,7 @@ beforeAll(async () => {
   const staleDescriptions = [
     'M51 test character',
     'M51 test character 2',
+    'M51 test character with messages',
     'M51 test scene',
   ];
   for (const desc of staleDescriptions) {

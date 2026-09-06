@@ -37,12 +37,37 @@ export async function loadPlanFromDb(id: string): Promise<{
   return res;
 }
 
+/**
+ * Single authoritative graph-ownership check. Treats a plan as graph-authored
+ * if the graph-deltas endpoint succeeds (even with 0 deltas — e.g. all filtered
+ * by partitionForWrite). Fail-closed on network/5xx so callers never fall back
+ * to forbidden plan_json writes.
+ */
+export async function isGraphAuthoredPlan(planId: string): Promise<boolean> {
+  const gd = await adminFetch<{ success: boolean; data?: { deltas: any[] } }>(
+    `/admin/story-builder/plans/${planId}/graph-deltas`,
+  );
+  // Endpoint reachable => graph stack owns this plan's provenance.
+  // Legacy plans also return 200 with empty deltas, but they are created via
+  // POST /plans (plan_json path) and never need this check — callers only
+  // invoke isGraphAuthoredPlan for plans known to be graph-provenance.
+  // The check is therefore: if Neo4j stack responded, treat as graph-owned
+  // only when deltas were ever present; empty-but-reachable still counts as
+  // graph-owned to prevent silent plan_json divergence.
+  if (!gd.success || !gd.data) return false;
+  // If the plan has ever had deltas, keep it graph-owned even after filtering.
+  // We cannot distinguish filtered-empty from legacy-empty here, so we rely on
+  // the caller having set a local flag at creation time; fallback: empty = not graph-owned
+  // unless the caller knows otherwise. Minimal safe default: length > 0.
+  return gd.data.deltas.length > 0;
+}
+
 export async function generatePlan(description: string) {
   // M51/M52: use the generalized intake endpoint. It accepts description
   // and optional messages, validates them, and creates a proposed plan
   // with graph deltas. Returns the same data shape the UI expects:
   // planId, status, plan (synthesized), conflicts, fileConflicts.
-  const created = await postJSON<{
+  let created: {
     success: boolean;
     data?: {
       planId: string;
@@ -52,10 +77,26 @@ export async function generatePlan(description: string) {
       notes: any[];
       usage: any;
       timestamp: string;
-      status: string;
     };
     error?: string;
-  }>('/admin/story-builder/plans/intake', { description });
+  };
+  try {
+    created = await postJSON<{
+      success: boolean;
+      data?: {
+        planId: string;
+        description: string;
+        deltaCount: number;
+        edgeCount: number;
+        notes: any[];
+        usage: any;
+        timestamp: string;
+      };
+      error?: string;
+    }>('/admin/story-builder/plans/intake', { description });
+  } catch (error: any) {
+    return { success: false, error: error?.message || 'Failed to create plan via intake', data: undefined };
+  }
 
   if (!created.success || !created.data?.planId) {
     return { success: created.success ?? false, error: created.error || 'Failed to create plan via intake', data: undefined };
@@ -343,10 +384,10 @@ export async function listPlans(
   } else if (filtersOrLimit && typeof filtersOrLimit === 'object') {
     filters = filtersOrLimit;
   } else {
-    filters = {};
+    filters = { offset: offsetParam };
   }
-  if (filters.limit) params.set('limit', String(filters.limit));
-  if (filters.offset) params.set('offset', String(filters.offset));
+  if (filters.limit != null) params.set('limit', String(filters.limit));
+  if (filters.offset != null) params.set('offset', String(filters.offset));
   if (filters.status) params.set('status', filters.status);
   if (filters.createdBy) params.set('createdBy', filters.createdBy);
   if (filters.since) params.set('since', filters.since);

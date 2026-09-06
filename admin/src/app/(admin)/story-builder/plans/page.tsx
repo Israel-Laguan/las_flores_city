@@ -161,14 +161,13 @@ function DetailPanel({
     setError(null);
     (async () => {
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'}/admin/story-builder/plans/${planId}`,
-          { credentials: 'include' },
+        const { adminFetch } = await import('@/lib/client-api');
+        const data = await adminFetch<{ success: boolean; data?: any; error?: string }>(
+          `/admin/story-builder/plans/${planId}`,
         );
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        if (!cancelled && data.success) setDetail(data.data);
-        else if (!cancelled) setError(data.error || 'Failed to load plan');
+        if (cancelled) return;
+        if (data.success && data.data) setDetail(data.data);
+        else setError(data.error || 'Failed to load plan');
       } catch (err: any) {
         if (!cancelled) setError(err?.message || String(err));
       } finally {
@@ -336,7 +335,7 @@ function PlanRow({
             </Link>
           )}
           <QuickActions plan={plan} onAction={onAction} actionLoading={actionLoading} />
-          {plan.status !== 'rejected' && (
+          {plan.status === 'proposed' && (
             <button
               className={cn('btn', 'btn--warning', 'btn--small')}
               onClick={() => onReject(plan.id)}
@@ -447,7 +446,10 @@ export default function StoryBuilderPlans() {
     };
   }, [search]);
 
+  const requestIdRef = useRef(0);
+
   const loadPlans = useCallback(async () => {
+    const requestId = ++requestIdRef.current;
     setLoading(true);
     setError(null);
     try {
@@ -458,6 +460,7 @@ export default function StoryBuilderPlans() {
       filters.order = order;
 
       const data = await listPlans(filters);
+      if (requestId !== requestIdRef.current) return;
       if (data.success && data.data) {
         setPlans(data.data.plans);
         setTotal(data.data.total);
@@ -465,9 +468,10 @@ export default function StoryBuilderPlans() {
         setError(data.error || 'Failed to load plans');
       }
     } catch (err: any) {
+      if (requestId !== requestIdRef.current) return;
       setError(err.message);
     } finally {
-      setLoading(false);
+      if (requestId === requestIdRef.current) setLoading(false);
     }
   }, [offset, debouncedSearch, statusFilter, sortBy, order]);
 
@@ -488,8 +492,14 @@ export default function StoryBuilderPlans() {
     try {
       const data = await deletePlan(id);
       if (data.success) {
-        setPlans(prev => prev.filter(p => p.id !== id));
-        setTotal(prev => prev - 1);
+        const remaining = plans.filter(p => p.id !== id);
+        // If we deleted the last row on a paginated offset, step back a page.
+        if (remaining.length === 0 && offset > 0) {
+          setOffset(o => Math.max(0, o - limit));
+        } else {
+          setPlans(remaining);
+          setTotal(prev => prev - 1);
+        }
       } else {
         setError(data.error || 'Failed to delete plan');
       }

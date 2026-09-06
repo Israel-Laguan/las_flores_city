@@ -285,13 +285,6 @@ export default function ChatPanel() {
         if (deltas.length === 0 && newDeltaEdges.length === 0) return null;
         return { ...prev, deltas, deltaEdges: newDeltaEdges };
       });
-      // M52: refresh review data from current graph revision after discard-delta.
-      try {
-        const refreshed = await refreshPlan(planId);
-        if (refreshed && requestToken === sessionTokenRef.current) {
-          window.dispatchEvent(new CustomEvent('lf:plan-refreshed', { detail: { planId, plan: refreshed } }));
-        }
-      } catch { /* best-effort */ }
     } catch (err: any) {
       if (requestToken !== sessionTokenRef.current) return;
       setError(err?.message || String(err));

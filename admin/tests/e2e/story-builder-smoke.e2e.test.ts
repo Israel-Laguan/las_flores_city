@@ -33,7 +33,7 @@ test.describe('M52 Story Builder full flow', () => {
 
     // Results step should appear (polling may take a moment)
     await expect(page.getByTestId('results-step')).toBeVisible({ timeout: 60_000 });
-    // solidify-result is inside StatusBox; for async jobs it may show pending first, then verified
-    await expect(page.getByTestId('solidify-result')).toBeVisible({ timeout: 10_000 });
+    // solidify-result appears only after terminal verified/failed; allow same budget as results-step
+    await expect(page.getByTestId('solidify-result')).toBeVisible({ timeout: 60_000 });
   });
 });

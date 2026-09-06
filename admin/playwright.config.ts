@@ -13,13 +13,14 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   webServer: {
-    command: 'npm run dev',
+    command: 'npm run dev -- -p 3002',
     port: 3002,
-    reuseExistingServer: true,
+    reuseExistingServer: !process.env.CI,
     timeout: 120_000,
     stdout: 'pipe',
     stderr: 'pipe',
     env: {
+      PORT: '3002',
       NEXT_PUBLIC_SERVER_URL: process.env.NEXT_PUBLIC_SERVER_URL ?? 'http://localhost:3001',
       INTERNAL_SERVER_URL: process.env.INTERNAL_SERVER_URL ?? 'http://las-flores-intake-worker:3001',
     },

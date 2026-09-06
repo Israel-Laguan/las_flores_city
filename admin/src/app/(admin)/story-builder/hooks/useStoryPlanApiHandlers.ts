@@ -5,7 +5,6 @@ import type { Step, GenerationStatus } from '../types';
 import type { SolidifyResultLite } from '../components/ResultsStep';
 import * as api from './useStoryBuilderApi';
 import { createDraftPlanHandlers, refreshPlanFromDb } from './useDraftPlanApi';
-import { adminFetch } from '@/lib/client-api';
 
 type SetState<T> = (v: T | ((prev: T) => T)) => void;
 
@@ -157,16 +156,11 @@ function makeRefine(cb: HandlersDeps) {
       }
       // Persist author edits first so refine runs against the edited plan (server
       // reloads the stored plan_json; without this, edits would be discarded).
-      // M52: graph-backed plans must not send forbidden PUT plan_json — skip
-      // the write when deltas are present and let the server consume the merged
-      // graph revision.
+      // Graph-authored plans must not send forbidden PUT plan_json — reuse the
+      // single ownership helper and fail closed on lookup errors.
       if (planId && plan) {
-        let hasDeltas = false;
-        try {
-          const gd = await adminFetch<{ success: boolean; data?: { deltas: any[] } }>(`/admin/story-builder/plans/${planId}/graph-deltas`);
-          hasDeltas = !!(gd.success && gd.data && gd.data.deltas.length > 0);
-        } catch { /* legacy plan — no deltas */ }
-        if (!hasDeltas) {
+        const isGraph = await api.isGraphAuthoredPlan(planId);
+        if (!isGraph) {
           const saveRes = await api.updatePlan(planId, plan);
           if (!saveRes.success) {
             throw new Error(saveRes.error || 'Failed to save plan edits before refining');
@@ -202,19 +196,13 @@ function makeApproveAndSolidify(cb: HandlersDeps) {
   return useCallback(async (planId: string) => {
     if (!planId) return;
     const data = await withLoading(setLoading, setError, async () => {
-      // M52: graph-authored plans must not send a pre-approval PUT plan_json.
-      // The approve-and-solidify endpoint reads the merged graph revision
-      // directly; plan_json edits would conflict with deltas already in the
-      // authoring graph and are rejected by the server with 409.
+      // Graph-authored plans must not send a pre-approval PUT plan_json.
+      // Reuse the single ownership helper (fail-closed on lookup error).
       if (plan) {
-        const deltasRes = await adminFetch<{ success: boolean; data?: { deltas: any[] }; error?: string }>(
-          `/admin/story-builder/plans/${planId}/graph-deltas`,
-        );
-        if (deltasRes.success && deltasRes.data && deltasRes.data.deltas.length > 0) {
-          // Graph-backed plan — skip the pre-approval updatePlan write.
+        const isGraph = await api.isGraphAuthoredPlan(planId);
+        if (isGraph) {
           return api.approveAndSolidify(planId);
         }
-        // Legacy plan (no deltas) — persist author edits first.
         const saveRes = await api.updatePlan(planId, plan);
         if (!saveRes.success) {
           throw new Error(saveRes.error || 'Failed to save plan edits before shipping');

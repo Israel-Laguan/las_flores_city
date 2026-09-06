@@ -157,6 +157,11 @@ adminStoryBuilderPlansRouter.get('/plans', async (req, res) => {
     const rawSince = typeof req.query.since === 'string' ? req.query.since.trim() : undefined;
     let since: string | undefined;
     if (rawSince !== undefined && rawSince.length > 0) {
+      const isoRe = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
+      if (!isoRe.test(rawSince)) {
+        res.status(400).json({ success: false, error: 'Invalid since: must be an ISO 8601 timestamp', timestamp: new Date().toISOString() });
+        return;
+      }
       const d = new Date(rawSince);
       if (Number.isNaN(d.getTime())) {
         res.status(400).json({ success: false, error: 'Invalid since: must be an ISO 8601 timestamp', timestamp: new Date().toISOString() });
@@ -210,9 +215,9 @@ adminStoryBuilderPlansRouter.get('/plans', async (req, res) => {
       `SELECT id, description, status, created_by, created_at, updated_at,
               jsonb_array_length(plan_json->'items') as item_count
        FROM content_plans
-       ${whereSql}
-       ORDER BY ${sortBy} ${order}
-       LIMIT $${idx} OFFSET $${idx + 1}`,
+        ${whereSql}
+        ORDER BY ${sortBy} ${order}, id ${order}
+        LIMIT $${idx} OFFSET $${idx + 1}`,
       [...params, limit, offset]
     );
 

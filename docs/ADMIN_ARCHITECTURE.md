@@ -326,11 +326,11 @@ app/story-builder/
 ```
 
 
-**State ownership**: `useStoryBuilder` owns the 10 `useState` slots (`step`, `description`, `plan`, `loading`, `error`, `planId`, `refineFeedback`, `showRefine`, `stagingResult`, `migrationResult`, `previewData`, `templates`). It composes four sibling hooks:
+**State ownership**: `useStoryBuilder` owns the 11 `useState` slots (`step`, `description`, `plan`, `loading`, `error`, `planId`, `refineFeedback`, `showRefine`, `solidifyResult`, `genStatus`, `conflicts`, `fileConflicts`, `templates`, `contentTree`). It composes two sibling hooks:
 - `useStoryPlanApi` — wraps the API actions (generate / refine / preview / stage / migrate / retry) with the state setters.
-- `useStoryBuilderApi` — load a saved plan by id, create a new plan via `POST /plans/intake` (M52), fetch templates.
 - `useStoryBuilderMutations` — pure functional transforms on the `ContentPlan` (e.g. `updateItemField`, `addLink`, `removeItem`).
-- `useCritiqueApi` — M26/M52 AI semantic critique; skips sending `plan_json` for graph-backed plans (M52).
+
+`useStoryBuilderApi` provides `loadPlanFromDb`, `generatePlan` (`POST /plans/intake`), templates and `isGraphAuthoredPlan`. `useCritique` (`useCritiqueApi`) is composed separately in `StoryBuilder.tsx`, not inside `useStoryBuilder`; it skips sending `plan_json` for graph-backed plans (M52).
 
 M52 intake flow: `generatePlan()` posts to `POST /admin/story-builder/plans/intake` (single-hop, replacing the retired `graph-intake` + `graph-plan` double-hop). After `chat/apply-delta`, `refreshPlan` calls `GET /plans/:id/graph-plan` to reload the merged graph revision. The approve flow gates the pre-approval `PUT plan_json` when graph deltas are present, and critique omits `plan_json` for graph-backed plans.
 

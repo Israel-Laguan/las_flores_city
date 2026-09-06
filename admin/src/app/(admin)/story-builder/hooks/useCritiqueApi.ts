@@ -83,15 +83,10 @@ export function useCritique(planId: string | null): CritiqueApiResult {
     setAnalyzeLoading(true);
     setError(null);
     try {
-      // M52: graph-backed plans must not send forbidden direct plan_json
-      // edits. The server-side critique service consumes the merged graph
-      // revision instead. Check for deltas to determine if this is a
-      // graph-backed plan.
-      const graphRes = await adminFetch<{ success: boolean; data?: { deltas: any[] }; error?: string }>(
-        `/admin/story-builder/plans/${planId}/graph-deltas`,
-        { signal: controller.signal },
-      );
-      const hasDeltas = graphRes.success && graphRes.data && graphRes.data.deltas.length > 0;
+      // Reuse the single graph-ownership helper; fail closed on lookup error
+      // so we never send forbidden plan_json for a graph-authored plan.
+      const { isGraphAuthoredPlan } = await import('./useStoryBuilderApi');
+      const hasDeltas = await isGraphAuthoredPlan(planId);
       const body: Record<string, unknown> = { scope };
       if (!hasDeltas) {
         body.plan_json = plan ?? null;

@@ -30,8 +30,6 @@ interface DiscardDeltaResponse {
 // M29 — client for the chat endpoints (POST .../chat, .../chat/apply-delta,
 // .../chat/discard-delta over /admin/story-builder). Requests ride the existing
 // adminFetch cookie credentials; no new auth surface is introduced.
-// M52: applyDelta and discardDelta return a mergedView that callers can
-// use to refresh the review plan from the current graph revision.
 export function useChatApi() {
   const chat = useCallback(async (
     planId: string,
@@ -65,23 +63,26 @@ export function useChatApi() {
     planId: string,
     nodeType: string,
     nodeId: string,
-  ): Promise<{ mergedView?: unknown }> => {
+  ): Promise<void> => {
     const res = await adminFetch<DiscardDeltaResponse>(
       `/admin/story-builder/plans/${planId}/chat/discard-delta`,
       { method: 'POST', body: JSON.stringify({ nodeType, nodeId }) },
     );
     if (!res.success) throw new Error(res.error || 'Discard delta failed');
-    return {};
   }, []);
 
   // M52: refresh the plan from the current graph revision after
   // chat/apply-delta or discard-delta operations.
   const refreshPlan = useCallback(async (planId: string) => {
-    const synth = await adminFetch<{ success: boolean; data?: { plan: ContentPlan }; error?: string }>(
-      `/admin/story-builder/plans/${planId}/graph-plan`,
-    );
-    if (synth.success && synth.data?.plan) {
-      return synth.data.plan;
+    try {
+      const synth = await adminFetch<{ success: boolean; data?: { plan: ContentPlan }; error?: string }>(
+        `/admin/story-builder/plans/${planId}/graph-plan`,
+      );
+      if (synth.success && synth.data?.plan) {
+        return synth.data.plan;
+      }
+    } catch {
+      // Fall through to DB fallback on HTTP error.
     }
     // Fallback: load from DB which will try graph-plan synthesis
     const db = await adminFetch<{ success: boolean; data?: { plan_json: ContentPlan } }>(

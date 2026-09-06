@@ -236,7 +236,7 @@
 
 .detailDl dd {
   margin: 0;
-  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .detailId {
@@ -264,22 +264,22 @@
   margin-top: 1rem;
 }
 
-.btn--success {
+:global(.btn--success) {
   background: var(--status-success);
   color: white;
   border: none;
 }
 
-.btn--success:hover {
+:global(.btn--success):hover {
   opacity: 0.9;
 }
 
-.btn--warning {
+:global(.btn--warning) {
   background: var(--status-warning);
   color: white;
   border: none;
 }
 
-.btn--warning:hover {
+:global(.btn--warning):hover {
   opacity: 0.9;
 }
