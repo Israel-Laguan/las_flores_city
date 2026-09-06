@@ -53,6 +53,7 @@ function buildHandlers(
   };
 }
 
+// eslint-disable-next-line max-lines-per-function -- story builder state + handlers cohesively grouped
 export function useStoryBuilder(initialPlanId: string | null) {
   const [step, setStep] = useState<Step>(1);
   const [description, setDescription] = useState('');
@@ -135,9 +136,15 @@ export function useStoryBuilder(initialPlanId: string | null) {
     setLoading(true);
     setError(null);
     try {
-      // Persist edits first
-      const saveRes = await import('./useStoryBuilderApi').then(m => m.updatePlan(planId, plan));
-      if (!saveRes.success) throw new Error(saveRes.error || 'Failed to save plan edits');
+      // Graph-authored plans must not send forbidden plan_json writes — reuse
+      // the single ownership helper (fail-closed on lookup error).
+      const { isGraphAuthoredPlan } = await import('./useStoryBuilderApi');
+      const isGraph = await isGraphAuthoredPlan(planId);
+      if (!isGraph) {
+        const { updatePlan } = await import('./useStoryBuilderApi');
+        const saveRes = await updatePlan(planId, plan);
+        if (!saveRes.success) throw new Error(saveRes.error || 'Failed to save plan edits');
+      }
       const res = await refinePlan(planId, `Refine the ${plan.items.find(i => i.id === itemId)?.name || 'selected'} item`, [itemId]);
       if (res.success && res.data) {
         setPlan(res.data.plan);
@@ -151,6 +158,18 @@ export function useStoryBuilder(initialPlanId: string | null) {
       setLoading(false);
     }
   }, [planId, plan, loading, setLoading, setError, setPlan, setPlanId]);
+
+  // M52: refresh review data from current graph revision after chat/apply-delta.
+  // ChatPanel dispatches `lf:plan-refreshed` with the merged ContentPlan.
+  useEffect(() => {
+    function onPlanRefreshed(e: Event) {
+      const detail = (e as CustomEvent<{ planId: string; plan: ContentPlan }>).detail;
+      if (!detail || detail.planId !== planId) return;
+      setPlan(detail.plan);
+    }
+    window.addEventListener('lf:plan-refreshed', onPlanRefreshed as EventListener);
+    return () => window.removeEventListener('lf:plan-refreshed', onPlanRefreshed as EventListener);
+  }, [planId]);
 
   const handlers = buildHandlers(planId, refineFeedback, apiCallbacks, applyMutation, handleRefineItem, setStep);
 

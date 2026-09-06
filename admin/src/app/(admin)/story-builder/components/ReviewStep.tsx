@@ -86,7 +86,7 @@ export default function ReviewStep({
   const ambiguousItems = collectAmbiguousItems(items);
 
   return (
-    <div className={styles.section}>
+    <div className={styles.section} data-testid="review-step">
       <h2 className={styles.sectionHeading}>Review Plan</h2>
       <p className={styles.description}>
         Review and edit the proposed content. All text fields are editable.

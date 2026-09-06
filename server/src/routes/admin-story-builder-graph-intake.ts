@@ -6,6 +6,8 @@ import type { AuthRequest } from '../middleware/auth.js';
 import { ChatMessageSchema, type ChatMessage } from '@las-flores/shared';
 import { graphIntakeService, GraphIntakeDisabledError, GraphIntakeValidationError } from '../services/GraphIntakeService.js';
 import { isNeo4jEnabled } from '../services/Neo4jClient.js';
+import { emitAdminEvent } from '../services/AdminEventEmitter.js';
+import { queryOLTP } from '@las-flores/infra';
 
 export const adminStoryBuilderGraphIntakeRouter = express.Router();
 
@@ -174,10 +176,36 @@ adminStoryBuilderGraphIntakeRouter.get('/plans/:id/graph-deltas', async (req: Au
     }
 
     const { deltas, edges } = await graphIntakeService.getPlanDeltas(id);
+    // Persisted provenance: a graph-authored plan that was rejected has its
+    // deltas pruned by rejectPlan, so `deltas.length > 0` would regress to
+    // false and the client would treat it as a legacy plan. Check durable
+    // provenance that survives delta pruning (admin_events source or intake
+    // annotations) so the flag never flips after lifecycle actions.
+    let isProvenanceGraph = false;
+    try {
+      const prov = await queryOLTP<{ one: number }>(
+        `SELECT 1 AS one
+         FROM admin_events
+         WHERE plan_id = $1
+           AND event_type IN ('plan_created', 'plan_intake')
+           AND (event_type = 'plan_intake' OR event_data->>'source' = 'graph-intake')
+         UNION ALL
+         SELECT 1 AS one
+         FROM critique_annotations
+         WHERE plan_id = $1 AND scope = 'intake'
+         LIMIT 1`,
+        [id],
+      );
+      isProvenanceGraph = prov.rows.length > 0;
+    } catch {
+      // Provenance check is best-effort; on DB error fall back to delta
+      // presence so a transient failure does not misclassify a plan.
+    }
+    const graphAuthored = deltas.length > 0 || edges.length > 0 || isProvenanceGraph;
 
     res.json({
       success: true,
-      data: { planId: id, deltas, edges },
+      data: { planId: id, deltas, edges, graphAuthored },
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
@@ -281,6 +309,94 @@ adminStoryBuilderGraphIntakeRouter.delete('/plans/:id/graph-intake', async (req:
     res.status(500).json({
       success: false,
       error: error.message || 'Failed to discard plan',
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+// POST /admin/story-builder/plans/intake — M51/M52: Generalized HTTP intake
+// Mirrors graph-intake but with proper actor attribution and event emission.
+// Accepts { description: string, messages?: ChatMessage[] }.
+adminStoryBuilderGraphIntakeRouter.post('/plans/intake', async (req: AuthRequest, res) => {
+  try {
+    if (!isNeo4jEnabled()) {
+      res.status(409).json({
+        success: false,
+        error: 'Neo4j authoring graph is disabled — cannot create graph-based plan. Enable NEO4J_ENABLED first.',
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    const { description, messages } = req.body ?? {};
+
+    if (!description || typeof description !== 'string' || description.trim().length === 0) {
+      res.status(400).json({
+        success: false,
+        error: 'Description is required and must be a non-empty string',
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    let validatedMessages: ChatMessage[] = [];
+    if (messages !== undefined && messages !== null) {
+      if (!Array.isArray(messages)) {
+        res.status(400).json({
+          success: false,
+          error: 'messages must be an array when provided',
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+      for (let i = 0; i < messages.length; i++) {
+        const parsed = ChatMessageSchema.safeParse(messages[i]);
+        if (!parsed.success) {
+          res.status(400).json({
+            success: false,
+            error: `messages[${i}]: ${parsed.error.issues.map((x) => x.message).join('; ')}`,
+            timestamp: new Date().toISOString(),
+          });
+          return;
+        }
+        validatedMessages.push(parsed.data);
+      }
+    }
+
+    const result = await graphIntakeService.createPlanFromDescription(
+      description,
+      validatedMessages,
+      req.userId,
+    );
+
+    await emitAdminEvent('plan_intake', { deltaCount: result.deltaCount, edgeCount: result.edgeCount, source: 'graph-intake' }, result.planId, req.userId);
+
+    res.json({
+      success: true,
+      data: result,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    if (error instanceof GraphIntakeDisabledError) {
+      res.status(409).json({
+        success: false,
+        error: error.message,
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+    if (error instanceof GraphIntakeValidationError) {
+      res.status(400).json({
+        success: false,
+        error: error.message,
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+    console.error('[story-builder] POST /plans/intake error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to create plan via intake',
       timestamp: new Date().toISOString(),
     });
   }

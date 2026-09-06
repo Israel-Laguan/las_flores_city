@@ -156,10 +156,15 @@ function makeRefine(cb: HandlersDeps) {
       }
       // Persist author edits first so refine runs against the edited plan (server
       // reloads the stored plan_json; without this, edits would be discarded).
+      // Graph-authored plans must not send forbidden PUT plan_json — reuse the
+      // single ownership helper and fail closed on lookup errors.
       if (planId && plan) {
-        const saveRes = await api.updatePlan(planId, plan);
-        if (!saveRes.success) {
-          throw new Error(saveRes.error || 'Failed to save plan edits before refining');
+        const isGraph = await api.isGraphAuthoredPlan(planId);
+        if (!isGraph) {
+          const saveRes = await api.updatePlan(planId, plan);
+          if (!saveRes.success) {
+            throw new Error(saveRes.error || 'Failed to save plan edits before refining');
+          }
         }
       }
       if (!planId) return null;
@@ -191,10 +196,13 @@ function makeApproveAndSolidify(cb: HandlersDeps) {
   return useCallback(async (planId: string) => {
     if (!planId) return;
     const data = await withLoading(setLoading, setError, async () => {
-      // Persist author edits first so ship uses the edited plan. The server
-      // re-parses plan_json from the DB during approve-and-solidify; without this
-      // the edits would be lost.
+      // Graph-authored plans must not send a pre-approval PUT plan_json.
+      // Reuse the single ownership helper (fail-closed on lookup error).
       if (plan) {
+        const isGraph = await api.isGraphAuthoredPlan(planId);
+        if (isGraph) {
+          return api.approveAndSolidify(planId);
+        }
         const saveRes = await api.updatePlan(planId, plan);
         if (!saveRes.success) {
           throw new Error(saveRes.error || 'Failed to save plan edits before shipping');

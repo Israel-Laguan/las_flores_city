@@ -10,11 +10,14 @@ vi.mock('../hooks/useStoryBuilderApi', () => {
   const generatePlan = vi.fn(async () => ({ success: true, data: { plan: { id: 'preview', items: [] }, conflicts: [], fileConflicts: [], status: 'preview' } }));
   const savePlan = vi.fn();
   const selectTemplate = vi.fn();
-  // refreshPlanFromDb (real, from useDraftPlanApi) calls api.loadPlanFromDb; the
-  // scaffold 'done' path exercises it, so provide a stub to avoid an undefined call.
   const loadPlanFromDb = vi.fn(async () => ({ success: true, data: { plan_json: { id: 'scaffold-plan', items: [] }, description: '' } }));
-  return { updatePlan, refinePlan, refinePlanPreview, scaffoldPlan, approveAndSolidify, generatePlan, savePlan, selectTemplate, loadPlanFromDb, __esModule: true };
+  const isGraphAuthoredPlan = vi.fn(async () => false);
+  return { updatePlan, refinePlan, refinePlanPreview, scaffoldPlan, approveAndSolidify, generatePlan, savePlan, selectTemplate, loadPlanFromDb, isGraphAuthoredPlan, __esModule: true };
 });
+
+vi.mock('@/lib/client-api', () => ({
+  adminFetch: vi.fn(async () => ({ success: true, data: { deltas: [] } })),
+}));
 
 import { createStoryPlanHandlers } from '../hooks/useStoryPlanApiHandlers';
 import * as api from '../hooks/useStoryBuilderApi';
@@ -67,7 +70,7 @@ describe('useStoryPlanApiHandlers edit fidelity (M13)', () => {
     expect(api.refinePlan).toHaveBeenCalledWith('plan-1', 'make it better');
   });
 
-  it('persists edited plan before approve-and-solidify', async () => {
+  it('persists edited plan before approve-and-solidify (legacy plan, no deltas)', async () => {
     const plan = makePlan();
     const handlers = renderHook(() =>
       createStoryPlanHandlers(makeCallbacks({ plan }) as any),
@@ -79,6 +82,24 @@ describe('useStoryPlanApiHandlers edit fidelity (M13)', () => {
 
     expect(api.updatePlan).toHaveBeenCalledWith('plan-1', plan);
     expect(api.approveAndSolidify).toHaveBeenCalledWith('plan-1');
+  });
+
+  it('skips updatePlan before approve-and-solidify for graph-backed plans', async () => {
+    const { isGraphAuthoredPlan } = await import('../hooks/useStoryBuilderApi');
+    // Mock isGraphAuthoredPlan to return true for graph-backed plans
+    (isGraphAuthoredPlan as ReturnType<typeof vi.fn>).mockResolvedValueOnce(true);
+
+    const plan = makePlan();
+    const handlers = renderHook(() =>
+      createStoryPlanHandlers(makeCallbacks({ plan }) as any),
+    ).result.current;
+
+    await act(async () => {
+      await handlers.handleApproveAndSolidify('plan-graph-1');
+    });
+
+    expect(api.updatePlan).not.toHaveBeenCalled();
+    expect(api.approveAndSolidify).toHaveBeenCalledWith('plan-graph-1');
   });
 });
 

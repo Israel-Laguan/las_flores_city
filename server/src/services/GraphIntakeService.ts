@@ -939,7 +939,7 @@ export class GraphIntakeService {
     const semanticNotes = await this.semanticNotes(description, safeDeltas);
     const notes = await this.triageAndAnnotate(planId, safeDeltas, partitionDiagnostics, semanticNotes);
 
-    emitAdminEvent(
+    await emitAdminEvent(
       'plan_created',
       {
         descriptionLength: description.trim().length,
@@ -1622,7 +1622,7 @@ export class GraphIntakeService {
    * materialize pipeline. Canonical content is never touched (a plan's deltas
    * are plan-scoped, never canonical).
    */
-  async deletePlan(planId: string): Promise<PlanLifecycleResult> {
+  async deletePlan(planId: string, createdBy?: string): Promise<PlanLifecycleResult> {
     // Validate the row and status under the lifecycle lock BEFORE pruning the
     // graph, so a delete against a non-deletable plan never leaves deltas pruned
     // while the OLTP row is unchanged.
@@ -1661,7 +1661,7 @@ export class GraphIntakeService {
       return { status, annotationCount };
     });
 
-    emitAdminEvent('plan_deleted', { planId, status }, planId);
+    emitAdminEvent('plan_deleted', { planId, status }, planId, createdBy);
 
     return { planId, status, deltaPruned: isNeo4jEnabled(), annotationCount };
   }

@@ -54,7 +54,7 @@ describe('POST /plans/from-template', () => {
     // persisted as proposed (status is a SQL literal; created_by is the last param)
     const [sql, params] = queryMock.mock.calls[0];
     expect(sql).toContain("'proposed'");
-    expect(params).toHaveLength(3);
+    expect(params).toHaveLength(4);
     expect(mockEmit).toHaveBeenCalledWith('plan_created', expect.objectContaining({ templateId: 'mission' }), expect.any(String), undefined);
   });
 

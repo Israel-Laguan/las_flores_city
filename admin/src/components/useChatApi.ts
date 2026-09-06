@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback } from 'react';
-import type { ChatMessage, GraphDelta, GraphDeltaEdge } from '@las-flores/shared';
+import type { ChatMessage, GraphDelta, GraphDeltaEdge, ContentPlan } from '@las-flores/shared';
 import { adminFetch } from '@/lib/client-api';
 
 interface ChatResponse {
@@ -71,5 +71,25 @@ export function useChatApi() {
     if (!res.success) throw new Error(res.error || 'Discard delta failed');
   }, []);
 
-  return { chat, applyDelta, discardDelta };
+  // M52: refresh the plan from the current graph revision after
+  // chat/apply-delta or discard-delta operations.
+  const refreshPlan = useCallback(async (planId: string) => {
+    try {
+      const synth = await adminFetch<{ success: boolean; data?: { plan: ContentPlan }; error?: string }>(
+        `/admin/story-builder/plans/${planId}/graph-plan`,
+      );
+      if (synth.success && synth.data?.plan) {
+        return synth.data.plan;
+      }
+    } catch {
+      // Fall through to DB fallback on HTTP error.
+    }
+    // Fallback: load from DB which will try graph-plan synthesis
+    const db = await adminFetch<{ success: boolean; data?: { plan_json: ContentPlan } }>(
+      `/admin/story-builder/plans/${planId}`,
+    );
+    return db.success && db.data?.plan_json ? db.data.plan_json : null;
+  }, []);
+
+  return { chat, applyDelta, discardDelta, refreshPlan };
 }

@@ -27,6 +27,7 @@ interface CritiqueApiResult {
  * aborted and a bump of the request sequence ensures a slow response for an old
  * plan can never overwrite the new plan's annotations/error/loading state.
  */
+// eslint-disable-next-line max-lines-per-function -- critique state + actions cohesively grouped
 export function useCritique(planId: string | null): CritiqueApiResult {
   const [annotations, setAnnotations] = useState<CritiqueAnnotation[]>([]);
   const [loading, setLoading] = useState(false);
@@ -82,19 +83,20 @@ export function useCritique(planId: string | null): CritiqueApiResult {
     setAnalyzeLoading(true);
     setError(null);
     try {
+      // Reuse the single graph-ownership helper; fail closed on lookup error
+      // so we never send forbidden plan_json for a graph-authored plan.
+      const { isGraphAuthoredPlan } = await import('./useStoryBuilderApi');
+      const hasDeltas = await isGraphAuthoredPlan(planId, controller.signal);
+      const body: Record<string, unknown> = { scope };
+      if (!hasDeltas) {
+        body.plan_json = plan ?? null;
+      }
       const res = await adminFetch<{ success: boolean; data?: { annotations: CritiqueAnnotation[] }; error?: string }>(
         `/admin/story-builder/plans/${planId}/analyze`,
-        // Send the current plan_json so the critique runs against the author's
-        // latest edits (the server persists it before analyzing).
-        { method: 'POST', body: JSON.stringify({ scope, plan_json: plan ?? null }), signal: controller.signal },
+        { method: 'POST', body: JSON.stringify(body), signal: controller.signal },
       );
       if (seq !== seqRef.current) return;
       if (res.success) {
-        // Reload the full stored annotation set rather than trusting the partial
-        // list the analyze endpoint returns (it only covers this scope+hash run).
-        // Clear analyzeLoading *before* the reload — fetchAnnotations increments
-        // the shared seqRef, so if we cleared in `finally` the check
-        // `seq === seqRef.current` would fail and leave the button stuck.
         setAnalyzeLoading(false);
         await fetchAnnotations();
       } else {

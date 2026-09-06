@@ -1,4 +1,4 @@
-import { describe, test, expect, jest, afterAll } from '@jest/globals';
+import { describe, test, expect, jest, afterAll, beforeEach } from '@jest/globals';
 import request from 'supertest';
 import express from 'express';
 
@@ -76,6 +76,25 @@ jest.mock('../../src/services/Neo4jClient.js', () => ({
   isNeo4jEnabled: () => false,
 }));
 
+const mockDeletePlan = jest.fn();
+
+jest.mock('../../src/services/GraphIntakeService.js', () => {
+  class GraphIntakeValidationError extends Error {
+    constructor(message: string) {
+      super(message);
+      this.name = 'GraphIntakeValidationError';
+    }
+  }
+  return {
+    GraphIntakeService: jest.fn().mockImplementation(() => ({
+      deletePlan: mockDeletePlan,
+      rejectPlan: jest.fn(),
+    })),
+    GraphIntakeValidationError,
+    GraphIntakeDisabledError: class GraphIntakeDisabledError extends Error {},
+  };
+});
+
 afterAll(() => {
   jest.clearAllMocks();
 });
@@ -84,6 +103,7 @@ import '../helpers/enableTestNeo4j.js';
 
 import { adminStoryBuilderRouter } from '../../src/routes/admin-story-builder.js';
 import { queryOLTP } from '@las-flores/infra';
+import { GraphIntakeValidationError } from '../../src/services/GraphIntakeService.js';
 
 const mockQueryOLTP = queryOLTP as jest.MockedFunction<typeof queryOLTP>;
 
@@ -184,7 +204,7 @@ describe('PUT /admin/story-builder/plans/:id', () => {
 
   test('updates a plan', async () => {
     mockQueryOLTP.mockResolvedValueOnce({
-      rows: [{ status: 'proposed' }],
+      rows: [{ status: 'proposed', updated_at: '2026-09-06T00:00:00.000Z' }],
       rowCount: 1, command: 'SELECT', oid: 0, fields: [],
     }).mockResolvedValueOnce({
       rows: [{ id: TEST_PLAN_ID }],
@@ -202,7 +222,7 @@ describe('PUT /admin/story-builder/plans/:id', () => {
 
   test('approves a plan and returns updated status', async () => {
     mockQueryOLTP.mockResolvedValueOnce({
-      rows: [{ status: 'proposed' }],
+      rows: [{ status: 'proposed', updated_at: '2026-09-06T00:00:00.000Z' }],
       rowCount: 1, command: 'SELECT', oid: 0, fields: [],
     }).mockResolvedValueOnce({
       rows: [{ id: TEST_PLAN_ID, plan_json: MOCK_PLAN }],
@@ -222,8 +242,14 @@ describe('PUT /admin/story-builder/plans/:id', () => {
 describe('DELETE /admin/story-builder/plans/:id', () => {
   const app = makeApp();
 
+  beforeEach(() => {
+    mockDeletePlan.mockReset();
+  });
+
   test('returns 404 for non-existent plan', async () => {
-    mockQueryOLTP.mockResolvedValueOnce({ rows: [], rowCount: 0, command: 'DELETE', oid: 0, fields: [] });
+    mockDeletePlan.mockRejectedValueOnce(
+      new GraphIntakeValidationError(`Plan not found: ${TEST_PLAN_ID}`),
+    );
 
     const res = await request(app)
       .delete(`/admin/story-builder/plans/${TEST_PLAN_ID}`);
@@ -233,7 +259,12 @@ describe('DELETE /admin/story-builder/plans/:id', () => {
   });
 
   test('deletes a plan', async () => {
-    mockQueryOLTP.mockResolvedValueOnce({ rows: [{ id: TEST_PLAN_ID }], rowCount: 1, command: 'DELETE', oid: 0, fields: [] });
+    mockDeletePlan.mockResolvedValueOnce({
+      planId: TEST_PLAN_ID,
+      status: 'proposed',
+      deltaPruned: false,
+      annotationCount: 0,
+    });
 
     const res = await request(app)
       .delete(`/admin/story-builder/plans/${TEST_PLAN_ID}`);

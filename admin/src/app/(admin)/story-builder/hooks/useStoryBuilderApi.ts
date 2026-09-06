@@ -37,43 +37,74 @@ export async function loadPlanFromDb(id: string): Promise<{
   return res;
 }
 
+/**
+ * Single authoritative graph-ownership check. Treats a plan as graph-authored
+ * if the graph-deltas endpoint succeeds (even with 0 deltas — e.g. all filtered
+ * by partitionForWrite). Fail-closed on network/5xx so callers never fall back
+ * to forbidden plan_json writes.
+ */
+export async function isGraphAuthoredPlan(planId: string, signal?: AbortSignal): Promise<boolean> {
+  const gd = await adminFetch<{ success: boolean; data?: { deltas: any[]; graphAuthored?: boolean } }>(
+    `/admin/story-builder/plans/${planId}/graph-deltas`,
+    { signal },
+  );
+  if (!gd.success || !gd.data) return false;
+  // Explicit provenance from the endpoint; legacy persisted plans return
+  // graphAuthored:false (or absent) so callers can flush plan_json edits via
+  // updatePlan. Preserve false on failure/absent data.
+  if (typeof gd.data.graphAuthored === 'boolean') return gd.data.graphAuthored;
+  // Fallback for older server: infer from non-empty deltas.
+  return Array.isArray(gd.data.deltas) && gd.data.deltas.length > 0;
+}
+
 export async function generatePlan(description: string) {
-  // M32: the legacy two-phase `/plan` → `/plan/scaffold` intake was retired in
-  // favor of graph-based authoring. Create the plan (and its graph deltas)
-  // synchronously via graph-intake, then synthesize a ContentPlan so the
-  // existing review/approve/stage steps continue to work.
+  // M51/M52: use the generalized intake endpoint. It accepts description
+  // and optional messages, validates them, and creates a proposed plan
+  // with graph deltas. Returns the same data shape the UI expects:
+  // planId, status, plan (synthesized), conflicts, fileConflicts.
   let created: {
     success: boolean;
-    data?: { planId: string; description: string; deltaCount: number; edgeCount: number };
+    data?: {
+      planId: string;
+      description: string;
+      deltaCount: number;
+      edgeCount: number;
+      notes: any[];
+      usage: any;
+      timestamp: string;
+    };
     error?: string;
   };
   try {
     created = await postJSON<{
       success: boolean;
-      data?: { planId: string; description: string; deltaCount: number; edgeCount: number };
+      data?: {
+        planId: string;
+        description: string;
+        deltaCount: number;
+        edgeCount: number;
+        notes: any[];
+        usage: any;
+        timestamp: string;
+      };
       error?: string;
-    }>(
-      '/admin/story-builder/plans/graph-intake',
-      { description },
-    );
+    }>('/admin/story-builder/plans/intake', { description });
   } catch (error: any) {
-    // postJSON throws for non-2xx (e.g. HTTP 409 when the graph is disabled),
-    // so the success check below is unreachable on failure. Return the
-    // documented structured failure instead of rejecting.
-    return { success: false, error: error?.message || 'Failed to create graph-based plan' };
+    return { success: false, error: error?.message || 'Failed to create plan via intake', data: undefined };
   }
 
   if (!created.success || !created.data?.planId) {
-    return { success: created.success ?? false, error: created.error || 'Failed to create graph-based plan' };
+    return { success: created.success ?? false, error: created.error || 'Failed to create plan via intake', data: undefined };
   }
 
   const planId = created.data.planId;
+  // Synthesize a legacy ContentPlan from the graph deltas so the
+  // review/approve/stage UI can render it.
   let synth;
   try { synth = await adminFetch<{ success: boolean; data?: { plan: ContentPlan }; error?: string }>(`/admin/story-builder/plans/${planId}/graph-plan`); }
-  catch (error: any) { return { success: false, error: error?.message || 'Failed to load synthesized plan' }; }
-
+  catch (error: any) { return { success: false, error: error?.message || 'Failed to synthesize plan from graph deltas', data: undefined }; }
   if (!synth.success || !synth.data?.plan) {
-    return { success: false, error: synth.error || 'Failed to load synthesized plan' };
+    return { success: false, error: synth.error || 'Failed to synthesize plan from graph deltas', data: undefined };
   }
 
   return {
@@ -326,10 +357,39 @@ export async function regenerateLore(planId: string, itemId: string) {
   );
 }
 
-export async function listPlans(limit?: number, offset?: number) {
+export interface ListPlansFilters {
+  limit?: number;
+  offset?: number;
+  status?: string;
+  createdBy?: string;
+  since?: string;
+  q?: string;
+  sortBy?: 'created_at' | 'updated_at';
+  order?: 'asc' | 'desc';
+}
+
+export async function listPlans(
+  filtersOrLimit?: ListPlansFilters | number,
+  offsetParam?: number,
+) {
   const params = new URLSearchParams();
-  if (limit) params.set('limit', String(limit));
-  if (offset) params.set('offset', String(offset));
+  let filters: ListPlansFilters;
+  if (typeof filtersOrLimit === 'number') {
+    filters = { limit: filtersOrLimit, offset: offsetParam };
+  } else if (filtersOrLimit && typeof filtersOrLimit === 'object') {
+    filters = filtersOrLimit;
+  } else {
+    filters = { offset: offsetParam };
+  }
+  if (filters.limit != null) params.set('limit', String(filters.limit));
+  if (filters.offset != null) params.set('offset', String(filters.offset));
+  if (filters.status) params.set('status', filters.status);
+  if (filters.createdBy) params.set('createdBy', filters.createdBy);
+  if (filters.since) params.set('since', filters.since);
+  if (filters.q) params.set('q', filters.q);
+  if (filters.sortBy) params.set('sortBy', filters.sortBy);
+  if (filters.order) params.set('order', filters.order);
+  const qs = params.toString();
   return adminFetch<{
     success: boolean;
     data?: {
@@ -337,14 +397,16 @@ export async function listPlans(limit?: number, offset?: number) {
         id: string;
         description: string;
         status: string;
+        created_by?: string | null;
         created_at: string;
         updated_at: string;
         item_count: number;
       }>;
       total: number;
+      filters?: Record<string, string>;
     };
     error?: string;
-  }>(`/admin/story-builder/plans?${params.toString()}`);
+  }>(`/admin/story-builder/plans${qs ? `?${qs}` : ''}`);
 }
 
 export async function deletePlan(planId: string) {
@@ -395,4 +457,28 @@ export async function getPlanVersions(planId: string) {
     success: true,
     data: { id: planId, description: '', status: '', created_at: '', updated_at: '', parent_plan_id: null, children: [] },
   };
+}
+
+/**
+ * Reject a plan via PUT /plans/:id with status='rejected'.
+ * Cleans up graph deltas and emits an audit event server-side.
+ */
+export async function rejectPlan(planId: string) {
+  return adminFetch<{ success: boolean; data?: { planId: string; status: string }; error?: string }>(
+    `/admin/story-builder/plans/${planId}`,
+    {
+      method: 'PUT',
+      body: JSON.stringify({ plan: {}, status: 'rejected' }),
+    },
+  );
+}
+
+/**
+ * Run verification on a migrated plan (POST /plans/:id/verify).
+ */
+export async function verifyPlan(planId: string) {
+  return postJSON<{ success: boolean; data?: any; error?: string }>(
+    `/admin/story-builder/plans/${planId}/verify`,
+    {},
+  );
 }
