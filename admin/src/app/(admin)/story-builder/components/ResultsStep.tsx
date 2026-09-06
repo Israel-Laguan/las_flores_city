@@ -61,7 +61,7 @@ function liveContentHref(item: ContentPlanItem): string | null {
 
 function StatusBox({ result, verified, failed }: { result: SolidifyResultLite; verified: boolean; failed: boolean }) {
   return (
-    <div className={verified ? styles.successBox : failed ? styles.errorBox : styles.neutralBox}>
+    <div data-testid="solidify-result" className={verified ? styles.successBox : failed ? styles.errorBox : styles.neutralBox}>
       <p className={styles.boldText}>
         {verified ? '✓ Plan verified and shipped!' : failed ? '✗ Solidify failed' : 'Solidify finished'}
       </p>
@@ -279,7 +279,7 @@ export default function ResultsStep({ result, plan, planId }: ResultsStepProps) 
   };
 
   return (
-    <div className={styles.section}>
+    <div className={styles.section} data-testid="results-step">
       <h2 className={styles.sectionHeading}>Results</h2>
 
       {asyncInProgress && (

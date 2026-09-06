@@ -101,9 +101,10 @@ M52 further updates the admin flow:
   checks for graph deltas before sending `plan_json`. Graph-backed plans omit
   `plan_json` from the analyze request so the server-side critique service
   consumes the merged graph revision instead.
-- **Refresh after chat/apply-delta**: `useChatApi.refreshPlan` calls
-  `GET /plans/:id/graph-plan` to synthesize the current graph revision for the
-  review UI after `apply-delta` or `discard-delta` operations.
+- **Refresh after chat/apply-delta**: `admin/src/components/useChatApi.ts#refreshPlan` calls
+  `GET /plans/:id/graph-plan` to synthesize the current graph revision; `ChatPanel` calls it after
+  `apply-delta`/`discard-delta` and dispatches `lf:plan-refreshed` which `useStoryBuilder` listens to
+  to update the review UI.
 
 #### Request
 

@@ -162,6 +162,18 @@ export function useStoryBuilder(initialPlanId: string | null) {
     }
   }, [planId, plan, loading, setLoading, setError, setPlan, setPlanId]);
 
+  // M52: refresh review data from current graph revision after chat/apply-delta.
+  // ChatPanel dispatches `lf:plan-refreshed` with the merged ContentPlan.
+  useEffect(() => {
+    function onPlanRefreshed(e: Event) {
+      const detail = (e as CustomEvent<{ planId: string; plan: ContentPlan }>).detail;
+      if (!detail || detail.planId !== planId) return;
+      setPlan(detail.plan);
+    }
+    window.addEventListener('lf:plan-refreshed', onPlanRefreshed as EventListener);
+    return () => window.removeEventListener('lf:plan-refreshed', onPlanRefreshed as EventListener);
+  }, [planId]);
+
   const handlers = buildHandlers(planId, refineFeedback, apiCallbacks, applyMutation, handleRefineItem, setStep);
 
   return {

@@ -15,7 +15,7 @@ interface StepIndicatorProps {
 
 export default function StepIndicator({ step }: StepIndicatorProps) {
   return (
-    <div className={styles.progressBar}>
+    <div className={styles.progressBar} data-testid="step-indicator">
       {stepLabels.map((label, i) => (
         <div key={i} className={styles.stepGroup}>
           <div

@@ -151,7 +151,7 @@ function MessageList({ messages, annotationType }: { messages: ChatMessage[]; an
 // never trusts the previous propose response payload.
 export default function ChatPanel() {
   const { isOpen, context, close } = useChatPanel();
-  const { chat, applyDelta, discardDelta } = useChatApi();
+  const { chat, applyDelta, discardDelta, refreshPlan } = useChatApi();
 
   const planId = context?.planId ?? null;
   const annotationId = context?.annotation?.id;
@@ -251,6 +251,13 @@ export default function ChatPanel() {
       if (requestToken !== sessionTokenRef.current) return;
       setMessages(prev => [...prev, { role: 'assistant', content: `Applied ${res.appliedCount} delta(s) — the merged revision was refreshed.` }]);
       setProposal(null);
+      // M52: refresh review data from current graph revision after apply-delta.
+      try {
+        const refreshed = await refreshPlan(planId);
+        if (refreshed && requestToken === sessionTokenRef.current) {
+          window.dispatchEvent(new CustomEvent('lf:plan-refreshed', { detail: { planId, plan: refreshed } }));
+        }
+      } catch { /* refresh is best-effort; apply already succeeded */ }
     } catch (err: any) {
       if (requestToken !== sessionTokenRef.current) return;
       setError(err?.message || String(err));
@@ -278,6 +285,13 @@ export default function ChatPanel() {
         if (deltas.length === 0 && newDeltaEdges.length === 0) return null;
         return { ...prev, deltas, deltaEdges: newDeltaEdges };
       });
+      // M52: refresh review data from current graph revision after discard-delta.
+      try {
+        const refreshed = await refreshPlan(planId);
+        if (refreshed && requestToken === sessionTokenRef.current) {
+          window.dispatchEvent(new CustomEvent('lf:plan-refreshed', { detail: { planId, plan: refreshed } }));
+        }
+      } catch { /* best-effort */ }
     } catch (err: any) {
       if (requestToken !== sessionTokenRef.current) return;
       setError(err?.message || String(err));

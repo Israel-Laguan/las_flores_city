@@ -193,8 +193,11 @@ export default function DescribeStep({ description, setDescription, onGenerate, 
       <CloneSection contentTree={contentTree} loading={loading} onClone={onClone} />
 
       <div className={styles.field}>
-        <label className={styles.label}>Description *</label>
+        <label className={styles.label} htmlFor="story-builder-description">Description *</label>
         <textarea
+          id="story-builder-description"
+          name="description"
+          data-testid="describe-textarea"
           className={styles.textarea}
           value={description}
           onChange={e => setDescription(e.target.value)}
@@ -217,6 +220,7 @@ export default function DescribeStep({ description, setDescription, onGenerate, 
 
       <ExamplesSection />
       <button
+        data-testid="generate-plan-btn"
         className={cn(styles.button, styles.primaryButton, (loading || !description.trim()) && styles.disabledButton)}
         onClick={onGenerate}
         disabled={loading || !description.trim()}

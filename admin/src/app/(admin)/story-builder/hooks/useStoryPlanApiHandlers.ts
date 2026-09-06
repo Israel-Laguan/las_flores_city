@@ -157,10 +157,20 @@ function makeRefine(cb: HandlersDeps) {
       }
       // Persist author edits first so refine runs against the edited plan (server
       // reloads the stored plan_json; without this, edits would be discarded).
+      // M52: graph-backed plans must not send forbidden PUT plan_json — skip
+      // the write when deltas are present and let the server consume the merged
+      // graph revision.
       if (planId && plan) {
-        const saveRes = await api.updatePlan(planId, plan);
-        if (!saveRes.success) {
-          throw new Error(saveRes.error || 'Failed to save plan edits before refining');
+        let hasDeltas = false;
+        try {
+          const gd = await adminFetch<{ success: boolean; data?: { deltas: any[] } }>(`/admin/story-builder/plans/${planId}/graph-deltas`);
+          hasDeltas = !!(gd.success && gd.data && gd.data.deltas.length > 0);
+        } catch { /* legacy plan — no deltas */ }
+        if (!hasDeltas) {
+          const saveRes = await api.updatePlan(planId, plan);
+          if (!saveRes.success) {
+            throw new Error(saveRes.error || 'Failed to save plan edits before refining');
+          }
         }
       }
       if (!planId) return null;
