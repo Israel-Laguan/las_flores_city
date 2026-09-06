@@ -6,6 +6,7 @@ import type { AuthRequest } from '../middleware/auth.js';
 import { ChatMessageSchema, type ChatMessage } from '@las-flores/shared';
 import { graphIntakeService, GraphIntakeDisabledError, GraphIntakeValidationError } from '../services/GraphIntakeService.js';
 import { isNeo4jEnabled } from '../services/Neo4jClient.js';
+import { emitAdminEvent } from '../services/AdminEventEmitter.js';
 
 export const adminStoryBuilderGraphIntakeRouter = express.Router();
 
@@ -281,6 +282,94 @@ adminStoryBuilderGraphIntakeRouter.delete('/plans/:id/graph-intake', async (req:
     res.status(500).json({
       success: false,
       error: error.message || 'Failed to discard plan',
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+// POST /admin/story-builder/plans/intake — M51/M52: Generalized HTTP intake
+// Mirrors graph-intake but with proper actor attribution and event emission.
+// Accepts { description: string, messages?: ChatMessage[] }.
+adminStoryBuilderGraphIntakeRouter.post('/plans/intake', async (req: AuthRequest, res) => {
+  try {
+    if (!isNeo4jEnabled()) {
+      res.status(409).json({
+        success: false,
+        error: 'Neo4j authoring graph is disabled — cannot create graph-based plan. Enable NEO4J_ENABLED first.',
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    const { description, messages } = req.body ?? {};
+
+    if (!description || typeof description !== 'string' || description.trim().length === 0) {
+      res.status(400).json({
+        success: false,
+        error: 'Description is required and must be a non-empty string',
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    let validatedMessages: ChatMessage[] = [];
+    if (messages !== undefined && messages !== null) {
+      if (!Array.isArray(messages)) {
+        res.status(400).json({
+          success: false,
+          error: 'messages must be an array when provided',
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+      for (let i = 0; i < messages.length; i++) {
+        const parsed = ChatMessageSchema.safeParse(messages[i]);
+        if (!parsed.success) {
+          res.status(400).json({
+            success: false,
+            error: `messages[${i}]: ${parsed.error.issues.map((x) => x.message).join('; ')}`,
+            timestamp: new Date().toISOString(),
+          });
+          return;
+        }
+        validatedMessages.push(parsed.data);
+      }
+    }
+
+    const result = await graphIntakeService.createPlanFromDescription(
+      description,
+      validatedMessages,
+      req.userId,
+    );
+
+    emitAdminEvent('plan_intake', { deltaCount: result.deltaCount, edgeCount: result.edgeCount }, result.planId, req.userId);
+
+    res.json({
+      success: true,
+      data: result,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    if (error instanceof GraphIntakeDisabledError) {
+      res.status(409).json({
+        success: false,
+        error: error.message,
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+    if (error instanceof GraphIntakeValidationError) {
+      res.status(400).json({
+        success: false,
+        error: error.message,
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+    console.error('[story-builder] POST /plans/intake error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to create plan via intake',
       timestamp: new Date().toISOString(),
     });
   }

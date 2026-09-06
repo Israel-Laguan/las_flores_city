@@ -80,10 +80,30 @@ content, publish assets, approve the plan, or run solidify. Review the plan in t
 admin UI and inspect its Neo4j deltas before a later approval step. `proposed` is
 the existing review-ready state; no separate `working` status is needed.
 
-### 1.2. HTTP Plan Intake Endpoint (M51)
+### 1.2. HTTP Plan Intake Endpoint (M51/M52)
 
-M51 generalizes the validated CLI intake flow into a supported admin HTTP endpoint:
+M51/M52 generalizes the validated CLI intake flow into a supported admin HTTP endpoint:
 `POST /admin/story-builder/plans/intake`.
+
+The admin Story Builder `generatePlan()` in `useStoryBuilderApi.ts` calls this endpoint
+directly (single-hop, no `graph-intake` → `graph-plan` synthesis). The returned shape
+includes `planId`, `description`, `deltaCount`, `edgeCount`, `notes`, `usage`, and
+`timestamp`.
+
+M52 further updates the admin flow:
+
+- **Pre-approval `PUT plan_json` is gated**: `makeApproveAndSolidify` checks for
+  graph deltas via `GET /plans/:id/graph-deltas`. If deltas exist, the plan is
+  graph-backed and `updatePlan` is skipped; the `approveAndSolidify` endpoint reads
+  the merged graph revision directly. Legacy plans (no deltas) still persist edits
+  before shipping.
+- **Critique does not send forbidden `plan_json`**: `useCritiqueApi.runCritique`
+  checks for graph deltas before sending `plan_json`. Graph-backed plans omit
+  `plan_json` from the analyze request so the server-side critique service
+  consumes the merged graph revision instead.
+- **Refresh after chat/apply-delta**: `useChatApi.refreshPlan` calls
+  `GET /plans/:id/graph-plan` to synthesize the current graph revision for the
+  review UI after `apply-delta` or `discard-delta` operations.
 
 #### Request
 

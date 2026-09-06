@@ -38,42 +38,37 @@ export async function loadPlanFromDb(id: string): Promise<{
 }
 
 export async function generatePlan(description: string) {
-  // M32: the legacy two-phase `/plan` → `/plan/scaffold` intake was retired in
-  // favor of graph-based authoring. Create the plan (and its graph deltas)
-  // synchronously via graph-intake, then synthesize a ContentPlan so the
-  // existing review/approve/stage steps continue to work.
-  let created: {
+  // M51/M52: use the generalized intake endpoint. It accepts description
+  // and optional messages, validates them, and creates a proposed plan
+  // with graph deltas. Returns the same data shape the UI expects:
+  // planId, status, plan (synthesized), conflicts, fileConflicts.
+  const created = await postJSON<{
     success: boolean;
-    data?: { planId: string; description: string; deltaCount: number; edgeCount: number };
+    data?: {
+      planId: string;
+      description: string;
+      deltaCount: number;
+      edgeCount: number;
+      notes: any[];
+      usage: any;
+      timestamp: string;
+      status: string;
+    };
     error?: string;
-  };
-  try {
-    created = await postJSON<{
-      success: boolean;
-      data?: { planId: string; description: string; deltaCount: number; edgeCount: number };
-      error?: string;
-    }>(
-      '/admin/story-builder/plans/graph-intake',
-      { description },
-    );
-  } catch (error: any) {
-    // postJSON throws for non-2xx (e.g. HTTP 409 when the graph is disabled),
-    // so the success check below is unreachable on failure. Return the
-    // documented structured failure instead of rejecting.
-    return { success: false, error: error?.message || 'Failed to create graph-based plan' };
-  }
+  }>('/admin/story-builder/plans/intake', { description });
 
   if (!created.success || !created.data?.planId) {
-    return { success: created.success ?? false, error: created.error || 'Failed to create graph-based plan' };
+    return { success: created.success ?? false, error: created.error || 'Failed to create plan via intake', data: undefined };
   }
 
   const planId = created.data.planId;
+  // Synthesize a legacy ContentPlan from the graph deltas so the
+  // review/approve/stage UI can render it.
   let synth;
   try { synth = await adminFetch<{ success: boolean; data?: { plan: ContentPlan }; error?: string }>(`/admin/story-builder/plans/${planId}/graph-plan`); }
-  catch (error: any) { return { success: false, error: error?.message || 'Failed to load synthesized plan' }; }
-
+  catch (error: any) { return { success: false, error: error?.message || 'Failed to synthesize plan from graph deltas', data: undefined }; }
   if (!synth.success || !synth.data?.plan) {
-    return { success: false, error: synth.error || 'Failed to load synthesized plan' };
+    return { success: false, error: synth.error || 'Failed to synthesize plan from graph deltas', data: undefined };
   }
 
   return {

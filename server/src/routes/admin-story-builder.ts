@@ -18,5 +18,5 @@ adminStoryBuilderRouter.use(adminStoryBuilderActionsRouter);
 // Mount lore regeneration routes
 adminStoryBuilderRouter.use(adminStoryBuilderLoreRouter);
 
-// Mount graph-based intake routes (M32)
+// Mount graph-based intake routes (M32) incl. M51/M52 /plans/intake
 adminStoryBuilderRouter.use(adminStoryBuilderGraphIntakeRouter);

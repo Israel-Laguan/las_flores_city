@@ -82,19 +82,25 @@ export function useCritique(planId: string | null): CritiqueApiResult {
     setAnalyzeLoading(true);
     setError(null);
     try {
+      // M52: graph-backed plans must not send forbidden direct plan_json
+      // edits. The server-side critique service consumes the merged graph
+      // revision instead. Check for deltas to determine if this is a
+      // graph-backed plan.
+      const graphRes = await adminFetch<{ success: boolean; data?: { deltas: any[] }; error?: string }>(
+        `/admin/story-builder/plans/${planId}/graph-deltas`,
+        { signal: controller.signal },
+      );
+      const hasDeltas = graphRes.success && graphRes.data && graphRes.data.deltas.length > 0;
+      const body: Record<string, unknown> = { scope };
+      if (!hasDeltas) {
+        body.plan_json = plan ?? null;
+      }
       const res = await adminFetch<{ success: boolean; data?: { annotations: CritiqueAnnotation[] }; error?: string }>(
         `/admin/story-builder/plans/${planId}/analyze`,
-        // Send the current plan_json so the critique runs against the author's
-        // latest edits (the server persists it before analyzing).
-        { method: 'POST', body: JSON.stringify({ scope, plan_json: plan ?? null }), signal: controller.signal },
+        { method: 'POST', body: JSON.stringify(body), signal: controller.signal },
       );
       if (seq !== seqRef.current) return;
       if (res.success) {
-        // Reload the full stored annotation set rather than trusting the partial
-        // list the analyze endpoint returns (it only covers this scope+hash run).
-        // Clear analyzeLoading *before* the reload — fetchAnnotations increments
-        // the shared seqRef, so if we cleared in `finally` the check
-        // `seq === seqRef.current` would fail and leave the button stuck.
         setAnalyzeLoading(false);
         await fetchAnnotations();
       } else {

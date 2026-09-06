@@ -5,6 +5,7 @@ import type { Step, GenerationStatus } from '../types';
 import type { SolidifyResultLite } from '../components/ResultsStep';
 import * as api from './useStoryBuilderApi';
 import { createDraftPlanHandlers, refreshPlanFromDb } from './useDraftPlanApi';
+import { adminFetch } from '@/lib/client-api';
 
 type SetState<T> = (v: T | ((prev: T) => T)) => void;
 
@@ -191,10 +192,19 @@ function makeApproveAndSolidify(cb: HandlersDeps) {
   return useCallback(async (planId: string) => {
     if (!planId) return;
     const data = await withLoading(setLoading, setError, async () => {
-      // Persist author edits first so ship uses the edited plan. The server
-      // re-parses plan_json from the DB during approve-and-solidify; without this
-      // the edits would be lost.
+      // M52: graph-authored plans must not send a pre-approval PUT plan_json.
+      // The approve-and-solidify endpoint reads the merged graph revision
+      // directly; plan_json edits would conflict with deltas already in the
+      // authoring graph and are rejected by the server with 409.
       if (plan) {
+        const deltasRes = await adminFetch<{ success: boolean; data?: { deltas: any[] }; error?: string }>(
+          `/admin/story-builder/plans/${planId}/graph-deltas`,
+        );
+        if (deltasRes.success && deltasRes.data && deltasRes.data.deltas.length > 0) {
+          // Graph-backed plan — skip the pre-approval updatePlan write.
+          return api.approveAndSolidify(planId);
+        }
+        // Legacy plan (no deltas) — persist author edits first.
         const saveRes = await api.updatePlan(planId, plan);
         if (!saveRes.success) {
           throw new Error(saveRes.error || 'Failed to save plan edits before shipping');
