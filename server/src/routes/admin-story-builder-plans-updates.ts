@@ -26,7 +26,7 @@ adminStoryBuilderPlansUpdatesRouter.put('/plans/:id', async (req: AuthRequest, r
     // revision token so two concurrent saves that observed the same status
     // cannot silently clobber each other's `plan_json`.
     const currentPlanRow = await queryOLTP<{ status: string; updated_at: string }>(
-      'SELECT status, updated_at FROM content_plans WHERE id = $1',
+      'SELECT status, updated_at::text AS updated_at FROM content_plans WHERE id = $1',
       [id],
     );
 
@@ -119,8 +119,8 @@ adminStoryBuilderPlansUpdatesRouter.put('/plans/:id', async (req: AuthRequest, r
        WHERE id = $4
          AND status = $5
          AND status <> 'rejected'
-         AND updated_at = $6::timestamptz
-       RETURNING id`,
+          AND updated_at::text = $6
+        RETURNING id`,
       [validatedPlan, validatedPlan.description, finalStatus, id, currentStatus, observedUpdatedAt]
     );
 

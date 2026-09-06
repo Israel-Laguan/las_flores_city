@@ -939,7 +939,7 @@ export class GraphIntakeService {
     const semanticNotes = await this.semanticNotes(description, safeDeltas);
     const notes = await this.triageAndAnnotate(planId, safeDeltas, partitionDiagnostics, semanticNotes);
 
-    emitAdminEvent(
+    await emitAdminEvent(
       'plan_created',
       {
         descriptionLength: description.trim().length,

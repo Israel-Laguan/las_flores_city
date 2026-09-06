@@ -188,7 +188,7 @@ adminStoryBuilderGraphIntakeRouter.get('/plans/:id/graph-deltas', async (req: Au
          FROM admin_events
          WHERE plan_id = $1
            AND event_type IN ('plan_created', 'plan_intake')
-           AND event_data->>'source' = 'graph-intake'
+           AND (event_type = 'plan_intake' OR event_data->>'source' = 'graph-intake')
          UNION ALL
          SELECT 1 AS one
          FROM critique_annotations
@@ -369,7 +369,7 @@ adminStoryBuilderGraphIntakeRouter.post('/plans/intake', async (req: AuthRequest
       req.userId,
     );
 
-    emitAdminEvent('plan_intake', { deltaCount: result.deltaCount, edgeCount: result.edgeCount }, result.planId, req.userId);
+    await emitAdminEvent('plan_intake', { deltaCount: result.deltaCount, edgeCount: result.edgeCount, source: 'graph-intake' }, result.planId, req.userId);
 
     res.json({
       success: true,

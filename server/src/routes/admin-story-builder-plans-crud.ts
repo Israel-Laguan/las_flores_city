@@ -228,6 +228,11 @@ adminStoryBuilderPlansCrudRouter.get('/plans/:id', async (req, res) => {
   try {
     const { id } = req.params;
 
+    if (!UUID_RE.test(id)) {
+      res.status(404).json({ success: false, error: 'Plan not found', timestamp: new Date().toISOString() });
+      return;
+    }
+
     const result = await queryOLTP(
       'SELECT id, description, plan_json, status, feedback_log, created_at, updated_at FROM content_plans WHERE id = $1',
       [id]

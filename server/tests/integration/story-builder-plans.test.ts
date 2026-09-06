@@ -204,7 +204,7 @@ describe('PUT /admin/story-builder/plans/:id', () => {
 
   test('updates a plan', async () => {
     mockQueryOLTP.mockResolvedValueOnce({
-      rows: [{ status: 'proposed' }],
+      rows: [{ status: 'proposed', updated_at: '2026-09-06T00:00:00.000Z' }],
       rowCount: 1, command: 'SELECT', oid: 0, fields: [],
     }).mockResolvedValueOnce({
       rows: [{ id: TEST_PLAN_ID }],
@@ -222,7 +222,7 @@ describe('PUT /admin/story-builder/plans/:id', () => {
 
   test('approves a plan and returns updated status', async () => {
     mockQueryOLTP.mockResolvedValueOnce({
-      rows: [{ status: 'proposed' }],
+      rows: [{ status: 'proposed', updated_at: '2026-09-06T00:00:00.000Z' }],
       rowCount: 1, command: 'SELECT', oid: 0, fields: [],
     }).mockResolvedValueOnce({
       rows: [{ id: TEST_PLAN_ID, plan_json: MOCK_PLAN }],
