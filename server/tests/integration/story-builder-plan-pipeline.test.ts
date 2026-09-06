@@ -33,6 +33,7 @@ import { executePlan } from '../../src/services/StoryBuilderPlanOps.js';
 import { generateLoreStubs } from '../../src/services/StoryBuilderLore.js';
 import { verifyPlanCrossReferences } from '../../src/services/PlanVerificationService.js';
 import { publishDialogueTree } from '../../src/services/ContentPublishService.js';
+import { deleteFromMinio } from '../../src/services/StorageService.js';
 
 // Dedicated synthetic IDs (collision-avoidance per AGENTS.md).
 const MISSION_ID = 'e4300000-0000-4000-8000-0000000000a1';
@@ -96,6 +97,19 @@ async function listFilesRecursive(dir: string): Promise<string[]> {
 }
 
 async function clearDbState(): Promise<void> {
+  // Collect MinIO pointers BEFORE deleting rows so the content-addressed
+  // blobs (fixture tree blob, compiled chunks, snapshots) can be removed as
+  // well — otherwise each run orphans them in MinIO. All keys are namespaced
+  // by FIXTURE_TREE_ID (dialogues/<id>__, chunks/<id>/, snapshots/<id>__),
+  // so this only touches objects owned by this test.
+  const treeUrls = await oltpPool.query<{ content_url: string | null }>(
+    `SELECT content_url FROM dialogue_trees WHERE id = $1::uuid`,
+    [FIXTURE_TREE_ID],
+  );
+  const chunkUrls = await oltpPool.query<{ content_url: string | null }>(
+    `SELECT content_url FROM dialogue_chunks WHERE tree_id = $1::uuid`,
+    [FIXTURE_TREE_ID],
+  );
   await oltpPool.query(`DELETE FROM mysteries WHERE id = ANY($1::uuid[])`, [
     [MISSION_ID, BAD_MISSION_ID],
   ]);
@@ -108,6 +122,21 @@ async function clearDbState(): Promise<void> {
   await oltpPool.query(`DELETE FROM districts WHERE name = $1`, [DISTRICT_NAME]);
   await oltpPool.query(
     `DELETE FROM migration_log WHERE file_path LIKE '%m43_pipeline%'`,
+  );
+  // Best-effort blob cleanup: dedupe (content-addressing can repeat keys;
+  // DeleteObject is idempotent anyway) and never fail the suite if MinIO is
+  // unreachable during teardown.
+  const urls = new Set(
+    [...treeUrls.rows, ...chunkUrls.rows]
+      .map((r) => r.content_url)
+      .filter((u): u is string => typeof u === 'string' && u.length > 0),
+  );
+  await Promise.all(
+    [...urls].map((url) =>
+      deleteFromMinio(url).catch((err: any) =>
+        console.warn(`[m43-pipeline] MinIO cleanup skipped for ${url}: ${err?.message ?? err}`),
+      ),
+    ),
   );
 }
 
