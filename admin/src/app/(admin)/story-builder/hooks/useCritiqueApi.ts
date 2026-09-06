@@ -86,7 +86,7 @@ export function useCritique(planId: string | null): CritiqueApiResult {
       // Reuse the single graph-ownership helper; fail closed on lookup error
       // so we never send forbidden plan_json for a graph-authored plan.
       const { isGraphAuthoredPlan } = await import('./useStoryBuilderApi');
-      const hasDeltas = await isGraphAuthoredPlan(planId);
+      const hasDeltas = await isGraphAuthoredPlan(planId, controller.signal);
       const body: Record<string, unknown> = { scope };
       if (!hasDeltas) {
         body.plan_json = plan ?? null;

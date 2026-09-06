@@ -43,23 +43,21 @@ export async function loadPlanFromDb(id: string): Promise<{
  * by partitionForWrite). Fail-closed on network/5xx so callers never fall back
  * to forbidden plan_json writes.
  */
-export async function isGraphAuthoredPlan(planId: string): Promise<boolean> {
+export async function isGraphAuthoredPlan(planId: string, signal?: AbortSignal): Promise<boolean> {
   const gd = await adminFetch<{ success: boolean; data?: { deltas: any[] } }>(
     `/admin/story-builder/plans/${planId}/graph-deltas`,
+    { signal },
   );
   // Endpoint reachable => graph stack owns this plan's provenance.
   // Legacy plans also return 200 with empty deltas, but they are created via
   // POST /plans (plan_json path) and never need this check — callers only
   // invoke isGraphAuthoredPlan for plans known to be graph-provenance.
   // The check is therefore: if Neo4j stack responded, treat as graph-owned
-  // only when deltas were ever present; empty-but-reachable still counts as
-  // graph-owned to prevent silent plan_json divergence.
+  // even when deltas are empty (they may be filtered by partitionForWrite).
+  // Callers only invoke this for plans known to be graph-provenance.
   if (!gd.success || !gd.data) return false;
-  // If the plan has ever had deltas, keep it graph-owned even after filtering.
-  // We cannot distinguish filtered-empty from legacy-empty here, so we rely on
-  // the caller having set a local flag at creation time; fallback: empty = not graph-owned
-  // unless the caller knows otherwise. Minimal safe default: length > 0.
-  return gd.data.deltas.length > 0;
+  // Endpoint reachable + data present = graph-owned (deltas may be filtered-empty).
+  return !!gd.data;
 }
 
 export async function generatePlan(description: string) {

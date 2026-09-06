@@ -11,7 +11,8 @@ vi.mock('../hooks/useStoryBuilderApi', () => {
   const savePlan = vi.fn();
   const selectTemplate = vi.fn();
   const loadPlanFromDb = vi.fn(async () => ({ success: true, data: { plan_json: { id: 'scaffold-plan', items: [] }, description: '' } }));
-  return { updatePlan, refinePlan, refinePlanPreview, scaffoldPlan, approveAndSolidify, generatePlan, savePlan, selectTemplate, loadPlanFromDb, __esModule: true };
+  const isGraphAuthoredPlan = vi.fn(async () => false);
+  return { updatePlan, refinePlan, refinePlanPreview, scaffoldPlan, approveAndSolidify, generatePlan, savePlan, selectTemplate, loadPlanFromDb, isGraphAuthoredPlan, __esModule: true };
 });
 
 vi.mock('@/lib/client-api', () => ({
@@ -84,12 +85,9 @@ describe('useStoryPlanApiHandlers edit fidelity (M13)', () => {
   });
 
   it('skips updatePlan before approve-and-solidify for graph-backed plans', async () => {
-    const { adminFetch } = await import('@/lib/client-api');
-    // Mock graph-deltas to return a plan with deltas (graph-backed)
-    (adminFetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
-      success: true,
-      data: { deltas: [{ id: 'd1', nodeType: 'Character', nodeId: 'c1', op: 'ADD' }] },
-    });
+    const { isGraphAuthoredPlan } = await import('../hooks/useStoryBuilderApi');
+    // Mock isGraphAuthoredPlan to return true for graph-backed plans
+    (isGraphAuthoredPlan as ReturnType<typeof vi.fn>).mockResolvedValueOnce(true);
 
     const plan = makePlan();
     const handlers = renderHook(() =>

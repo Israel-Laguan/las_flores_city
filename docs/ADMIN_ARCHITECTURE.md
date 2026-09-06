@@ -326,9 +326,7 @@ app/story-builder/
 ```
 
 
-**State ownership**: `useStoryBuilder` owns the 11 `useState` slots (`step`, `description`, `plan`, `loading`, `error`, `planId`, `refineFeedback`, `showRefine`, `solidifyResult`, `genStatus`, `conflicts`, `fileConflicts`, `templates`, `contentTree`). It composes two sibling hooks:
-- `useStoryPlanApi` — wraps the API actions (generate / refine / preview / stage / migrate / retry) with the state setters.
-- `useStoryBuilderMutations` — pure functional transforms on the `ContentPlan` (e.g. `updateItemField`, `addLink`, `removeItem`).
+**State ownership**: `useStoryBuilder` owns the 14 `useState` slots (`step`, `description`, `plan`, `loading`, `error`, `planId`, `refineFeedback`, `showRefine`, `solidifyResult`, `genStatus`, `conflicts`, `fileConflicts`, `templates`, `contentTree`). It composes `useStoryPlanApi` and uses the pure transform helpers from `useStoryBuilderMutations` plus `useStoryBuilderApi` utilities:
 
 `useStoryBuilderApi` provides `loadPlanFromDb`, `generatePlan` (`POST /plans/intake`), templates and `isGraphAuthoredPlan`. `useCritique` (`useCritiqueApi`) is composed separately in `StoryBuilder.tsx`, not inside `useStoryBuilder`; it skips sending `plan_json` for graph-backed plans (M52).
 
