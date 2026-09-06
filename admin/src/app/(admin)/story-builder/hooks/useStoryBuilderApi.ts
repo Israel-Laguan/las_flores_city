@@ -422,3 +422,27 @@ export async function getPlanVersions(planId: string) {
     data: { id: planId, description: '', status: '', created_at: '', updated_at: '', parent_plan_id: null, children: [] },
   };
 }
+
+/**
+ * Reject a plan via PUT /plans/:id with status='rejected'.
+ * Cleans up graph deltas and emits an audit event server-side.
+ */
+export async function rejectPlan(planId: string) {
+  return adminFetch<{ success: boolean; data?: { planId: string; status: string }; error?: string }>(
+    `/admin/story-builder/plans/${planId}`,
+    {
+      method: 'PUT',
+      body: JSON.stringify({ plan: {}, status: 'rejected' }),
+    },
+  );
+}
+
+/**
+ * Run verification on a migrated plan (POST /plans/:id/verify).
+ */
+export async function verifyPlan(planId: string) {
+  return postJSON<{ success: boolean; data?: any; error?: string }>(
+    `/admin/story-builder/plans/${planId}/verify`,
+    {},
+  );
+}
