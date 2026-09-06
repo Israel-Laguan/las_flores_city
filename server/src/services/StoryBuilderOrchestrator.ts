@@ -401,7 +401,7 @@ export async function resumeSolidify(planId: string, userId?: string): Promise<v
               ORDER BY created_at DESC, id DESC
               LIMIT 1
            )`,
-        [planId, run.id, run.committedStages ?? []],
+        [planId, run.id, JSON.stringify(run.committedStages ?? [])],
        );
     });
     return;

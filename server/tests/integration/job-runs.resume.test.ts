@@ -163,6 +163,41 @@ describe('job_runs resume integration', () => {
     },
   );
 
+  it.each(['staged', 'migrated'])(
+    'legacy no-token resume flips a %s plan to failed when this run committed the marker',
+    async (midStatus) => {
+      // Same setup as the preserve test above, except the legacy run's own
+      // lifecycle committed the matching stage marker (a crash right after
+      // solidify's own commit). The OR-branch must flip these to `failed` so
+      // the retry route accepts the plan again.
+      await queryOLTP('DELETE FROM job_runs WHERE plan_id = $1', [TEST_PLAN_ID]);
+      await queryOLTP(
+        `INSERT INTO content_plans (id, description, plan_json, status)
+         VALUES ($1, 'resume-legacy', '{}'::jsonb, $2)
+         ON CONFLICT (id) DO UPDATE SET status = $2, plan_json = '{}'::jsonb`,
+        [TEST_PLAN_ID, midStatus],
+      );
+      await deleteCache(`${JOB_CACHE_PREFIX}${TEST_PLAN_ID}`);
+      const committedStages =
+        midStatus === 'staged'
+          ? '["staging","publish","staged"]'
+          : '["staging","publish","staged","migrated"]';
+      await queryOLTP(
+        `INSERT INTO job_runs (plan_id, job_type, status, attempt, max_attempts, run_token, committed_stages)
+         VALUES ($1, 'solidify', 'resumable', 1, 3, NULL, $2::jsonb)`,
+        [TEST_PLAN_ID, committedStages],
+      );
+      await resumeSolidify(TEST_PLAN_ID);
+
+      const run = await getJobRun(TEST_PLAN_ID, 'solidify');
+      expect(run!.status).toBe('failed');
+      const plan = await queryOLTP<{ status: string }>(
+        'SELECT status FROM content_plans WHERE id = $1', [TEST_PLAN_ID],
+      );
+      expect(plan.rows[0].status).toBe('failed');
+    },
+  );
+
   it('legacy no-token resume is a no-op when a newer running solidify run owns the plan', async () => {
     // resumeSolidify resolves the LATEST solidify run first (getJobRun). When the
     // newest run is a newer `running` run that owns the plan, resumeSolidify

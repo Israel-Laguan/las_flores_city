@@ -260,14 +260,19 @@ adminStoryBuilderPlansRouter.put('/plans/:id', async (req, res) => {
 
     // Conditional UPDATE: the `status <> 'rejected'` guard ensures a concurrent
     // rejection cannot be overwritten by a stale proposed/draft status from this
-    // request. If a concurrent rejection wins the race, this UPDATE is a no-op
-    // and returns 0 rows, surfacing a 409 so the caller can re-fetch.
+    // request, and the `status = $5` guard ensures the row still matches the
+    // status observed at read time — so a concurrent pipeline transition
+    // (e.g. pending → staging) cannot be clobbered by this stale save.
+    // If either guard fails, this UPDATE is a no-op and returns 0 rows,
+    // surfacing a 409 so the caller can re-fetch.
     const result = await queryOLTP(
       `UPDATE content_plans
        SET plan_json = $1, description = $2, status = $3, updated_at = NOW()
-       WHERE id = $4 AND status <> 'rejected'
+       WHERE id = $4
+         AND status = $5
+         AND status <> 'rejected'
        RETURNING id`,
-      [validatedPlan, validatedPlan.description, finalStatus, id]
+      [validatedPlan, validatedPlan.description, finalStatus, id, currentStatus]
     );
 
     if (result.rows.length === 0) {

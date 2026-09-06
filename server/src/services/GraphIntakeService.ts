@@ -1213,12 +1213,14 @@ export class GraphIntakeService {
     graphEdges: GraphDeltaEdge[];
     synthesizedDiagnostics: IntakeDiagnostic[];
     planJson: ContentPlan | null;
+    committedXmin: string;
   }> {
     let result!: Awaited<ReturnType<typeof chatService.applyDeltas>>;
     let graphDeltas: GraphDelta[] = [];
     let graphEdges: GraphDeltaEdge[] = [];
     let synthesizedDiagnostics: IntakeDiagnostic[] = [];
     let planJson: ContentPlan | null = null;
+    let committedXmin = '';
 
     await withOLTPTransaction(async (client) => {
       await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`plan-lifecycle:${planId}`]);
@@ -1252,13 +1254,17 @@ export class GraphIntakeService {
         );
       }
 
-      await client.query(
-        `UPDATE content_plans SET updated_at = now(), plan_json = COALESCE($2::jsonb, plan_json) WHERE id = $1`,
+      // Capture the row's `xmin` as a revision marker: a later concurrent
+      // amendment commits its own UPDATE (bumping `xmin`), so the refresh pass
+      // below can detect it and skip writing stale diagnostics.
+      const committed = await client.query<{ xmin: string }>(
+        `UPDATE content_plans SET updated_at = now(), plan_json = COALESCE($2::jsonb, plan_json) WHERE id = $1 RETURNING (xmin::text) AS xmin`,
         [planId, planJson],
       );
+      committedXmin = committed.rows[0]?.xmin ?? '';
     });
 
-    return { result, graphDeltas, graphEdges, synthesizedDiagnostics, planJson };
+    return { result, graphDeltas, graphEdges, synthesizedDiagnostics, planJson, committedXmin };
   }
 
   private async refreshAmendmentAnnotations(
@@ -1267,13 +1273,14 @@ export class GraphIntakeService {
     graphDeltas: GraphDelta[],
     result: { diagnostics: IntakeDiagnostic[] },
     synthesizedDiagnostics: IntakeDiagnostic[],
+    committedXmin: string,
   ): Promise<IntakeNote[]> {
     let notes: IntakeNote[] = [];
     await withOLTPTransaction(async (client) => {
       await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`plan-lifecycle:${planId}`]);
 
-      const confirm = await client.query<{ status: string }>(
-        'SELECT status FROM content_plans WHERE id = $1',
+      const confirm = await client.query<{ status: string; xmin: string }>(
+        'SELECT status, (xmin::text) AS xmin FROM content_plans WHERE id = $1 FOR UPDATE',
         [planId],
       );
       if (confirm.rows.length === 0) {
@@ -1282,6 +1289,13 @@ export class GraphIntakeService {
       }
       if (confirm.rows[0].status === 'rejected') {
         console.warn(`[graph-intake] post-commit annotation refresh skipped: plan ${planId} was rejected`);
+        return;
+      }
+      // A later amendment committed after this one (row version moved on):
+      // its own refresh owns the annotations now. Writing this stale snapshot
+      // would retire the newer amendment's open intake annotations.
+      if (committedXmin !== '' && confirm.rows[0].xmin !== committedXmin) {
+        console.warn(`[graph-intake] post-commit annotation refresh skipped: plan ${planId} was amended again after this commit`);
         return;
       }
 
@@ -1309,8 +1323,8 @@ export class GraphIntakeService {
     const { planRow, existing } = await this.validateAmendablePlan(planId, instruction);
     const { proposal, resolvedDeltas } = await this.buildAmendmentProposal(planId, instruction, existing.deltas);
     const { filteredDeltas, filteredEdges } = await this.buildFilteredAmendment(planId, resolvedDeltas, proposal, existing, planRow.description);
-    const { result, graphDeltas, graphEdges, synthesizedDiagnostics } = await this.persistAmendment(planId, planRow, filteredDeltas, filteredEdges);
-    const notes = await this.refreshAmendmentAnnotations(planId, planRow, graphDeltas, result, synthesizedDiagnostics);
+    const { result, graphDeltas, graphEdges, synthesizedDiagnostics, committedXmin } = await this.persistAmendment(planId, planRow, filteredDeltas, filteredEdges);
+    const notes = await this.refreshAmendmentAnnotations(planId, planRow, graphDeltas, result, synthesizedDiagnostics, committedXmin);
 
     const deltaCount = graphDeltas.length;
     const edgeCount = graphEdges.length;
