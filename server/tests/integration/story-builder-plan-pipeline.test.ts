@@ -221,7 +221,7 @@ describe('plan → file write → migrateContent → verification (mission + loc
     // SnapshotService uses, so this also guards against content-pool/oltp
     // divergence.
     const snapshotChunks = await queryContent<{ chunk_key: string }>(
-      `SELECT chunk_key FROM dialogue_chunks WHERE tree_id = $1::uuid AND chunk_key LIKE $2 ESCAPE '\\\\'`,
+      `SELECT chunk_key FROM dialogue_chunks WHERE tree_id = $1::uuid AND chunk_key LIKE $2`,
       [FIXTURE_TREE_ID, '__snapshot\\_%'],
     );
     expect(snapshotChunks.rows.length).toBeGreaterThanOrEqual(1);
