@@ -133,6 +133,9 @@ export function buildPlanFromTemplate(
   templateId: string,
   params: Record<string, any>,
 ): ContentPlan {
+  if (!Object.prototype.hasOwnProperty.call(TEMPLATE_BUILDERS, templateId)) {
+    throw new UnknownTemplateError(templateId);
+  }
   const builder = TEMPLATE_BUILDERS[templateId];
   if (!builder) throw new UnknownTemplateError(templateId);
   return builder(params ?? {});

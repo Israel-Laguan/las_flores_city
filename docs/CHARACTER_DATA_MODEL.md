@@ -245,7 +245,7 @@ CREATE TABLE mission_mob_casts (
     (is_named AND character_id IS NOT NULL AND mob_template_id IS NULL)
     OR
     (NOT is_named AND character_id IS NULL AND mob_template_id IS NOT NULL)
-  )
+  ),
   instantiated_name  TEXT,                          -- result of name pool draw
   instantiated_traits VARCHAR(40)[],                -- result of trait composition
   user_id            UUID NOT NULL REFERENCES users(id),
@@ -345,7 +345,7 @@ characters:
 
 ### What TODO_FIELDS.character Becomes
 
-Today: `['description', 'metadata.personality', 'title']` and 14 more `metadata.*` fields to fill (17 metadata fields total via `StoryBuilderPlanOps.ts` `FILL_TARGETS`; only empty/TODO fields are sent).
+Today: `['description', 'metadata.personality', 'title']` and 16 more `metadata.*` fields to fill (17 metadata fields total via `StoryBuilderPlanOps.ts` `FILL_TARGETS`; only empty/TODO fields are sent).
 
 Proposed:
 ```python

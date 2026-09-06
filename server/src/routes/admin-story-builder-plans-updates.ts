@@ -4,7 +4,7 @@ import type { AuthRequest } from '../middleware/auth.js';
 import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
 import { queryOLTP } from '@las-flores/infra';
 import { isNeo4jEnabled } from '../services/Neo4jClient.js';
-import { getDeltasForPlan, clearDeltasForPlan } from '../services/GraphDeltaService.js';
+import { getDeltasForPlan } from '../services/GraphDeltaService.js';
 import { GraphIntakeService, GraphIntakeValidationError } from '../services/GraphIntakeService.js';
 
 export const adminStoryBuilderPlansUpdatesRouter = express.Router();
@@ -12,7 +12,7 @@ export const adminStoryBuilderPlansUpdatesRouter = express.Router();
 // PUT /admin/story-builder/plans/:id — Update plan
 adminStoryBuilderPlansUpdatesRouter.put('/plans/:id', async (req: AuthRequest, res) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const { plan: rawPlan, status } = req.body;
 
     if (!rawPlan) {
@@ -20,11 +20,13 @@ adminStoryBuilderPlansUpdatesRouter.put('/plans/:id', async (req: AuthRequest, r
       return;
     }
 
-    // Fetch the current plan status early — needed for both rejection handling
-    // (below, before the graph-authoring edit guard) and for preserving the
-    // 'rejected' terminal state on ordinary saves. A missing plan returns 404.
-    const currentPlanRow = await queryOLTP<{ status: string }>(
-      'SELECT status FROM content_plans WHERE id = $1',
+    // Fetch the current plan status + revision early — needed for both rejection
+    // handling and for optimistic concurrency on the plan snapshot. A missing
+    // plan returns 404. The `updated_at` value is used as an optimistic
+    // revision token so two concurrent saves that observed the same status
+    // cannot silently clobber each other's `plan_json`.
+    const currentPlanRow = await queryOLTP<{ status: string; updated_at: string }>(
+      'SELECT status, updated_at FROM content_plans WHERE id = $1',
       [id],
     );
 
@@ -34,6 +36,7 @@ adminStoryBuilderPlansUpdatesRouter.put('/plans/:id', async (req: AuthRequest, r
     }
 
     const currentStatus = currentPlanRow.rows[0].status;
+    const observedUpdatedAt = currentPlanRow.rows[0].updated_at;
 
     // Rejection must go through the lifecycle action so graph deltas and intake
     // annotations are cleaned up and a rejection audit event is emitted. This
@@ -104,19 +107,21 @@ adminStoryBuilderPlansUpdatesRouter.put('/plans/:id', async (req: AuthRequest, r
 
     // Conditional UPDATE: the `status <> 'rejected'` guard ensures a concurrent
     // rejection cannot be overwritten by a stale proposed/draft status from this
-    // request, and the `status = $5` guard ensures the row still matches the
-    // status observed at read time — so a concurrent pipeline transition
-    // (e.g. pending → staging) cannot be clobbered by this stale save.
-    // If either guard fails, this UPDATE is a no-op and returns 0 rows,
-    // surfacing a 409 so the caller can re-fetch.
+    // request, the `status = $5` guard ensures the row still matches the
+    // status observed at read time, and the `updated_at = $6` optimistic
+    // revision guard ensures a concurrent save that already committed a newer
+    // `plan_json` is not silently clobbered. If any guard fails, this UPDATE
+    // is a no-op and returns 0 rows, surfacing a 409 so the caller can
+    // re-fetch.
     const result = await queryOLTP(
       `UPDATE content_plans
        SET plan_json = $1, description = $2, status = $3, updated_at = NOW()
        WHERE id = $4
          AND status = $5
          AND status <> 'rejected'
+         AND updated_at = $6::timestamptz
        RETURNING id`,
-      [validatedPlan, validatedPlan.description, finalStatus, id, currentStatus]
+      [validatedPlan, validatedPlan.description, finalStatus, id, currentStatus, observedUpdatedAt]
     );
 
     if (result.rows.length === 0) {
@@ -135,35 +140,29 @@ adminStoryBuilderPlansUpdatesRouter.put('/plans/:id', async (req: AuthRequest, r
   }
 });
 
-// DELETE /admin/story-builder/plans/:id — Delete a plan
-adminStoryBuilderPlansUpdatesRouter.delete('/plans/:id', async (req, res) => {
+// DELETE /admin/story-builder/plans/:id — Delete a plan (lifecycle-validated)
+adminStoryBuilderPlansUpdatesRouter.delete('/plans/:id', async (req: AuthRequest, res) => {
   try {
-    const { id } = req.params;
-
-    const result = await queryOLTP('DELETE FROM content_plans WHERE id = $1 RETURNING id', [id]);
-
-    if (result.rows.length === 0) {
-      res.status(404).json({ success: false, error: 'Plan not found', timestamp: new Date().toISOString() });
-      return;
-    }
-
-    // M28 — best-effort clean up the plan's graph deltas so orphan
-    // :ContentDelta nodes don't linger after the plan row is gone. The plan row
-    // is already deleted above (SQL is authoritative); if the graph cleanup
-    // fails we must not silently claim a clean delete — surface it so the admin
-    // can reconcile (a later graph resync / retry of the delete prunes the
-    // orphaned :ContentDelta nodes).
-    let graphDeltasCleaned = true;
-    if (isNeo4jEnabled()) {
-      try {
-        await clearDeltasForPlan(id);
-      } catch (err) {
-        graphDeltasCleaned = false;
-        console.warn('[story-builder] delta cleanup failed for deleted plan', id, (err as Error).message);
+    const id = req.params.id as string;
+    const svc = new GraphIntakeService();
+    try {
+      const result = await svc.deletePlan(id, (req as AuthRequest).userId || undefined);
+      res.json({
+        success: true,
+        data: { deleted: true, graphDeltasCleaned: result.deltaPruned, status: result.status },
+        timestamp: new Date().toISOString(),
+      });
+    } catch (err: any) {
+      if (err instanceof GraphIntakeValidationError) {
+        if (/Plan not found/i.test(err.message)) {
+          res.status(404).json({ success: false, error: err.message, timestamp: new Date().toISOString() });
+          return;
+        }
+        res.status(409).json({ success: false, error: err.message, timestamp: new Date().toISOString() });
+        return;
       }
+      throw err;
     }
-
-    res.json({ success: true, data: { deleted: true, graphDeltasCleaned }, timestamp: new Date().toISOString() });
   } catch (error: any) {
     console.error('[story-builder] DELETE /plans/:id error:', error);
     res.status(500).json({ success: false, error: 'Failed to delete plan', timestamp: new Date().toISOString() });

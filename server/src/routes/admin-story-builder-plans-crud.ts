@@ -11,7 +11,7 @@ export const adminStoryBuilderPlansCrudRouter = express.Router();
 // Use POST /plans/graph-intake for description-based plan creation (M32)
 adminStoryBuilderPlansCrudRouter.post('/plans', async (req: AuthRequest, res) => {
   try {
-    const { plan } = req.body;
+    const { plan } = (req.body ?? {}) as { plan?: unknown };
 
     if (!plan) {
       res.status(400).json({ success: false, error: 'plan is required', timestamp: new Date().toISOString() });
@@ -28,10 +28,10 @@ adminStoryBuilderPlansCrudRouter.post('/plans', async (req: AuthRequest, res) =>
     validatedPlan.status = 'proposed';
 
     const result = await queryOLTP(
-      `INSERT INTO content_plans (description, plan_json, status, created_by)
-       VALUES ($1, $2, 'proposed', $3)
+      `INSERT INTO content_plans (id, description, plan_json, status, created_by)
+       VALUES ($1, $2, $3, 'proposed', $4)
        RETURNING id`,
-      [validatedPlan.description, validatedPlan, req.userId || null]
+      [validatedPlan.id, validatedPlan.description, validatedPlan, req.userId || null]
     );
 
     const planId = result.rows[0].id;
@@ -92,8 +92,17 @@ function isValidCalendarDate(iso: string): boolean {
 
 adminStoryBuilderPlansCrudRouter.get('/plans', async (req, res) => {
   try {
-    const limit = Math.max(1, Math.min(Number(req.query.limit) || 50, 100));
-    const offset = Math.max(0, Number(req.query.offset) || 0);
+    const rawLimit = req.query.limit !== undefined ? Number(req.query.limit) : undefined;
+    const rawOffset = req.query.offset !== undefined ? Number(req.query.offset) : undefined;
+    if (
+      (rawLimit !== undefined && (!Number.isFinite(rawLimit) || !Number.isInteger(rawLimit) || rawLimit < 1 || rawLimit > 100)) ||
+      (rawOffset !== undefined && (!Number.isFinite(rawOffset) || !Number.isInteger(rawOffset) || rawOffset < 0))
+    ) {
+      res.status(400).json({ success: false, error: 'Invalid pagination: limit must be an integer 1..100 and offset must be a non-negative integer', timestamp: new Date().toISOString() });
+      return;
+    }
+    const limit = rawLimit ?? 50;
+    const offset = rawOffset ?? 0;
 
     // --- status filter ---
     const rawStatus = typeof req.query.status === 'string' ? req.query.status.trim() : undefined;

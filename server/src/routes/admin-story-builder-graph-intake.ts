@@ -7,6 +7,7 @@ import { ChatMessageSchema, type ChatMessage } from '@las-flores/shared';
 import { graphIntakeService, GraphIntakeDisabledError, GraphIntakeValidationError } from '../services/GraphIntakeService.js';
 import { isNeo4jEnabled } from '../services/Neo4jClient.js';
 import { emitAdminEvent } from '../services/AdminEventEmitter.js';
+import { queryOLTP } from '@las-flores/infra';
 
 export const adminStoryBuilderGraphIntakeRouter = express.Router();
 
@@ -175,7 +176,32 @@ adminStoryBuilderGraphIntakeRouter.get('/plans/:id/graph-deltas', async (req: Au
     }
 
     const { deltas, edges } = await graphIntakeService.getPlanDeltas(id);
-    const graphAuthored = deltas.length > 0 || edges.length > 0;
+    // Persisted provenance: a graph-authored plan that was rejected has its
+    // deltas pruned by rejectPlan, so `deltas.length > 0` would regress to
+    // false and the client would treat it as a legacy plan. Check durable
+    // provenance that survives delta pruning (admin_events source or intake
+    // annotations) so the flag never flips after lifecycle actions.
+    let isProvenanceGraph = false;
+    try {
+      const prov = await queryOLTP<{ one: number }>(
+        `SELECT 1 AS one
+         FROM admin_events
+         WHERE plan_id = $1
+           AND event_type IN ('plan_created', 'plan_intake')
+           AND event_data->>'source' = 'graph-intake'
+         UNION ALL
+         SELECT 1 AS one
+         FROM critique_annotations
+         WHERE plan_id = $1 AND scope = 'intake'
+         LIMIT 1`,
+        [id],
+      );
+      isProvenanceGraph = prov.rows.length > 0;
+    } catch {
+      // Provenance check is best-effort; on DB error fall back to delta
+      // presence so a transient failure does not misclassify a plan.
+    }
+    const graphAuthored = deltas.length > 0 || edges.length > 0 || isProvenanceGraph;
 
     res.json({
       success: true,

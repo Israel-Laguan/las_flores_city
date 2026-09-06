@@ -22,6 +22,13 @@ adminStoryBuilderPlansTemplatesRouter.post('/plans/from-template', async (req: A
       res.status(400).json({ success: false, error: 'name and slug are required', timestamp: new Date().toISOString() });
       return;
     }
+    if (templateId === 'location') {
+      const district = (extra as Record<string, unknown>).district;
+      if (!district || typeof district !== 'string' || (district as string).trim().length === 0) {
+        res.status(400).json({ success: false, error: 'district is required for location template', timestamp: new Date().toISOString() });
+        return;
+      }
+    }
 
     let plan;
     try {
@@ -37,10 +44,10 @@ adminStoryBuilderPlansTemplatesRouter.post('/plans/from-template', async (req: A
     plan.status = 'proposed';
 
     const result = await queryOLTP(
-      `INSERT INTO content_plans (description, plan_json, status, created_by)
-       VALUES ($1, $2, 'proposed', $3)
+      `INSERT INTO content_plans (id, description, plan_json, status, created_by)
+       VALUES ($1, $2, $3, 'proposed', $4)
        RETURNING id`,
-      [plan.description, plan, req.userId || null]
+      [plan.id, plan.description, plan, req.userId || null]
     );
 
     const planId = result.rows[0].id;
