@@ -175,10 +175,11 @@ adminStoryBuilderGraphIntakeRouter.get('/plans/:id/graph-deltas', async (req: Au
     }
 
     const { deltas, edges } = await graphIntakeService.getPlanDeltas(id);
+    const graphAuthored = deltas.length > 0 || edges.length > 0;
 
     res.json({
       success: true,
-      data: { planId: id, deltas, edges },
+      data: { planId: id, deltas, edges, graphAuthored },
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {

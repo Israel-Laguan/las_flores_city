@@ -10,7 +10,7 @@
 
 ### What the pipeline already asks for
 
-Plan intake (`StoryBuilderPlanOps.ts:499-509`) sends the LLM **19 metadata fields** to fill for every character: `faction`, `age`, `gender`, `occupation`, `residence`, `status`, and 13 more, plus `description`, `title`, `physical_description`, `psychological_description`.
+Plan intake (`StoryBuilderPlanOps.ts:499-521` `FILL_TARGETS`) sends the LLM only currently empty or TODO fields to fill for every character: up to **17 metadata fields** (`metadata.faction`, `metadata.age`, `metadata.gender`, `metadata.occupation`, `metadata.residence`, `metadata.status`, and 11 more) plus `description`, `title`, `physical_description`, `psychological_description` (21 fields total when all are empty).
 
 ### What the pipeline actually gets
 
@@ -107,8 +107,11 @@ CREATE TABLE expressions (
 Queryable, indexed, constrained. These are **casting filters** and **generation keys**; nothing joins against them.
 
 ```sql
+-- Seed sentinel before the constrained column (FK requires the row to exist):
+-- INSERT INTO character_archetypes (id, label, voice_register, default_expressions) VALUES ('undefined', 'Undefined', 'direct', '{}') ON CONFLICT DO NOTHING;
 ALTER TABLE characters
   -- Generation key: personality system replaces 182 snowflakes with ~16 archetypes
+  -- Executable order: seed character_archetypes sentinel first, then add constrained column.
   ADD COLUMN archetype VARCHAR(40) NOT NULL DEFAULT 'undefined'
     REFERENCES character_archetypes(id) ON DELETE RESTRICT,
 
@@ -128,16 +131,16 @@ ALTER TABLE characters
   -- Kept out of the main variant key to avoid combinatorial explosion
   ADD COLUMN gender VARCHAR(20),
 
-  -- Casting filter: derived, never authored
+  -- Casting filter: derived, never authored (fixed game era 2077; NOW() is not immutable for STORED)
   ADD COLUMN birth_year INTEGER,
   ADD COLUMN age_bracket VARCHAR(20)
     GENERATED ALWAYS AS (
       CASE
         WHEN birth_year IS NULL THEN 'unknown'
-        WHEN EXTRACT(YEAR FROM NOW()) - birth_year < 13 THEN 'child'
-        WHEN EXTRACT(YEAR FROM NOW()) - birth_year < 18 THEN 'adolescent'
-        WHEN EXTRACT(YEAR FROM NOW()) - birth_year < 30 THEN 'young_adult'
-        WHEN EXTRACT(YEAR FROM NOW()) - birth_year < 55 THEN 'adult'
+        WHEN 2077 - birth_year < 13 THEN 'child'
+        WHEN 2077 - birth_year < 18 THEN 'adolescent'
+        WHEN 2077 - birth_year < 30 THEN 'young_adult'
+        WHEN 2077 - birth_year < 55 THEN 'adult'
         ELSE 'elder'
       END
     ) STORED,
@@ -197,7 +200,7 @@ CREATE TABLE character_presence (
   district_id  UUID NOT NULL REFERENCES districts(id) ON DELETE CASCADE,
   time_band    VARCHAR(20) NOT NULL
     CHECK (time_band IN ('morning','day','evening','night')),
-  confidence   SMALLINT NOT NULL DEFAULT 50,        -- 0–100; higher = more reliable cast
+  confidence   SMALLINT NOT NULL DEFAULT 50 CHECK (confidence BETWEEN 0 AND 100), -- 0–100; higher = more reliable cast
   PRIMARY KEY (character_id, district_id, time_band)
 );
 
@@ -238,6 +241,11 @@ CREATE TABLE mission_mob_casts (
   is_named           BOOLEAN NOT NULL,              -- false = mob; true = named character
   character_id       UUID REFERENCES characters(id),  -- if is_named = true
   mob_template_id    VARCHAR(40) REFERENCES mob_templates(id),  -- if is_named = false
+  CONSTRAINT mission_mob_casts_target_shape CHECK (
+    (is_named AND character_id IS NOT NULL AND mob_template_id IS NULL)
+    OR
+    (NOT is_named AND character_id IS NULL AND mob_template_id IS NOT NULL)
+  )
   instantiated_name  TEXT,                          -- result of name pool draw
   instantiated_traits VARCHAR(40)[],                -- result of trait composition
   user_id            UUID NOT NULL REFERENCES users(id),
@@ -337,7 +345,7 @@ characters:
 
 ### What TODO_FIELDS.character Becomes
 
-Today: `['description', 'metadata.personality', 'title']` and 19 more metadata fields to fill.
+Today: `['description', 'metadata.personality', 'title']` and 14 more `metadata.*` fields to fill (17 metadata fields total via `StoryBuilderPlanOps.ts` `FILL_TARGETS`; only empty/TODO fields are sent).
 
 Proposed:
 ```python
@@ -376,12 +384,12 @@ Stage 4: Archive `metadata.personality`, `metadata.status` (JSONB keys remain, b
 
 ### Conflict Checking
 
-`PlanConsistencyChecker` (M50) gains new rules:
+`PlanConsistencyChecker` (M50) gains new rules (all `ConsistencySeveritySchema: warning` — `attachConsistencyReport` is advisory and does not block `approveAndSolidifyPlan`; severity `reject`/`error` is not yet in the schema):
 
-1. **Archetype retirement**: plan references a retired archetype → reject.
-2. **Trait validity**: plan has traits not in `traits` table → reject.
-3. **Life role + faction coherence**: some combos are invalid (e.g., `student` + `government` faction is plausible, but `homeless` + any faction is incoherent) → warn or reject.
-4. **Expression promises**: if a plan authors `character_expressions` entries, validate they match the archetype's `default_expressions`.
+1. **Archetype retirement**: plan references a retired archetype → warning (future: `reject` severity blocks approval).
+2. **Trait validity**: plan has traits not in `traits` table → warning (future: `reject` severity blocks approval).
+3. **Life role + faction coherence**: some combos are invalid (e.g., `student` + `government` faction is plausible, but `homeless` + any faction is incoherent) → warning.
+4. **Expression promises**: if a plan authors `character_expressions` entries, validate they match the archetype's `default_expressions` → warning.
 
 ### Graph Revision Scoping
 

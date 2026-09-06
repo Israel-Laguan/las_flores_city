@@ -44,20 +44,17 @@ export async function loadPlanFromDb(id: string): Promise<{
  * to forbidden plan_json writes.
  */
 export async function isGraphAuthoredPlan(planId: string, signal?: AbortSignal): Promise<boolean> {
-  const gd = await adminFetch<{ success: boolean; data?: { deltas: any[] } }>(
+  const gd = await adminFetch<{ success: boolean; data?: { deltas: any[]; graphAuthored?: boolean } }>(
     `/admin/story-builder/plans/${planId}/graph-deltas`,
     { signal },
   );
-  // Endpoint reachable => graph stack owns this plan's provenance.
-  // Legacy plans also return 200 with empty deltas, but they are created via
-  // POST /plans (plan_json path) and never need this check — callers only
-  // invoke isGraphAuthoredPlan for plans known to be graph-provenance.
-  // The check is therefore: if Neo4j stack responded, treat as graph-owned
-  // even when deltas are empty (they may be filtered by partitionForWrite).
-  // Callers only invoke this for plans known to be graph-provenance.
   if (!gd.success || !gd.data) return false;
-  // Endpoint reachable + data present = graph-owned (deltas may be filtered-empty).
-  return !!gd.data;
+  // Explicit provenance from the endpoint; legacy persisted plans return
+  // graphAuthored:false (or absent) so callers can flush plan_json edits via
+  // updatePlan. Preserve false on failure/absent data.
+  if (typeof gd.data.graphAuthored === 'boolean') return gd.data.graphAuthored;
+  // Fallback for older server: infer from non-empty deltas.
+  return Array.isArray(gd.data.deltas) && gd.data.deltas.length > 0;
 }
 
 export async function generatePlan(description: string) {

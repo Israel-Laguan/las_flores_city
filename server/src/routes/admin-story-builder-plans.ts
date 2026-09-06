@@ -126,6 +126,24 @@ function escapeLikePattern(raw: string): string {
   return raw.replace(/\\/g, '\\\\').replace(/%/g, '\\%').replace(/_/g, '\\_');
 }
 
+function isValidCalendarDate(iso: string): boolean {
+  const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})T/);
+  if (!m) return false;
+  const year = Number(m[1]);
+  const month = Number(m[2]);
+  const day = Number(m[3]);
+  if (month < 1 || month > 12 || day < 1 || day > 31) return false;
+  const isLeap = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+  const daysInMonth = [31, isLeap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  if (day > daysInMonth[month - 1]) return false;
+  // Also validate HH:MM:SS ranges to avoid overflow normalization
+  const t = iso.match(/T(\d{2}):(\d{2}):(\d{2})/);
+  if (!t) return false;
+  const hh = Number(t[1]); const mm = Number(t[2]); const ss = Number(t[3]);
+  if (hh > 23 || mm > 59 || ss > 59) return false;
+  return true;
+}
+
 adminStoryBuilderPlansRouter.get('/plans', async (req, res) => {
   try {
     const limit = Math.max(1, Math.min(Number(req.query.limit) || 50, 100));
@@ -158,7 +176,7 @@ adminStoryBuilderPlansRouter.get('/plans', async (req, res) => {
     let since: string | undefined;
     if (rawSince !== undefined && rawSince.length > 0) {
       const isoRe = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
-      if (!isoRe.test(rawSince)) {
+      if (!isoRe.test(rawSince) || !isValidCalendarDate(rawSince)) {
         res.status(400).json({ success: false, error: 'Invalid since: must be an ISO 8601 timestamp', timestamp: new Date().toISOString() });
         return;
       }
