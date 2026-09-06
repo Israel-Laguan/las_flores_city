@@ -6,7 +6,7 @@ import { emitAdminEvent } from '../services/AdminEventEmitter.js';
 import { isNeo4jEnabled } from '../services/Neo4jClient.js';
 import { getDeltasForPlan, clearDeltasForPlan } from '../services/GraphDeltaService.js';
 import { buildPlanFromTemplate, UnknownTemplateError } from '../services/PlanTemplateBuilders.js';
-import { GraphIntakeService } from '../services/GraphIntakeService.js';
+import { GraphIntakeService, GraphIntakeValidationError } from '../services/GraphIntakeService.js';
 
 export const adminStoryBuilderPlansRouter = express.Router();
 
@@ -198,7 +198,22 @@ adminStoryBuilderPlansRouter.put('/plans/:id', async (req, res) => {
     // receive a 400 from the guard below before rejection is processed.
     if (status === 'rejected' && currentStatus !== 'rejected') {
       const graphIntakeService = new GraphIntakeService();
-      await graphIntakeService.rejectPlan(id);
+      try {
+        await graphIntakeService.rejectPlan(id);
+      } catch (err: any) {
+        if (err instanceof GraphIntakeValidationError) {
+          // Lifecycle validation errors are expected client errors, not server faults.
+          // A missing plan is a 404; conflicts (already rejected, non-rejectable
+          // status) are 409 so the admin UI can show a meaningful message.
+          if (/Plan not found/i.test(err.message)) {
+            res.status(404).json({ success: false, error: err.message, timestamp: new Date().toISOString() });
+            return;
+          }
+          res.status(409).json({ success: false, error: err.message, timestamp: new Date().toISOString() });
+          return;
+        }
+        throw err;
+      }
       return res.json({
         success: true,
         data: { planId: id, status: 'rejected' },
@@ -233,8 +248,14 @@ adminStoryBuilderPlansRouter.put('/plans/:id', async (req, res) => {
 
     // Transient pipeline statuses are server-owned — only stable user-editable
     // statuses are accepted here. `rejected` is preserved for ordinary saves.
+    // If the plan is already in a transient pipeline status (pending/staging/
+    // migrating/verifying), preserve it rather than clobbering to draft — the
+    // pipeline owns these statuses and a plain save must not regress them.
     const validStatuses = ['draft', 'proposed', 'approved', 'staged', 'migrated', 'verified', 'failed', 'rejected'];
-    const finalStatus = validStatuses.includes(status) ? status : (currentStatus === 'rejected' ? 'rejected' : 'draft');
+    const transientStatuses = ['pending', 'staging', 'migrating', 'verifying'];
+    const finalStatus = transientStatuses.includes(currentStatus)
+      ? currentStatus
+      : validStatuses.includes(status) ? status : (currentStatus === 'rejected' ? 'rejected' : 'draft');
     validatedPlan.status = finalStatus;
 
     // Conditional UPDATE: the `status <> 'rejected'` guard ensures a concurrent

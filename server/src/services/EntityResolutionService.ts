@@ -153,8 +153,8 @@ export function floorSimilarity(a: string, b: string): number {
   // not a strong enough match to suppress ungrounded_plan. Cap well below
   // the LOW_FLOOR_SIMILARITY probe floor (0.45).
   const isStrictSubset =
-    (tokensA.size > 0 && tokensA.size < tokensB.size && [...tokensA].every(t => tokensB.has(t))) ||
-    (tokensB.size > 0 && tokensB.size < tokensA.size && [...tokensB].every(t => tokensA.has(t)));
+    (tokensA.size === 1 && tokensA.size < tokensB.size && [...tokensA].every(t => tokensB.has(t))) ||
+    (tokensB.size === 1 && tokensB.size < tokensA.size && [...tokensB].every(t => tokensA.has(t)));
   if (isStrictSubset) score = Math.min(score, 0.4);
   return Math.min(1, score);
 }

@@ -390,14 +390,18 @@ export async function resumeSolidify(planId: string, userId?: string): Promise<v
       await client.query(
         `UPDATE content_plans SET status = 'failed', updated_at = NOW()
          WHERE id = $1
-           AND status IN ('pending', 'staging', 'migrating', 'verifying')
+           AND (
+             status IN ('pending', 'staging', 'migrating', 'verifying')
+             OR (status = 'staged' AND COALESCE($3::jsonb, '[]') ? 'staged')
+             OR (status = 'migrated' AND COALESCE($3::jsonb, '[]') ? 'migrated')
+           )
            AND $2 = (
              SELECT id FROM job_runs
               WHERE plan_id = $1 AND job_type = 'solidify'
               ORDER BY created_at DESC, id DESC
               LIMIT 1
            )`,
-         [planId, run.id],
+        [planId, run.id, run.committedStages ?? []],
        );
     });
     return;

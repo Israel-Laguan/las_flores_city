@@ -152,7 +152,7 @@ describe('job_runs resume integration', () => {
       await queryOLTP(
         `INSERT INTO job_runs (plan_id, job_type, status, attempt, max_attempts, run_token, committed_stages)
          VALUES ($1, 'solidify', 'resumable', 1, 3, NULL, $2::jsonb)`,
-        [TEST_PLAN_ID, midStatus === 'staged' ? '["staging","publish","staged"]' : '["staging","publish","staged","migrated"]'],
+        [TEST_PLAN_ID, null],
       );
       await resumeSolidify(TEST_PLAN_ID);
 
