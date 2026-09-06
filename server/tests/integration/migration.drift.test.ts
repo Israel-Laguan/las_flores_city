@@ -23,6 +23,10 @@ const OVERLAY_FILE = 'overlays/great_lithium_leak/overlay_great_lithium_leak.yam
 // rows that should persist; deleting them would corrupt the beat registry relied on
 // by dialogue/scene beat-slug validation. Only the migration_log row is cleaned up.
 const STORY_FILE = 'stories/real_heroism_in_latam/real_heroism_in_latam.yaml';
+// Target tree of OVERLAY_FILE (content/overlays/great_lithium_leak/overlay_great_lithium_leak.yaml).
+// Post-migration compile + snapshots are scoped to it so this suite doesn't
+// pay for all ~59 canon trees; assertions below only cover entity rows.
+const OVERLAY_TARGET_TREE_ID = 'f6a7b8c9-d0e1-4345-babc-456789012345';
 // Legacy 046-mystery fixture (unique synthetic IDs). Cleaned up in afterAll.
 const LEGACY_MIGRATION_FILE = 'migrations/drift-046-legacy-mystery.yaml';
 const LEGACY_ID = 'e0000000-e29b-41d4-a716-446655440099';
@@ -139,7 +143,9 @@ describe('Migration drift guard', () => {
     const missionPath = path.resolve(CONTENT_DIR, MISSION_FILE);
     const vaultPath = path.resolve(CONTENT_DIR, VAULT_FILE);
     const overlayPath = path.resolve(CONTENT_DIR, OVERLAY_FILE);
-    const result = await migrateContent(CONTENT_DIR, [missionPath, vaultPath, overlayPath]);
+    const result = await migrateContent(CONTENT_DIR, [missionPath, vaultPath, overlayPath], {
+      dialogueTreeIds: [OVERLAY_TARGET_TREE_ID],
+    });
     expect(result.success).toBe(true);
     expect(result.filesFailed).toBe(0);
 
@@ -178,7 +184,8 @@ describe('Migration drift guard', () => {
     // manifest row. 058 dropped the dead table; the migration drift guard must
     // verify presence via story_beats.slug for content type 'story'.
     const storyPath = path.resolve(CONTENT_DIR, STORY_FILE);
-    const result = await migrateContent(CONTENT_DIR, [storyPath]);
+    // No dialogue content involved — skip compile + snapshot loops entirely.
+    const result = await migrateContent(CONTENT_DIR, [storyPath], { dialogueTreeIds: [] });
     expect(result.success).toBe(true);
     expect(result.filesFailed).toBe(0);
 

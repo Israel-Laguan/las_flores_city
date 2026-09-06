@@ -566,8 +566,11 @@ export async function buildSnapshotsForTree(treeId: string): Promise<SnapshotBui
 /**
  * Build snapshots for all dialogue trees.
  * Called from migrate.ts after the per-entity content migration.
+ *
+ * @param onlyTreeIds — when provided, builds snapshots just for these trees
+ * instead of the whole table (integration-test scoping, see compiler.ts).
  */
-export async function buildSnapshotsForAllTrees(): Promise<{
+export async function buildSnapshotsForAllTrees(onlyTreeIds?: readonly string[]): Promise<{
   totalTrees: number;
   totalSnapshots: number;
   errors: string[];
@@ -579,8 +582,9 @@ export async function buildSnapshotsForAllTrees(): Promise<{
   };
 
   // Get all dialogue tree IDs
-  const treeResult = await queryContent<{ id: string }>('SELECT id FROM dialogue_trees');
-  const treeIds = treeResult.rows.map((row) => row.id);
+  const treeIds =
+    onlyTreeIds ??
+    (await queryContent<{ id: string }>('SELECT id FROM dialogue_trees')).rows.map((row) => row.id);
 
   result.totalTrees = treeIds.length;
 
