@@ -22,7 +22,7 @@ import { describe, test, expect, beforeAll, afterAll, beforeEach, jest } from '@
 import fs from 'fs/promises';
 import os from 'os';
 import path from 'path';
-import { oltpPool, closeConnections } from '@las-flores/infra';
+import { oltpPool, queryContent, closeConnections } from '@las-flores/infra';
 
 import {
   buildMissionTemplatePlan,
@@ -186,6 +186,16 @@ describe('plan → file write → migrateContent → verification (mission + loc
       [FIXTURE_TREE_ID],
     );
     expect(fixtureChunks.rows.length).toBeGreaterThanOrEqual(1);
+
+    // Snapshot pre-resolution (M30): verify at least one __snapshot_% chunk
+    // was created for the scoped tree. queryContent mirrors the read path
+    // SnapshotService uses, so this also guards against content-pool/oltp
+    // divergence.
+    const snapshotChunks = await queryContent<{ chunk_key: string }>(
+      `SELECT chunk_key FROM dialogue_chunks WHERE tree_id = $1::uuid AND chunk_key LIKE $2 ESCAPE '\\\\'`,
+      [FIXTURE_TREE_ID, '__snapshot\\_%'],
+    );
+    expect(snapshotChunks.rows.length).toBeGreaterThanOrEqual(1);
 
     // Lore stubs + verification report pass (read-only gate after migration).
     await generateLoreStubs(plan.items, contentDir);
