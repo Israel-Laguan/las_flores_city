@@ -46,7 +46,7 @@ Create a seamless looping video. The woman on the reference image shows a warm, 
 
 **Input**: `assets/valentina_quan__smirk.png`
 
-Create a seamless looping video. The woman on the reference image shows a knowing, private smirk with one brow lifted and lips curving in a self-aware curve. Subtle idle animation: relaxed, easy breathing motion rising and falling in the chest, a subtle micro-lift at the corner of the smirk, and an easy, barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. The casual city clothing settles naturally over her frame, and the earbud catches a faint ambient draft. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a knowing, private smirk with one brow lifted and lips curving in a self-aware curve. Subtle idle animation: relaxed, easy breathing motion rising and falling in the chest, a subtle micro-lift at the corner of the smirk, and an easy, barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. The casual city clothing settles naturally over her frame, and the earbud remains still. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__focused` loop
 

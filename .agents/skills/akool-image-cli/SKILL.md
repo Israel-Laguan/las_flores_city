@@ -5,7 +5,7 @@ description: "Test and operate AKOOL text-to-image and image-to-image generation
 
 # Akool Image CLI Skill
 
-End-to-end workflow for generating images with `akool-cli image generate`, covering text-to-image and image-to-image pipelines, credit tracking, result polling, and documentation of real CLI output.
+End-to-end workflow for generating images and videos with `akool-cli image generate` and `akool-cli image2video`, covering text-to-image, image-to-image, image-to-video pipelines, credit tracking, result polling, and documentation of real CLI output.
 
 ## When to use
 
@@ -108,50 +108,141 @@ End-to-end workflow for generating images with `akool-cli image generate`, cover
          "https://d2qf6ukcym4kn9.cloudfront.net/1782947640903-086eee14-b5ff-46e0-bddf-189c946efa70-7221.jpeg"
        ],
        "image_status": 3
-     }
-   }
-   ```
+    }
+  }
+}
 
-### Phase 4: Async patterns
+### Phase 4: Image-to-video
 
-6. **Polling fallback**
-   If `--wait` is unavailable or interrupted, poll manually:
+5. **List available models**
+    ```bash
+    akool-cli models --json
+    ```
+    Image-to-video models (type 1501) include:
+    - `AkoolImage2VideoFastV1` — Akool Basic, cost-efficient
+    - `AkoolImage2VideoHDV1` — Akool Premium, studio quality
+    - `MiniMax-Hailuo-2.3/image-to-video` — fluid motion, photorealistic
+    - `MiniMax-Hailuo-2.3-Fast/image-to-video` — instant, cinematic
+    - `seedance-1-0-lite-i2v-250428` — Seedance Lite, cost-efficient
+    - `seedance-1-0-pro-250528` — Seedance Pro, cinematic
+    - `seedance/seedance-1-0-pro-fast-251015/image-to-video` — Seedance Pro Fast
+    - `openai/sora-2-pro/image-to-video` — Sora 2 Pro
+    - `akool/sora-2/image-to-video` — Sora 2
+    - `kwaivgi/kling-video-o3-pro/image-to-video` — Kling 3.0 Omni
+
+    **PixVerse 6 is NOT available** in AKOOL's image-to-video model list.
+
+6. **Create video from image**
+    ```bash
+    akool-cli --json image2video create \
+      --image "https://example.com/portrait.png" \
+      --prompt "Subtle gentle motion, soft lighting, cinematic" \
+      --resolution 720p \
+      --video-length 5 \
+      --audio-type 3
+    ```
+    Flags:
+    - `--image <url>` — source portrait/image URL.
+    - `--prompt <text>` — motion description.
+    - `--negative-prompt <text>` — what to avoid.
+    - `--resolution <res>` — `720p`, `1080p`, `4k`. Default: `720p`.
+    - `--video-length <secs>` — `5` or `10`. Default: `5`.
+    - `--audio-type <type>` — `1` = AI generated, `2` = upload via `--audio-url`, `3` = none. Default: `3`.
+    - `--premium` — use premium HD model (`AkoolImage2VideoHDV1`).
+    - `--extend-prompt` — let algorithm extend the prompt.
+    - `--webhook <url>` — callback on completion.
+
+    **⚠️ HIGH CREDIT COST WARNING:**
+    - **5s 720p video:** ~100 credits deduction per video
+    - **10s video:** ~300 credits deduction per video
+    - This is dramatically more expensive than alternatives: PixVerse 6 charges ~3 tokens for audio-off 360p video.
+    - **No pre-flight pricing check** — actual cost only appears in `deduction_credit` after generation.
+
+7. **Capture creation response**
+    ```json
+    {
+      "code": 1000,
+      "msg": "OK",
+      "data": {
+        "_id": "6a9f2780d8f85dab98695520",
+        "create_time": 1788815232296,
+        "video_duration": 5,
+        "resolution": "720p",
+        "deduction_credit": 100,
+        "status": 1
+      }
+    }
+    ```
+    - `_id` is the job identifier for polling.
+    - `deduction_credit` shows actual cost — expect 100+ for 5s video.
+    - `status`: `1` = queued, `2` = processing, `3` = completed, `4` = failed.
+
+    **CLI limitation:** `akool-cli image2video results` currently returns `"Failed to get results"` for video jobs. Use the direct API instead (see step 8).
+
+8. **Poll results via direct API**
+    The working endpoint is:
+    ```bash
+    curl -s "https://openapi.akool.com/api/open/v4/image2Video/resultsByIds" -X POST \
+      -H "x-api-key: $AKOOL_CLIENT_SECRET" \
+      -H "Content-Type: application/json" \
+      -d '{"_ids": "6a9f2780d8f85dab98695520"}'
+    ```
+    Notes:
+    - Body parameter is `_ids` (string of comma-separated IDs), not `ids`.
+    - Use `clientSecret` as `x-api-key`. `clientId` returns "account does not exist".
+    - Response includes `video_url` when `status: 3`.
+
+### Phase 5: Polling fallback
+
+9. **Polling fallback**
+   If `--wait` is unavailable or interrupted, poll manually via direct API:
    ```bash
-   akool-cli image result --id "6a459f0131cbea71ffa0f682"
+   curl -s "https://openapi.akool.com/api/open/v4/image2Video/resultsByIds" -X POST \
+     -H "x-api-key: $AKOOL_CLIENT_SECRET" \
+     -H "Content-Type: application/json" \
+     -d '{"_ids": "6a9f2780d8f85dab98695520"}'
+   ```
+   Or for images:
+   ```bash
    akool-cli --json image result --id "6a459f0131cbea71ffa0f682"
    ```
 
-7. **Webhook callback**
-   For CI or long jobs, add:
-   ```bash
-   akool-cli image generate ... --webhook "https://your-server.com/webhook"
-   ```
+10. **Webhook callback**
+    For CI or long jobs, add:
+    ```bash
+    akool-cli image generate ... --webhook "https://your-server.com/webhook"
+    ```
 
-### Phase 5: Verify cost and archive
+### Phase 6: Verify cost and archive
 
-8. **Confirm credit delta**
-   ```bash
-   akool-cli credit
-   ```
-   Expected pattern: baseline minus `8 x generations` = final. Confirm before documenting.
+11. **Confirm credit delta**
+    ```bash
+    akool-cli credit
+    ```
+    Expected pattern: baseline minus generation cost = final. Image generations are ~8 credits via CLI, ~4 via direct API. Video generations are ~100 credits for 5s 720p, ~300 for 10s. Confirm before documenting.
 
-9. **Archive assets and metadata**
-    Save generated image URLs, `_id` values, model names, timestamps, and raw JSON to `docs/lore/assets/akool-test/` or a research log for tutorial reference.
+12. **Archive assets and metadata**
+    Save generated image/video URLs, `_id` values, model names, timestamps, and raw JSON to `docs/lore/assets/akool-test/` or a research log for tutorial reference. Download videos immediately — CDN links may expire.
 
 ## Gotchas
 
 - **Credit cost is per generation.** Live tests show:
-  - **CLI (`akool-cli --wait`):** 8 credits
-  - **Direct API (curl/Python):** 4 credits
-  - API docs show `deduction_credit: 1` as an example — actual costs may vary by model, region, or pricing tier.
+  - **CLI (`akool-cli --wait`):** 8 credits per image
+  - **Direct API (curl/Python):** 4 credits per image
+  - **Image-to-video:** 100 credits for 5s 720p, 300 credits for 10s video
+  - API docs show `deduction_credit: 1` as an example — actual costs vary wildly by task type.
+- **⚠️ Image-to-video is extremely expensive.** 100 credits per 5s video is ~33x more than PixVerse 6 (~3 tokens). Always check `akool-cli credit` before and after. Consider alternatives like PixVerse for video tasks.
 - **No pre-flight pricing check.** The CLI does not expose a command to list costs before generating. Check `akool-cli credit` before and after to measure actual spend.
-- **`--wait` is blocking.** For CI, prefer `--webhook` or `image result --id` polling.
+- **`--wait` is blocking.** For CI, prefer `--webhook` or direct API polling.
 - **Model depends on mode.** Text-to-image uses `wavespeed-ai/flux-krea-dev-lora`. Image-to-image uses `wavespeed-ai/flux-kontext-dev`.
 - **URLs expire.** CDN links are stable but should be downloaded or re-uploaded immediately if they must persist.
 - **`--json` is mandatory for scripting.** Raw JSON output is required to extract `_id`, `task_id`, and URLs programmatically.
 - **`image_status` values:** `1` = queued, `2` = processing, `3` = completed. Check `image_sub_status` for finer state.
 - **`--scale` validation:** Only the documented ratios are accepted. Wrong ratios return validation errors.
 - **Test environment may be unavailable.** `akool-cli -e test credit` can fail with "Failed to get token: Unknown error" — falls back to `prod`.
+- **PixVerse 6 is not available.** AKOOL's image-to-video models do not include PixVerse. Available providers: Akool, OpenAI, Minimax, Seedance, Kling.
+- **Video results polling via CLI is broken.** `akool-cli image2video results --ids` returns "Failed to get results". Use the direct API endpoint `POST /api/open/v4/image2Video/resultsByIds` with `_ids` body parameter instead.
+- **Use clientSecret for API auth.** `x-api-key: <clientSecret>` works for direct API calls. `clientId` returns account errors.
 
 ## Quick Reference Commands
 
@@ -172,8 +263,22 @@ akool-cli --json image generate \
   --scale 1:1 \
   --wait
 
-# Poll result
+# Image-to-video (CLI create)
+akool-cli --json image2video create \
+  --image "<url>" \
+  --prompt "<motion>" \
+  --resolution 720p \
+  --video-length 5 \
+  --audio-type 3
+
+# Poll image result
 akool-cli --json image result --id "<job_id>"
+
+# Poll video result (direct API)
+curl -s "https://openapi.akool.com/api/open/v4/image2Video/resultsByIds" -X POST \
+  -H "x-api-key: "$AKOOL_CLIENT_SECRET" \
+  -H "Content-Type: application/json" \
+  -d '{"_ids": "<job_id>"}'
 
 # Switch environment
 akool-cli -e test credit
@@ -188,28 +293,51 @@ akool-cli -e test credit
 - Image-to-image model: `wavespeed-ai/flux-kontext-dev`
 - Avg completion with `--wait`: ~30–50s on `prod`
 
+## Observed Image-to-Video Data (2026-09-07)
+
+- **5s 720p video:** 100 credits deducted per video (Akool Basic, Akool Premium, Seedance Lite)
+- **10s 1080P video:** 300 credits deducted (Minimax Hailuo 2.3)
+- **Generation time:** ~30–50s for 5s videos, ~60–90s for 10s videos
+- **Output:** h264, 720×960 portrait, ~1.5 Mbps, 5.17s actual duration
+- **PixVerse 6 equivalent:** ~3 tokens for audio-off 360p video (not available in AKOOL)
+- **Video URLs:** CDN links at `https://d2qf6ukcym4kn9.cloudfront.net/...` — download immediately, they may expire
+
 ## Pricing Notes
 
-- **No pre-flight pricing check.** The API docs show `deduction_credit: 1` as an example, but live tests show actual costs differ by method:
-  - **CLI (`akool-cli --wait`):** 8 credits per generation
-  - **Direct API (curl/Python):** 4 credits per generation
+- **Image generation:** No pre-flight pricing check. The API docs show `deduction_credit: 1` as an example, but live tests show actual costs differ by method:
+  - **CLI (`akool-cli --wait`):** 8 credits per image
+  - **Direct API (curl/Python):** 4 credits per image
+- **Image-to-video: EXTREMELY EXPENSIVE.** Live tests on 2026-09-07:
+  - **5s 720p video:** 100 credits deduction per video
+  - **10s 1080P video:** 300 credits deduction per video
+  - This is ~33x more expensive than PixVerse 6 (~3 tokens for 360p audio-off video)
+  - **No pre-flight pricing check** — actual cost only appears in `deduction_credit` after generation
+  - **PixVerse 6 is NOT available** in AKOOL's model list
 - **Model selection:** Text-to-image uses `wavespeed-ai/flux-krea-dev-lora`, image-to-image uses `wavespeed-ai/flux-kontext-dev`.
 - **Resolution:** Both `1080p` and `4k` cost the same per image.
 - **Batch:** Set `batch_quantity` (1-4) to generate multiple images in one request. Each image deducts credits separately.
+
+## Auth Notes
+
+- **API key for direct API calls:** Use `clientSecret` as the `x-api-key` header value. `clientId` returns "account does not exist" errors.
+- **Token auth:** The `/api/open/v4/image2Video/resultsByIds` endpoint accepts `Authorization: Bearer <token>` but the CLI-generated token may return "invalid authorization". Using `clientSecret` as `x-api-key` is more reliable.
+- **Results endpoint:** Body parameter is `_ids` (string of comma-separated IDs), not `ids`. The CLI `akool-cli image2video results --ids` command currently fails with "Failed to get results" — use the direct API instead.
 
 ## Reading Credentials from .env
 
 Store your API key:
 ```bash
 # .env file
-AKOOL_API_KEY=your-client-id
-AKOOL_API_SECRET=your-client-secret
+AKOOL_CLIENT_ID=your-client-id
+AKOOL_CLIENT_SECRET=your-client-secret
 ```
+
+**Important:** For direct API calls, use `AKOOL_CLIENT_SECRET` as the `x-api-key` header value. `AKOOL_CLIENT_ID` returns "account does not exist" errors.
 
 **Bash + curl (simplest):**
 ```bash
 source .env && curl --location 'https://openapi.akool.com/api/open/v4/content/image/createBySourcePrompt' \
-  --header "x-api-key: $AKOOL_API_KEY" \
+  --header "x-api-key: $AKOOL_CLIENT_SECRET" \
   --header 'Content-Type: application/json' \
   --data '{"prompt": "A serene mountain lake", "scale": "16:9"}'
 ```
@@ -219,7 +347,7 @@ source .env && curl --location 'https://openapi.akool.com/api/open/v4/content/im
 from dotenv import load_dotenv; import os, requests
 load_dotenv()
 requests.post('https://openapi.akool.com/api/open/v4/content/image/createBySourcePrompt',
-  headers={'x-api-key': os.getenv('AKOOL_API_KEY'), 'Content-Type': 'application/json'},
+  headers={'x-api-key': os.getenv('AKOOL_CLIENT_SECRET'), 'Content-Type': 'application/json'},
   json={'prompt': 'A serene mountain lake', 'scale': '16:9'})
 ```
 

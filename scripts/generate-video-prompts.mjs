@@ -43,6 +43,8 @@ async function generateVideoPrompts() {
     console.log('Finished generating video-prompt files.');
   } catch (error) {
     console.error('Error:', error);
+    process.exitCode = 1;
+    throw error;
   }
 }
 
@@ -53,27 +55,31 @@ async function createVideoPrompt(charDir, charName) {
   
   // Extract expression variants from the content
   const expressionVariants = [];
-  const variantRegex = /- \*\*`__([^`]+)`\*\*:/g;
+  const variantRegex = /- \*\*`(?:[^`]*__)?([^`]+)`\*\*:/g;
   let match;
   
   while ((match = variantRegex.exec(content)) !== null) {
-    expressionVariants.push(match[1]);
+    if (match[1] !== 'default.png') expressionVariants.push(match[1]);
   }
   
+  // Read canonical name from the source prompt frontmatter
+  const nameMatch = content.match(/^name:\s*(.+)$/m);
+  const displayName = nameMatch ? nameMatch[1].trim() : charName.replace(/_/g, ' ');
+
   // Determine gender from the prompt content for the reference description
   const isFemale = content.toLowerCase().includes('woman') || content.toLowerCase().includes('female');
   const referenceDesc = isFemale ? 'The woman on the reference image' : 'The man on the reference image';
-  
+
   // Generate the video-prompt content
   let videoPromptContent = `---
-name: ${charName.replace(/_/g, ' ')}
+name: ${displayName}
 type: video-loop
 model: Seedance 1.5 Pro
 source: content/characters/${charName}/${charName}.prompt.md
 target: content/characters/${charName}/assets/
 ---
 
-# Video Prompts: ${charName.replace(/_/g, ' ')}
+# Video Prompts: ${displayName}
 
 Generate seamless looping portrait videos from each expression variant PNG. Use the corresponding \`${charName}__<expression>.png\` as the input image for each prompt. ${referenceDesc} is the character described in the source prompt file.
 
