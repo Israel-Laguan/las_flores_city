@@ -14,7 +14,7 @@ Generate seamless looping portrait videos from each expression variant PNG. Use 
 
 **Input**: `assets/maria_garcia__default.png`
 
-Create a seamless looping video. The woman on the reference image holds a neutral resting expression with curly dark hair framing a gentle face and a faint chemical-burn mark on her wrist. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, and a barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. Curly dark hair shifts softly against her shoulders, and the simple flower-farming clothes with an apron and sun hat pushed back shift gently in the draft. The small sport earbud clipped to her earlobe remains still. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image holds a neutral resting expression with curly dark hair framing a gentle face and a faint chemical-burn mark on her wrist. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, and a barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. Curly dark hair shifts softly against her shoulders, and the simple flower-farming clothes with an apron and sun hat pushed back shift gently in the draft. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
 

@@ -34,7 +34,7 @@ Create a seamless looping video. The man on the reference image shows shifty ass
 
 **Input**: `assets/manuel_rodriguez__contemplative.png`
 
-Create a seamless looping video. The man on the reference image shows a guarded, thoughtful pause with eyes softening warily and lips relaxed. Subtle idle animation: slow, measured breathing motion rising and falling gently in the chest, a quiet softening of gaze into the distance, and a slow, reflective blink cycle. Hair and clothing respond to a faint ambient breeze. Strands of dark hair drift delicately across his forehead, the practical clothing shifts gently with his breath, and the earbud shifts slightly. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a guarded, thoughtful pause with eyes softening warily and lips relaxed. Subtle idle animation: slow, measured breathing motion rising and falling gently in the chest, a quiet softening of gaze into the distance, and a slow, reflective blink cycle. Hair and clothing respond to a faint ambient breeze. Strands of dark hair drift delicately across his forehead, the practical clothing shifts gently with his breath, and the earbud remains still. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__happy` loop
 

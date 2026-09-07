@@ -14,7 +14,7 @@ Generate seamless looping portrait videos from each expression variant PNG. Use 
 
 **Input**: `assets/petra_solis__default.png`
 
-Create a seamless looping video. The woman on the reference image holds a neutral composed resting expression, looking at the camera with steady presence. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Woman in her early fifties, silver-streaked dark hair styled immaculately, tailored charcoal suit projecting competence and authority, high cheekbones, dark brown eyes, slight smile that doesn't quite reach her eyes. The background remains static.
+Create a seamless looping video. The woman on the reference image holds a neutral composed resting expression, looking slightly off-camera at a three-quarter angle with steady presence. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Woman in her early fifties, silver-streaked dark hair styled immaculately, tailored charcoal suit projecting competence and authority, high cheekbones, dark brown eyes, slight smile that doesn't quite reach her eyes. The background remains static.
 The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
@@ -30,7 +30,7 @@ The motion must loop perfectly — the last frame blends seamlessly into the fir
 
 **Input**: `assets/petra_solis__happy.png`
 
-Create a seamless looping video. The woman on the reference image displays a warm genuine smile with eyes brightening and cheeks lifting. Subtle idle animation: buoyant rhythmic breathing motion lifting the chest and shoulders, a soft crinkling smile cycle around the eyes, and a warm natural blink cycle. Woman in her early fifties, silver-streaked dark hair styled immaculately, tailored charcoal suit projecting competence and authority, high cheekbones, dark brown eyes, slight smile that doesn't quite reach her eyes. The background remains static.
+Create a seamless looping video. The woman on the reference image displays a warm genuine smile with eyes brightening and cheeks lifting. Subtle idle animation: buoyant rhythmic breathing motion lifting the chest and shoulders, a soft crinkling smile cycle around the eyes, and a warm natural blink cycle. Woman in her early fifties, silver-streaked dark hair styled immaculately, tailored charcoal suit projecting competence and authority, high cheekbones, dark brown eyes, warm genuine smile reaching her eyes. The background remains static.
 The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__contemplative` loop

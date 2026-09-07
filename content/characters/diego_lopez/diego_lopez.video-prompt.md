@@ -23,7 +23,7 @@ The motion must loop perfectly — the last frame blends seamlessly into the fir
 
 **Input**: `assets/diego_lopez__calculating.png`
 
-Create a seamless looping video. The man on the reference image is engaged in sharp analytical thought with eyes narrowed in assessment and lips pressed into a measured line. Subtle idle animation: slow, measured breathing rhythm in the chest, a subtle micro-narrowing cycle of the eyes, and an infrequent deliberate blink cycle. Latino business journalist in his 40s, stocky comfortable build, wavy dark hair with gray threading, reading glasses looped on a chain, small sport earbud clipped to earlobe, slightly crooked smile, small chip in one molar. The background remains static.
+Create a seamless looping video. The man on the reference image is engaged in sharp analytical thought with eyes narrowed in assessment and lips pressed into a measured line. Subtle idle animation: slow, measured breathing rhythm in the chest, a subtle micro-narrowing cycle of the eyes, and an infrequent deliberate blink cycle. Latino business journalist in his 40s, stocky comfortable build, wavy dark hair with gray threading, reading glasses looped on a chain, small sport earbud clipped to earlobe, small chip in one molar. The background remains static.
 The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__smirk` loop
@@ -37,13 +37,13 @@ The motion must loop perfectly — the last frame blends seamlessly into the fir
 
 **Input**: `assets/diego_lopez__determined.png`
 
-Create a seamless looping video. The man on the reference image shows a resolved, firm expression with steady unflinching eyes and a squared jaw. Subtle idle animation: deep controlled breathing motion in the chest and shoulders, a slight firming micro-motion in the jawline, and an unwavering slow blink cycle. Latino business journalist in his 40s, stocky comfortable build, wavy dark hair with gray threading, reading glasses looped on a chain, small sport earbud clipped to earlobe, slightly crooked smile, small chip in one molar. The background remains static.
+Create a seamless looping video. The man on the reference image shows a resolved, firm expression with steady unflinching eyes and a squared jaw. Subtle idle animation: deep controlled breathing motion in the chest and shoulders, a slight firming micro-motion in the jawline, and an unwavering slow blink cycle. Latino business journalist in his 40s, stocky comfortable build, wavy dark hair with gray threading, reading glasses looped on a chain, small sport earbud clipped to earlobe, small chip in one molar. The background remains static.
 The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__surprised` loop
 
 **Input**: `assets/diego_lopez__surprised.png`
 
-Create a seamless looping video. The man on the reference image experiences a light startle with widened eyes, raised brows, and slightly parted lips. Subtle idle animation: a gentle catch in breath transitioning into soft rhythmic breathing in the chest, a subtle micro-tilt of the head, and a light attentive blink cycle. Latino business journalist in his 40s, stocky comfortable build, wavy dark hair with gray threading, reading glasses looped on a chain, small sport earbud clipped to earlobe, slightly crooked smile, small chip in one molar. The background remains static.
+Create a seamless looping video. The man on the reference image experiences a light startle with widened eyes, raised brows, and slightly parted lips. Subtle idle animation: a gentle catch in breath transitioning into soft rhythmic breathing in the chest, a subtle micro-tilt of the head, and a light attentive blink cycle. Latino business journalist in his 40s, stocky comfortable build, wavy dark hair with gray threading, reading glasses looped on a chain, small sport earbud clipped to earlobe, small chip in one molar. The background remains static.
 The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 

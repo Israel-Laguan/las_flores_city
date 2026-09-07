@@ -28,7 +28,7 @@ Create a seamless looping video. The woman on the reference image shows a bright
 
 **Input**: `assets/sofia_diaz__contemplative.png`
 
-Create a seamless looping video. The woman on the reference image shows a quiet moment of reflection with eyes softening into the middle distance and lips relaxed. Subtle idle animation: slow, measured breathing motion rising and falling gently in the chest, a quiet softening of gaze into the distance, and a slow, reflective blink cycle. Hair and clothing respond to a faint ambient breeze. Strands of dark hair drift delicately across her forehead, the practical clothing shifts gently with her breath, and the earbud shifts slightly. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a quiet moment of reflection with eyes softening into the middle distance and lips relaxed. Subtle idle animation: slow, measured breathing motion rising and falling gently in the chest, a quiet softening of gaze into the distance, and a slow, reflective blink cycle. Hair and clothing respond to a faint ambient breeze. Strands of dark hair drift delicately across her forehead, the practical clothing shifts gently with her breath, and the earbud remains still. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__focused` loop
 

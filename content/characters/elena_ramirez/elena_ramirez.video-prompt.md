@@ -34,7 +34,7 @@ Create a seamless looping video. The woman on the reference image shows a soft, 
 
 **Input**: `assets/elena_ramirez__determined.png`
 
-Create a seamless looping video. The woman on the reference image shows a firm, resolved expression with eyes steady and lips pressed into a strong line and chin lifted. Subtle idle animation: steady, controlled breathing motion in the chest and shoulders, a slight firming micro-motion in the jawline, and a disciplined, slow blink cycle. Hair and clothing respond to a faint ambient breeze. The cardigan shifts subtly across her shoulders, and the Humanity First pin catches a faint draft. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a firm, resolved expression with eyes steady and lips pressed into a strong line and chin lifted. Subtle idle animation: steady, controlled breathing motion in the chest and shoulders, a slight firming micro-motion in the jawline, and a disciplined, slow blink cycle. Hair and clothing respond to a faint ambient breeze. The cardigan shifts subtly across her shoulders, and the Humanity First pin remains still. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__sad` loop
 

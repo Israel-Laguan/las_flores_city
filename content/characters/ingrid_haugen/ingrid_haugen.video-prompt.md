@@ -28,7 +28,7 @@ Create a seamless looping video. The woman on the reference image shows a cold, 
 
 **Input**: `assets/ingrid_haugen__smirk.png`
 
-Create a seamless looping video. The woman on the reference image shows a faint, controlled half-smile with one corner of the thin lips pulled up and wide-set eyes glinting with professional calculation. Subtle idle animation: relaxed, easy breathing motion rising and falling in the chest, a subtle micro-lift at the corner of the smirk, and an easy, barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. The blazer jacket settles naturally over her shoulders, and the company-issued tablet catches a faint draft. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a faint, controlled half-smile with one corner of the thin lips pulled up and wide-set eyes glinting with professional calculation. Subtle idle animation: relaxed, easy breathing motion rising and falling in the chest, a subtle micro-lift at the corner of the smirk, and an easy, barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. The blazer jacket settles naturally over her shoulders, and the company-issued tablet stays still at her side. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__vulnerable` loop
 

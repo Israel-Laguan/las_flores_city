@@ -28,7 +28,7 @@ Create a seamless looping video. The man on the reference image shows a bright, 
 
 **Input**: `assets/ricardo_tan__contemplative.png`
 
-Create a seamless looping video. The man on the reference image shows a thoughtful pause with eyes softening into the middle distance and lips relaxed. Subtle idle animation: slow, measured breathing motion rising and falling gently in the chest, a quiet softening of gaze into the distance, and a slow, reflective blink cycle. Hair and clothing respond to a faint ambient breeze. Strands of black hair drift delicately across his forehead, the practical work clothing shifts gently with his breath, and the earbud shifts slightly. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a thoughtful pause with eyes softening into the middle distance and lips relaxed. Subtle idle animation: slow, measured breathing motion rising and falling gently in the chest, a quiet softening of gaze into the distance, and a slow, reflective blink cycle. Hair and clothing respond to a faint ambient breeze. Strands of black hair drift delicately across his forehead, the practical work clothing shifts gently with his breath, and the earbud remains still. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__surprised` loop
 
@@ -40,4 +40,4 @@ Create a seamless looping video. The man on the reference image shows a bright, 
 
 **Input**: `assets/ricardo_tan__determined.png`
 
-Create a seamless looping video. The man on the reference image shows steady resolve with eyes fixed and sharp and jaw set. Subtle idle animation: steady, controlled breathing motion in the chest and shoulders, a slight firming micro-motion in the jawline, and a resolute, slow blink cycle. Hair and clothing respond to a faint ambient breeze. The practical work clothing shifts crisply in the draft, and the earbud catches a faint draft. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows steady resolve with eyes fixed and sharp and jaw set. Subtle idle animation: steady, controlled breathing motion in the chest and shoulders, a slight firming micro-motion in the jawline, and a resolute, slow blink cycle. Hair and clothing respond to a faint ambient breeze. The practical work clothing shifts crisply in the draft, and the earbud remains still. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
