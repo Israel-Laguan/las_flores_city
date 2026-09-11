@@ -8,7 +8,10 @@
     "admin",
     "shared",
     "ui",
-    "infra"
+    "infra",
+    "api/contracts",
+    "api/planning",
+    "api/runtime"
   ],
   "scripts": {
     "dev:client": "npm run dev --workspace=client",
