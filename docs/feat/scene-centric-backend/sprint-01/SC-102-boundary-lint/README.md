@@ -30,11 +30,22 @@ per `architecture.md` §2, "an unenforced architectural rule is a comment."
   starting, if a different concrete package was chosen instead — never leave "a lint
   rule" unspecified).
 - Rule configured via `no-restricted-paths` (or equivalent) and passing on the empty
-  tree from SC-101.
-- A deliberate violation (an import from `api/planning` into `api/runtime` or vice versa)
-  is committed on a scratch branch; CI is shown to fail; **the failure output names the
-  specific rule**, not just "lint failed." Screenshot or CI run link recorded in the
-  retro.
+  tree from SC-101. **Coverage MUST include both relative-path and workspace package-name
+  import forms** — the repo exposes `@las-flores/api-planning`, `@las-flores/api-runtime`,
+  and `@las-flores/api-contracts` as package names (`api/*/package.json`). There are no
+  TypeScript path aliases. If the ESLint resolver cannot forbid package-name imports,
+  document that limitation explicitly in this README and in the lint config comment, and
+  restrict the violation test to the supported (relative) form.
+- A deliberate violation is committed on a scratch branch and CI is shown to fail with
+  the **specific rule** named in the output (not just "lint failed"). Violations MUST be
+  exercised in **all** forbidden directions and forms the config claims to cover:
+  - `api/planning/**` → `api/runtime/**` and `api/runtime/**` → `api/planning/**`
+  - `api/contracts/**` → `api/planning/**` and `api/contracts/**` → `api/runtime/**`
+  - each direction tested via **both** a relative import (`../../runtime/...`,
+    `../planning/...`) **and** a package-name import (`@las-flores/api-runtime`,
+    `@las-flores/api-planning`, `@las-flores/api-contracts`), unless the limitation
+  note above applies (in which case test only the supported form and state the gap).
+  Screenshot or CI run link for each exercised violation is recorded in the retro.
 - The violation is removed before merge — the scratch branch/commit is never part of the
   real PR history.
 - `contracts/` importing from either `planning/` or `runtime/` also fails the rule (the

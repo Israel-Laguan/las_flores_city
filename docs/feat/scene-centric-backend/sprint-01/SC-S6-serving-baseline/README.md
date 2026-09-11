@@ -4,9 +4,13 @@
 
 ## Context
 
-Measure the current dialogue path: p50/p95 for chunk fetch and portrait load, including
-`resolveChunkSpeakers` (uncached bulk `SELECT` plus per-portrait presigning per
-response).
+Measure the current dialogue path: p50/p95 for chunk fetch and for server-side
+**speaker resolution + portrait URL presigning** (`resolveChunkSpeakers`: uncached bulk
+`SELECT` plus per-portrait presigning per response). This function does **not** measure
+client/object-storage image load — presigned URLs are embedded in the `/dialogue/active`
+JSON response; actual portrait load is the subsequent client→storage `GET` of that URL
+and MUST be measured separately (or explicitly excluded and renamed). Do not label the
+`resolveChunkSpeakers` timing as "portrait load."
 
 ## Dependencies
 
@@ -20,7 +24,11 @@ response).
 ## Acceptance criteria (from the write-up)
 
 The answer must state:
-- The numbers: p50/p95 for chunk fetch and portrait load.
+- The numbers: p50/p95 for **chunk fetch** (`GET /dialogue/active` end-to-end) and for
+  **speaker resolution / presigning** (`resolveChunkSpeakers` in isolation). If any
+  "portrait load" latency is reported, it MUST be defined as the client/object-storage
+  image `GET` and measured separately from server-side presigning, or the metric MUST be
+  renamed to "speaker resolution/presigning" with the distinction stated explicitly.
 - The measurement method, described well enough to be repeatable by someone else.
 - Whether `resolveChunkSpeakers` is in fact the hot spot, or whether that was a reading
   error — `lessons-from-current-code.md` §2.9 identifies it as *suspected* (found by

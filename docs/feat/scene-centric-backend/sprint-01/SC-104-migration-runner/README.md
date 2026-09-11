@@ -50,10 +50,10 @@ you find a concrete reason it cannot apply a plain CREATE SCHEMA / CREATE ROLE f
 migration-targets.json and tracks it in schema_migrations for idempotency).
 
 Steps:
-1. Add the SC-103 migration filename to server/src/database/migration-targets.json's
+1. Add the SC-103 migration filename to server/src/database/migrations/migration-targets.json's
    "oltp" array, following the existing entries' format.
-2. Run `npm run migrate` once — confirm the schemas/roles are created.
-3. Run `npm run migrate` a second time — confirm the migration is skipped (idempotent),
+2. Run `npm run schema:migrate --workspace=server` once — confirm the schemas/roles are created.
+3. Run `npm run schema:migrate --workspace=server` a second time — confirm the migration is skipped (idempotent),
    via the schema_migrations table or the runner's log output.
 4. Decide and record rollback stance: forward-only (with the one-sentence reason) unless
    a rollback migration is trivial to write — do not silently omit this decision.

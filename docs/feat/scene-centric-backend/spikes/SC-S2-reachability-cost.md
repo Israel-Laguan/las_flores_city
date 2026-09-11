@@ -19,14 +19,19 @@ spike measures reachability against the edges that actually exist and actually c
 ## What was run
 
 Query (`scripts/spikes/sc-s2-reachability.sql`), invoked via
-`scripts/spikes/sc-s2-run.mjs`:
+`scripts/spikes/sc-s2-run.mjs` (both were local throwaways, **not committed** — see the
+reproducibility rule in this folder's README; the SQL body is inlined in full below, which
+is the re-runnable part):
 
 ```sql
 WITH RECURSIVE flag_edges AS (
   SELECT
-    s.from_slug AS from_node,
-    r.from_slug AS to_node,
-    s.to_slug   AS via_flag
+    s.from_type AS from_type,
+    s.from_slug AS from_slug,
+    r.from_type AS to_type,
+    r.from_slug AS to_slug,
+    s.to_type   AS via_type,
+    s.to_slug   AS via_slug
   FROM spike_sc_s1.entity_edges s
   JOIN spike_sc_s1.entity_edges r
     ON r.edge_kind = 'requires_flag'
@@ -35,40 +40,64 @@ WITH RECURSIVE flag_edges AS (
   WHERE s.edge_kind = 'sets_flag'
 ),
 reachable AS (
+  -- Synthetic game-start: dialogue_node rows that SET a flag and do not REQUIRE one.
   SELECT
-    s.from_slug AS node,
-    ARRAY[s.from_slug] AS path,
+    s.from_type AS node_type,
+    s.from_slug AS node_slug,
+    ARRAY[s.from_type || ':' || s.from_slug] AS path,
     0 AS depth
   FROM spike_sc_s1.entity_edges s
   WHERE s.edge_kind = 'sets_flag'
     AND NOT EXISTS (
       SELECT 1 FROM spike_sc_s1.entity_edges r
-      WHERE r.edge_kind = 'requires_flag' AND r.from_slug = s.from_slug
+      WHERE r.edge_kind = 'requires_flag'
+        AND r.from_type = s.from_type
+        AND r.from_slug = s.from_slug
     )
 
   UNION ALL
 
   SELECT
-    fe.to_node,
-    reachable.path || fe.to_node,
+    fe.to_type,
+    fe.to_slug,
+    reachable.path || (fe.to_type || ':' || fe.to_slug),
     reachable.depth + 1
   FROM reachable
-  JOIN flag_edges fe ON fe.from_node = reachable.node
-  WHERE NOT (fe.to_node = ANY(reachable.path))
+  JOIN flag_edges fe
+    ON fe.from_type = reachable.node_type
+   AND fe.from_slug = reachable.node_slug
+  WHERE NOT ((fe.to_type || ':' || fe.to_slug) = ANY(reachable.path))
 )
-SELECT DISTINCT node, min(depth) AS min_depth
+SELECT DISTINCT node_type, node_slug, min(depth) AS min_depth
 FROM reachable
-GROUP BY node
-ORDER BY min_depth, node;
+GROUP BY node_type, node_slug
+ORDER BY min_depth, node_type, node_slug;
 ```
 
-**Why this shape.** There is no literal `game_start` row anywhere in SC-S1's projected
-data — no edge kind for it exists. "Game start" is modeled as the set of dialogue_node
-rows that *set* a flag but don't themselves *require* one — i.e. content reachable with
-no prerequisite, the natural entry points into the flag graph. `flag_edges` then links
-node A → node B whenever A sets a flag that B requires (completing A "unlocks" B), and
-the recursive step walks that link with a visited-path array (`ARRAY[...] `/`= ANY(...)`)
-for cycle safety, per §5's own "cycles: recursive CTE with a visited-path array" note.
+**Why this shape (and its known choice-level limitation).** There is no literal
+`game_start` row anywhere in SC-S1's projected data — no edge kind for it exists.
+"Game start" is modeled as the set of dialogue_node rows that *set* a flag but don't
+themselves *require* one — i.e. content reachable with no prerequisite, the natural entry
+points into the flag graph. `flag_edges` then links node A → node B whenever A sets a
+flag that B requires (completing A "unlocks" B), and the recursive step walks that link
+with a visited-path array (`ARRAY[...] `/`= ANY(...)`) for cycle safety, per §5's own
+"cycles: recursive CTE with a visited-path array" note.
+
+> **⚠ Choice-level correction (post-SC-S3 review).** `requires_flag` is projected from
+> `choices[].required_flags`, but the query above stores only `from_slug` (the dialogue
+> node) and its `NOT EXISTS` anti-join excludes an entire node when *any* choice on that
+> node is gated — an ungated choice on the same node would be incorrectly marked
+> unreachable. The fixture in `spikes/SC-S3-overlay-view.md` has exactly that shape
+> (`branch_departed`/`branch_friends` ungated alongside gated `branch_grounded`).
+> **Correct projection:** `requires_flag` edges MUST retain `choice_id` — e.g.
+> `attrs: {choice_id, flag_slug}` — or be split into two edge kinds: `node_entry`
+> (always traversable) vs `choice_requires_flag` (per-choice gate). Reachability then
+> distinguishes **entering a node** (reachable if any choice that leads to it is
+> enabled) from **enabling a specific choice** (requires its flag). The latency
+> numbers below were measured with the node-level shape and remain valid as a
+> *cost* baseline; tier-3 correctness for SC-704 MUST use the choice-aware shape
+> so gated and ungated choices on the same node are not conflated. See `plan-graph-in-postgres.md` §3.2
+> and `backlog.md` SC-701 for the projection fix.
 
 Sanity-checked first: only 8 of 237 `sets_flag` flags are also referenced by a
 `requires_flag` edge (`camila_romanced`, `LOVER_PATH_ACTIVE`, etc.) — a real but small
@@ -259,7 +288,7 @@ actually chain). It is not yet evidence for deep or densely cross-linked flag gr
 because today's content doesn't have any to measure against — the 10x simulation
 multiplied the number of independent shallow chains, not their depth or density. The
 `Recursive Union`'s `WorkTable Scan` — the part that would blow up under deep or highly
-branching recursion — stayed cheap here (rows=134-160 per loop) specifically because
+branching recursion — stayed cheap here (WorkTable Scan rows=134/loop at 1x, 1345/loop at 10x — linear in rows, not the superlinear blow-up deep recursion would cause) specifically because
 depth stayed at 1-2 hops in every generation.
 
 ## What it changes

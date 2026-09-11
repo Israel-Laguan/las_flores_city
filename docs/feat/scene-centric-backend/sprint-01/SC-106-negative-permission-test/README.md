@@ -13,7 +13,9 @@ is never tested is a claim, not a fact.
 `.github/workflows/ci.yml`'s `with-migrations` job already provisions a `postgres-oltp`
 service and runs `npm run test:integration --workspace=server`. **This test belongs
 there** — it needs a live DB connection using the `runtime` role's actual credentials
-(via the `runtimePool` added in SC-103), not a new CI service or a mocked connection.
+(via a **raw `pg` client using `RUNTIME_DATABASE_URL`** — test-only; SC-103 deliberately
+adds no `runtimePool` because the repo's sanctioned-pool constraint forbids a new
+production pool), not a new CI service or a mocked connection.
 
 ## Dependencies
 
@@ -24,17 +26,32 @@ there** — it needs a live DB connection using the `runtime` role's actual cred
 
 ## Acceptance criteria
 
-- A test connects using `runtimePool` (or a role-scoped connection matching its
-  credentials) and asserts a `SELECT` against any `planning`-schema table fails with a
-  permission error (not a table-not-found error — the schema must exist and be
-  visible/rejected, not absent).
-- The same test (or a sibling) asserts a `runtime`-role write attempt against `planning`
-  also fails.
+- **Known planning fixture exists before the negative check.** The test MUST NOT probe
+  an arbitrary or non-existent `planning.*` table — that would conflate
+  `permission denied` with `relation does not exist`. A dedicated planning-schema table
+  (e.g. `planning._sc106_probe` or the real `planning.flag_definitions` once SC-202
+  lands) is provisioned **ahead** of the check via a privileged fixture/migration
+  applied with the migration-owner role, with `GRANT ALL ON TABLE planning._sc106_probe
+  TO planning_role` (and `ALTER DEFAULT PRIVILEGES` per SC-103) so the `planning` role
+  can use it. The test first verifies the fixture is present as the privileged owner
+  (or via `information_schema` / `SELECT to_regclass('planning._sc106_probe') IS NOT
+  NULL`) and that the schema `planning` exists, and only then performs the denial
+  checks — so a failure is unambiguously a permission error, not a missing relation.
+- A test connects using a raw `pg` client with the test-only `RUNTIME_DATABASE_URL`
+  (SC-103 provisions this; **no new pool export** — the repo forbids adding
+  `runtimePool`) and asserts a `SELECT` against the **known** `planning`-schema fixture
+  table fails with a permission-denied error (`42501` / `permission denied for schema`
+  or `permission denied for table`), not a table-not-found error.
+- The same test (or a sibling) asserts a `runtime`-role `INSERT`/`UPDATE` attempt
+  against the same known `planning` fixture also fails with permission-denied, even
+  after the `SELECT` denial is confirmed.
 - The test lives in the existing integration test suite (`server/tests/integration/`)
   and runs inside CI's `with-migrations` job — not a manual/one-off check, not a new CI
   service.
 - Test failure output clearly names which permission was expected to fail and didn't, if
   it regresses — this is a security-relevant test, so a vague assertion isn't acceptable.
+  On success, the test also logs the fixture table OID and the `permission denied` SQLSTATE
+  it observed, to make the proof auditable.
 
 ## Prompt to execute
 
@@ -49,10 +66,14 @@ Read server/tests/integration/ for the existing test structure and conventions
 Steps:
 1. Add a test file under server/tests/integration/ (naming convention matching
    neighboring files, e.g. migration.test.ts's style) that:
-   - Connects using the runtime role's credentials (via runtimePool from SC-103, or a
-     raw pg client using RUNTIME_DATABASE_URL directly if that matches this suite's
-     conventions for role-specific tests).
-   - Attempts a SELECT against a planning-schema table and asserts it fails with a
+   - Connects using the runtime role's credentials via a raw pg client with
+     RUNTIME_DATABASE_URL (provided by SC-103 as a test-only env var). Do NOT add a
+     runtimePool or any pool export — this repo's AGENTS.md constraint is
+     oltpPool/withOLTPTransaction for player data plus the read-only contentPool, and
+     nothing else.
+   - Assert schema-level denial first (`has_schema_privilege(runtime, 'planning', 'USAGE')` is false).
+     If you also SELECT a table, create a privileged fixture table in the test setup —
+     SC-103 creates schemas/roles only, no domain tables. Then assert it fails with a
      permission-denied error (not a missing-table error — assert the schema and table
      exist, just aren't readable by this role).
    - Attempts an INSERT/UPDATE against a planning-schema table and asserts that also

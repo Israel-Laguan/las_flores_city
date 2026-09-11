@@ -32,9 +32,11 @@ Write the result to `../../spikes/SC-S2-reachability-cost.md` using the
 
 ```
 Using the entity_edges table produced by SC-S1's spike script, write and run one
-recursive-CTE reachability query from a synthetic game-start node, per
-docs/feat/scene-centric-backend/plan-graph-in-postgres.md §5 ("Reachability from game
-start: recursive CTE over sets_flag/requires_flag edges").
+recursive-CTE reachability query. SC-S1 has no game_start node — seed from the
+dialogue_node rows that SET a flag and do not REQUIRE one, and carry (from_type,
+from_slug) through flag_edges, reachable, the visited path, and every join so
+same-slug entities of different types cannot cross-link. Record that seed in the
+query. See plan-graph-in-postgres.md §5.
 
 Do not start this before SC-S1's table exists and has real projected rows — this spike
 has nothing to measure without it.

@@ -17,7 +17,8 @@ and specifically whether `jsonb` merge alone is sufficient for `MODIFY`, per ope
 ## What was run
 
 Script: `scripts/spikes/sc-s3-overlay.mjs`, built on `spike_sc_s1.entity_edges` (must be
-rebuilt first — SC-S1's script drops/recreates it every run).
+rebuilt first — SC-S1's script drops/recreates it every run). **Not committed** — see the
+reproducibility rule in this folder's README.
 
 ```bash
 DATABASE_URL="postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores" \
@@ -59,7 +60,9 @@ base_hash, position`), one `ADD` + one `MODIFY`:
 
 ### Overlay build (§3.3)
 
-Ran the literal `canon.payload || delta.payload` merge the doc proposes, then re-projected
+Ran `COALESCE(canon.payload, '{}'::jsonb) || delta.payload` — the literal
+`canon.payload || delta.payload` is NULL for ADD (no canon row, LEFT JOIN yields
+NULL, and `NULL || jsonb` is NULL, which would drop every ADD node's edges). Then re-projected
 `sets_flag`/`requires_flag` edges from the merged entity using the same projection rules
 SC-S1's script used (`effects.flag_set` → `sets_flag`, `choices[].required_flags` →
 `requires_flag`). Also built a second, corrected version that merges the `choices` array
@@ -184,14 +187,21 @@ sufficient check; only the per-node diff exposes the bug.
   that view needs to be array-aware wherever the entity schema has array fields, which
   given the point above is the common case, not the exception.
 - **SC-S1's edge-projection code becomes directly reusable for this**, not just for canon.
-  The same `effects.flag_set` → `sets_flag` / `choices[].required_flags` → `requires_flag`
-  rules SC-S1 wrote for canon content projected correctly over the merged (canon+delta)
-  payload with no changes — confirming §3.2's claim that projection is agnostic to
-  whether the source is canon or an overlay. That reduces the actual implementation gap to
-  "make the merge step array-aware," not "write a second projection path."
+   The same `effects.flag_set` → `sets_flag` / `choices[].required_flags` → `requires_flag`
+   rules SC-S1 wrote for canon content projected correctly over the merged (canon+delta)
+   payload with no changes — confirming §3.2's claim that projection is agnostic to
+   whether the source is canon or an overlay. That reduces the actual implementation gap to
+   "make the merge step array-aware," not "write a second projection path."
+- **Implementation constraint for the overlay view.** Until a schema-owned, array-aware
+   merge is implemented (per-element by stable `id`, with per-field merge semantics — not
+   wholesale `||` replacement — and ordering/deletion owned by the entity schema in
+   `contracts/`), `MODIFY` deltas that touch array-bearing fields MUST carry full snapshots
+   for those fields. Naive partial `choices` arrays that rely on `||` WILL silently drop
+   unmentioned elements and produce wrong reachability (as demonstrated above).
 - **This does not reopen C1 (Overlay) in §4's capability table as a whole.** The
-  view-composition mechanism (`LEFT JOIN` + filter + merge) is sound; only the *merge*
-  sub-step needs to be smarter than the doc's "single operator" framing suggested. Still
-  **equal or better than Neo4j's `GraphMerger`**, just not as trivially cheap to implement
-  as §3.3 implied — budget for per-field/array merge logic in the entity-agnostic delta
-  layer's implementation, not a schema redesign.
+   view-composition mechanism (`LEFT JOIN` + filter + merge) is sound; only the *merge*
+   sub-step needs to be smarter than the doc's "single operator" framing suggested. Still
+   **conditionally equal or better than Neo4j's `GraphMerger` once array-aware merge is
+   validated**, just not as trivially cheap to implement as §3.3 implied — budget for
+   per-field/array merge logic in the entity-agnostic delta layer's implementation, not a
+   schema redesign.

@@ -3,6 +3,16 @@
 One file per spike: `SC-S<n>-<slug>.md`. Spikes are listed in `../backlog.md` §Spikes and
 scheduled in the sprint files.
 
+**Harness reproducibility rule:** every spike write-up's "What was run" section must
+contain either (a) the actual harness script/SQL **committed in the repo** (spike scripts
+that touch the DB belong in `server/scripts/`, not `scripts/`, which is file-to-file
+tools only), or (b) fully self-contained inline commands and inputs that reproduce the
+measurement. A spike whose harness exists only on one machine is not finished — its
+numbers cannot be re-validated against changed content later. Known gap: the SC-S1
+through SC-S4 harnesses and `server/scripts/spike_sc_s6_serving_baseline.ts` were not
+committed with their write-ups; committing (or inlining) them is a recorded follow-up
+before any downstream ticket treats those measurements as re-runnable.
+
 **A spike that answers "no" is a success.** It gets written up here and the affected story
 is re-planned at retro — not quietly re-attempted next sprint.
 

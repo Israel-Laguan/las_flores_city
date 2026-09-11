@@ -68,19 +68,32 @@ Candidate evaluation against the documented precedence chain (`visual.background
 
 **It's a mix, already decided in `proposal.md` §2.3 — this spike converts that decision
 into the concrete answer for A6: weather comes from district-level state, with an
-optional per-scene override.**
+optional per-scene override. With a revision-pinning correction for artifact isolation.**
 
 - **Source of truth**: a `weather` field on the `districts` table (new column,
   analogous to the existing seeded district metadata in
-  `034_seed_districts.sql`/`035_seed_districts_extended.sql`) is the **default**.
+  `034_seed_districts.sql`/`035_seed_districts_extended.sql`) is the **authoritative
+  default** at compile time. **It MUST NOT be read live at runtime from the mutable
+  `districts` row** — that would let an active session observe a weather change outside
+  its pinned revision, violating `architecture.md` §4 / `plan-graph-in-postgres.md`
+  §9.3's "runtime serves exclusively from artifacts" contract.
+- **Compiled snapshot:** the compile step snapshots the district default into the
+  revision's artifact bundle (e.g. `district_defaults[district_slug].weather` inside the
+  scene artifact, or a companion `district-weather@R` artifact keyed by revision). The
+  snapshot is revision-scoped and immutable; old revisions keep their old weather value
+  exactly as they keep old scene URLs. If a revision-scoped runtime read model is ever
+  introduced instead, it MUST still be revision-scoped (read via `pinned_revision_id`)
+  and that contract MUST be added to `architecture.md` §4 — no direct `SELECT weather
+  FROM districts WHERE id = $1` at serve time.
 - **Override**: a scene's own `weather` field (part of SC-305's scene entity: location,
   time, weather, participants...) wins when a writer sets it, per §2.3's
-  inherit-with-override rule.
-- **Resolution at the call site**: resolve `weather` **before** calling
-  `buildBackgroundHints`, the same way `DialogueVisualLayer.ts:156` already resolves
-  `timeOfDay` before the call:
-  ```
-  const resolvedWeather = scene.weather ?? district.weather ?? undefined;
+  inherit-with-override rule. This override is also baked into the compiled artifact, not
+  resolved against a live row.
+- **Resolution at the call site** (caller resolves **before** `buildBackgroundHints`,
+  same pattern as `DialogueVisualLayer.ts:156` for `timeOfDay`):
+  ```ts
+  const compiledDistrictWeather = artifact.district_defaults[scene.district_slug]?.weather;
+  const resolvedWeather = scene.weather ?? compiledDistrictWeather ?? undefined;
   const hints = buildBackgroundHints(timeOfDay, resolvedWeather, visual?.mood);
   ```
   This does not touch `buildBackgroundHints`'s own internal chain (weather > time-of-day
@@ -93,24 +106,33 @@ optional per-scene override.**
   into it.
 
 This settles open decision **A6** in `architecture.md` §9 (due by SC-M2): the weather
-source is **district default (new `districts.weather` column) with scene-level author
-override**, resolved by the caller before invoking `buildBackgroundHints`.
+source is **district default (compiled snapshot of `districts.weather` at revision R)
+with scene-level author override**, resolved by the caller before invoking
+`buildBackgroundHints`. Runtime never reads `districts.weather` live.
 
 ## What it changes
 
 - **SC-305** (scene entity: location, time, weather, participants, items, dialogue refs)
-  implements the scene-side half: `scene.weather` as an optional authored override field,
-  validated against the same environment-tag vocabulary `buildBackgroundHints` expects
-  (`night`, `rain`, `sunset`, etc. — `docs/ASSET_EXPRESSION_VOCABULARY.md`).
-- **A new ticket (not yet in the backlog) is needed for the district side**: add a
-  `weather` column to `districts` (migration, in the style of `033`–`035`), a default
-  seed value per district, and admin/content tooling to set it. This spike does not
-  create that ticket's code — it is a decision spike, no code artifact — but SC-305 or
-  its follow-up should account for reading `district.weather` as the fallback.
+   implements the scene-side half: `scene.weather` as an optional authored override field,
+   validated against the same environment-tag vocabulary `buildBackgroundHints` expects
+   (`night`, `rain`, `sunset`, etc. — `docs/ASSET_EXPRESSION_VOCABULARY.md`).
+- **District-side implementation is tracked by SC-309**: add a
+   `weather` column to `districts` (migration, in the style of `033`–`035`), a default
+   seed value per district, admin/content tooling to set it, **and** compile-time
+   snapshotting of that column into the revision's artifact bundle (e.g.
+   `district_defaults` inside the scene artifact). Runtime MUST resolve against that
+   compiled snapshot via the session's pinned revision — not via live `SELECT` from
+   `districts` — to preserve artifact-boundary isolation (`architecture.md` §4). This spike
+   does not create that ticket's code — it is a decision spike, no code artifact — but
+   SC-305 or its follow-up MUST account for the compiled snapshot as the fallback source.
 - **`architecture.md` §9's open-decisions table**: A6 moves from *open* to *resolved*,
-  citing this file. Text to record: *"Weather source: `districts.weather` (default) +
-  `scene.weather` (author override, wins when set) — resolved into a single value by the
-  caller before `buildBackgroundHints`, per `proposal.md` §2.3."*
+   citing this file. Text to record: *"Weather source: compiled snapshot of
+   `districts.weather` at revision R (default) + `scene.weather` (author override, wins
+   when set) — resolved by caller before `buildBackgroundHints` from the pinned
+   artifact, not by live read of `districts`; per `proposal.md` §2.3 and pinned-revision
+   contract (`architecture.md` §4 / `plan-graph-in-postgres.md` §9.3). If a revision-scoped
+   read model is used instead of a snapshot, its contract MUST be added to `architecture.md`
+   §4."*
 - **`AGENTS.md:36`'s "forward-compatible hook with no live source yet" note becomes
   stale** once the district column + scene field land and a caller resolves them — that
   sentence should be updated (by SC-305 or its follow-up) to describe the resolved

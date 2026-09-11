@@ -53,7 +53,12 @@ Target shape (from docs/feat/scene-centric-backend/plan-graph-in-postgres.md §3
 This is a spike, not production code:
 - Do not wait for or depend on SC-103's planning/runtime schemas. Use a scratch table
   in the existing dev database (or a temp schema you create and can drop), independent
-  of the setup tickets.
+  of the setup tickets' timeline.
+- The script MUST be deterministic and idempotent: on every run it **drops or
+  truncates** the scratch table/schema before repopulating (e.g. DROP TABLE IF EXISTS /
+  TRUNCATE + re-INSERT, or CREATE OR REPLACE), so a second execution does not duplicate
+  edges and change row counts or index sizes. Record the content revision (git SHA or
+  `content/` hash) that produced each measurement.
 - The script itself can be disposable (a one-off .ts/.mjs under a scratch/spikes path),
   but it must be re-runnable — someone else should be able to execute it and get the
   same numbers.

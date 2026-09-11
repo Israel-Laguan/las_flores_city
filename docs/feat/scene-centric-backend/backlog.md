@@ -34,7 +34,7 @@
 | SC-203 | Condition grammar type in `contracts/condition` — discrete flag tests only, no continuous values | M | **Ready** |
 | SC-204 | Condition evaluator, single implementation, consumed by both modules | M | Blocked: SC-203 |
 | SC-205 | Track which flags are set and read, per entity, as the input to tier-3 | M | Blocked: SC-202 |
-| SC-206 | Threshold-crossing sets a flag as a persisted event, not a derived query | M | Blocked: SC-202, S3 |
+| SC-206 | Threshold-crossing sets a flag as a persisted event (fixture-backed mechanism) — real-stat wiring is follow-up blocked on S3 / SC-811 | M | **Ready** (fixture scope); real-stat integration **Blocked: S3** |
 
 ## SC-E3 — Scene model & composition · F3, F7 · SC-M2
 
@@ -44,7 +44,7 @@
 | SC-302 | Role slots as a scene attribute — slot id, cast, position | M | Blocked: SC-301 |
 | SC-303 | Base + overlay composition with priority ordering | M | Blocked: SC-301 |
 | SC-304 | Exclusive vs. additive property resolution; equal-priority conflict fails compile | M | Blocked: A3 |
-| SC-305 | Weather: `scene.weather` authored override field, resolved against `district.weather` before `buildBackgroundHints` (A6 resolved — `spikes/SC-S5-weather-source.md`) | S | Blocked: SC-301, SC-309 |
+| SC-305 | Weather: compile resolves `scene.weather` over `district.weather` and persists the resolved value on the artifact; runtime only reads that artifact field before `buildBackgroundHints` (A6 — `spikes/SC-S5-weather-source.md`) | S | Blocked: SC-301, SC-309, F4 |
 | SC-306 | Personality dialogue pools, shared many-to-many across characters | M | Blocked: SC-301 |
 | SC-307 | Scene dialogue attached to role slots rather than characters | M | Blocked: SC-302 |
 | SC-308 | Specificity ladder resolution — scene > relationship > personality | M | Blocked: SC-306, SC-307 |
@@ -144,9 +144,15 @@ in `spikes/` and the affected story is re-planned rather than quietly re-attempt
 | SC-S5 | Where does weather come from? `AGENTS.md:36` says it is a hook with no live source and callers pass `undefined`. Propose the source. | 0.5 day | A6, SC-305 |
 | SC-S6 | Dialogue serving baseline — p50/p95 for chunk fetch and portrait load on the current path, including `resolveChunkSpeakers` | 1 day | SC-508, R13 |
 
+### Spike follow-ups
+
+| ID | Story | Size | State |
+|---|---|---|---|
+| SC-S7 | Commit the spike harnesses (SC-S1 projection script, SC-S2 run/duplicate scripts, SC-S3 overlay script, SC-S4 corpus/analysis files, S6 serving baseline) under `server/scripts/`, or replace each write-up with fully self-contained inline repro commands. Until then the recorded spike numbers are not re-runnable from the repo. | S | Ready |
+
 ## Defects
 
 | ID | Defect | Priority |
 |---|---|---|
-| D1 | Chunk lookup not scoped to the player's active content revision | **now** |
+| D1 | Chunk lookup not scoped to the player's active tree/revision — requires adding a monotonic `dialogue_trees.revision` + player-pinned `pinned_tree_revision` first (no revision identifier exists in the current model; see D1 ticket) | **now** |
 | D2 | Submitted choice not validated as reachable before effects apply | **now** |

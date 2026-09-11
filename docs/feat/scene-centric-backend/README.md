@@ -55,7 +55,6 @@ due by SC-M4.
 - `docs/CHARACTER_DATA_MODEL.md` — the earlier character-schema-first direction. Superseded
   in framing; its corpus diagnosis (182 personality snowflakes, 55 `faction: independent`,
   three-way expression drift) still holds and is reproduced here.
-- `docs/feat/character-data-model-and-intake/strategy.md` — the internal strategic critique
-  that overturned the character-first framing.
-- `docs/feat/character-data-model-and-intake/context-brief.md` — the schema-agnostic brief
-  sent for the first round of external review.
+- The earlier character-data-model-and-intake strategy / context-brief (not in this
+  checkout) — internal critique that overturned the character-first framing; the
+  diagnosis is reproduced in this pack rather than linked as a live path.

@@ -5,8 +5,8 @@ provisional and revised at each retro (§5).
 
 **Track naming.** `SC-M*` deliberately does not continue the existing `M50–M54` sequence.
 This is a parallel track, not the next item in the intake-pipeline series — the same
-precedent `docs/milestones/README.md` sets for M54, which "can run at any time — it
-targets a different pipeline entirely."
+precedent `docs/DIALOGUE_CACHING_AND_CHARACTER_CASTING.md` sets for M54, which runs
+outside the M50–M53 sequence.
 
 **Cadence assumption.** One developer, two-week sprints, and roughly **60% of a sprint
 available for planned work** — the rest absorbs interruptions, the existing `server/`, and
@@ -68,7 +68,7 @@ being wrong. A roadmap that assumes 100% is a roadmap that lies at the first ret
 | Serving benchmark baseline (prerequisite gap) | F5 |
 
 **Exit criteria**
-- **The vertical slice from `proposal.md` §7 is playable end to end in the existing client.**
+- A hand-authored scene slice is playable end to end in the existing client; the intake-authored slice is the SC-M4 exit criterion.
 - A player session pins to a revision and is unaffected by a subsequent pointer flip.
 - An unreachable choice submission is rejected with no effect applied.
 - p50/p95 recorded for scene resolution and artifact fetch.

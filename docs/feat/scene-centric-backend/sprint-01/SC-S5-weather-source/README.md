@@ -26,7 +26,9 @@ The answer must state:
 - How the chosen source interacts with the documented precedence chain: explicit
   `visual.background` > weather > time-of-day > mood > default.
 
-This settles open decision **A6** (`architecture.md` §9, due by SC-M2).
+A6 is already resolved — see `spikes/SC-S5-weather-source.md` and `architecture.md` §9.
+Do not re-run the research. This brief is the recorded answer plus implementation
+follow-up (SC-305 / SC-309), not a second spike.
 
 Write the result to `../../spikes/SC-S5-weather-source.md` using the `spikes/README.md`
 template, including the "what it changes" section — even though this spike produces no

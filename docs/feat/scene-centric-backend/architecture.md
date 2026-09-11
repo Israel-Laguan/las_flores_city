@@ -96,8 +96,14 @@ Two properties follow structurally rather than by discipline:
 
 - **Publish is atomic and reversible.** Artifacts go up first; the pointer flips last;
   rollback is flipping it back. Old revisions are never mutated.
-- **Sessions pin to a revision.** R12's revision-scoping requirement stops being a rule
-  to remember and becomes the shape of the system.
+- **Sessions pin to a revision.** At session creation (first scene resolution) the
+  runtime reads the current `active_revision` pointer and stores that revision ID on the
+  session / player-state row (`runtime.player_sessions.pinned_revision_id` or equivalent).
+  Every subsequent artifact and transition lookup in that session is scoped to the pinned
+  ID — never to "current pointer." New sessions pin to whatever is active at creation
+  time; in-progress sessions are unaffected by a later pointer flip; rollback (flipping the
+  pointer back) affects only sessions created after the rollback — existing pinned sessions
+  continue to resolve against their already-pinned revision, consistent with R12.
 
 ## 5. Technology decisions
 
@@ -169,7 +175,7 @@ which it must be settled.
 | A3 | Precedence rule for exclusive scene properties on overlay conflict — and whether equal priority warns or fails | SC-M2 |
 | A4 | Approval granularity: whole-plan or partial | SC-M4 |
 | A5 | Regeneration vs. hand-edit merge rule | SC-M4 |
-| A6 | ~~Weather source — where the live value comes from~~ — **resolved**: `districts.weather` (default) + `scene.weather` (author override, wins when set), resolved by the caller before `buildBackgroundHints` (`spikes/SC-S5-weather-source.md`) | SC-M2 |
+| A6 | ~~Weather source — where the live value comes from~~ — **resolved**: compiled snapshot of `districts.weather` at revision R (default) + `scene.weather` (author override, wins when set), resolved by the caller from the **pinned artifact** before `buildBackgroundHints` (`spikes/SC-S5-weather-source.md`). Runtime never reads `districts` live; if a revision-scoped read model replaces the snapshot, its contract MUST be added to §4. | SC-M2 |
 | A7 | `asset_fallback` signal consumer | SC-M6 |
 | A8 | Whether `dialogue_bias` and `look_hint` survive R7 (no field without a reader) | SC-M6 |
 
