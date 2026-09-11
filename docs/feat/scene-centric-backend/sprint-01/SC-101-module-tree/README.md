@@ -34,6 +34,10 @@ exists as something CI can check.
 - Each has its own `package.json` with `typecheck`/`lint`/`test` scripts matching the
   shape of `server/package.json`'s equivalents, and its own `tsconfig.json` matching the
   conventions in `server/tsconfig.json` (strict, `ES2022`, `moduleResolution: bundler`).
+- Each has its own `eslint.config.cjs` that spreads the repo-root `eslint.config.base.cjs`
+  (same pattern as `server/eslint.config.cjs` / `infra/eslint.config.cjs`). ESLint 10
+  flat config errors if a workspace has no config file — `npm run lint --workspaces`
+  will fail without this.
 - `npm run typecheck --workspaces` and `npm run lint --workspaces` at the repo root pick
   up all three with **zero changes to root scripts** — the workspace mechanism is what
   wires them in, not a new root command.
@@ -56,6 +60,8 @@ Requirements:
   matching server/package.json's equivalents in spirit.
 - Each gets its own tsconfig.json matching server/tsconfig.json's conventions
   (strict: true, target ES2022, moduleResolution: bundler, skipLibCheck, etc).
+- Each gets its own eslint.config.cjs that spreads ../../eslint.config.base.cjs
+  (api/* is one level deeper than server/infra — use ../../ not ../).
 - Subfolders per architecture.md §1:
   - api/contracts/{condition,artifact,revision,flags}
   - api/planning/{intake,plan,validate,edges,compile,canon}

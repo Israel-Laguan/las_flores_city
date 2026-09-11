@@ -97,7 +97,7 @@ SC-106's negative-permission test, not new app-side pools.
 Steps:
 1. Write the schema+role migration as a new file under
    server/src/database/migrations/ (check the existing numbering scheme and follow it),
-   registered in server/src/database/migration-targets.json's "oltp" array:
+   registered in server/src/database/migrations/migration-targets.json's "oltp" array:
    - CREATE SCHEMA planning; CREATE SCHEMA runtime;
    - CREATE ROLE planning_role LOGIN PASSWORD ... with full rights on planning schema
      only. Roles are NOLOGIN by default — without LOGIN+PASSWORD, SC-106 cannot connect

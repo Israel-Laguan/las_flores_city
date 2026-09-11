@@ -37,12 +37,12 @@ template, including the "what it changes" section.
 ## Prompt to execute
 
 ```
-Using the entity_edges table from SC-S1, hand-write one plan_deltas-shaped test case
-with one ADD and one MODIFY delta (schema per
-docs/feat/scene-centric-backend/plan-graph-in-postgres.md §3.1), build the overlay view
-described in §3.3 (canon LEFT JOIN plan_deltas, jsonb merge for MODIFY, DELETE rows
-filtered), and run the same reachability-style traversal from SC-S1's data with and
-without the overlay applied.
+Using the entity_edges table from SC-S1, first load a scratch canon-payload table
+(entity_type, entity_slug, payload jsonb) for the nodes you will overlay — §3.3 merges
+canon *payloads*, not derived edge rows. Hand-write one plan_deltas-shaped test case
+with one ADD and one MODIFY (schema per plan-graph-in-postgres.md §3.1). Build the
+overlay with COALESCE(canon.payload, '{}') || delta.payload (plain || drops ADD
+nodes). Re-project edges from both canon and overlay payloads, then traverse both.
 
 Do not start before SC-S1's table exists — there's nothing to overlay without it.
 

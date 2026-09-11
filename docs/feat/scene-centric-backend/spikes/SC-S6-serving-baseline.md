@@ -14,9 +14,10 @@ asserting it.
 
 ## What was run
 
-`server/scripts/spike_sc_s6_serving_baseline.ts` (`npx tsx server/scripts/spike_sc_s6_serving_baseline.ts`,
-run from the `server/` workspace with the repo-root `.env` sourced; **not committed** with
-this write-up — see the reproducibility rule in this folder's README), against the
+A local throwaway (`server/scripts/spike_sc_s6_serving_baseline.ts`, **not in this
+checkout**). Treat the numbers below as a **legacy preliminary baseline** for
+`GET /dialogue/active` only — not as the SC-M3/SC-508 scene-resolution + artifact-fetch
+measurement. Against the
 already-running local docker-compose stack (`las-flores-server` on `:3000`,
 `las-flores-postgres-oltp` on `:5434`, `las-flores-minio` on `:9000`) — no code changes,
 no synthetic infra, just the existing dev stack anyone gets from `docker compose up -d`.
@@ -117,10 +118,9 @@ the majority. Two things the code-reading suspicion got specifically wrong:
 
 ## What it changes
 
-- **R13's "no performance goal without a baseline" is now satisfied for the dialogue
-  serving path**: SC-M3's serving-benchmark deliverable has a real number to compare
-  against — p50 ≈ 25ms / p95 ≈ 35-39ms end-to-end for a realistic 3-speaker chunk, not an
-  assumption.
+- **R13 has a legacy preliminary baseline only**: p50 ≈ 25ms / p95 ≈ 35-39ms for
+  `GET /dialogue/active` on today's server. That does **not** satisfy SC-508 / SC-M3,
+  which require p50/p95 for scene resolution and artifact fetch on the new path.
 - **`lessons-from-current-code.md` §2.9 should be corrected**, not just cited: the
   document currently frames `resolveChunkSpeakers` as *the* hot spot; the measured
   evidence is that it's a real but minority cost (~30-45%), and the specific "uncached

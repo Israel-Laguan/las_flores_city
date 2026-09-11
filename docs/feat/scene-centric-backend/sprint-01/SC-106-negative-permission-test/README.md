@@ -71,7 +71,9 @@ Steps:
      runtimePool or any pool export — this repo's AGENTS.md constraint is
      oltpPool/withOLTPTransaction for player data plus the read-only contentPool, and
      nothing else.
-   - Attempts a SELECT against a planning-schema table and asserts it fails with a
+   - Assert schema-level denial first (`has_schema_privilege(runtime, 'planning', 'USAGE')` is false).
+     If you also SELECT a table, create a privileged fixture table in the test setup —
+     SC-103 creates schemas/roles only, no domain tables. Then assert it fails with a
      permission-denied error (not a missing-table error — assert the schema and table
      exist, just aren't readable by this role).
    - Attempts an INSERT/UPDATE against a planning-schema table and asserts that also

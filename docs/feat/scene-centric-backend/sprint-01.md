@@ -72,7 +72,7 @@ build order there is not the table order below.
 | D2 · Choice-reachability validation | M | [sprint-01/D2-choice-reachability-validation/](sprint-01/D2-choice-reachability-validation/) |
 
 > These fix the **current** `server/`, not the new backend. Worth doing anyway: they are
-> live player-facing bugs, and the fix shape informs SC-505 in the new resolver. Both are
+> live player-facing bugs. D1's fix shape informs SC-502 (revision-scoped artifact lookup); D2 informs SC-505 (choice-reachability validation). Both are
 > fully isolated from the module-tree work and each other — schedule wherever they fit.
 
 ---

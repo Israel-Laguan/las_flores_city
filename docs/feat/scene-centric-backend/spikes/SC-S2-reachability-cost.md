@@ -26,9 +26,12 @@ is the re-runnable part):
 ```sql
 WITH RECURSIVE flag_edges AS (
   SELECT
-    s.from_slug AS from_node,
-    r.from_slug AS to_node,
-    s.to_slug   AS via_flag
+    s.from_type AS from_type,
+    s.from_slug AS from_slug,
+    r.from_type AS to_type,
+    r.from_slug AS to_slug,
+    s.to_type   AS via_type,
+    s.to_slug   AS via_slug
   FROM spike_sc_s1.entity_edges s
   JOIN spike_sc_s1.entity_edges r
     ON r.edge_kind = 'requires_flag'
@@ -37,31 +40,38 @@ WITH RECURSIVE flag_edges AS (
   WHERE s.edge_kind = 'sets_flag'
 ),
 reachable AS (
+  -- Synthetic game-start: dialogue_node rows that SET a flag and do not REQUIRE one.
   SELECT
-    s.from_slug AS node,
-    ARRAY[s.from_slug] AS path,
+    s.from_type AS node_type,
+    s.from_slug AS node_slug,
+    ARRAY[s.from_type || ':' || s.from_slug] AS path,
     0 AS depth
   FROM spike_sc_s1.entity_edges s
   WHERE s.edge_kind = 'sets_flag'
     AND NOT EXISTS (
       SELECT 1 FROM spike_sc_s1.entity_edges r
-      WHERE r.edge_kind = 'requires_flag' AND r.from_slug = s.from_slug
+      WHERE r.edge_kind = 'requires_flag'
+        AND r.from_type = s.from_type
+        AND r.from_slug = s.from_slug
     )
 
   UNION ALL
 
   SELECT
-    fe.to_node,
-    reachable.path || fe.to_node,
+    fe.to_type,
+    fe.to_slug,
+    reachable.path || (fe.to_type || ':' || fe.to_slug),
     reachable.depth + 1
   FROM reachable
-  JOIN flag_edges fe ON fe.from_node = reachable.node
-  WHERE NOT (fe.to_node = ANY(reachable.path))
+  JOIN flag_edges fe
+    ON fe.from_type = reachable.node_type
+   AND fe.from_slug = reachable.node_slug
+  WHERE NOT ((fe.to_type || ':' || fe.to_slug) = ANY(reachable.path))
 )
-SELECT DISTINCT node, min(depth) AS min_depth
+SELECT DISTINCT node_type, node_slug, min(depth) AS min_depth
 FROM reachable
-GROUP BY node
-ORDER BY min_depth, node;
+GROUP BY node_type, node_slug
+ORDER BY min_depth, node_type, node_slug;
 ```
 
 **Why this shape (and its known choice-level limitation).** There is no literal
@@ -278,7 +288,7 @@ actually chain). It is not yet evidence for deep or densely cross-linked flag gr
 because today's content doesn't have any to measure against — the 10x simulation
 multiplied the number of independent shallow chains, not their depth or density. The
 `Recursive Union`'s `WorkTable Scan` — the part that would blow up under deep or highly
-branching recursion — stayed cheap here (rows=134-160 per loop) specifically because
+branching recursion — stayed cheap here (WorkTable Scan rows=134/loop at 1x, 1345/loop at 10x — linear in rows, not the superlinear blow-up deep recursion would cause) specifically because
 depth stayed at 1-2 hops in every generation.
 
 ## What it changes

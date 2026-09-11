@@ -60,7 +60,9 @@ base_hash, position`), one `ADD` + one `MODIFY`:
 
 ### Overlay build (§3.3)
 
-Ran the literal `canon.payload || delta.payload` merge the doc proposes, then re-projected
+Ran `COALESCE(canon.payload, '{}'::jsonb) || delta.payload` — the literal
+`canon.payload || delta.payload` is NULL for ADD (no canon row, LEFT JOIN yields
+NULL, and `NULL || jsonb` is NULL, which would drop every ADD node's edges). Then re-projected
 `sets_flag`/`requires_flag` edges from the merged entity using the same projection rules
 SC-S1's script used (`effects.flag_set` → `sets_flag`, `choices[].required_flags` →
 `requires_flag`). Also built a second, corrected version that merges the `choices` array

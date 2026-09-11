@@ -100,7 +100,7 @@ Table: 144 kB · Indexes: 152 kB · Total: 328 kB, for 1,018 rows across 3 index
 eight edge kinds projected cleanly with no reinterpretation; two required contortion or
 invention; one candidate kind is flatly unsupported by the current data shape.
 
-**Clean, no contortion (4 kinds, 981 of 1,018 rows — 96.4%):** [Recomputed: 192 (`affiliated_with`) + 237 (`sets_flag`) + 28 (`requires_flag`) + 2 (`gives_item`) + 522 (`scene_participant`) = 981; prior draft miscounted as 979.]
+**Clean, no contortion (5 kinds, 981 of 1,018 rows — 96.4%):** [Recomputed: 192 (`affiliated_with`) + 237 (`sets_flag`) + 28 (`requires_flag`) + 2 (`gives_item`) + 522 (`scene_participant`) = 981; prior draft miscounted as 979.]
 - `affiliated_with` — `character.metadata.faction` is already a bare slug
   (`van_der_meer`, `lw_group`). Direct field read, one line. 192 of 194 characters have
   it; `aria_welcome_bot` and `sofia_ramirez` don't, which is a plausible content gap, not

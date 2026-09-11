@@ -27,8 +27,8 @@ the validate-before-apply ordering right here since it's reused later.
   shape/status code convention used elsewhere in this API before inventing a new one.
 - Existing dialogue tests stay green.
 - Validation happens **before** effect processing starts, not as a post-hoc check —
-  per `lessons-from-current-code.md` R11 ("checks run where the writer/actor can still
-  act on them, not after the point of no return").
+  per `lessons-from-current-code.md` R12 (§2.7: "every state transition validates that
+  the submitted transition was reachable *before* applying effects").
 
 ## Prompt to execute
 

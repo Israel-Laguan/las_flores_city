@@ -1,8 +1,8 @@
 # Scene-Centric Backend — Proposal
 
 **Status:** Proposal. Supersedes the direction in `docs/CHARACTER_DATA_MODEL.md`
-(character-schema-first) and incorporates `docs/feat/character-data-model-and-intake/strategy.md`
-(internal critique) plus an external independent review.
+(character-schema-first). The earlier character-data-model-and-intake strategy/context
+brief is not in this checkout; its critique is incorporated here rather than linked.
 
 **What this proposes:** a new backend — planning, compilation/migration, and runtime —
 built around the **scene** as the unit of composition, rather than the character. Built
@@ -50,7 +50,6 @@ flowchart LR
   C --> S[Object storage / CDN<br/>immutable artifacts]
   C --> D[(Postgres<br/>canon)]
   S --> R[Runtime resolver]
-  D --> R
   R --> G[Client renders scene]
 ```
 
@@ -463,9 +462,8 @@ it does not, this proposal is wrong cheaply.
 - `docs/CHARACTER_DATA_MODEL.md` — prior character-schema-first direction; superseded in
   framing, but its corpus diagnosis (182 personality snowflakes, 55 `faction: independent`,
   three-way expression drift) is reproduced and holds
-- `docs/feat/character-data-model-and-intake/strategy.md` — internal strategic critique
-- `docs/feat/character-data-model-and-intake/context-brief.md` — the brief sent for
-  independent review
+- Character-data-model-and-intake strategy/context-brief (not checked in here) — the
+  critique is incorporated in this proposal rather than kept as a live path
 - `docs/DIALOGUE_CACHING_AND_CHARACTER_CASTING.md` — chunk delivery, cast pinning,
   named/generic tiers
 - `docs/DATA_INTAKE.md` — the three current intake paths and their safety properties

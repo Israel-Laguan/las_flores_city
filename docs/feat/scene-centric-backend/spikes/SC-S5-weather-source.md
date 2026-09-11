@@ -116,7 +116,7 @@ with scene-level author override**, resolved by the caller before invoking
    implements the scene-side half: `scene.weather` as an optional authored override field,
    validated against the same environment-tag vocabulary `buildBackgroundHints` expects
    (`night`, `rain`, `sunset`, etc. — `docs/ASSET_EXPRESSION_VOCABULARY.md`).
-- **A new ticket (not yet in the backlog) is needed for the district side**: add a
+- **District-side implementation is tracked by SC-309**: add a
    `weather` column to `districts` (migration, in the style of `033`–`035`), a default
    seed value per district, admin/content tooling to set it, **and** compile-time
    snapshotting of that column into the revision's artifact bundle (e.g.

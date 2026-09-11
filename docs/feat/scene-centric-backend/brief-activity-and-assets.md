@@ -231,7 +231,7 @@ entity: activity_def              # slug = stable verb, e.g. selling, patrolling
   animation_tag: string           # reader: client sprite manifest
   completion:                     # reader: resolver + edge projector
     type: 'none'|'auto'|'interactive'
-    returns_flag_slug?: string    # only if interactive — see below
+    # returns_flag_slug lives on the RoleSlot binding, not on the reusable verb
   dialogue_bias?: string          # optional tag merged into situation pool key
   look_hint?: string              # optional suggestion, NOT authoritative (see §6.2)
   requires_flag_slug?: string     # optional discrete gate (R2)
@@ -243,6 +243,7 @@ entity: scene (existing, extended)
     slot_id: string               # "bystander", "vendor_1"
     cast: character_slug|mob_pool_slug|null  # null = still casting
     activity_slug?: string        # FK -> activity_def.slug, nullable
+    returns_flag_slug?: string    # interactive completion — scene-specific, not on activity_def
     position_tag?: string         # "stall_3", "door" — client-only, no edges (R7)
 ```
 
@@ -253,7 +254,7 @@ entity: scene (existing, extended)
 | edge_kind | from | to | when emitted | attrs | analysability |
 |---|---|---|---|---|---|
 | `scene_requires_activity` | `scene` | `activity_def` | slot has `activity_slug` | `{slot_id, priority}` | tier-2 reference check |
-| `activity_sets_flag` | `activity_def` | `flag` | `completion.returns_flag_slug` present | `{completion_type}` | **gating — tier-3 reachability** |
+| `activity_sets_flag` | `scene` (via RoleSlot) | `flag` | binding `returns_flag_slug` present | `{slot_id, activity_slug, completion_type}` | **gating — tier-3; project from the binding, not the reusable verb** |
 | `activity_requires_flag` | `activity_def` | `flag` | `requires_flag_slug` present | `{condition}` | gating |
 | `scene_casts_character` | `scene` | `character` | slot.cast present | `{slot_id, activity_slug}` | trivial anti-join |
 | `activity_selects_dialogue_pool` | `activity_def` | `dialogue_pool` | `dialogue_bias` present | — | colour only (no gate) |
@@ -268,7 +269,11 @@ Conditions attach only as discrete flag tests on `activity_def.requires_flag_slu
 4. **Minigame return — interactive completion contract (S12):** `completion.type='interactive'` declares a named `returns_flag_slug` (e.g. `haggled_with_rafaela`). Client POSTs completion with **only** `{ session_id, slot_id }` (or equivalent pinned-session handle) — it MUST NOT supply `activity_slug`, `returns_flag_slug`, `revision_id`, or any identity field; the server derives all three from authoritative state: the session's `pinned_revision_id` (`architecture.md` §4 / `plan-graph-in-postgres.md` §9.3) and that session's active `RoleSlot.activity_slug` at the pinned revision. The server looks up `activity_def` for that slug at the pinned revision to obtain `returns_flag_slug`, then sets that flag transactionally and re-resolves the scene. Requests are **idempotent**: repeated POSTs for the same `(session_id, slot_id, pinned_revision_id, activity_slug)` MUST NOT apply the flag or effects more than once (guard with a `completed_interactive_activities` dedup table or equivalent, checked inside the same transaction). Any client-supplied identity field is rejected (400) or ignored. This **is** effect-bearing, so `activity_sets_flag` participates in tier-3 reachability (`lessons R5`). `type='none'/'auto'` sets no flag.
 5. **Dialogue selection:** activity does not add a new specificity rung. Scene dialogue attaches to a **role slot** `proposal.md: §2.6`; the slot already carries `activity_slug`, so `selling`-lines are scene-situational lines filtered by `slot.activity == selling`. Specificity stays `scene > relationship > personality` (`proposal.md: §2.6` ladder).
 6. **Duration:** durative presentation state pinned for the scene visit (`proposal.md: §2.2` pinning precedent). Server does not tick progress; duration is presentational. An `auto` activity (e.g. walks A→B) completes client-side with no flag. Defer scheduled/timed activities — no field without a reader yet (R7).
-7. **Conflict:** exclusive per `(scene_resolution, character)`. Two overlays assigning different activities to the same slot → **higher `priority` overlay wins** (generalizes `content/overlays/` precedent `proposal.md: §1.10` / `lessons: §1.10`). Compile warns on conflict; runtime is deterministic.
+7. **Conflict:** exclusive per `(scene_resolution, character)`, not only per slot. Compile
+   rejects (or higher-priority overlay wins) when the same `cast` appears on two slots
+   with different `activity_slug`s. Two overlays assigning different activities to the
+   same slot → **higher `priority` overlay wins**. Unique `(scene, revision, cast)` is
+   the constraint; slot id alone is not enough.
 8. **Default:** `NULL` = idle. `idle` is not an entity; resolver maps null to default idle animation. Avoids a fake row every character references.
 
 #### Lifecycle — authored vs derived vs async
@@ -344,7 +349,7 @@ entity: mob_pool                      # shared portrait pool for tier=mob
 |---|---|---|---|
 | `has_look` | `character/location/scene` | `look` | `{look_slug}` |
 | `look_requires_flag` | `look` | `flag` | discrete gating condition |
-| `variant_of` | `look` | `AssetVariant` | `{variant_slug, kind}` |
+| *(no `variant_of` edge)* | — | — | `AssetVariant` is a nested attribute of `look`, not an `entity_edges` node. Store `{variant_slug, kind}` on `has_look` attrs or promote variants to first-class slugs before adding an edge. |
 | `character_uses_pool` | `character` (tier=mob) | `mob_pool` | — |
 | `scene_selects_look` | `scene` | `look` | `{priority}` |
 
@@ -368,7 +373,7 @@ entity: mob_pool                      # shared portrait pool for tier=mob
 
 7. **Locations unify — yes.** Location looks use `variant.kind='environment'` (`night`,`rain`,`sunset` per `docs/ASSET_EXPRESSION_VOCABULARY.md:83`), resolved via `buildBackgroundHints:157` + `resolveBackgroundUrl:81`. Character looks add `kind='expression'` on top. Same `look` table, same `has_look` edge, same fallback chain (without expression step).
 
-8. **Weather is both.** Scene exclusive property (`proposal.md: §2.3` inherit-with-override — scene may override district default as authored intent) **and** asset-selection hint. Resolved `weather` feeds `buildBackgroundHints(weather, timeOfDay, mood):161` which produces an ordered hint chain tried against `background_urls[].variant` (`client/src/utils/resolvePortraitUrl.ts:72-109`). Weather is the strongest hint by construction (`AGENTS.md:36`).
+8. **Weather is both.** Scene exclusive property (`proposal.md: §2.3` inherit-with-override — scene may override district default as authored intent) **and** asset-selection hint. Resolved `weather` feeds `buildBackgroundHints(timeOfDay, weather, mood):161` which produces an ordered hint chain tried against `background_urls[].variant` (`client/src/utils/resolvePortraitUrl.ts:72-109`). Weather is the strongest hint by construction (`AGENTS.md:36`).
 
 #### Lifecycle — authored vs derived vs async
 

@@ -9,8 +9,10 @@ duplicate phrasings (e.g. Spanish-language variants of existing slugs).
 
 ## Dependencies
 
-- **None.** This spike is fully independent of SC-S1/S2/S3 and of SC-103's schemas — it
-  operates on existing character/location name data already in the DB. It can run at any
+- **None on the setup tickets.** Location names are **not** in the DB — they live in
+  `content/districts/**/location_*.yaml`. Load character names from the DB (or content)
+  and location names/aliases from those YAML files into the scratch corpus.
+  Independent of SC-S1/S2/S3 and SC-103. It can run at any
   point in the sprint, including in parallel with the S1→S2 chain.
 - **First to cut** if capacity runs short (`sprint-01.md` §5) — it feeds SC-706, which is
   five milestones out (SC-M5). Schedule it last among the spikes precisely because it's
@@ -20,8 +22,10 @@ duplicate phrasings (e.g. Spanish-language variants of existing slugs).
 
 The answer must state:
 - Precision/recall on a hand-labelled set of **at least 10** known near-duplicates (real
-  examples from existing content — e.g. Spanish-language variants of existing slugs, per
-  `plan-graph-in-postgres.md` §6's "el mercado de la ciudad" vs. "central-market").
+  examples from existing content — accent/case variants, truncations, and partial-word
+  matches, per `plan-graph-in-postgres.md` §6. Note §6's caveat: "el mercado de la
+  ciudad" vs. "central-market" is a pure translation that scores 0.0 under pg_trgm;
+  include it as a known non-match, not an expected hit).
 - The similarity threshold used.
 - **Candidate universe for precision:** recall is measured against the ≥10 hand-labelled
   pairs (known positives), but **precision MUST be measured over the full indexed corpus**

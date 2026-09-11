@@ -44,7 +44,7 @@
 | SC-302 | Role slots as a scene attribute — slot id, cast, position | M | Blocked: SC-301 |
 | SC-303 | Base + overlay composition with priority ordering | M | Blocked: SC-301 |
 | SC-304 | Exclusive vs. additive property resolution; equal-priority conflict fails compile | M | Blocked: A3 |
-| SC-305 | Weather: `scene.weather` authored override field, resolved against `district.weather` before `buildBackgroundHints` (A6 resolved — `spikes/SC-S5-weather-source.md`) | S | Blocked: SC-301, SC-309 |
+| SC-305 | Weather: compile resolves `scene.weather` over `district.weather` and persists the resolved value on the artifact; runtime only reads that artifact field before `buildBackgroundHints` (A6 — `spikes/SC-S5-weather-source.md`) | S | Blocked: SC-301, SC-309, F4 |
 | SC-306 | Personality dialogue pools, shared many-to-many across characters | M | Blocked: SC-301 |
 | SC-307 | Scene dialogue attached to role slots rather than characters | M | Blocked: SC-302 |
 | SC-308 | Specificity ladder resolution — scene > relationship > personality | M | Blocked: SC-306, SC-307 |

@@ -180,17 +180,14 @@ precision differently, and `pg_trgm` only wins on the failure mode `ILIKE` is wo
   across the 12 queries, i.e. roughly 1.6 wrong suggestions returned per correct one). It
   additionally caught the accent-drop (#1) and reorder+substring (#9) cases that `ILIKE`
   missed, and got close on truncation cases with weaker overlap (#3).
-- **Neither tool caught 2 of the hardest cases, and a third was borderline**:
-   pure Spanish/English **translation with no shared substring** (#8 Vieja Las Flores →
-   South Las Flores — missed by both tools at every threshold), pure **slang synonym**
-   (#10 Zona Rica → Northeast), and **acronym** (#12 WTCLF → World Trade Center Las
-   Flores, similarity 0.083 — essentially random). **Separately**, pair 11 (National
+- **Neither tool returned the correct top-1 for these cases**: #8 (Vieja Las Flores →
+   South Las Flores) is *recalled* at threshold 0.30 because it shares the "Las Flores"
+   substring (score > T) but a distractor outranks it — it is not a correct top-1.
+   Only #10 (Zona Rica → Northeast, slang) and #12 (WTCLF → World Trade Center Las
+   Flores, acronym, sim 0.083) sit below any useful threshold. Pair 11 (National
    Theater → Teatro Nacional) **was** a `pg_trgm` true positive — similarity 0.320,
-   included in the 10 recalled pairs at threshold 0.30 (see threshold sweep: 10/12
-   recalled ≤0.30 includes #11). It is borderline and translation-shaped, but unlike #8 it
-   shares enough trigrams (`ation`/`teatro`) to cross the threshold. These translation/
-   synonym/acronym cases are exactly the shape `plan-graph-in-postgres.md` §6's own
-   example ("*el mercado de la ciudad*" vs. "*central-market*") describes, and trigram
+   included in the 10 recalled pairs at threshold 0.30. Translation/synonym/acronym
+   cases are the shape `plan-graph-in-postgres.md` §6 describes, and trigram
    similarity — which only measures shared 3-character substrings — is structurally weak
    at them; pure translations with zero overlap remain unrecoverable at any threshold.
 - **The threshold choice matters a lot and there's no clean elbow.** 0.10–0.30 all give the
@@ -222,7 +219,10 @@ precision differently, and `pg_trgm` only wins on the failure mode `ILIKE` is wo
    borderline at 0.320. If SC-706 must catch pure translations/synonyms/acronyms reliably,
    that requires a different mechanism (an explicit alias table keyed by canonical entity —
    which `entity_aliases` already exists and is populated for characters, scenes,
-   missions, dialogues, and overlays, though not yet for locations — or an LLM-based
+   missions, dialogues, and overlays, though not yet for locations. **Postgres currently backfills canonical names; curated
+   writer aliases are seeded into Neo4j.** Treat a Postgres alias import (or an explicit
+   SC-706 story to copy Neo4j aliases into `entity_aliases`) as new work before relying
+   on that table as the translation/synonym fallback — or an LLM-based
    semantic match), not a `pg_trgm` threshold tweak. This should be flagged to whoever
    specs SC-706 in SC-M5 before that spec is written, not discovered again during that
    milestone. **Scope note for SC-706:** SC-S4 measured only character names (196) and

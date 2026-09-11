@@ -9,7 +9,7 @@ resolution. Scope `current_chunk_id`, `choice_id`, `target_chunk`, CDN URLs, and
 keys to the player's active tree revision.
 
 This fixes the **current** `server/`, not the new backend — but the fix shape directly
-informs SC-505 in the new resolver (per `sprint-01.md`'s note), so get the scoping model
+informs SC-502 (resolver: revision-scoped artifact lookup) in the new resolver, so get the scoping model
 right here rather than treating it as a throwaway patch.
 
 ## Dependencies

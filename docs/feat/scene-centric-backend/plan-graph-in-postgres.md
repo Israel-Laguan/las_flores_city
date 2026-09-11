@@ -187,7 +187,7 @@ and are unrecoverable at any threshold. `pg_trgm` does catch: accent/case varian
 (`Plaza de la Constitucion` ↔ `Plaza de la Constitución`), truncations/substrings,
 partial-word matches, and some reorderings. Pure translations, slang synonyms, and acronyms
 require the existing `entity_aliases` table (which is already populated for characters,
-scenes, missions, dialogues; and planned for locations as part of SC-103). SC-706's spec
+scenes, missions, dialogues; location aliases are a follow-up on `entity_aliases`, not SC-103). SC-706's spec
 should call out this limitation explicitly: `pg_trgm` is a *supplement* for catching
 typos/variants, not a complete alias system.
 
