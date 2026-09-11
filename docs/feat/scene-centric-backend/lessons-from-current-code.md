@@ -171,18 +171,22 @@ incompatible with the hint experience (`proposal.md` §4.2).
 > **Rule:** checks run where the writer can still act on them. Anything that only runs
 > after approval is a safety net, not a hint.
 
-### 2.7 Lookups that can serve player content without revision scoping
+### 2.7 Lookups that can serve player content without revision scoping — and transitions applied without pre-effect reachability validation
 
-`WHERE chunk_key = $1 LIMIT 1` with no tree/revision constraint means a client can
-potentially load a chunk from a different tree or an older revision, and submitted choices
-are not verified as reachable from the player's current node before effects fire.
+**Bug 1 — unscoped chunk lookup.** `server/src/services/DialogueResolver.ts` loads a
+chunk with `WHERE chunk_key = $1 LIMIT 1` (no `tree_id`/revision predicate). A client can
+therefore load a chunk belonging to a different dialogue tree or an older content revision
+than the one currently active for that player.
+
+**Bug 2 — chunk-boundary choices not validated as reachable.** `server/src/routes/dialogue-choose.ts`'s `handleChoose` selects the submitted leaf by `choice_id` and then calls `IronGateValidator.validateChoice`, which returns success immediately for `FREE` leaves and checks only `leaf.reasons` for `GUARDED` leaves — it never verifies that the chosen leaf is reachable from the player's `current_node_id`. State persistence (`player_dialogue_states` / `users.active_dialogue_id`) and side effects (flag/item/relationship writes, analytics) occur afterward regardless, so a client can submit any `choice_id` from any node in the tree and have its effects applied.
 
 > **Rule:** every lookup that can serve player content is scoped to the player's active
-> content revision, and every state transition validates that the submitted transition was
-> reachable *before* applying effects.
+> content revision (`tree_id` + `pinned_revision_id`), and every state transition validates
+> that the submitted transition was reachable from the player's current node *before*
+> applying effects.
 
-This is the one item in this document that is a live player-facing bug rather than a
-design concern.
+These are the two items in this document that are live player-facing bugs rather than
+design concerns.
 
 ### 2.8 A test harness becoming production infrastructure
 

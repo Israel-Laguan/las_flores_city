@@ -64,13 +64,30 @@ GROUP BY node
 ORDER BY min_depth, node;
 ```
 
-**Why this shape.** There is no literal `game_start` row anywhere in SC-S1's projected
-data — no edge kind for it exists. "Game start" is modeled as the set of dialogue_node
-rows that *set* a flag but don't themselves *require* one — i.e. content reachable with
-no prerequisite, the natural entry points into the flag graph. `flag_edges` then links
-node A → node B whenever A sets a flag that B requires (completing A "unlocks" B), and
-the recursive step walks that link with a visited-path array (`ARRAY[...] `/`= ANY(...)`)
-for cycle safety, per §5's own "cycles: recursive CTE with a visited-path array" note.
+**Why this shape (and its known choice-level limitation).** There is no literal
+`game_start` row anywhere in SC-S1's projected data — no edge kind for it exists.
+"Game start" is modeled as the set of dialogue_node rows that *set* a flag but don't
+themselves *require* one — i.e. content reachable with no prerequisite, the natural entry
+points into the flag graph. `flag_edges` then links node A → node B whenever A sets a
+flag that B requires (completing A "unlocks" B), and the recursive step walks that link
+with a visited-path array (`ARRAY[...] `/`= ANY(...)`) for cycle safety, per §5's own
+"cycles: recursive CTE with a visited-path array" note.
+
+> **⚠ Choice-level correction (post-SC-S3 review).** `requires_flag` is projected from
+> `choices[].required_flags`, but the query above stores only `from_slug` (the dialogue
+> node) and its `NOT EXISTS` anti-join excludes an entire node when *any* choice on that
+> node is gated — an ungated choice on the same node would be incorrectly marked
+> unreachable. The fixture in `spikes/SC-S3-overlay-view.md` has exactly that shape
+> (`branch_departed`/`branch_friends` ungated alongside gated `branch_grounded`).
+> **Correct projection:** `requires_flag` edges MUST retain `choice_id` — e.g.
+> `attrs: {choice_id, flag_slug}` — or be split into two edge kinds: `node_entry`
+> (always traversable) vs `choice_requires_flag` (per-choice gate). Reachability then
+> distinguishes **entering a node** (reachable if any choice that leads to it is
+> enabled) from **enabling a specific choice** (requires its flag). The latency
+> numbers below were measured with the node-level shape and remain valid as a
+> *cost* baseline; tier-3 correctness for SC-704 MUST use the choice-aware shape
+> so gated and ungated choices on the same node are not conflated. See `plan-graph-in-postgres.md` §3.2
+> and `backlog.md` SC-701 for the projection fix.
 
 Sanity-checked first: only 8 of 237 `sets_flag` flags are also referenced by a
 `requires_flag` edge (`camila_romanced`, `LOVER_PATH_ACTIVE`, etc.) — a real but small

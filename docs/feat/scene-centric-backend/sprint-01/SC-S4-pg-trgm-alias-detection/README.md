@@ -23,6 +23,13 @@ The answer must state:
   examples from existing content — e.g. Spanish-language variants of existing slugs, per
   `plan-graph-in-postgres.md` §6's "el mercado de la ciudad" vs. "central-market").
 - The similarity threshold used.
+- **Candidate universe for precision:** recall is measured against the ≥10 hand-labelled
+  pairs (known positives), but **precision MUST be measured over the full indexed corpus**
+  — i.e. for each query, search the entire indexed name corpus, label **every returned
+  candidate** as true-positive (genuinely near-duplicate of the query) or false-positive,
+  and compute `precision = true_positives / total_returned`. Pre-selected negative pairs
+  are not required when this universe and labelling rule are explicit; false positives
+  MUST be included in the precision denominator so the result is reproducible.
 
 **If it cannot beat a plain `ILIKE`, say so** — then SC-706 is not worth building as
 specced, and that's a valid, complete answer to this spike, not a failure of it.

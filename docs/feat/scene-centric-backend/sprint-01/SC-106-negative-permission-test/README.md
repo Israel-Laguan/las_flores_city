@@ -26,18 +26,32 @@ production pool), not a new CI service or a mocked connection.
 
 ## Acceptance criteria
 
+- **Known planning fixture exists before the negative check.** The test MUST NOT probe
+  an arbitrary or non-existent `planning.*` table — that would conflate
+  `permission denied` with `relation does not exist`. A dedicated planning-schema table
+  (e.g. `planning._sc106_probe` or the real `planning.flag_definitions` once SC-202
+  lands) is provisioned **ahead** of the check via a privileged fixture/migration
+  applied with the migration-owner role, with `GRANT ALL ON TABLE planning._sc106_probe
+  TO planning_role` (and `ALTER DEFAULT PRIVILEGES` per SC-103) so the `planning` role
+  can use it. The test first verifies the fixture is present as the privileged owner
+  (or via `information_schema` / `SELECT to_regclass('planning._sc106_probe') IS NOT
+  NULL`) and that the schema `planning` exists, and only then performs the denial
+  checks — so a failure is unambiguously a permission error, not a missing relation.
 - A test connects using a raw `pg` client with the test-only `RUNTIME_DATABASE_URL`
   (SC-103 provisions this; **no new pool export** — the repo forbids adding
-  `runtimePool`) and asserts a `SELECT` against any `planning`-schema table fails with a
-  permission error (not a table-not-found error — the schema must exist and be
-  visible/rejected, not absent).
-- The same test (or a sibling) asserts a `runtime`-role write attempt against `planning`
-  also fails.
+  `runtimePool`) and asserts a `SELECT` against the **known** `planning`-schema fixture
+  table fails with a permission-denied error (`42501` / `permission denied for schema`
+  or `permission denied for table`), not a table-not-found error.
+- The same test (or a sibling) asserts a `runtime`-role `INSERT`/`UPDATE` attempt
+  against the same known `planning` fixture also fails with permission-denied, even
+  after the `SELECT` denial is confirmed.
 - The test lives in the existing integration test suite (`server/tests/integration/`)
   and runs inside CI's `with-migrations` job — not a manual/one-off check, not a new CI
   service.
 - Test failure output clearly names which permission was expected to fail and didn't, if
   it regresses — this is a security-relevant test, so a vague assertion isn't acceptable.
+  On success, the test also logs the fixture table OID and the `permission denied` SQLSTATE
+  it observed, to make the proof auditable.
 
 ## Prompt to execute
 

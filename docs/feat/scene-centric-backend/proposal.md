@@ -75,7 +75,16 @@ there is a dangerous man standing there." So scene properties divide by arity:
 | **Additive** | participants, items, activities, dialogue | all active scenes contribute |
 
 Model this as **base scene + overlays, ordered by priority.** Precedence only needs
-resolving for exclusive properties.
+resolving for exclusive properties. **Overlay merge semantics (schema-owned):** higher
+`priority` wins for exclusive scalars (background, weather — last write wins in priority
+order); additive collections (participants, items, activities, dialogue refs) are **merged,
+not replaced** — elements are matched by stable id (`slot_id`, `item_slug`, `activity_slug`,
+choice `id`/dialogue `node_id`) and merged per-field, ordered by priority then by schema
+definition order; an overlay deletes only what its `DELETE` delta explicitly names (no
+wholesale array replacement — naive `jsonb ||` is incorrect for array fields per
+`spikes/SC-S3-overlay-view.md`). Whether the merged collection's final order is
+priority-order or schema-order is owned by the entity's schema definition in
+`contracts/`.
 
 > **Existing precedent:** `content/overlays/` already does exactly this at the dialogue
 > level — an overlay injects nodes into a base tree, gated by `mission_id`, ordered by an
@@ -197,6 +206,20 @@ flowchart LR
 
 Scenes **write** stats and **read** only flags. The loop closes through flags
 exclusively.
+
+> **Old-to-new import — relationship gates.** The existing corpus contains
+> `required_relationship` comparators (e.g. `{friendship: "gte:7"}` in
+> `camila_santander_endings.yaml` — see `spikes/SC-S1-entity-edges-projection.md`
+> §4's 10 occurrences). An import that silently drops them changes choice
+> availability; preserving raw relationship reads at resolution time would violate
+> §3.1's flag-only progression invariant and make reachability undecidable again.
+> Before that invariant is enforced, every `required_relationship` on import MUST be
+> handled in one of two explicit ways: **(a) translate** it into a supported flag
+> (create the flag, wire the threshold-crossing event per §3.3 rule 2, and rewrite the
+> gate as `requires_flag`), or **(b) reject** the import with a migration error that
+> lists the offending comparators. No entity may land in canon with a relationship
+> comparator still gating progression. The translation-or-reject implementation MUST
+> exist before flag-only gating is asserted.
 
 This resolves the flags-vs-continuous-axes tension: the answer is **both, with a strict
 direction of flow.** Continuous axes live on the write side, so the shipped
@@ -349,10 +372,11 @@ concerns):
 2. A submitted choice must be validated as **reachable from the player's current node**
    before any effect is applied.
 
-There is also **no dialogue serving benchmark anywhere in the repo**, so "serve fast" has
-no baseline. SC-S6 (`docs/feat/scene-centric-backend/spikes/SC-S6-serving-baseline.md`)
-measured chunk fetch + portrait load on the current path: `GET /dialogue/active` is p50 ≈
-25ms / p95 ≈ 35-39ms. The suspected hot spot, `resolveChunkSpeakers` (uncached bulk
+**No dialogue-serving benchmark existed before SC-S6** — until then "serve fast" had
+no baseline and "no benchmark" was accurate. **SC-S6 is now that baseline**
+(`docs/feat/scene-centric-backend/spikes/SC-S6-serving-baseline.md`): on the current
+path `GET /dialogue/active` measures p50 ≈ 25ms / p95 ≈ 35-39ms (chunk fetch + portrait
+presigning, per SC-S6's corrected per-iteration methodology). The suspected hot spot, `resolveChunkSpeakers` (uncached bulk
 SELECT plus per-portrait object-storage presigning), turned out to be only ~29-45% of
 that — its SELECT is sub-millisecond and not a real cost; presigning is the real but
 minority cost inside it. The larger, unmeasured-further cost (~70%) is the rest of the

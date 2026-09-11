@@ -34,7 +34,7 @@
 | SC-203 | Condition grammar type in `contracts/condition` — discrete flag tests only, no continuous values | M | **Ready** |
 | SC-204 | Condition evaluator, single implementation, consumed by both modules | M | Blocked: SC-203 |
 | SC-205 | Track which flags are set and read, per entity, as the input to tier-3 | M | Blocked: SC-202 |
-| SC-206 | Threshold-crossing sets a flag as a persisted event, not a derived query | M | Blocked: SC-202, S3 |
+| SC-206 | Threshold-crossing sets a flag as a persisted event (fixture-backed mechanism) — real-stat wiring is follow-up blocked on S3 / SC-811 | M | **Ready** (fixture scope); real-stat integration **Blocked: S3** |
 
 ## SC-E3 — Scene model & composition · F3, F7 · SC-M2
 

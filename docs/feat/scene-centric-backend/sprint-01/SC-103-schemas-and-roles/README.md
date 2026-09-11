@@ -50,11 +50,30 @@ not be cut.
   (see SC-104 — same migration file may cover both tickets).
 - `runtime` role: full rights on `runtime` schema, **no read and no write on `planning`**.
 - `planning` role: full rights on `planning` schema; no rights on `runtime`.
+- **Object-level privileges (Postgres `GRANT ALL ON SCHEMA` is not enough):** for each
+  schema, grant the owning role `USAGE` on the schema plus `ALL` on all existing
+  **tables and sequences** in that schema (`GRANT ALL ON ALL TABLES IN SCHEMA` /
+  `ALL SEQUENCES`), and install `ALTER DEFAULT PRIVILEGES IN SCHEMA ... GRANT ALL ON
+  TABLES/SEQUENCES TO <role>` so future objects are automatically accessible to the
+  role that owns that schema. Alternative satisfying the same invariant: make the
+  corresponding role the **owner** of every object it is meant to access (so grants are
+  implicit) — document which path is chosen. In either case, `runtime` receives **no
+  grants of any kind** on `planning` (not even `USAGE`), and vice versa, and no grant
+  touches existing `server/` tables or the app role.
 - Roles are created **with `LOGIN` and a password** (`CREATE ROLE runtime LOGIN PASSWORD
   ...`). PostgreSQL roles are `NOLOGIN` by default, and SC-106 must actually connect as
-  the `runtime` role — a `NOLOGIN` role leaves that test unable to connect. CI injects
-  `RUNTIME_DATABASE_URL` (and `PLANNING_DATABASE_URL` if needed) into the
-  `with-migrations` job as test-only secrets/env.
+  the `runtime` role — a `NOLOGIN` role leaves that test unable to connect. Passwords
+  are **not hardcoded** in the migration — read from env (`RUNTIME_DB_PASSWORD` /
+  `PLANNING_DB_PASSWORD`) or a CI secret at migration-apply time; the migration file
+  contains only `CREATE ROLE ... LOGIN` with a placeholder that the runner substitutes.
+  **CI/dev auth path for SC-106:** CI's `with-migrations` job injects
+  `RUNTIME_DATABASE_URL=postgresql://runtime:<password>@postgres-oltp:5432/las_flores`
+  (and `PLANNING_DATABASE_URL` if needed) as a test-only secret/env; SC-106 connects
+  with a raw `pg` client using that URL. If the environment cannot issue `LOGIN` roles
+  (e.g. managed Postgres without `CREATEROLE`), document the fallback bootstrap
+  connection that authenticates as the migration owner and immediately `SET ROLE runtime`
+  — SC-106 MUST still exercise the grant check, not bypass it. No production pool
+  consumes these URLs.
 - Explicitly scoped: *"role creation targets the CI/dev `postgres-oltp` service only this
   sprint; production provisioning path is recorded as an open question, not assumed
   solved."*

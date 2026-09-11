@@ -137,7 +137,7 @@ with no second store to keep in sync — once the merge strategy is specified.
 
 | | Neo4j today | Postgres equivalent | Assessment |
 |---|---|---|---|
-| **C1 Overlay** | `plan_id`-tagged subgraph merged by `GraphMerger` | overlay view: canon `LEFT JOIN plan_deltas`, `jsonb` merge for MODIFY | **equal**, and transactional with canon |
+| **C1 Overlay** | `plan_id`-tagged subgraph merged by `GraphMerger` | overlay view: canon `LEFT JOIN plan_deltas`, array-aware `jsonb` merge for MODIFY (not naive `||` — see §3.3 / `spikes/SC-S3-overlay-view.md`) | **conditional — equal only once array-aware merge semantics are implemented and validated against the tier-3 queries;** transactional with canon by construction, but parity is not established until that validation lands. Open question #3. |
 | **C2 Diff** | computed by comparing tagged subgraphs | **the delta rows *are* the diff** — no computation | **better**: directly queryable and renderable |
 | **C3 Traversal** | Cypher | recursive CTE over `entity_edges` | **equal at this scale** — see §5 |
 | **C4 Conflict** | node-level comparison across plans | `UNIQUE (plan_id, type, slug)` + `base_hash` staleness check + cross-plan overlap query | **better**: constraints make some conflicts unrepresentable |
@@ -312,7 +312,13 @@ Two properties fall out for free:
 
 - **Player sessions pin to a revision.** This is exactly the revision-scoping requirement
   from `lessons-from-current-code.md` R12 — it stops being a discipline you have to
-  remember and becomes the shape of the system.
+  remember and becomes the shape of the system. Concretely: at session creation the
+  runtime reads `revision_pointer.active` and writes that ID to the session/player-state
+  row (`pinned_revision_id`). All artifact fetches and transition/overlay lookups are
+  then filtered by that pinned ID, not by "current pointer." New sessions pin to the
+  revision that is active when they start; in-progress sessions keep their pinned
+  revision across pointer flips; rollback (re-flipping the pointer) only affects
+  subsequently created sessions.
 - **Publishing is atomic and reversible.** Artifacts go up first; the pointer flips last.
   Rollback is flipping it back, because old revisions are never mutated.
 

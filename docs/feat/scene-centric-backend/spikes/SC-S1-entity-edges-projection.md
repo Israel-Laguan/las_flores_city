@@ -100,7 +100,7 @@ Table: 144 kB · Indexes: 152 kB · Total: 328 kB, for 1,018 rows across 3 index
 eight edge kinds projected cleanly with no reinterpretation; two required contortion or
 invention; one candidate kind is flatly unsupported by the current data shape.
 
-**Clean, no contortion (4 kinds, 979 of 1,018 rows — 96%):**
+**Clean, no contortion (4 kinds, 981 of 1,018 rows — 96.4%):** [Recomputed: 192 (`affiliated_with`) + 237 (`sets_flag`) + 28 (`requires_flag`) + 2 (`gives_item`) + 522 (`scene_participant`) = 981; prior draft miscounted as 979.]
 - `affiliated_with` — `character.metadata.faction` is already a bare slug
   (`van_der_meer`, `lw_group`). Direct field read, one line. 192 of 194 characters have
   it; `aria_welcome_bot` and `sofia_ramirez` don't, which is a plausible content gap, not
@@ -108,11 +108,20 @@ invention; one candidate kind is flatly unsupported by the current data shape.
 - `sets_flag` / `requires_flag` — dialogue node `effects.flag_set` and choice
   `required_flags` are already flag-name → value maps. Direct projection.
 - `gives_item` — choice `vault_unlock` is a bare vault-item UUID. Direct projection.
-- `scene_participant` (the `speaker_id` path, 522 of 522 rows) — every `speaker_id`
-  found in dialogue nodes resolved to a real character UUID (10 distinct speakers, 0
-  dangling — well, 4 dangling occurrences out of the total node count; see below).
+- `scene_participant` (522 rows) — projected from `dialogue.speaker_id` → character.
+  **Dangling-reference reconciliation:** `Raw results` reports 4 unresolved `speaker_id`
+  occurrences (present in the scanned node set but with no matching character row); those
+  4 are **excluded** from the 522 clean count and from the 981-row clean total above —
+  522 counts only the resolved occurrences (10 distinct speakers). The table's 1,018
+  stored rows likewise exclude the 4 unresolved occurrences; had they been counted as
+  attempted projections, the denominator would be 1,022 and clean would be 981/1,022.
+  **Shape qualification:** the source field is dialogue-scoped (`dialogue.speaker_id`),
+  not scene-scoped — there is no `scene.participants` field in `content/scenes/`. The
+  edge therefore lands as `dialogue → character` (one hop from the `scene → character`
+  shape §3.2 names) but projects without additional invention beyond that hop; it is
+  counted once, in this clean bucket, not duplicated in the contortion bucket.
 
-**Required contortion (2 kinds):**
+**Required contortion (1 kind):**
 - `located_in` (scene → district, 24 rows) — `scene.district` is a human-readable title
   (`"South Las Flores"`, `"Los Andes"`), and `content/districts/` folders are snake_case
   slugs (`south`, `los_andes`). **No declared mapping exists anywhere in content/.** The
@@ -122,12 +131,6 @@ invention; one candidate kind is flatly unsupported by the current data shape.
   exactly the kind of silent mismatch §3.2's "derived at compile time" framing assumes
   away: the derivation isn't a pure field read, it's a lookup table someone has to
   author and maintain by hand, and it can already fail on real content.
-- `scene_participant` (the dialogue-level path) — the plan's mental model is "scene has
-  participants." The actual structured field is `dialogue.character_id` /
-  `dialogue.speaker_id` (dialogue-scoped, not scene-scoped) — no scene file has a
-  `characters:`/`participants:` field anywhere in `content/scenes/`. The edge had to be
-  re-targeted from `scene → character` to `dialogue → character`, one join hop away from
-  what §3.2's table names imply. It's still projectable, but it is not the shape written.
 
 **Unsupported (1 kind):**
 - `mission_scene` — **zero edges, and it isn't a threshold problem.** The single mission
