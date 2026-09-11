@@ -97,7 +97,7 @@ not derived by querying the stat at read time.
 - **Readiness scope:** this ticket is **Ready** only as the fixture-backed mechanism.
   Real relationship-stat integration (reading actual `relationship_stats` / emitted deltas,
   `SC-E8` S3) remains **blocked on S3** and is not part of this sprint's commitment —
-  it is tracked as a follow-up (SC-811/SC-206b) blocked on SC-M6. This ticket's tests
+  it is tracked as a follow-up (SC-811) blocked on SC-M6. This ticket's tests
   MUST pass without a live stat pipeline.
 
 > **Backlog alignment:** `backlog.md` SC-206 is marked Ready for the fixture-backed

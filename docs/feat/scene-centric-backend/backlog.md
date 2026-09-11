@@ -93,7 +93,7 @@
 | ID | Story | Size | State |
 |---|---|---|---|
 | SC-700 | Add a structured scene/character/location reference to the mission payload schema — per `spikes/SC-S1-entity-edges-projection.md`, the mission YAML currently has no field `mission_scene` can be projected from | S | Blocked: SC-S1 |
-| SC-701 | `entity_edges` table and projection from entity payloads, incl. `mission_scene` from `SC-700`'s new field | L | Blocked: SC-S1, SC-S2, SC-700 |
+| SC-701 | `entity_edges` table and projection from entity payloads, incl. `mission_scene` from `SC-700`'s new field. **Acceptance criteria must include choice-level awareness:** `requires_flag` edges MUST retain `choice_id` in attrs or split into `node_entry` (ungated) vs `choice_requires_flag` (gated), so that ungated and gated choices on the same node are not conflated — see `spikes/SC-S2-reachability-cost.md` for the discovered correctness issue. | L | Blocked: SC-S1, SC-S2, SC-700 |
 | SC-702 | Overlay edge projection from `plan_deltas` (`plan_edges`); requires array-aware merge logic for MODIFY deltas (naive `jsonb \|\|` fails, per SC-S3) | M | Blocked: SC-701 |
 | SC-703 | Four tier-3 anti-joins: orphan flag, dead end, unreachable scene, unreferenced item | M | Blocked: SC-701 |
 | SC-704 | Recursive-CTE reachability from game start, with recorded `EXPLAIN ANALYZE` (baseline established by SC-S2: 0.82ms→6.85ms at 1x→10x volume) | M | Blocked: SC-701 |

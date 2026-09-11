@@ -14,9 +14,11 @@ retrofit, two bugs off the board, and the removal of guesswork from SC-M2 planni
 
 **Capacity.** ~7.5 working days of planned work assumed across 10 calendar days (75%)
 for the **mandatory** scope; total load if no cuts is 4.5 days setup + 4.5 days spikes +
-1 day defects = 10 days. The 2.5-day gap is covered by the cut order in §5 — the three
-non-mandatory spikes (SC-S3/SC-S4/SC-S6) are the explicit capacity buffer. See §4 for
-the mandatory vs cuttable split.
+1 day defects = 10 days. **Note:** This exceeds the `roadmap.md` standard assumption of
+60% because SC-M1 is foundational infrastructure — the sprint's 7.5-day mandatory load is
+tightly sequenced and non-negotiable for SC-M2's success. The 2.5-day buffer is covered
+by the cut order in §5 — the three non-mandatory spikes (SC-S3/SC-S4/SC-S6) are the
+explicit capacity buffer. See §4 for the mandatory vs cuttable split.
 
 **Detail layer.** Full context, dependencies, refined acceptance criteria (checked
 against this repo's actual workspaces/CI/migration-runner/pooling setup — not just the
@@ -85,9 +87,13 @@ write-up exists with a "what it changes" section. Not when the code works locall
 **Sprint is successful if:** SC-101 through SC-106 are done, D1 and D2 are fixed, and at
 minimum SC-S1, SC-S2, and SC-S5 have written answers (mandatory load = 4.5 + 1 + 2 =
 7.5 days, fitting the 7.5-day capacity). The remaining spikes (SC-S3, SC-S4, SC-S6)
-are **not** required for success and may slip to sprint 2 per §5 without the sprint
-being a failure; if capacity runs short they are cut in the order SC-S4 → SC-S6 → SC-S3
-before any mandatory item is deferred.
+are **not** required for this sprint's success and may slip to sprint 2 per §5 without the
+sprint being a failure; if capacity runs short they are cut in the order SC-S4 → SC-S6 → SC-S3
+before any mandatory item is deferred. **Critical:** SC-M1's exit criteria require every
+sprint-1 spike to have a written answer (`backlog.md` §SC-M1, exit criteria). Spikes that
+slip to sprint 2 MUST be completed in sprint 2 before SC-M1 is closed — they cannot remain
+open into sprint 3. If sprint 2's capacity cannot accommodate the spillover, SC-M1's
+completion is explicitly delayed to sprint 3, noted in that retro.
 
 ## 5. If capacity runs short — cut in this order
 

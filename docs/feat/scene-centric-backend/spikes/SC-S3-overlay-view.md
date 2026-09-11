@@ -18,7 +18,11 @@ and specifically whether `jsonb` merge alone is sufficient for `MODIFY`, per ope
 
 Script: `scripts/spikes/sc-s3-overlay.mjs`, built on `spike_sc_s1.entity_edges` (must be
 rebuilt first — SC-S1's script drops/recreates it every run). **Not committed** — see the
-reproducibility rule in this folder's README.
+reproducibility rule in this folder's README. **Known gap:** full inline SQL reproduction
+is needed before this spike's measurements can be re-validated against changed content;
+committing the harness to `server/scripts/spike_sc_s3_overlay.mjs` or inlining the complete
+delta-merge and reachability-query logic below is a follow-up before SC-702 relies on these
+numbers.
 
 ```bash
 DATABASE_URL="postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores" \

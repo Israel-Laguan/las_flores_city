@@ -96,9 +96,10 @@ Table: 144 kB · Indexes: 152 kB · Total: 328 kB, for 1,018 rows across 3 index
 
 ### 4. Did the projection feel natural, or did it require contorting?
 
-**It's genuinely mixed, and the split matters more than an average would.** Four of the
-eight edge kinds projected cleanly with no reinterpretation; two required contortion or
-invention; one candidate kind is flatly unsupported by the current data shape.
+**It's genuinely mixed, and the split matters more than an average would.** Five of the
+eight edge kinds projected cleanly with no reinterpretation; one required contortion; one
+was invented outside the candidate list; one candidate kind is flatly unsupported by the
+current data shape.
 
 **Clean, no contortion (5 kinds, 981 of 1,018 rows — 96.4%):** [Recomputed: 192 (`affiliated_with`) + 237 (`sets_flag`) + 28 (`requires_flag`) + 2 (`gives_item`) + 522 (`scene_participant`) = 981; prior draft miscounted as 979.]
 - `affiliated_with` — `character.metadata.faction` is already a bare slug
@@ -131,6 +132,13 @@ invention; one candidate kind is flatly unsupported by the current data shape.
   exactly the kind of silent mismatch §3.2's "derived at compile time" framing assumes
   away: the derivation isn't a pure field read, it's a lookup table someone has to
   author and maintain by hand, and it can already fail on real content.
+
+**Invented, not in candidate list (1 kind, 13 rows):**
+- `offers_dialogue` (scene → dialogue, 13 rows) — no field in the candidate list covers
+  the scene's available dialogue choices. The script invented this edge kind to project
+  `available_dialogues` — a scene's dialogue IDs can be derived from dialogue files'
+  `initial_scene` field, but this is a reverse lookup (scene → dialogues), not a forward
+  field read from the scene payload itself.
 
 **Unsupported (1 kind):**
 - `mission_scene` — **zero edges, and it isn't a threshold problem.** The single mission

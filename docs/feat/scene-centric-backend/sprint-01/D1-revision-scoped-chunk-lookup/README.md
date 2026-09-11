@@ -27,7 +27,7 @@ right here rather than treating it as a throwaway patch.
 - **Scoping note (verified against the current model):** there is **no** revision
   identifier stored with dialogue state today — `dialogue_chunks` is unique only by
   `(tree_id, chunk_key)`, `server/src/content/compiler.ts` deletes and reinserts a tree's
-  chunks on recompile, and `player_dialogue_states` stores only `active_dialogue_id` +
+  chunks on recompile, and `player_dialogue_states` stores only `dialogue_tree_id` +
   `current_chunk_id`. So this ticket **must include, as part of its own scope**:
   1. a monotonic `dialogue_trees.revision` column (bumped only on chunk recompile —
      following migration `089`'s monotonicity rule: bump on exactly the events claimed,

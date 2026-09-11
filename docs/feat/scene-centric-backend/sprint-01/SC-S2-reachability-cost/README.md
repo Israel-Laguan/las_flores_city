@@ -38,6 +38,14 @@ from_slug) through flag_edges, reachable, the visited path, and every join so
 same-slug entities of different types cannot cross-link. Record that seed in the
 query. See plan-graph-in-postgres.md §5.
 
+**Known choice-level limitation:** This seed logic excludes an entire node if ANY choice
+on it is gated (requires a flag), even if other choices on the same node are ungated —
+the existing SC-S3 fixture has exactly this shape (`branch_grounded` gated,
+`branch_departed`/`branch_friends` ungated). A node-level shape cannot distinguish this;
+the fix requires choice-aware edge projection (choice_id in `requires_flag` edges or a
+split into node_entry vs choice_requires_flag edges). See spikes/SC-S2-reachability-cost.md
+for the detailed correction note and its impact on SC-701.
+
 Do not start this before SC-S1's table exists and has real projected rows — this spike
 has nothing to measure without it.
 

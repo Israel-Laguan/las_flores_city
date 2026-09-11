@@ -20,8 +20,13 @@ spike measures reachability against the edges that actually exist and actually c
 
 Query (`scripts/spikes/sc-s2-reachability.sql`), invoked via
 `scripts/spikes/sc-s2-run.mjs` (both were local throwaways, **not committed** — see the
-reproducibility rule in this folder's README; the SQL body is inlined in full below, which
-is the re-runnable part):
+reproducibility rule in this folder's README). **Note:** The SQL body inlined below has
+been updated post-measurement to be type-aware (node_type/node_slug, from_type joins);
+the EXPLAIN ANALYZE blocks below were recorded from an earlier node-level shape
+(from_slug only, NO type joins). This mismatch was discovered post-SC-S3 review when the
+choice-level limitation became apparent. **To reproduce the numbers below, use the node-level
+SQL archived here** (earlier revision, not re-runnable from this text), or **re-run with the
+type-aware SQL below and record the new numbers** before relying on the latency baseline.
 
 ```sql
 WITH RECURSIVE flag_edges AS (

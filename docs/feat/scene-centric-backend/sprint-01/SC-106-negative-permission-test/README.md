@@ -71,11 +71,8 @@ Steps:
      runtimePool or any pool export — this repo's AGENTS.md constraint is
      oltpPool/withOLTPTransaction for player data plus the read-only contentPool, and
      nothing else.
-   - Assert schema-level denial first (`has_schema_privilege(runtime, 'planning', 'USAGE')` is false).
-     If you also SELECT a table, create a privileged fixture table in the test setup —
-     SC-103 creates schemas/roles only, no domain tables. Then assert it fails with a
-     permission-denied error (not a missing-table error — assert the schema and table
-     exist, just aren't readable by this role).
+   - Assert schema-level denial first (`has_schema_privilege('runtime', 'planning', 'USAGE')` is false).
+     If you also SELECT a table, fixture setup requires a privileged connection (e.g. a raw `pg` client with `PLANNING_DATABASE_URL` / migration-owner role) to create the fixture table in the planning schema — SC-103 creates schemas/roles only, no domain tables. The denial checks then use the `RUNTIME_DATABASE_URL` connection to assert SELECT/INSERT/UPDATE fail with permission-denied (not missing-table errors).
    - Attempts an INSERT/UPDATE against a planning-schema table and asserts that also
      fails.
 2. Confirm this test runs as part of `npm run test:integration --workspace=server`

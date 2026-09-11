@@ -42,7 +42,7 @@ per `architecture.md` §2, "an unenforced architectural rule is a comment."
   - `api/planning/**` → `api/runtime/**` and `api/runtime/**` → `api/planning/**`
   - `api/contracts/**` → `api/planning/**` and `api/contracts/**` → `api/runtime/**`
   - each direction tested via **both** a relative import (`../../runtime/...`,
-    `../planning/...`) **and** a package-name import (`@las-flores/api-runtime`,
+    `../../planning/...`) **and** a package-name import (`@las-flores/api-runtime`,
     `@las-flores/api-planning`, `@las-flores/api-contracts`), unless the limitation
   note above applies (in which case test only the supported form and state the gap).
   Screenshot or CI run link for each exercised violation is recorded in the retro.

@@ -56,7 +56,7 @@ This is a spike, not production code:
   of the setup tickets' timeline.
 - The script MUST be deterministic and idempotent: on every run it **drops or
   truncates** the scratch table/schema before repopulating (e.g. DROP TABLE IF EXISTS /
-  TRUNCATE + re-INSERT, or CREATE OR REPLACE), so a second execution does not duplicate
+  TRUNCATE + re-INSERT, or DROP SCHEMA scratch CASCADE), so a second execution does not duplicate
   edges and change row counts or index sizes. Record the content revision (git SHA or
   `content/` hash) that produced each measurement.
 - The script itself can be disposable (a one-off .ts/.mjs under a scratch/spikes path),

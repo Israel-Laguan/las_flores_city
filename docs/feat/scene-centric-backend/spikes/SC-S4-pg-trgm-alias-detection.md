@@ -15,10 +15,11 @@ criteria, "if it cannot beat `ILIKE`, say so" is a complete, valid answer.
 This spike is independent of SC-S1/S2/S3 and SC-103 — it only reads existing
 `characters` rows and existing `content/districts/**/location_*.yaml` name/alias data, and
 runs entirely in a scratch schema. **Corpus scope:** 196 character names + 75 canonical
-location names = 269 rows; no scenes, missions, dialogues, or overlays were indexed.
-Any SC-706 threshold derived here is validated only for character/location aliases —
-applying it to other `entity_aliases` types without additional labeled pairs is
-unvalidated.
+location names = 271 rows total (some deduplication may account for the recorded 269 count
+— confirm the actual corpus size from the measurement); no scenes, missions, dialogues, or
+overlays were indexed. Any SC-706 threshold derived here is validated only for
+character/location aliases — applying it to other `entity_aliases` types without
+additional labeled pairs is unvalidated.
 
 ## What was run
 
@@ -29,11 +30,12 @@ pairs were hand-picked from those `aliases:` fields, spanning the difficulty ran
 drop, substring/truncation, translation, slang synonym, and acronym.
 
 ```
-scripts/spikes/sc-s4-build-corpus.mjs   — builds spike_trgm.corpus (269 rows: 196 character
-                                           names from `characters` + 75 canonical location
-                                           names from content YAML — locations aren't in the
-                                           DB yet, only in content) and spike_trgm.labeled_pairs
-                                           (the 12 pairs below), in a scratch schema.
+scripts/spikes/sc-s4-build-corpus.mjs   — builds spike_trgm.corpus (196 character names
+                                           from `characters` + 75 canonical location names
+                                           from content YAML = 271 rows total; locations
+                                           aren't in the DB yet, only in content) and
+                                           spike_trgm.labeled_pairs (the 12 pairs below),
+                                           in a scratch schema.
 scripts/spikes/sc-s4-analysis.sql       — per-pair top-1 match, threshold sweep
                                            (precision/recall), ILIKE baseline, EXPLAIN ANALYZE.
 ```
@@ -219,17 +221,19 @@ precision differently, and `pg_trgm` only wins on the failure mode `ILIKE` is wo
    borderline at 0.320. If SC-706 must catch pure translations/synonyms/acronyms reliably,
    that requires a different mechanism (an explicit alias table keyed by canonical entity —
    which `entity_aliases` already exists and is populated for characters, scenes,
-   missions, dialogues, and overlays, though not yet for locations. **Postgres currently backfills canonical names; curated
-   writer aliases are seeded into Neo4j.** Treat a Postgres alias import (or an explicit
-   SC-706 story to copy Neo4j aliases into `entity_aliases`) as new work before relying
-   on that table as the translation/synonym fallback — or an LLM-based
-   semantic match), not a `pg_trgm` threshold tweak. This should be flagged to whoever
-   specs SC-706 in SC-M5 before that spec is written, not discovered again during that
-   milestone. **Scope note for SC-706:** SC-S4 measured only character names (196) and
-   location names (75) — 269 rows, no scenes/missions/dialogues/overlays. SC-706's
-   threshold evaluation MUST be scoped to the measured types (characters + locations)
-   unless additional labeled pairs are added for every other `entity_aliases` type it
-   claims to cover; otherwise thresholds are unvalidated for those types.
+   missions, dialogues, and overlays, though not yet for locations). **Existing path:** the
+   `IdentityResolver` in the current (Neo4j-based) backend already performs alias import
+   lazily, pulling from `entity_aliases` for characters, scenes, missions, dialogues, and
+   overlays. **For SC-706 in the new Postgres backend:** either re-use/port that import
+   logic, or explicitly add SC-706's scope to include seeding Neo4j aliases into the new
+   backend's `entity_aliases` table before SC-706 relies on it as the translation/synonym
+   fallback — or use an LLM-based semantic match instead. Document this path before specs
+   SC-706 in SC-M5, not discovered again during that milestone. **Scope note for SC-706:**
+   SC-S4 measured only character names (196) and location names (75) — 271 rows total, no
+   scenes/missions/dialogues/overlays. SC-706's threshold evaluation MUST be scoped to the
+   measured types (characters + locations) unless additional labeled pairs are added for
+   every other `entity_aliases` type it claims to cover; otherwise thresholds are
+   unvalidated for those types.
 - **Index-at-scale is still untested.** The GIN trigram index was not used by the planner at
   269 rows (seq scan won on cost). SC-706's spec should not cite this spike as evidence that
   `pg_trgm` stays cheap at production content volume — that would need its own follow-up

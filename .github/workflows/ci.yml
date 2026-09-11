@@ -116,7 +116,7 @@ jobs:
           --health-retries 5
 
       minio:
-        image: ${{ env.MINIO_IMAGE }}
+        image: ${{ vars.MINIO_IMAGE || 'docker.io/minio/minio:latest' }}
         env:
           MINIO_ROOT_USER: minioadmin
           MINIO_ROOT_PASSWORD: minioadmin
