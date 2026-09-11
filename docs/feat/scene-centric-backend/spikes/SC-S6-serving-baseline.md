@@ -14,8 +14,10 @@ asserting it.
 
 ## What was run
 
-`server/scripts/spike_sc_s6_serving_baseline.ts` (`npx tsx server/scripts/spike_sc_s6_serving_baseline.ts`,
-run from the `server/` workspace with the repo-root `.env` sourced), against the
+A local throwaway (`server/scripts/spike_sc_s6_serving_baseline.ts`, **not in this
+checkout**). Treat the numbers below as a **legacy preliminary baseline** for
+`GET /dialogue/active` only — not as the SC-M3/SC-508 scene-resolution + artifact-fetch
+measurement. Against the
 already-running local docker-compose stack (`las-flores-server` on `:3000`,
 `las-flores-postgres-oltp` on `:5434`, `las-flores-minio` on `:9000`) — no code changes,
 no synthetic infra, just the existing dev stack anyone gets from `docker compose up -d`.
@@ -40,17 +42,27 @@ reported):
    ANY($1::uuid[])`), run directly via `queryOLTP`, to separate the `SELECT` from the
    presigning step within `resolveChunkSpeakers`.
 
-Presigning-only cost and "rest of `/dialogue/active`" cost are then derived by
-subtraction (#2 − #3, and #1 − #2, respectively) — an approximation (it ignores the
-~1-2ms of fetch()/HTTP overhead the blackbox measurement carries that the in-process
-calls don't), stated as such below, not as an exact split.
+Presigning-only cost and "rest of `/dialogue/active`" cost are derived **per iteration**
+from paired timings — each iteration records all three measurements with the same
+iteration index, then the per-iteration differences (`presigning_i = resolveChunkSpeakers_i
+− bulkSelect_i`; `rest_i = endpoint_i − resolveChunkSpeakers_i`) are computed, and
+`p50`/`p95`/shares are calculated from those difference distributions. This avoids the
+bias of subtracting aggregate percentiles (`p50(total) − p50(select)` is not `p50(per-iteration
+difference)`). The blackbox HTTP overhead (~1-2ms fetch) remains as a stated
+approximation within each `rest_i`, not removed by aggregate math.
 
-Repeat by anyone with the stack up: `cd server && set -a && source ../.env && set +a &&
-npx tsx scripts/spike_sc_s6_serving_baseline.ts`.
+Committing the harness (e.g. under `server/scripts/`) is required before anyone re-runs
+this — the "repeat by anyone" step currently depends on a file that is not in the repo.
 
 ## Raw results
 
-Two consecutive runs (unedited console output):
+Two consecutive runs (unedited console output; **methodology note:** the `presigning only`
+and `rest` rows below were originally computed as `p50(total) − p50(select)` — a
+median-of-aggregate subtraction. The corrected methodology is per-iteration as stated
+above; reruns MUST compute `p50`/`p95` from the per-iteration difference distribution.
+The original aggregate-subtraction numbers are retained here for provenance but are not
+the correct `p50(presigning_i)` — the order-of-magnitude (~7ms p50 presigning, ~17-19ms
+rest) is preserved, but exact `p95` shares shift when recomputed paired.)
 
 **Run 1:**
 ```
@@ -106,10 +118,9 @@ the majority. Two things the code-reading suspicion got specifically wrong:
 
 ## What it changes
 
-- **R13's "no performance goal without a baseline" is now satisfied for the dialogue
-  serving path**: SC-M3's serving-benchmark deliverable has a real number to compare
-  against — p50 ≈ 25ms / p95 ≈ 35-39ms end-to-end for a realistic 3-speaker chunk, not an
-  assumption.
+- **R13 has a legacy preliminary baseline only**: p50 ≈ 25ms / p95 ≈ 35-39ms for
+  `GET /dialogue/active` on today's server. That does **not** satisfy SC-508 / SC-M3,
+  which require p50/p95 for scene resolution and artifact fetch on the new path.
 - **`lessons-from-current-code.md` §2.9 should be corrected**, not just cited: the
   document currently frames `resolveChunkSpeakers` as *the* hot spot; the measured
   evidence is that it's a real but minority cost (~30-45%), and the specific "uncached

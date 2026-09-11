@@ -85,8 +85,9 @@ flowchart TD
   class S1,S2,S3,S4,S5 secondary
 ```
 
-**The critical path is `F10 → F1 → F2 → F3 → F4 → F5`.** Six features stand between here
-and a served scene. Everything else is parallel or later.
+**The critical path is `F10 → F1 → F2 → F3 → F7 → F4 → F5`, with `F6` required before F5.**
+The graph already requires F7 before F4 (dialogue keying is an input to compile) and F6
+before F5 (resolver needs player state). Everything else is parallel or later.
 
 ## 4. Explicitly out of scope
 

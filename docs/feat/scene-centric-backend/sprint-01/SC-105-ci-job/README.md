@@ -26,9 +26,11 @@ job runs.
 
 ## Acceptance criteria
 
-- CI's existing `no-migrations` job runs typecheck, lint (incl. SC-102's rule), and unit
-  tests across `api/contracts`, `api/planning`, `api/runtime` — verified by confirming no
-  new job/workflow file was added, only the existing chain now covers the new workspaces.
+- CI's existing `no-migrations` job runs an explicit `npm run typecheck --workspaces`
+  (today it builds shared/infra/server/admin and lints, but does **not** typecheck the
+  new `api/*` workspaces), plus lint (incl. SC-102's rule) and unit tests across
+  `api/contracts`, `api/planning`, `api/runtime`. Add that typecheck step to the existing
+  job — do not create a new workflow file.
 - Job is green on the empty tree (placeholder `index.ts` files only, per SC-101).
 - If a genuinely new job step is required (e.g. the aggregate `npm run test` command
   doesn't already fan out to new workspaces), that's a one-line, explicit addition to
@@ -52,12 +54,10 @@ Steps:
 2. Check whether `no-migrations`'s "Unit tests" step (`npm run test:unit --workspace=server`)
    or an equivalent needs a matching entry for the new workspaces, or whether a root
    `npm run test` / `--workspaces` invocation already covers them.
-3. If everything is already covered by the existing --workspaces commands, make NO
-   changes to ci.yml — the acceptance criterion is "green with no new job," not "a new
-   job that happens to pass."
-4. If a genuine gap exists (e.g. a new workspace's test script isn't invoked anywhere),
-   add the minimal single line to the existing no-migrations job — do not create a new
-   job or workflow file.
+3. The current no-migrations job does NOT run `npm run typecheck --workspaces`. Add that
+   as one step on the existing job so api/* type errors cannot merge undetected.
+4. If a new workspace's test script isn't invoked anywhere, add the minimal extra line
+   to the same job — do not create a new job or workflow file.
 
 Do not add SC-106's negative-permission test wiring here — that belongs in the
 with-migrations job since it needs a live Postgres connection; keep these separate.

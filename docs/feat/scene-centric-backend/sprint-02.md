@@ -82,7 +82,7 @@ Record which entities set a flag and which read it — the input tier-3 needs to
 - **Shape depends on SC-S1.** If the spike found the edge projection unnatural, this ticket
   is re-planned at the retro rather than built as written.
 
-### SC-206 · Threshold crossing sets a flag as an event · M
+### SC-206 · Threshold crossing sets a flag as an event (fixture-backed mechanism) · M
 When a relationship stat crosses a declared threshold, a flag is **set and persisted** —
 not derived by querying the stat at read time.
 
@@ -92,9 +92,17 @@ not derived by querying the stat at read time.
   read time smuggles continuous reads back into resolution and voids the decidability
   property (`proposal.md` §3.3 rule 2).
 - `latching` flags persist after the stat falls back below the threshold; `tracking` flags
-  clear. Both behaviours are tested.
-- **Partially blocked.** Full behaviour needs relationship stats (S3, SC-M6). Scope here is
-  the *mechanism* plus tests against a fixture stat source — not wiring to a real one.
+  clear. Both behaviours are tested against a **fixture stat source** (no real
+  relationship-stat table or delta wiring required in this sprint).
+- **Readiness scope:** this ticket is **Ready** only as the fixture-backed mechanism.
+  Real relationship-stat integration (reading actual `relationship_stats` / emitted deltas,
+  `SC-E8` S3) remains **blocked on S3** and is not part of this sprint's commitment —
+  it is tracked as a follow-up (SC-811/SC-206b) blocked on SC-M6. This ticket's tests
+  MUST pass without a live stat pipeline.
+
+> **Backlog alignment:** `backlog.md` SC-206 is marked Ready for the fixture-backed
+> mechanism; the real-stat wiring is the blocked follow-up. Only the fixture-backed
+> shape is committed to sprint 02.
 
 ---
 

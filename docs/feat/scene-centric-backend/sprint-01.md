@@ -12,9 +12,11 @@ the scene model depends on the condition grammar, which depends on flags, and th
 rebuilding it in sprint 3. What this sprint buys is a boundary that is expensive to
 retrofit, two bugs off the board, and the removal of guesswork from SC-M2 planning.
 
-**Capacity.** ~6 working days of planned work assumed across 10 calendar days (60%). Load
-below is 4.5 days of setup + 4.5 days of spikes + 1 day of defects = **10 days, which is
-over**. Cut order is stated in §5.
+**Capacity.** ~7.5 working days of planned work assumed across 10 calendar days (75%)
+for the **mandatory** scope; total load if no cuts is 4.5 days setup + 4.5 days spikes +
+1 day defects = 10 days. The 2.5-day gap is covered by the cut order in §5 — the three
+non-mandatory spikes (SC-S3/SC-S4/SC-S6) are the explicit capacity buffer. See §4 for
+the mandatory vs cuttable split.
 
 **Detail layer.** Full context, dependencies, refined acceptance criteria (checked
 against this repo's actual workspaces/CI/migration-runner/pooling setup — not just the
@@ -70,7 +72,7 @@ build order there is not the table order below.
 | D2 · Choice-reachability validation | M | [sprint-01/D2-choice-reachability-validation/](sprint-01/D2-choice-reachability-validation/) |
 
 > These fix the **current** `server/`, not the new backend. Worth doing anyway: they are
-> live player-facing bugs, and the fix shape informs SC-505 in the new resolver. Both are
+> live player-facing bugs. D1's fix shape informs SC-502 (revision-scoped artifact lookup); D2 informs SC-505 (choice-reachability validation). Both are
 > fully isolated from the module-tree work and each other — schedule wherever they fit.
 
 ---
@@ -81,8 +83,11 @@ An item is done when: acceptance criteria are met; CI is green; and for spikes, 
 write-up exists with a "what it changes" section. Not when the code works locally.
 
 **Sprint is successful if:** SC-101 through SC-106 are done, D1 and D2 are fixed, and at
-minimum SC-S1, SC-S2, and SC-S5 have written answers. The remaining spikes may slip to
-sprint 2 without the sprint being a failure.
+minimum SC-S1, SC-S2, and SC-S5 have written answers (mandatory load = 4.5 + 1 + 2 =
+7.5 days, fitting the 7.5-day capacity). The remaining spikes (SC-S3, SC-S4, SC-S6)
+are **not** required for success and may slip to sprint 2 per §5 without the sprint
+being a failure; if capacity runs short they are cut in the order SC-S4 → SC-S6 → SC-S3
+before any mandatory item is deferred.
 
 ## 5. If capacity runs short — cut in this order
 
