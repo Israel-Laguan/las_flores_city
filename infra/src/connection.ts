@@ -13,6 +13,8 @@ const { Pool } = pg;
 let _oltpPool: pg.Pool | null = null;
 let _olapPool: pg.Pool | null = null;
 let _contentPool: pg.Pool | null = null;
+let _planningPool: pg.Pool | null = null;
+let _runtimePool: pg.Pool | null = null;
 
 function parseContentPoolMax(): number {
   const raw = process.env.CONTENT_POOL_MAX;
@@ -87,6 +89,47 @@ function getContentPool(): pg.Pool {
   return _contentPool;
 }
 
+function getPlanningPool(): pg.Pool {
+  if (!_planningPool) {
+    connectionsClosed = false;
+    // SC-103: planning-schema writer pool. Same OLTP database as `oltpPool`,
+    // intended for `api/planning` only. PLANNING_DATABASE_URL should use the
+    // `las_flores_planning` role (full rights on `planning`, none on `runtime`).
+    // Falls back to DATABASE_URL when unset — same convenience as
+    // CONTENT_DATABASE_URL — so local boot still works; SC-106 must set the
+    // restricted URL to prove the grant boundary.
+    //
+    // Role creation via migration assumes CREATEROLE (true for CI/dev
+    // postgres-oltp POSTGRES_USER). Production provisioning on managed
+    // Postgres is an open question, not solved by this pool.
+    _planningPool = new Pool({
+      connectionString: process.env.PLANNING_DATABASE_URL || process.env.DATABASE_URL,
+      max: 10,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 5000,
+    });
+  }
+  return _planningPool;
+}
+
+function getRuntimePool(): pg.Pool {
+  if (!_runtimePool) {
+    connectionsClosed = false;
+    // SC-103: runtime-schema writer pool. Same OLTP database as `oltpPool`,
+    // intended for `api/runtime` only. RUNTIME_DATABASE_URL should use the
+    // `las_flores_runtime` role (full rights on `runtime`, no USAGE on
+    // `planning`). Falls back to DATABASE_URL when unset; SC-106 must set
+    // the restricted URL to prove the grant boundary.
+    _runtimePool = new Pool({
+      connectionString: process.env.RUNTIME_DATABASE_URL || process.env.DATABASE_URL,
+      max: 10,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 5000,
+    });
+  }
+  return _runtimePool;
+}
+
 // Proxy-based lazy exports: `oltpPool.query()` / `oltpPool.connect()` etc.
 // delegate to the real pool only when first called — no TCPWRAP handle created
 // at module-import time.
@@ -107,6 +150,22 @@ export const olapPool: pg.Pool = new Proxy({} as pg.Pool, {
 export const contentPool: pg.Pool = new Proxy({} as pg.Pool, {
   get(_, prop, receiver) {
     return Reflect.get(getContentPool(), prop, receiver);
+  },
+});
+
+// SC-103: lazy exports for the planning/runtime schema roles. `api/planning`
+// is the only code path that should use `planningPool`; `api/runtime` is the
+// only code path that should use `runtimePool`. Existing `server/` stays on
+// `oltpPool`/`contentPool`.
+export const planningPool: pg.Pool = new Proxy({} as pg.Pool, {
+  get(_, prop, receiver) {
+    return Reflect.get(getPlanningPool(), prop, receiver);
+  },
+});
+
+export const runtimePool: pg.Pool = new Proxy({} as pg.Pool, {
+  get(_, prop, receiver) {
+    return Reflect.get(getRuntimePool(), prop, receiver);
   },
 });
 
@@ -150,6 +209,14 @@ export async function closeConnections(): Promise<void> {
   if (_contentPool) {
     await _contentPool.end();
     _contentPool = null;
+  }
+  if (_planningPool) {
+    await _planningPool.end();
+    _planningPool = null;
+  }
+  if (_runtimePool) {
+    await _runtimePool.end();
+    _runtimePool = null;
   }
   console.error('🔌 Database connections closed');
 }
