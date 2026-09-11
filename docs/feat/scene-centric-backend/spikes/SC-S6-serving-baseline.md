@@ -15,7 +15,8 @@ asserting it.
 ## What was run
 
 `server/scripts/spike_sc_s6_serving_baseline.ts` (`npx tsx server/scripts/spike_sc_s6_serving_baseline.ts`,
-run from the `server/` workspace with the repo-root `.env` sourced), against the
+run from the `server/` workspace with the repo-root `.env` sourced; **not committed** with
+this write-up — see the reproducibility rule in this folder's README), against the
 already-running local docker-compose stack (`las-flores-server` on `:3000`,
 `las-flores-postgres-oltp` on `:5434`, `las-flores-minio` on `:9000`) — no code changes,
 no synthetic infra, just the existing dev stack anyone gets from `docker compose up -d`.
@@ -45,8 +46,8 @@ subtraction (#2 − #3, and #1 − #2, respectively) — an approximation (it ig
 ~1-2ms of fetch()/HTTP overhead the blackbox measurement carries that the in-process
 calls don't), stated as such below, not as an exact split.
 
-Repeat by anyone with the stack up: `cd server && set -a && source ../.env && set +a &&
-npx tsx scripts/spike_sc_s6_serving_baseline.ts`.
+Committing the harness (e.g. under `server/scripts/`) is required before anyone re-runs
+this — the "repeat by anyone" step currently depends on a file that is not in the repo.
 
 ## Raw results
 

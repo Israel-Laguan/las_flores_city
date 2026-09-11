@@ -28,6 +28,12 @@ in the existing dev Postgres container (`las-flores-postgres-oltp`, host port 54
 
 No fixture or synthetic data was used — every row traces to a real file under `content/`.
 
+**Reproducibility caveat:** the script was a local throwaway and was **not committed** with
+this write-up — the numbers above are not re-runnable from the repo as-is. Before any
+downstream ticket (SC-701, SC-S2, SC-S3) builds on these counts, the harness must either
+be committed (e.g. `server/scripts/spike_sc_s1_project_entity_edges.ts`, since `scripts/`
+is reserved for file-to-file tools that never touch the DB) or re-run and re-recorded.
+
 ## Raw results
 
 ```

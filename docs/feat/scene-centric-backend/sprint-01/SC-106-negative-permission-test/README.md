@@ -13,7 +13,9 @@ is never tested is a claim, not a fact.
 `.github/workflows/ci.yml`'s `with-migrations` job already provisions a `postgres-oltp`
 service and runs `npm run test:integration --workspace=server`. **This test belongs
 there** — it needs a live DB connection using the `runtime` role's actual credentials
-(via the `runtimePool` added in SC-103), not a new CI service or a mocked connection.
+(via a **raw `pg` client using `RUNTIME_DATABASE_URL`** — test-only; SC-103 deliberately
+adds no `runtimePool` because the repo's sanctioned-pool constraint forbids a new
+production pool), not a new CI service or a mocked connection.
 
 ## Dependencies
 
@@ -24,8 +26,9 @@ there** — it needs a live DB connection using the `runtime` role's actual cred
 
 ## Acceptance criteria
 
-- A test connects using `runtimePool` (or a role-scoped connection matching its
-  credentials) and asserts a `SELECT` against any `planning`-schema table fails with a
+- A test connects using a raw `pg` client with the test-only `RUNTIME_DATABASE_URL`
+  (SC-103 provisions this; **no new pool export** — the repo forbids adding
+  `runtimePool`) and asserts a `SELECT` against any `planning`-schema table fails with a
   permission error (not a table-not-found error — the schema must exist and be
   visible/rejected, not absent).
 - The same test (or a sibling) asserts a `runtime`-role write attempt against `planning`
@@ -49,9 +52,11 @@ Read server/tests/integration/ for the existing test structure and conventions
 Steps:
 1. Add a test file under server/tests/integration/ (naming convention matching
    neighboring files, e.g. migration.test.ts's style) that:
-   - Connects using the runtime role's credentials (via runtimePool from SC-103, or a
-     raw pg client using RUNTIME_DATABASE_URL directly if that matches this suite's
-     conventions for role-specific tests).
+   - Connects using the runtime role's credentials via a raw pg client with
+     RUNTIME_DATABASE_URL (provided by SC-103 as a test-only env var). Do NOT add a
+     runtimePool or any pool export — this repo's AGENTS.md constraint is
+     oltpPool/withOLTPTransaction for player data plus the read-only contentPool, and
+     nothing else.
    - Attempts a SELECT against a planning-schema table and asserts it fails with a
      permission-denied error (not a missing-table error — assert the schema and table
      exist, just aren't readable by this role).

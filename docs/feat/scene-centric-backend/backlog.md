@@ -144,9 +144,15 @@ in `spikes/` and the affected story is re-planned rather than quietly re-attempt
 | SC-S5 | Where does weather come from? `AGENTS.md:36` says it is a hook with no live source and callers pass `undefined`. Propose the source. | 0.5 day | A6, SC-305 |
 | SC-S6 | Dialogue serving baseline — p50/p95 for chunk fetch and portrait load on the current path, including `resolveChunkSpeakers` | 1 day | SC-508, R13 |
 
+### Spike follow-ups
+
+| ID | Story | Size | State |
+|---|---|---|---|
+| SC-S7 | Commit the spike harnesses (SC-S1 projection script, SC-S2 run/duplicate scripts, SC-S3 overlay script, SC-S4 corpus/analysis files, S6 serving baseline) under `server/scripts/`, or replace each write-up with fully self-contained inline repro commands. Until then the recorded spike numbers are not re-runnable from the repo. | S | Ready |
+
 ## Defects
 
 | ID | Defect | Priority |
 |---|---|---|
-| D1 | Chunk lookup not scoped to the player's active content revision | **now** |
+| D1 | Chunk lookup not scoped to the player's active tree/revision — requires adding a monotonic `dialogue_trees.revision` + player-pinned `pinned_tree_revision` first (no revision identifier exists in the current model; see D1 ticket) | **now** |
 | D2 | Submitted choice not validated as reachable before effects apply | **now** |

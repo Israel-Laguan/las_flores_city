@@ -19,7 +19,9 @@ spike measures reachability against the edges that actually exist and actually c
 ## What was run
 
 Query (`scripts/spikes/sc-s2-reachability.sql`), invoked via
-`scripts/spikes/sc-s2-run.mjs`:
+`scripts/spikes/sc-s2-run.mjs` (both were local throwaways, **not committed** — see the
+reproducibility rule in this folder's README; the SQL body is inlined in full below, which
+is the re-runnable part):
 
 ```sql
 WITH RECURSIVE flag_edges AS (

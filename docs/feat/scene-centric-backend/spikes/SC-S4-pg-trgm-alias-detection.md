@@ -34,6 +34,9 @@ scripts/spikes/sc-s4-analysis.sql       — per-pair top-1 match, threshold swee
                                            (precision/recall), ILIKE baseline, EXPLAIN ANALYZE.
 ```
 
+**Not committed** — both files were local throwaways; see the reproducibility rule in this
+folder's README.
+
 Commands:
 
 ```bash

@@ -13,6 +13,10 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  # Override this repository variable if CI needs to use an internal mirror.
+  MINIO_IMAGE: ${{ vars.MINIO_IMAGE || 'docker.io/minio/minio:latest' }}
+
 jobs:
   # Chain 1: No services needed — fast feedback on lint, build, unit tests, schema validation
   no-migrations:
@@ -109,7 +113,7 @@ jobs:
           --health-retries 5
 
       minio:
-        image: minio/minio:latest
+        image: ${{ env.MINIO_IMAGE }}
         env:
           MINIO_ROOT_USER: minioadmin
           MINIO_ROOT_PASSWORD: minioadmin

@@ -17,7 +17,8 @@ and specifically whether `jsonb` merge alone is sufficient for `MODIFY`, per ope
 ## What was run
 
 Script: `scripts/spikes/sc-s3-overlay.mjs`, built on `spike_sc_s1.entity_edges` (must be
-rebuilt first — SC-S1's script drops/recreates it every run).
+rebuilt first — SC-S1's script drops/recreates it every run). **Not committed** — see the
+reproducibility rule in this folder's README.
 
 ```bash
 DATABASE_URL="postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores" \
