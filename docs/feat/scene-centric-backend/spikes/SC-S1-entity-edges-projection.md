@@ -101,7 +101,7 @@ eight edge kinds projected cleanly with no reinterpretation; one required contor
 was invented outside the candidate list; one candidate kind is flatly unsupported by the
 current data shape.
 
-**Clean, no contortion (5 kinds, 981 of 1,018 rows — 96.4%):** [Recomputed: 192 (`affiliated_with`) + 237 (`sets_flag`) + 28 (`requires_flag`) + 2 (`gives_item`) + 522 (`scene_participant`) = 981; prior draft miscounted as 979.]
+**Clean, no contortion (4 kinds, 981 of 1,018 rows — 96.4%):** [Recomputed: 192 (`affiliated_with`) + 237 (`sets_flag`) + 28 (`requires_flag`) + 2 (`gives_item`) + 522 (`scene_participant`) = 981; prior draft miscounted as 979.]
 - `affiliated_with` — `character.metadata.faction` is already a bare slug
   (`van_der_meer`, `lw_group`). Direct field read, one line. 192 of 194 characters have
   it; `aria_welcome_bot` and `sofia_ramirez` don't, which is a plausible content gap, not
@@ -134,11 +134,7 @@ current data shape.
   author and maintain by hand, and it can already fail on real content.
 
 **Invented, not in candidate list (1 kind, 13 rows):**
-- `offers_dialogue` (scene → dialogue, 13 rows) — no field in the candidate list covers
-  the scene's available dialogue choices. The script invented this edge kind to project
-  `available_dialogues` — a scene's dialogue IDs can be derived from dialogue files'
-  `initial_scene` field, but this is a reverse lookup (scene → dialogues), not a forward
-  field read from the scene payload itself.
+- `offers_dialogue` (scene → dialogue, 13 rows) — the scene payload directly lists dialogue IDs, so this is a forward field read rather than a reverse lookup; `offers_dialogue` is invented because the candidate list does not name scene → dialogue relationships.
 
 **Unsupported (1 kind):**
 - `mission_scene` — **zero edges, and it isn't a threshold problem.** The single mission
@@ -169,7 +165,7 @@ than 2×.
 
 ## Answer
 
-**It depends, and the dependency is legible — this is not a clean yes.** Four of eight
+**It depends, and the dependency is legible — this is not a clean yes.** Five of eight
 edge kinds (96% of projected rows) are genuinely a direct field read, exactly as §3.2
 describes. But `located_in` needed a hand-authored mapping table with real unresolved
 cases on real content, `scene_participant` had to move one join hop from the shape §3.2

@@ -90,7 +90,7 @@ minimum SC-S1, SC-S2, and SC-S5 have written answers (mandatory load = 4.5 + 1 +
 are **not** required for this sprint's success and may slip to sprint 2 per §5 without the
 sprint being a failure; if capacity runs short they are cut in the order SC-S4 → SC-S6 → SC-S3
 before any mandatory item is deferred. **Critical:** SC-M1's exit criteria require every
-sprint-1 spike to have a written answer (`backlog.md` §SC-M1, exit criteria). Spikes that
+sprint-1 spike to have a written answer (`roadmap.md` §SC-M1, exit criteria). Spikes that
 slip to sprint 2 MUST be completed in sprint 2 before SC-M1 is closed — they cannot remain
 open into sprint 3. If sprint 2's capacity cannot accommodate the spillover, SC-M1's
 completion is explicitly delayed to sprint 3, noted in that retro.

@@ -15,7 +15,7 @@ criteria, "if it cannot beat `ILIKE`, say so" is a complete, valid answer.
 This spike is independent of SC-S1/S2/S3 and SC-103 — it only reads existing
 `characters` rows and existing `content/districts/**/location_*.yaml` name/alias data, and
 runs entirely in a scratch schema. **Corpus scope:** 196 character names + 75 canonical
-location names = 271 rows total (some deduplication may account for the recorded 269 count
+location names = 271 rows total (some deduplication may account for the recorded 271 count
 — confirm the actual corpus size from the measurement); no scenes, missions, dialogues, or
 overlays were indexed. Any SC-706 threshold derived here is validated only for
 character/location aliases — applying it to other `entity_aliases` types without
@@ -74,7 +74,7 @@ The 12 labeled pairs:
 | 11 | National Theater | Teatro Nacional | translation |
 | 12 | WTCLF | World Trade Center Las Flores | acronym |
 
-**Methodology.** `similarity(query, name)` was computed against every one of the 269 corpus
+**Methodology.** `similarity(query, name)` was computed against every one of the 271 corpus
 names (196 characters + 75 locations, so the test set includes realistic distractors, not
 just the 12 correct answers). For each candidate threshold T: **recall** = fraction of the 12
 pairs where the expected canonical scores `> T`; **precision** = correct matches ÷ total
@@ -149,7 +149,7 @@ threshold to tune.
                       5 |              5 |               0 |              5 |          12 |  0.417 |     1.000
 ```
 
-**Index usage at this corpus size (269 rows):**
+**Index usage at this corpus size (271 rows):**
 
 ```
 EXPLAIN ANALYZE SELECT name FROM spike_trgm.corpus WHERE name % 'Rio Grande'
@@ -161,7 +161,7 @@ Planning Time: 0.131 ms
 Execution Time: 0.513 ms
 ```
 
-The planner ignored the GIN trigram index and seq-scanned — expected at 269 rows (below the
+The planner ignored the GIN trigram index and seq-scanned — expected at 271 rows (below the
 planner's threshold for preferring an index scan). This spike does not speak to index
 behavior at production content volume; it only confirms the index builds and the operator
 works, per the acceptance criteria's ask for "similarity search," not an index-scaling claim.
@@ -235,7 +235,7 @@ precision differently, and `pg_trgm` only wins on the failure mode `ILIKE` is wo
    every other `entity_aliases` type it claims to cover; otherwise thresholds are
    unvalidated for those types.
 - **Index-at-scale is still untested.** The GIN trigram index was not used by the planner at
-  269 rows (seq scan won on cost). SC-706's spec should not cite this spike as evidence that
+  271 rows (seq scan won on cost). SC-706's spec should not cite this spike as evidence that
   `pg_trgm` stays cheap at production content volume — that would need its own follow-up
   measurement at realistic row counts, the same caveat SC-S2's write-up raised for its own
   cost claim.
