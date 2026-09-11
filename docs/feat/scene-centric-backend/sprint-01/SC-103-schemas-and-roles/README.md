@@ -9,6 +9,24 @@ Create `planning` and `runtime` schemas plus two DB roles, with grants per
 separate roles). This is the R9 ("one writer per fact") enforcement mechanism — it must
 not be cut.
 
+## Known drift — needs cleanup
+
+The existing `feat/sc-103-schemas-and-roles` branch was built **before** this ticket was
+revised to forbid new pools, and still has the old shape:
+- `infra/src/connection.ts` exports live `planningPool`/`runtimePool` Proxy pools (plus
+  the backing `_planningPool`/`_runtimePool` singletons and their teardown in the
+  shutdown handler).
+- `infra/src/index.ts` re-exports both.
+- `docs/feat/scene-centric-backend/sprint-01/SC-103-schemas-and-roles/README.md` (the
+  version committed on that branch) and `SC-106-negative-permission-test/README.md` both
+  still describe `runtimePool` as the SC-106 connection path.
+
+Before continuing work on that branch: remove both pool exports and their singletons
+from `infra/src/connection.ts` and `infra/src/index.ts`, and update both READMEs to
+match this revision — SC-106 connects via a raw `pg` client against
+`RUNTIME_DATABASE_URL`, not a pool export. Nothing outside `infra/src/connection.ts` /
+`infra/src/index.ts` references these pools, so the removal is self-contained.
+
 ## Data checked against the real repo
 
 - The two schemas live inside the **existing** `las_flores` OLTP database — the same one
