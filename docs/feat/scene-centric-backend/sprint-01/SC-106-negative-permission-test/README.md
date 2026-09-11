@@ -32,7 +32,7 @@ production pool), not a new CI service or a mocked connection.
   (e.g. `planning._sc106_probe` or the real `planning.flag_definitions` once SC-202
   lands) is provisioned **ahead** of the check via a privileged fixture/migration
   applied with the migration-owner role, with `GRANT ALL ON TABLE planning._sc106_probe
-  TO planning_role` (and `ALTER DEFAULT PRIVILEGES` per SC-103) so the `planning` role
+  TO planning` (and `ALTER DEFAULT PRIVILEGES` per SC-103) so the `planning` role
   can use it. The test first verifies the fixture is present as the privileged owner
   (or via `information_schema` / `SELECT to_regclass('planning._sc106_probe') IS NOT
   NULL`) and that the schema `planning` exists, and only then performs the denial

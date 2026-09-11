@@ -63,9 +63,24 @@ Rung 2 of the separation ladder — same database, separate schemas, separate ro
 | `runtime` | player state: flags set, current resolution, pinned cast, progress | `runtime/` | `runtime/` |
 | *(existing)* | current `server/` tables, untouched | `server/` | `server/` |
 
-Two DB roles. **The runtime role has no write access to `planning`, and no read access
-either.** Runtime gets content exclusively from artifacts, never from canon tables — that
-is not a convention, it is a grant.
+**SC-M1 enforcement scope (grant-proof only):** the `R9` one-writer-per-fact boundary is
+proven as a CI/dev grant check, not as a production runtime that actually assumes the
+restricted role. Production `runtime/` code still runs on `oltpPool` as the privileged
+`las_flores` app role per `AGENTS.md`. Making production transactions actually run as
+`runtime` (e.g. `SET LOCAL ROLE runtime` inside `withOLTPTransaction` or a sanctioned pool
+exception) is an explicit post-M1 decision — record as debt, do not add `runtimePool` now.
+
+Two DB roles (`runtime`, `planning` — must match `RUNTIME_DATABASE_URL` /
+`PLANNING_DATABASE_URL` and SC-106). **The runtime role has no write access to
+`planning`, and no read access either.** Runtime gets content exclusively from artifacts,
+never from canon tables — that is not a convention, it is a grant.
+
+**Enforcement scope (SC-M1):** the `R9` one-writer-per-fact boundary is proven as a
+**CI/dev grant-proof** in SC-106 (role `runtime` denied on `planning`), not as a
+production runtime that actually assumes the restricted role. Production `runtime/` code
+still runs on `oltpPool` as the privileged `las_flores` app role per `AGENTS.md`; making
+production transactions actually run as `runtime` (e.g. `SET LOCAL ROLE runtime` inside
+`withOLTPTransaction` or a sanctioned pool exception) is an explicit post-M1 follow-up.
 
 Per R14, every table declares its writer. A table with two writers is the drift pathology
 this redesign exists to remove.
