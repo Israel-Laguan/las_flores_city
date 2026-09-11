@@ -1,0 +1,36 @@
+# SC-102 boundary lint proof
+# Captured locally on feat/sc-102-boundary-lint. Violations were NOT committed.
+# Tool: eslint-plugin-import-x (fork of eslint-plugin-import for ESLint 10)
+# Rules: import-x/no-restricted-paths, no-restricted-imports
+
+## 1. api/runtime relative import of api/planning (import-x/no-restricted-paths)
+
+/home/anthony/code/las_flores_city/api/runtime/src/index.ts
+  1:31  error  Unexpected path "../../planning/src/index.ts" imported in restricted zone. SC-102: api/runtime must not import api/planning  import-x/no-restricted-paths
+
+✖ 1 problem (1 error, 0 warnings)
+
+
+## 2. api/runtime package import of @las-flores/api-planning (no-restricted-imports)
+
+/home/anthony/code/las_flores_city/api/runtime/src/index.ts
+  1:1  error  '@las-flores/api-planning' import is restricted from being used. SC-102: do not import @las-flores/api-planning across the planning/runtime/contracts boundary  no-restricted-imports
+
+✖ 1 problem (1 error, 0 warnings)
+
+
+## 3. api/planning relative import of api/runtime
+
+/home/anthony/code/las_flores_city/api/planning/src/index.ts
+  1:30  error  Unexpected path "../../runtime/src/index.ts" imported in restricted zone. SC-102: api/planning must not import api/runtime  import-x/no-restricted-paths
+
+✖ 1 problem (1 error, 0 warnings)
+
+
+## 4. api/contracts relative import of api/planning
+
+/home/anthony/code/las_flores_city/api/contracts/src/index.ts
+  1:31  error  Unexpected path "../../planning/src/index.ts" imported in restricted zone. SC-102: api/contracts must not import api/planning  import-x/no-restricted-paths
+
+✖ 1 problem (1 error, 0 warnings)
+
