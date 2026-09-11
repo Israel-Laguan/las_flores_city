@@ -80,7 +80,9 @@
     "088_admin_events_plan_lifecycle_validate.sql",
     "089_content_plans_graph_revision.sql",
     "090_admin_events_plan_intake.sql",
-    "091_admin_events_plan_intake_validate.sql"
+    "091_admin_events_plan_intake_validate.sql",
+    "092_add_dialogue_trees_revision.sql",
+    "093_add_pinned_tree_revision.sql"
   ],
   "nontransactional": {
     "075_job_runs_run_token_backfill.sql": "las_flores"

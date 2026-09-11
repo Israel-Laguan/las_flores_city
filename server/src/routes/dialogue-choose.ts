@@ -244,9 +244,18 @@ async function handleChunkBoundaryChoice(
   const tbDeducted = validationResult.tbDeducted ?? 0;
   const targetChunkKey = leaf.target_chunk as string;
 
+  // Fetch the tree revision for revision-scoped chunk lookup.
+  const treeRevResult = await queryOLTP<{ revision: number }>(
+    'SELECT revision FROM dialogue_trees WHERE id = $1',
+    [currentChunk.tree_id]
+  );
+  const treeRevision = treeRevResult.rows[0]?.revision ?? 0;
+
   let resolvedNextChunk;
   try {
-    resolvedNextChunk = await DialogueResolver.resolveNextChunk(userId, targetChunkKey);
+    resolvedNextChunk = await DialogueResolver.resolveNextChunk(
+      userId, targetChunkKey, currentChunk.tree_id, treeRevision
+    );
   } catch (err: any) {
     if (err.message && err.message.includes('not found')) {
       return res.status(404).json({

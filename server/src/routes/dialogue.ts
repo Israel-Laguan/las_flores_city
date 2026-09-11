@@ -53,9 +53,17 @@ dialogueRouter.get('/chunk/:chunkId', authMiddleware, async (req: AuthRequest, r
     const userId = req.userId!;
     const chunkKey = req.params.chunkId as string;
 
+    // Fetch the player's current dialogue cursor to get the active tree_id and revision.
+    const cursor = await PlayerStateRepository.getDialogueCursor(userId);
+    const treeId = cursor?.active_dialogue_id;
+    const treeRevResult = cursor?.active_dialogue_id
+      ? await queryOLTP<{ revision: number }>('SELECT revision FROM dialogue_trees WHERE id = $1', [cursor.active_dialogue_id])
+      : { rows: [] };
+    const treeRevision = treeRevResult.rows[0]?.revision ?? 0;
+
     let resolvedChunk;
     try {
-      resolvedChunk = await DialogueResolver.resolveNextChunk(userId, chunkKey);
+      resolvedChunk = await DialogueResolver.resolveNextChunk(userId, chunkKey, treeId, treeRevision);
     } catch {
       return res.status(404).json({ success: false, error: 'Chunk not found' });
     }

@@ -528,18 +528,20 @@ export class DialogueResolver {
    * Resolve the next chunk when crossing a chunk boundary.
    * Looks up the chunk by (tree_id, targetChunkKey), then merges
    * overlays using the same pattern as resolveChunkForUser.
+   * If treeId and revision are provided, the chunk lookup is scoped
+   * to the player's active tree revision.
    *
    * Requirements: 4.1, 4.2
    */
   public static async resolveNextChunk(
     userId: string,
-    targetChunkKey: string
+    targetChunkKey: string,
+    treeId?: string,
+    revision?: number
   ): Promise<ResolvedChunk> {
-    // Load the target chunk by chunk_key (across all trees — first match wins,
-    // which is safe because chunk_key values encode the entry node id and are
-    // unique within a tree; callers typically know the tree but we look up by
-    // key for flexibility in boundary transitions).
-    const chunkRow = await DialogueResolver.loadBaseChunkByKey(targetChunkKey);
+    const chunkRow = await DialogueResolver.loadBaseChunkByKey(
+      targetChunkKey, treeId, revision
+    );
 
     return DialogueResolver.resolveChunkForUser(userId, chunkRow.id, chunkRow.chunk_key);
   }
@@ -608,8 +610,44 @@ export class DialogueResolver {
   /**
    * Load a base chunk from dialogue_chunks by its chunk_key.
    * Used by resolveNextChunk when crossing boundaries.
+   * If treeId and revision are provided, the lookup is scoped
+   * to the player's active tree revision.
    */
-  private static async loadBaseChunkByKey(chunkKey: string): Promise<BaseDialogueChunkRow> {
-    return DialogueResolver.loadBaseChunkRow('chunk_key', chunkKey);
+  private static async loadBaseChunkByKey(
+    chunkKey: string,
+    treeId?: string,
+    revision?: number
+  ): Promise<BaseDialogueChunkRow> {
+    const where = treeId !== undefined
+      ? `chunk_key = $1 AND tree_id = $2 AND revision = $3`
+      : `chunk_key = $1`;
+    const params: (string | number)[] = treeId !== undefined
+      ? [chunkKey, treeId, revision]
+      : [chunkKey];
+    const result = await queryContent<BaseDialogueChunkRow>(
+      `SELECT id, tree_id, chunk_key, content_url
+          FROM dialogue_chunks
+         WHERE ${where}
+         LIMIT 1`,
+      params
+    );
+
+    if (result.rows.length === 0) {
+      throw new Error(`Dialogue chunk not found for chunk_key = ${chunkKey}`);
+    }
+
+    const row = result.rows[0];
+    const cdn = await fetchChunkFromContentUrl(row.content_url, {
+      nodes: {},
+      leaves: {},
+    });
+    if (!cdn) {
+      throw new Error(`Dialogue chunk ${chunkKey} failed to load nodes/leaves from content_url ${row.content_url}`);
+    }
+    return {
+      ...row,
+      nodes: cdn.nodes,
+      leaves: cdn.leaves,
+    };
   }
 }

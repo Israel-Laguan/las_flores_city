@@ -255,6 +255,14 @@ export async function compileDialogueTree(treeId: string): Promise<CompiledChunk
       );
     }
 
+    // Bump the tree's monotonic revision counter.
+    // This only happens when chunks are recompiled (i.e. compileDialogueTree
+    // is called), never on unrelated column touches.
+    await client.query(
+      'UPDATE dialogue_trees SET revision = revision + 1 WHERE id = $1',
+      [treeId]
+    );
+
     // Point the tree row at its externalized nodes blob.
     await client.query(
       'UPDATE dialogue_trees SET content_url = $1 WHERE id = $2',
