@@ -40,6 +40,9 @@ jobs:
       - name: Build infra
         run: npm run build --workspace=infra
 
+      - name: Typecheck all workspaces
+        run: npm run typecheck --workspaces
+
       - name: Lint all workspaces
         run: npm run lint
 
@@ -109,7 +112,17 @@ jobs:
           --health-retries 5
 
       minio:
-        image: minio/minio:latest
+        # Pinned to immutable digest per security review. The tag below is a
+        # placeholder — it is NOT verified against the actual MinIO release
+        # that produced this digest (no network/registry access was available
+        # to confirm it; this could not be resolved to a real
+        # RELEASE.YYYY-MM-DDTHH-MM-SSZ tag). Re-verify the tag against the
+        # digest (e.g. `skopeo inspect docker://quay.io/minio/minio@sha256:...`)
+        # before merge, and update this comment once confirmed. There is no
+        # override hook (e.g. a repo vars.MINIO_IMAGE) — none was found in use
+        # or documented elsewhere in the repo, so the image always resolves to
+        # this pinned digest.
+        image: quay.io/minio/minio:UNVERIFIED-PINNED@sha256:a1a8bd4ac40ad7881a245bab97323e18f971e4d4cba2c2007ec1bedd21cbaba2
         env:
           MINIO_ROOT_USER: minioadmin
           MINIO_ROOT_PASSWORD: minioadmin

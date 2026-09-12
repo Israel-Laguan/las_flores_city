@@ -45,31 +45,10 @@ export async function validateLorePaths(filePath: string, data: any, warnings: s
     }
   }
 
-  const assetPaths = data?.asset_paths;
-  if (assetPaths && typeof assetPaths === 'object') {
-    for (const [assetType, assetPath] of Object.entries(assetPaths)) {
-      if (typeof assetPath !== 'string') continue;
-
-      // New per-folder layout: asset is in assets/ subfolder relative to YAML
-      const newPath = path.join(yamlDir, 'assets', assetPath);
-      try {
-        await fs.access(newPath);
-        continue;
-      } catch {
-        // Not found in new location
-      }
-
-      // Old layout fallback: content/assets/<type>/<slug>/<file>
-      const projectRoot = process.env.PROJECT_ROOT || path.resolve(process.cwd(), '..');
-      const oldPath = path.resolve(projectRoot, 'content', 'assets', assetPath);
-      try {
-        await fs.access(oldPath);
-        continue;
-      } catch {
-        // Not found anywhere
-      }
-
-      warnings.push(`Asset file not found: ${assetPath} (${assetType})`);
-    }
-  }
+  // Asset file existence is intentionally NOT checked here.
+  // - content/**/assets/*.png are .gitignored (staging drafts only)
+  // - Canonical assets live in MinIO; YAMLs record them via portrait_urls / background_urls
+  // - asset_paths.* is a local "which draft did I select" pointer and may reference
+  //   files that are not present on disk in CI or on other machines.
+  // Missing local assets must not produce warnings or fail migrations.
 }

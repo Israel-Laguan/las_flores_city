@@ -41,7 +41,6 @@ ethnicities:
       - isabella_marquez
       - isabella_rodriguez
       - isabella_vargas
-      - isabella_vasquez
       - isadora_morales
       - javier_ramirez
       - javier_salazar
@@ -133,5 +132,6 @@ ethnicities:
       - julian_schneider
       - levi_de_jong
       - liam_van_der_meer
-      - evelyn_ruthenberg
-      - daniel_carter
+       - evelyn_ruthenberg
+       - daniel_carter
+       - isabella_vasquez

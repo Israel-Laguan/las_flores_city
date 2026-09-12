@@ -11,10 +11,10 @@ aspect_ratio: 3:4
 # Prompt: Liu Fang
 
 ## Prompt (Draft)
-Slender Chinese woman in her late 30s, lithe build, dark brown eyes that are intelligent and wary, calm and determined expression, steady, composed bearing, black shoulder-length hair, professional attire, a blouse and blazer, small sport earbud clipped to earlobe. Weathered urban Latin American building under harsh tropical sun backdrop. premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a slender Chinese woman in her late 30s. Lithe build, dark brown eyes that are intelligent and wary, calm and determined expression, steady, composed bearing. Black shoulder-length hair, professional attire, a blouse and blazer, small sport earbud clipped to earlobe. Weathered urban Latin American building under harsh tropical sun backdrop.
 
 ## Prompt
-Slender Chinese woman in her late 30s, lithe build, dark brown eyes that are intelligent and wary, calm and determined expression, steady, composed bearing, black shoulder-length hair, professional attire, a blouse and blazer, small sport earbud clipped to earlobe. Weathered urban Latin American building under harsh tropical sun backdrop. premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a slender Chinese woman in her late 30s. Lithe build, dark brown eyes that are intelligent and wary. Calm and determined expression, steady, composed bearing. Black shoulder-length hair, professional attire, a blouse and blazer, small sport earbud clipped to earlobe. The backdrop is a weathered urban Latin American building under harsh tropical sun. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds

@@ -11,7 +11,7 @@ aspect_ratio: 2:3
 # Prompt: Valentina Cruz
 
 ## Prompt — Base
-A lean student with neon-green streaks in her dark hair and cybernetic ocular implants that flicker with data streams, moving through university halls like a ghost in the system—spreading rumors and sabotaging competitors with methodical precision. Her rivalry knows no bounds, whether academic sabotage or corporate espionage, making her a dangerous peer to those who cross her path in the neon-soaked corridors of power. Cyberpunk aesthetic, neon-lit urban environment.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a lean student with neon-green streaks in her dark hair and cybernetic ocular implants that flicker with data streams, moving through university halls like a ghost in the system—spreading rumors and sabotaging competitors with methodical precision. Her rivalry knows no bounds, whether academic sabotage or corporate espionage, making her a dangerous peer to those who cross her path in the neon-soaked corridors of power. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 --no androids, no clean backgrounds, no modern clothing

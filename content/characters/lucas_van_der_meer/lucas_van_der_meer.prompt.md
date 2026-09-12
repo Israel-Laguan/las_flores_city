@@ -11,10 +11,10 @@ aspect_ratio: 3:4
 # Prompt: Lucas van der Meer
 
 ## Prompt (Draft)
-Medium-height Dutch man in his early 30s, thin build, pale blue eyes that are bloodshot, unfocused, and haunted, haunted expression, distant, haunted eyes, sandy blond hair, practical work clothing, small sport earbud clipped to earlobe. Weathered urban Latin American building under harsh tropical sun backdrop. premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height Dutch man in his early 30s. Thin build, pale blue eyes that are bloodshot, unfocused, and haunted, haunted expression, distant, haunted eyes. Sandy blond hair, practical work clothing, small sport earbud clipped to earlobe. Weathered urban Latin American building under harsh tropical sun backdrop.
 
 ## Prompt
-Medium-height Dutch man in his early 30s, thin build, pale blue eyes that are bloodshot, unfocused, and haunted, haunted expression, distant, haunted eyes, sandy blond hair, practical work clothing, small sport earbud clipped to earlobe. Weathered urban Latin American building under harsh tropical sun backdrop. premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height Dutch man in his early 30s. Thin build, pale blue eyes that are bloodshot, unfocused, and haunted. Haunted expression, distant, haunted eyes. Sandy blond hair, practical work clothing, small sport earbud clipped to earlobe. The backdrop is a weathered urban Latin American building under harsh tropical sun. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing

@@ -44,12 +44,26 @@ async function acquireRowLock(): Promise<() => void> {
 // Controls whether a start chunk row exists (chunk path vs. tree fallback path).
 let hasStartChunk = true;
 
+// Captured SQLs executed inside withOLTPTransaction (batches for per-tx assertions).
+// Per-invocation batches: txQueryBatches[0] is queries from the FIRST withOLTPTransaction(callback) call
+// (the rev-read + chunk-read snapshot in handleStartDialogue). The pin + node/chunk writes happen
+// atomically in the later effects tx (under player lock).
+let txQueryBatches: string[][] = [];
+
 const withOLTPTransactionMock = jest.fn(async (callback: any) => {
+  const txQueries: string[] = [];
   let release: (() => void) | null = null;
   const client = {
-    async query(sql: string) {
+    async query(sql: string, params?: any[]) {
+      txQueries.push(sql);
       if (/FOR UPDATE/i.test(sql) && !release) {
         release = await acquireRowLock();
+      }
+      if (sql.includes('SELECT revision FROM dialogue_trees')) {
+        return { rows: [{ revision: 1 }] };
+      }
+      if (sql.includes('FROM dialogue_chunks')) {
+        return { rows: hasStartChunk ? [{ id: 'chunk-1', chunk_key: 'root' }] : [] };
       }
       return { rows: [] };
     },
@@ -59,6 +73,7 @@ const withOLTPTransactionMock = jest.fn(async (callback: any) => {
   } finally {
     // COMMIT / ROLLBACK releases the row lock.
     release?.();
+    txQueryBatches.push(txQueries);
   }
 });
 
@@ -89,15 +104,19 @@ const queryOLTPMock = jest.fn(async (sql: string) => {
       ],
     };
   }
-  if (sql.includes('FROM dialogue_chunks')) {
-    return { rows: hasStartChunk ? [{ id: 'chunk-1', chunk_key: 'root' }] : [] };
-  }
   return { rows: [] };
 });
+
+  // queryContent is used by resolver internals (CDN metadata + overlays)
+  // but /dialogue/start reads rev + start chunk via client.query inside withOLTPTransaction (OLTP primary)
+  // for read-after-write visibility after compile. Pin/node/chunk written together in effects tx.
+  const queryContentMock = jest.fn(async (_sql: string) => ({ rows: [] }));
+
 
 jest.mock('@las-flores/infra', () => ({
   queryOLTP: queryOLTPMock,
   queryOLAP: jest.fn(),
+  queryContent: queryContentMock,
   withOLTPTransaction: withOLTPTransactionMock,
   // M48: resolveDialogueTree preloads the speaker's relationship row via
   // the pool-based getter; empty result = missing row (fail-closed gates).
@@ -176,7 +195,7 @@ jest.mock('../../src/database/repositories/PlayerStateRepository.js', () => ({
   },
 }));
 
-import { handleStartDialogue } from '../../src/routes/dialogue-start.js';
+let handleStartDialogue: (req: any, res: any) => Promise<any>;
 
 function makeReq() {
   return { userId: USER_ID, body: { characterId: CHARACTER_ID, sceneId: SCENE_ID } } as any;
@@ -202,11 +221,43 @@ describe.each([
   ['chunk path', true],
   ['tree fallback path', false],
 ])('/dialogue/start root effects — %s', (_label, chunkExists) => {
-  beforeEach(() => {
+  beforeEach(async () => {
     db.activeDialogueId = null;
     db.stats = {};
     rowLockTail = Promise.resolve();
     hasStartChunk = chunkExists;
+    queryOLTPMock.mockClear();
+    queryContentMock.mockClear();
+    withOLTPTransactionMock.mockClear();
+    txQueryBatches = [];
+    jest.resetModules();
+    const mod = await import('../../src/routes/dialogue-start.js');
+    handleStartDialogue = mod.handleStartDialogue;
+  });
+
+  it('reads the revision and start chunk inside withOLTPTransaction (snapshot for start)', async () => {
+    await handleStartDialogue(makeReq(), makeRes());
+
+    // Rev + start-chunk read inside withOLTPTransaction for read-after-write
+    // visibility vs concurrent compile. Pin+node+chunk are written atomically
+    // later (under player lock) in the effects tx so a pin is never observable
+    // without its matching state.
+    expect(withOLTPTransactionMock).toHaveBeenCalled();
+    // The *first* withOLTP call (in handleStartDialogue) performs the rev/chunk
+    // SELECTs for consistent snapshot + path decision. No pin write here.
+    expect(txQueryBatches.length).toBeGreaterThanOrEqual(1);
+    const firstTx = txQueryBatches[0];
+    expect(firstTx.some((q) => q.includes('SELECT revision FROM dialogue_trees'))).toBe(true);
+    expect(firstTx.some((q) => q.includes('FROM dialogue_chunks'))).toBe(true);
+    // No pin write in the read snapshot tx.
+    expect(firstTx.some((q) => /pinned_tree_revision/i.test(q))).toBe(false);
+    // Node/chunk writes (incl. pin) live in later tx; first must not contain them.
+    expect(firstTx.some((q) => /INSERT INTO player_dialogue_states/i.test(q))).toBe(false);
+    // No direct queryContent for these.
+    expect(queryContentMock).not.toHaveBeenCalledWith(
+      expect.stringContaining('SELECT revision FROM dialogue_trees'),
+      expect.anything()
+    );
   });
 
   it('applies root stat effects on a fresh run', async () => {

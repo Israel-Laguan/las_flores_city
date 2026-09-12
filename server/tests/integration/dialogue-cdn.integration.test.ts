@@ -89,8 +89,16 @@ async function seedTree(nodes: Record<string, DialogueNode>): Promise<void> {
 }
 
 async function loadChunkRow() {
+  // The compiler retains prior-revision chunk rows on recompile (compiler.ts
+  // "prior revisions are retained"), so scope to the tree's CURRENT revision —
+  // an unscoped LIMIT 1 can return a stale prior-rev row whose resolver cache
+  // entry was already populated with the previous content version.
   const result = await queryOLTP<{ id: string; chunk_key: string; content_url: string | null }>(
-    `SELECT id, chunk_key, content_url FROM dialogue_chunks WHERE tree_id = $1 AND chunk_key = 'start' LIMIT 1`,
+    `SELECT c.id, c.chunk_key, c.content_url
+       FROM dialogue_chunks c
+       JOIN dialogue_trees t ON t.id = c.tree_id
+      WHERE c.tree_id = $1 AND c.chunk_key = 'start' AND c.revision = t.revision
+      LIMIT 1`,
     [TEST_TREE_ID]
   );
   return result.rows[0];
@@ -188,10 +196,23 @@ describe('M23 dialogue CDN externalization', () => {
     expect(newTree.rows[0].content_url).not.toBe(treeContentUrl);
     treeContentUrl = newTree.rows[0].content_url;
 
-    // Resolver now serves the new content (cache key changed → no stale).
+    // Resolver now serves the new content. Resolve *before* invalidate so that
+    // any rev-1 cache entry is still present; success with v2 data proves rev 2
+    // uses a distinct cache key (would have hit stale v1 data if key collided).
     const resolved = await DialogueResolver.resolveChunkForUser(TEST_USER_ID, chunkId, chunkKey);
     expect(resolved.mergedNodes.start.text).toBe('v2');
     expect(resolved.mergedNodes.next.text).toBe('end-v2');
+
+    // Simulate post-migration invalidation (migrate.ts does `invalidateCaches`
+    // which clears `dialogue:*`). The versioned key is defense-in-depth, but
+    // the explicit clear here ensures the publish-first read path is exercised
+    // regardless of key computation.
+    await invalidatePattern(`dialogue:resolved:chunk:${TEST_TREE_ID}:*`);
+
+    // Follow-up resolve (after the invalidate) should also see v2 via fresh populate
+    // under its distinct rev key.
+    const resolved2 = await DialogueResolver.resolveChunkForUser(TEST_USER_ID, chunkId, chunkKey);
+    expect(resolved2.mergedNodes.start.text).toBe('v2');
   });
 
   it('throws when content_url is NULL (no in-DB fallback after M32 drop)', async () => {

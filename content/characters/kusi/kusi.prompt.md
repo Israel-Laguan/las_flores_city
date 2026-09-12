@@ -11,10 +11,10 @@ aspect_ratio: 3:4
 # Prompt: Kusi
 
 ## Prompt (Draft)
-Short indigenous man in his early 50s, stocky, sturdy build, deep brown eyes that are gentle and humble, and a broad nose with a defined bridge, gentle expression, a subtle, knowing half-smile, thick black hair, a simple cotton shirt and worn trousers, small sport earbud clipped to earlobe. Weathered urban Latin American building under harsh tropical sun backdrop. premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a short indigenous man in his early 50s. Stocky, sturdy build, deep brown eyes that are gentle and humble, and a broad nose with a defined bridge. Gentle expression, a subtle, knowing half-smile. Thick black hair, a simple cotton shirt and worn trousers, small sport earbud clipped to earlobe. Weathered urban Latin American building under harsh tropical sun backdrop.
 
 ## Prompt
-Short indigenous man in his early 50s, stocky, sturdy build, deep brown eyes that are gentle and humble, and a broad nose with a defined bridge, gentle expression, a subtle, knowing half-smile, thick black hair, a simple cotton shirt and worn trousers, small sport earbud clipped to earlobe. Weathered urban Latin American building under harsh tropical sun backdrop. premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a short indigenous man in his early 50s. Stocky, sturdy build, deep brown eyes that are gentle and humble, and a broad nose with a defined bridge. Gentle expression, a subtle, knowing half-smile. Thick black hair, a simple cotton shirt and worn trousers, small sport earbud clipped to earlobe. The backdrop is a weathered urban Latin American building under harsh tropical sun. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing

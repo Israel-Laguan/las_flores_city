@@ -26,8 +26,15 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
     }
 
     const dialogue = await resolveDialogueTree(characterId, sceneId, userId);
+    if (!dialogue) {
+      return res.status(404).json({
+        success: false,
+        error: 'Dialogue tree not found',
+        timestamp: new Date().toISOString(),
+      });
+    }
 
-    // M15: premium gate check
+    // M15: premium gate check (before any state mutation)
     if (dialogue?.metadata?.requires_premium) {
       const entitlement = await queryOLTP(
         'SELECT is_premium_unlocked FROM user_entitlements WHERE user_id = $1',
@@ -42,27 +49,41 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
       }
     }
 
-    if (!dialogue) {
-      return res.status(404).json({
-        success: false,
-        error: 'No dialogue available for this character at this location',
-        timestamp: new Date().toISOString(),
-      });
+    // Read rev + start chunk inside one tx (for read-after-write visibility
+    // after content compile). Do NOT write pinned here. Resolve the chunk
+    // (or fall back), then under the player lock in the state tx revalidate the
+    // revision and write pinned_tree_revision atomically together with
+    // current_node_id + current_chunk_id (and ps cursor). This ensures pin is
+    // never committed without matching node/chunk state.
+    let startChunkId: string | undefined;
+    let startChunkKey: string | undefined;
+    let treeRevision = 0;
+    await withOLTPTransaction(async (client) => {
+      const treeRevResult = await client.query<{ revision: number }>(
+        'SELECT revision FROM dialogue_trees WHERE id = $1',
+        [dialogue.id]
+      );
+      treeRevision = treeRevResult.rows[0]?.revision ?? 0;
+
+      const startChunkResult = await client.query(
+        `SELECT id, chunk_key FROM dialogue_chunks
+         WHERE tree_id = $1 AND chunk_key = $2 AND revision = $3
+         LIMIT 1`,
+        [dialogue.id, dialogue.start_node_id, treeRevision]
+      );
+
+      if (startChunkResult.rows.length > 0) {
+        startChunkId = startChunkResult.rows[0].id;
+        startChunkKey = startChunkResult.rows[0].chunk_key;
+      }
+      // No pin write here — see above.
+    });
+
+    if (!startChunkId || !startChunkKey) {
+      return handleStartFallback(userId, dialogue, treeRevision, res);
     }
 
-    const startChunkResult = await queryOLTP(
-      `SELECT id, chunk_key FROM dialogue_chunks
-       WHERE tree_id = $1 AND chunk_key = $2
-       LIMIT 1`,
-      [dialogue.id, dialogue.start_node_id]
-    );
-
-    if (startChunkResult.rows.length === 0) {
-      return handleStartFallback(userId, dialogue, res);
-    }
-
-    const { id: startChunkId, chunk_key: startChunkKey } = startChunkResult.rows[0];
-    return handleStartChunk(userId, dialogue, startChunkId, startChunkKey, res);
+    return handleStartChunk(userId, dialogue, startChunkId, startChunkKey, treeRevision, res);
   } catch (error: any) {
     const mapped = mapDialogueWriteError(error);
     if (mapped) {
@@ -81,7 +102,7 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
   }
 }
 
-async function handleStartFallback(userId: string, dialogue: any, res: any) {
+async function handleStartFallback(userId: string, dialogue: any, pinnedRevision: number, res: any) {
   console.warn(`[dialogue/start] No chunk found for tree ${dialogue.id}, falling back to tree resolver`);
 
   const resolved = await DialogueResolver.resolveTreeForUser(userId, dialogue.id);
@@ -113,7 +134,16 @@ async function handleStartFallback(userId: string, dialogue: any, res: any) {
     const existingCursor = await PlayerStateRepository.lockDialogueCursor(client, userId);
     const isRestart = existingCursor?.active_dialogue_id === dialogue.id;
 
-    await initializeDialogueState(client, userId, dialogue.id, rootNodeId);
+    // Revalidate the captured revision under the player lock. Write pin + node
+    // (chunk cleared by initialize for tree fallback) atomically so /active never
+    // sees a pinned rev without matching state, or a stale current_chunk_id.
+    const treeRevResult = await client.query<{ revision: number }>(
+      'SELECT revision FROM dialogue_trees WHERE id = $1',
+      [dialogue.id]
+    );
+    const txRevision = treeRevResult.rows[0]?.revision ?? pinnedRevision;
+
+    await initializeDialogueState(client, userId, dialogue.id, rootNodeId, txRevision);
     if (isRestart) {
       // Mid-dialogue restart: root stat_set already applied on the first
       // start and persists (initializeDialogueState resets the cursor +
@@ -154,7 +184,7 @@ async function handleStartFallback(userId: string, dialogue: any, res: any) {
   );
 }
 
-async function handleStartChunk(userId: string, dialogue: any, startChunkId: string, startChunkKey: string, res: any) {
+async function handleStartChunk(userId: string, dialogue: any, startChunkId: string, startChunkKey: string, pinnedRevision: number, res: any) {
   let resolvedChunk;
   try {
     resolvedChunk = await DialogueResolver.resolveChunkForUser(userId, startChunkId, startChunkKey);
@@ -189,8 +219,15 @@ async function handleStartChunk(userId: string, dialogue: any, startChunkId: str
     const existingCursor = await PlayerStateRepository.lockDialogueCursor(client, userId);
     const isRestart = existingCursor?.active_dialogue_id === dialogue.id;
 
+    // Revalidate revision under lock; write pin+node+chunk atomically.
+    const treeRevResult = await client.query<{ revision: number }>(
+      'SELECT revision FROM dialogue_trees WHERE id = $1',
+      [dialogue.id]
+    );
+    const txRevision = treeRevResult.rows[0]?.revision ?? pinnedRevision;
+
     await PlayerStateRepository.setDialogueCursor(client, userId, rootNodeId, dialogue.id);
-    await PlayerStateRepository.initDialogueChunkState(client, userId, dialogue.id, rootNodeId, startChunkId);
+    await PlayerStateRepository.initDialogueChunkState(client, userId, dialogue.id, rootNodeId, startChunkId, txRevision);
     if (isRestart) {
       // Mid-dialogue restart: skip re-applying root effects.
       return;

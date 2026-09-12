@@ -357,70 +357,6 @@ export async function regenerateLore(planId: string, itemId: string) {
   );
 }
 
-export interface ListPlansFilters {
-  limit?: number;
-  offset?: number;
-  status?: string;
-  createdBy?: string;
-  since?: string;
-  q?: string;
-  sortBy?: 'created_at' | 'updated_at';
-  order?: 'asc' | 'desc';
-}
-
-export async function listPlans(
-  filtersOrLimit?: ListPlansFilters | number,
-  offsetParam?: number,
-) {
-  const params = new URLSearchParams();
-  let filters: ListPlansFilters;
-  if (typeof filtersOrLimit === 'number') {
-    filters = { limit: filtersOrLimit, offset: offsetParam };
-  } else if (filtersOrLimit && typeof filtersOrLimit === 'object') {
-    filters = filtersOrLimit;
-  } else {
-    filters = { offset: offsetParam };
-  }
-  if (filters.limit != null) params.set('limit', String(filters.limit));
-  if (filters.offset != null) params.set('offset', String(filters.offset));
-  if (filters.status) params.set('status', filters.status);
-  if (filters.createdBy) params.set('createdBy', filters.createdBy);
-  if (filters.since) params.set('since', filters.since);
-  if (filters.q) params.set('q', filters.q);
-  if (filters.sortBy) params.set('sortBy', filters.sortBy);
-  if (filters.order) params.set('order', filters.order);
-  const qs = params.toString();
-  return adminFetch<{
-    success: boolean;
-    data?: {
-      plans: Array<{
-        id: string;
-        description: string;
-        status: string;
-        created_by?: string | null;
-        created_at: string;
-        updated_at: string;
-        item_count: number;
-      }>;
-      total: number;
-      filters?: Record<string, string>;
-    };
-    error?: string;
-  }>(`/admin/story-builder/plans${qs ? `?${qs}` : ''}`);
-}
-
-export async function deletePlan(planId: string) {
-  return adminFetch<{ success: boolean; error?: string }>(
-    `/admin/story-builder/plans/${planId}`,
-    { method: 'DELETE' },
-  );
-}
-
-export async function generateDrafts(_planId: string, _count?: number) {
-  // M32 retired the drafts router; asset drafting moved elsewhere.
-  return { success: false, error: 'Draft generation was retired in M32 — asset authoring moved to graph-intake/CDN.' };
-}
-
 export interface DraftAsset {
   filename: string;
   sizeBytes: number;
@@ -449,6 +385,24 @@ export async function listDrafts(_planId: string) {
 export async function chooseDraft(_planId: string, _itemId: string, _promptType: string, _filename: string) {
   // M32 retired the drafts router.
   return { success: false, error: 'Draft selection was retired in M32.' };
+}
+
+export {
+  listPlans,
+  type ListPlansFilters,
+  type ListPlansResponse,
+} from './listPlansApi';
+
+export async function deletePlan(planId: string) {
+  return adminFetch<{ success: boolean; error?: string }>(
+    `/admin/story-builder/plans/${planId}`,
+    { method: 'DELETE' },
+  );
+}
+
+export async function generateDrafts(_planId: string, _count?: number) {
+  // M32 retired the drafts router; asset drafting moved elsewhere.
+  return { success: false, error: 'Draft generation was retired in M32 — asset authoring moved to graph-intake/CDN.' };
 }
 
 export async function getPlanVersions(planId: string) {

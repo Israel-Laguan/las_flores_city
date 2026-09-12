@@ -11,10 +11,10 @@ aspect_ratio: 3:4
 # Prompt: Sofia Ramirez
 
 ## Prompt (Draft)
-Medium-height 52-year-old Latina woman, solid build, dark expressive eyes, a straight nose, and a defined jaw, calm and determined expression, steady, composed bearing, dark hair, practical clothing, small sport earbud clipped to earlobe. Weathered urban Latin American building under harsh tropical sun backdrop. premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height 52-year-old Latina woman. Solid build, dark expressive eyes, a straight nose, and a defined jaw, calm and determined expression, steady, composed bearing. Dark hair, practical clothing, small sport earbud clipped to earlobe. Weathered urban Latin American building under harsh tropical sun backdrop.
 
 ## Prompt
-Medium-height 52-year-old Latina woman, solid build, dark expressive eyes, a straight nose, and a defined jaw, calm and determined expression, steady, composed bearing, dark hair, practical clothing, small sport earbud clipped to earlobe. Weathered urban Latin American building under harsh tropical sun backdrop. premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height 52-year-old Latina woman. Solid build, dark expressive eyes, a straight nose, and a defined jaw. Calm and determined expression, steady, composed bearing. Dark hair, practical clothing, small sport earbud clipped to earlobe. The backdrop is a weathered urban Latin American building under harsh tropical sun. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing

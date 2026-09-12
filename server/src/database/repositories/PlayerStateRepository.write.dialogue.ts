@@ -45,34 +45,39 @@ export async function setDialogueChunkCursor(
 }
 
 /**
- * Upsert the initial dialogue chunk state when a player starts a
- * dialogue. Resets choices_made and started_at so a fresh start
- * is reflected in state.
- *
- * Requirement 8.2: records initial chunk_id in player_dialogue_states.
+  * Upsert the initial dialogue chunk state when a player starts a
+  * dialogue. Resets choices_made and started_at so a fresh start
+  * is reflected in state.
+  *
+  * The pinned_tree_revision is supplied (and revalidated) inside the
+  * same locked tx as node+chunk writes + ps cursor so they are atomic.
+  *
+  * Requirement 8.2: records initial chunk_id in player_dialogue_states.
  *
  * @param client  - Active pg.PoolClient inside withOLTPTransaction
  * @param userId  - Player's user id
  * @param treeId  - Dialogue tree id
  * @param nodeId  - Start node id
  * @param chunkId - Start chunk id (UUID)
+ * @param pinnedTreeRevision - pinned rev captured at start (defaults to 0 for callers that predate pinning)
  */
 export async function initDialogueChunkState(
   client: pg.PoolClient,
   userId: string,
   treeId: string,
   nodeId: string,
-  chunkId: string
+  chunkId: string,
+  pinnedTreeRevision: number = 0
 ): Promise<void> {
   await client.query(
     `INSERT INTO player_dialogue_states
-         (user_id, dialogue_tree_id, current_node_id, current_chunk_id, choices_made)
-       VALUES ($1, $2, $3, $4, '[]')
+         (user_id, dialogue_tree_id, current_node_id, current_chunk_id, choices_made, pinned_tree_revision)
+       VALUES ($1, $2, $3, $4, '[]', $5)
        ON CONFLICT (user_id, dialogue_tree_id) DO UPDATE SET
          current_node_id  = EXCLUDED.current_node_id,
          current_chunk_id = EXCLUDED.current_chunk_id,
          choices_made     = '[]',
          started_at       = NOW()`,
-    [userId, treeId, nodeId, chunkId]
+    [userId, treeId, nodeId, chunkId, pinnedTreeRevision]
   );
 }

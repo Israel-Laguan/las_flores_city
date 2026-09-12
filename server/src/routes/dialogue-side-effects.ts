@@ -22,7 +22,7 @@ export async function handleBreakthroughSideEffects(userId: string, breakthrough
 }
 
 export async function handleJoinMystery(choices: any[], choiceId: string, userId: string) {
-  const choice = choices.find((c: any) => c.id === choiceId);
+  const choice = choices.find((c: any) => c.id === choiceId || c.next_node_id === choiceId);
   if (!choice?.join_mystery) return;
   const joinAction = choice.join_mystery;
   const mysteryId = Array.isArray(joinAction) ? joinAction[0] : joinAction;

@@ -6,7 +6,7 @@
 
 **Type:** Glossy Lifestyle Magazine
 **Focus:** Elite scandals, gossip, celebrity culture
-**Owner:** Isabella Vasquez (former model, media mogul)
+**Owner:** Isabella Vasquez (media mogul, society power broker)
 **Star Journalist:** Juan Pérez
 **Approach:** Sensationalist
 
@@ -17,6 +17,7 @@ The Las Flores Chronicle is a glossy lifestyle magazine catering to the city's e
 ## Key Figures
 
 ### Juan Pérez — Star Journalist
+- Isabella's star reporter at the magazine; ambitious exposer of elite secrets and scandals
 - Charismatic and ambitious reporter
 - Known for exposing secrets of Las Flores' high society
 - Sharp wit and uncanny knack for uncovering scandal
@@ -24,7 +25,7 @@ The Las Flores Chronicle is a glossy lifestyle magazine catering to the city's e
 - Devoted following among the city's socialites
 
 ### Isabella Vasquez — Owner
-- Former model turned media mogul
+- Media mogul and society power broker
 - Inherited the publication from her wealthy father
 - Connections within high society secure exclusive content
 - Made The Chronicle one of Las Flores' most influential periodicals
@@ -56,7 +57,7 @@ The Las Flores Chronicle is a glossy lifestyle magazine catering to the city's e
 | Character | Role |
 |---|---|
 | **Juan Pérez** | Star journalist — dirt digger |
-| **Isabella Vasquez** | Owner — former model, society connections |
+| **Isabella Vasquez** | Owner — society power broker, information leverage |
 
 ## Notable Articles & Coverage
 

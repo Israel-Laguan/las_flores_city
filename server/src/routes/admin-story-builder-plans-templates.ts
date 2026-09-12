@@ -1,4 +1,3 @@
-/* eslint-disable max-lines-per-function */
 import express from 'express';
 import type { AuthRequest } from '../middleware/auth.js';
 import { queryOLTP } from '@las-flores/infra';

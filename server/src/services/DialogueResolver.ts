@@ -59,6 +59,12 @@ interface BaseDialogueChunkRow {
   // `loadBaseChunk` hydrates `nodes`/`leaves` from the CDN exclusively; an
   // unavailable CDN payload is an error (the in-DB JSONB columns are gone).
   content_url?: string | null;
+  // 094: the compile-time revision this specific chunk row belongs to.
+  // Since (tree_id, chunk_key, revision) is unique and `id` is the PK, a
+  // given chunk row's revision is fixed forever — it's the authoritative
+  // revision this chunk was resolved/reached under, independent of
+  // whatever the tree's *current* revision has since become.
+  revision: number;
 }
 
 interface OverlayRow {
@@ -445,6 +451,11 @@ export class DialogueResolver {
    *
    * Requirements: 7.1, 7.2, 7.3, 7.4
    */
+  /**
+   * Resolve a dialogue chunk (base + active mystery overlays) for a user.
+   * Revision is carried on the chunk row; callers that have a pinned revision
+   * must look up the chunk row using that revision before calling here.
+   */
   public static async resolveChunkForUser(
     userId: string,
     chunkId: string,
@@ -478,7 +489,10 @@ export class DialogueResolver {
     // the resolved tree, so cache is partitioned correctly across
     // the same (tree, chunk) pair for different users. `storyBeat`
     // is included so a player whose beat advances re-resolves.
-    const cacheKey = `dialogue:resolved:chunk:${chunkRow.tree_id}:${chunkKey}:nsfw:${isNsfwUnlocked}:align:${alignment}:beat:${storyBeat}:mysteries:${cacheSuffix}`;
+    // Include revision (and implicitly the row via rev) so that after an identical
+    // recompile a revision-scoped chunk row does not hit a cache entry for another
+    // revision of the same logical chunkKey.
+    const cacheKey = `dialogue:resolved:chunk:${chunkRow.tree_id}:${chunkKey}:rev:${chunkRow.revision}:nsfw:${isNsfwUnlocked}:align:${alignment}:beat:${storyBeat}:mysteries:${cacheSuffix}`;
     // M23: include the chunk's content version (from its content_url pointer)
     // so re-published chunks under a new key force fresh resolution.
     const versionedCacheKey = `${cacheKey}:content:${contentVersionFromUrl(chunkRow.content_url, JSON.stringify({ nodes: chunkRow.nodes, leaves: chunkRow.leaves }))}`;
@@ -528,18 +542,24 @@ export class DialogueResolver {
    * Resolve the next chunk when crossing a chunk boundary.
    * Looks up the chunk by (tree_id, targetChunkKey), then merges
    * overlays using the same pattern as resolveChunkForUser.
+   * If treeId and revision are provided, the chunk lookup is scoped
+   * to the player's active tree revision.
    *
    * Requirements: 4.1, 4.2
    */
+  /**
+   * Cross a chunk boundary: load the target chunk (revision-scoped when
+   * treeId+revision supplied) then delegate to resolveChunkForUser for merge.
+   */
   public static async resolveNextChunk(
     userId: string,
-    targetChunkKey: string
+    targetChunkKey: string,
+    treeId?: string,
+    revision?: number
   ): Promise<ResolvedChunk> {
-    // Load the target chunk by chunk_key (across all trees — first match wins,
-    // which is safe because chunk_key values encode the entry node id and are
-    // unique within a tree; callers typically know the tree but we look up by
-    // key for flexibility in boundary transitions).
-    const chunkRow = await DialogueResolver.loadBaseChunkByKey(targetChunkKey);
+    const chunkRow = await DialogueResolver.loadBaseChunkByKey(
+      targetChunkKey, treeId, revision
+    );
 
     return DialogueResolver.resolveChunkForUser(userId, chunkRow.id, chunkRow.chunk_key);
   }
@@ -557,8 +577,8 @@ export class DialogueResolver {
     param: string
   ): Promise<BaseDialogueChunkRow> {
     const where = column === 'id' ? 'id' : 'chunk_key';
-    const result = await queryContent<BaseDialogueChunkRow>(
-      `SELECT id, tree_id, chunk_key, content_url
+    const result = await queryOLTP<BaseDialogueChunkRow>(
+      `SELECT id, tree_id, chunk_key, content_url, revision
           FROM dialogue_chunks
          WHERE ${where} = $1
          LIMIT 1`,
@@ -608,8 +628,52 @@ export class DialogueResolver {
   /**
    * Load a base chunk from dialogue_chunks by its chunk_key.
    * Used by resolveNextChunk when crossing boundaries.
+   * Scoped lookup only when BOTH treeId and revision are supplied;
+   * otherwise unscoped (used when no active dialogue pins a revision).
    */
-  private static async loadBaseChunkByKey(chunkKey: string): Promise<BaseDialogueChunkRow> {
-    return DialogueResolver.loadBaseChunkRow('chunk_key', chunkKey);
+  private static async loadBaseChunkByKey(
+    chunkKey: string,
+    treeId?: string,
+    revision?: number
+  ): Promise<BaseDialogueChunkRow> {
+    // Scope only when BOTH treeId and revision are supplied together.
+    // Reject partial scope (treeId w/o rev, or rev w/o treeId) to avoid
+    // accidentally selecting a chunk_key from wrong tree/revision.
+    // Revision 0 with no treeId is the explicit unscoped sentinel (no active dialogue).
+    if ((treeId != null && revision == null) || (treeId == null && revision != null && revision !== 0)) {
+      throw new Error(`Partial scope for loadBaseChunkByKey (treeId=${treeId}, revision=${revision}) is not allowed`);
+    }
+    const hasScope = treeId != null && revision != null;
+    const where = hasScope
+      ? `chunk_key = $1 AND tree_id = $2 AND revision = $3`
+      : `chunk_key = $1`;
+    const params: (string | number)[] = hasScope
+      ? [chunkKey, treeId, revision]
+      : [chunkKey];
+    const result = await queryOLTP<BaseDialogueChunkRow>(
+      `SELECT id, tree_id, chunk_key, content_url, revision
+          FROM dialogue_chunks
+         WHERE ${where}
+         ${!hasScope ? 'ORDER BY revision DESC ' : ''}LIMIT 1`,
+      params
+    );
+
+    if (result.rows.length === 0) {
+      throw new Error(`Dialogue chunk not found for chunk_key = ${chunkKey}`);
+    }
+
+    const row = result.rows[0];
+    const cdn = await fetchChunkFromContentUrl(row.content_url, {
+      nodes: {},
+      leaves: {},
+    });
+    if (!cdn) {
+      throw new Error(`Dialogue chunk ${chunkKey} failed to load nodes/leaves from content_url ${row.content_url}`);
+    }
+    return {
+      ...row,
+      nodes: cdn.nodes,
+      leaves: cdn.leaves,
+    };
   }
 }

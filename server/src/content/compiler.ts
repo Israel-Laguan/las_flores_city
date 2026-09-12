@@ -178,13 +178,21 @@ export function compileTree(
 
 /**
  * Compile a single dialogue tree and write chunks to the database.
- * Uses DELETE+INSERT per tree for stale-free idempotency.
+ * Append-only revision history: each compile bumps the tree's revision
+ * and inserts a fresh chunk set under that revision. Prior revisions are
+ * retained, not deleted, so players pinned to an older revision keep
+ * working — callers should not expect old chunks to be cleaned up.
  *
  * Publish-first ordering (M23): the tree nodes blob + each compiled
  * chunk blob are externalized to MinIO/CDN BEFORE the DB rows are
  * written, so the DB `content_url` pointer always references an object
  * that already exists. Cache invalidation for these pointers runs after
  * the full migration (see migrate.ts `invalidateCaches`).
+ */
+/**
+ * Compile a dialogue tree into chunks and persist append-only under a new revision.
+ * Bumps dialogue_trees.revision and writes dialogue_chunks rows carrying
+ * content_url pointers (M23). Prior revisions are retained for pinned players.
  */
 export async function compileDialogueTree(treeId: string): Promise<CompiledChunk[]> {
   const result = await queryOLTP<{
@@ -242,16 +250,24 @@ export async function compileDialogueTree(treeId: string): Promise<CompiledChunk
     }
   }
 
-  // DB write: delete stale + insert fresh, in one transaction.
+  // DB write: insert fresh chunks for a new revision (prior revisions are
+  // retained so players pinned to an older revision keep working).
   // `content_url` references the (already-published) CDN objects.
   await withOLTPTransaction(async (client) => {
-    await client.query('DELETE FROM dialogue_chunks WHERE tree_id = $1', [treeId]);
+    // Bump first and capture the revision that will be recorded on chunks.
+    // Bump ONLY on recompile per 092 contract.
+    const bumpRes = await client.query<{ revision: number }>(
+      'UPDATE dialogue_trees SET revision = revision + 1 WHERE id = $1 RETURNING revision',
+      [treeId]
+    );
+    const treeRevision = bumpRes.rows[0]?.revision ?? 1;
 
     for (const chunk of chunks) {
       await client.query(
-        `INSERT INTO dialogue_chunks (tree_id, chunk_key, content_url)
-         VALUES ($1, $2, $3)`,
-        [chunk.tree_id, chunk.chunk_key, chunkContentUrls.get(chunk.chunk_key)]
+        `INSERT INTO dialogue_chunks (tree_id, chunk_key, content_url, revision)
+         VALUES ($1, $2, $3, $4)
+         ON CONFLICT (tree_id, chunk_key, revision) DO NOTHING`,
+        [chunk.tree_id, chunk.chunk_key, chunkContentUrls.get(chunk.chunk_key), treeRevision]
       );
     }
 

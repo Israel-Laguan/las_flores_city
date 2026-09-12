@@ -518,8 +518,8 @@ export async function recordChoiceAndEffects(
   }
 
   await client.query(
-    `INSERT INTO player_dialogue_states (user_id, dialogue_tree_id, current_node_id, choices_made)
-     VALUES ($1, $2, $3, $4)
+    `INSERT INTO player_dialogue_states (user_id, dialogue_tree_id, current_node_id, choices_made, pinned_tree_revision)
+     VALUES ($1, $2, $3, $4, 0)
      ON CONFLICT (user_id, dialogue_tree_id) DO UPDATE SET
        current_node_id = EXCLUDED.current_node_id,
        choices_made = player_dialogue_states.choices_made || EXCLUDED.choices_made`,
@@ -542,17 +542,18 @@ export async function recordChoiceAndEffects(
   return grantDialogueRewards(client, userId, dialogueId, nextNodeId, effects, 'grant');
 }
 
-export async function initializeDialogueState(client: any, userId: string, dialogueId: string, rootNodeId: string) {
+export async function initializeDialogueState(client: any, userId: string, dialogueId: string, rootNodeId: string, pinnedTreeRevision: number = 0) {
   await PlayerStateRepository.setDialogueCursor(client, userId, rootNodeId, dialogueId);
 
   await client.query(
-    `INSERT INTO player_dialogue_states (user_id, dialogue_tree_id, current_node_id, choices_made)
-     VALUES ($1, $2, $3, '[]')
+    `INSERT INTO player_dialogue_states (user_id, dialogue_tree_id, current_node_id, choices_made, pinned_tree_revision)
+     VALUES ($1, $2, $3, '[]', $4)
      ON CONFLICT (user_id, dialogue_tree_id) DO UPDATE SET
        current_node_id = EXCLUDED.current_node_id,
+       current_chunk_id = NULL,
        choices_made = '[]',
        started_at = NOW()`,
-    [userId, dialogueId, rootNodeId]
+    [userId, dialogueId, rootNodeId, pinnedTreeRevision]
   );
 }
 

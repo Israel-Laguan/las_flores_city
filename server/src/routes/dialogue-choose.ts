@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { queryOLAP, withOLTPTransaction } from '@las-flores/infra';
 import {
   filterChoices,
@@ -15,7 +16,13 @@ import { handleAlignmentSideEffects, handleBreakthroughSideEffects, handleJoinMy
 import { handleLegacyChoiceIndex } from './dialogue-legacy.js';
 import { mapDialogueWriteError } from './dialogue-errors.js';
 
-// ── main handler ────────────────────────────────────────────
+/**
+ * Handle POST /dialogue/:id/choose for chunk-based dialogue.
+ * Validates the posted current_chunk_id against the player's cursor
+ * (tree, revision, exact chunk) then scopes the choice lookup to the
+ * server-side current_node_id using the effective (overlay-merged) node.
+ * Supports both intra-chunk and chunk-boundary transitions.
+ */
 export async function handleChoose(req: any, res: any): Promise<any> {
   try {
     const { id } = req.params;
@@ -48,15 +55,83 @@ export async function handleChoose(req: any, res: any): Promise<any> {
       throw err;
     }
 
-    const leaves = currentChunk.leaves as Record<string, any>;
-    const chunkNodes = currentChunk.nodes as Record<string, any>;
-    const leaf = leaves[choice_id] ?? findLeafByChoiceId(leaves, choice_id);
-
-    if (!leaf) {
-      return handleIntraChunkChoice(id, userId, current_chunk_id, choice_id, currentChunk, chunkNodes, leaves, res);
+    // Validate client-supplied current_chunk_id against the player's cursor
+    // BEFORE any leaf/intra dispatch. This binds the chunk (and its tree/rev)
+    // to the active dialogue and pinned revision so a historical chunk id from
+    // the same tree cannot cause a revision jump.
+    const cursor = await PlayerStateRepository.getDialogueCursor(userId);
+    if (currentChunk.tree_id && cursor?.active_dialogue_id !== currentChunk.tree_id) {
+      return res.status(409).json({
+        success: false,
+        error: 'dialogue_tree_mismatch',
+        timestamp: new Date().toISOString(),
+      });
+    }
+    if (cursor?.pinned_tree_revision != null &&
+        cursor.pinned_tree_revision !== 0 &&
+        currentChunk.revision != null &&
+        cursor.pinned_tree_revision !== currentChunk.revision) {
+      return res.status(409).json({
+        success: false,
+        error: 'dialogue_revision_mismatch',
+        timestamp: new Date().toISOString(),
+      });
+    }
+    if (cursor?.current_chunk_id !== current_chunk_id) {
+      return res.status(409).json({
+        success: false,
+        error: 'dialogue_chunk_mismatch',
+        timestamp: new Date().toISOString(),
+      });
     }
 
-    return handleChunkBoundaryChoice(id, userId, current_chunk_id, choice_id, currentChunk, leaf, res);
+    const baseLeaves = currentChunk.leaves as Record<string, any>;
+    const baseChunkNodes = currentChunk.nodes as Record<string, any>;
+
+    // Resolve with overlays so that overlay-injected choices (e.g. mystery hooks)
+    // are visible for matching. Scope lookup to server cursor's current_node_id
+    // (prevents client from supplying a choice_id belonging to a different node).
+    let effectiveNodes: Record<string, any> = baseChunkNodes;
+    try {
+      const resolved = await DialogueResolver.resolveChunkForUser(
+        userId,
+        current_chunk_id,
+        currentChunk.chunk_key
+      );
+      effectiveNodes = resolved.mergedNodes || baseChunkNodes;
+    } catch {
+      // fall back to base; validation below will still use server cursor node
+    }
+
+    const currentNodeId = cursor?.current_node_id;
+    const currentNode = currentNodeId ? effectiveNodes[currentNodeId] : null;
+    const matchedChoice = currentNode && Array.isArray(currentNode.choices)
+      ? currentNode.choices.find((c: any) => c.id === choice_id || c.next_node_id === choice_id)
+      : null;
+    if (!matchedChoice) {
+      return res.status(400).json({
+        success: false,
+        error: 'invalid_choice',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    let leaf = baseLeaves[matchedChoice.next_node_id];
+    if (!leaf && currentNodeId) {
+      const cid = matchedChoice.id || choice_id;
+      const scopedKey = `__leaf__:${currentNodeId}:${cid}`;
+      leaf = baseLeaves[scopedKey];
+    }
+    if (!leaf) {
+      const cid = matchedChoice.id || choice_id;
+      leaf = findLeafByChoiceId(baseLeaves, cid);
+    }
+
+    if (!leaf) {
+      return handleIntraChunkChoice(id, userId, current_chunk_id, choice_id, matchedChoice, currentChunk, effectiveNodes, baseLeaves, cursor, res);
+    }
+
+    return handleChunkBoundaryChoice(id, userId, current_chunk_id, choice_id, currentChunk, leaf, cursor, res, effectiveNodes);
   } catch (error: any) {
     const mapped = mapDialogueWriteError(error);
     if (mapped) {
@@ -73,13 +148,19 @@ async function handleIntraChunkChoice(
   userId: string,
   currentChunkId: string,
   choiceId: string,
+  matchedChoice: any,
   currentChunk: any,
-  chunkNodes: Record<string, any>,
-  leaves: Record<string, any>,
+  effectiveNodes: Record<string, any>,
+  baseLeaves: Record<string, any>,
+  cursor: any,
   res: any
 ) {
-  const matched = findChoiceInNodes(chunkNodes, choiceId);
-  if (!matched) {
+  // matchedChoice passed from outer (already bound to cursor.current_node_id
+  // via c.id === choiceId || c.next_node_id === choiceId). This keeps the
+  // two choice-matching sites in sync for intra vs leaf and for repeated-id
+  // protection. choiceId param is the client-supplied value (may be .id or
+  // .next_node_id form) and is echoed for API contract / telemetry.
+  if (!matchedChoice) {
     return res.status(400).json({
       success: false,
       error: 'invalid_choice',
@@ -87,15 +168,11 @@ async function handleIntraChunkChoice(
     });
   }
 
-  const { choice: matchedChoice, fromNodeId: matchedFromNodeId } = matched;
-  const cursor = await PlayerStateRepository.getDialogueCursor(userId);
-  const currentNodeId = cursor?.current_node_id ?? matchedFromNodeId;
+  const currentNodeId = cursor?.current_node_id;
 
-  // processChoiceInTransaction owns the transaction: a rejected choice
-  // (e.g. insufficient TB on a choice that also unlocks a vault item)
-  // rolls back every mutation instead of committing the partial ones.
+  // processChoiceInTransaction owns the transaction.
   const choiceResult: ProcessChoiceResult = await processChoiceInTransaction(
-    userId, dialogueId, 0, matchedChoice, currentNodeId, chunkNodes
+    userId, dialogueId, 0, matchedChoice, currentNodeId, effectiveNodes
   );
 
   if (!choiceResult.success) {
@@ -103,7 +180,7 @@ async function handleIntraChunkChoice(
   }
 
   const nextNodeId = matchedChoice.next_node_id;
-  const nextNode = chunkNodes[nextNodeId] ?? null;
+  const nextNode = effectiveNodes[nextNodeId] ?? null;
   const isEnd = !nextNode || (nextNode as any).is_end === true || (!(nextNode as any).choices || (nextNode as any).choices.length === 0);
   const nextChoices = isEnd ? [] : await filterChoices((nextNode as any)?.choices || [], userId, (nextNode as any)?.speaker_id);
   const tbCursor = await PlayerStateRepository.getDialogueCursor(userId);
@@ -111,14 +188,23 @@ async function handleIntraChunkChoice(
   emitIntraChunkTelemetry(userId, dialogueId, choiceId, currentChunkId, choiceResult);
   emitIntraChunkSideEffects(userId, dialogueId, choiceId, choiceResult);
 
+  // intra path: scan effective (overlay-merged) for join_mystery too, for consistency with boundary
+  let allChoices: any[] = [];
+  for (const node of Object.values(effectiveNodes)) {
+    if (node && Array.isArray((node as any).choices)) {
+      allChoices = allChoices.concat((node as any).choices);
+    }
+  }
+  await handleJoinMystery(allChoices, matchedChoice.id, userId);
+
   const intraChunkPayload: ChunkPayload = {
     id: currentChunk.id,
     chunk_key: currentChunk.chunk_key,
-    nodes: chunkNodes,
-    leaves,
+    nodes: effectiveNodes,
+    leaves: baseLeaves,
   };
 
-  const speakers = await resolveChunkSpeakers(chunkNodes);
+  const speakers = await resolveChunkSpeakers(effectiveNodes);
 
   return res.json(
     buildChooseResponse(
@@ -131,18 +217,6 @@ async function handleIntraChunkChoice(
       speakers
     )
   );
-}
-
-function findChoiceInNodes(chunkNodes: Record<string, any>, choiceId: string) {
-  for (const [nodeId, node] of Object.entries(chunkNodes)) {
-    if (node && Array.isArray((node as any).choices)) {
-      const found = (node as any).choices.find((c: any) => c.id === choiceId);
-      if (found) {
-        return { choice: found, fromNodeId: nodeId };
-      }
-    }
-  }
-  return null;
 }
 
 export function findLeafByChoiceId(leaves: Record<string, any>, choiceId: string): any | undefined {
@@ -233,7 +307,9 @@ async function handleChunkBoundaryChoice(
   choiceId: string,
   currentChunk: any,
   leaf: any,
-  res: any
+  cursor: any,
+  res: any,
+  effectiveSourceNodes?: Record<string, any>
 ) {
   const validationResult = await IronGateValidator.validateChoice(userId, currentChunkId, choiceId, leaf);
 
@@ -244,9 +320,18 @@ async function handleChunkBoundaryChoice(
   const tbDeducted = validationResult.tbDeducted ?? 0;
   const targetChunkKey = leaf.target_chunk as string;
 
+  // The early validation in handleChoose already enforced tree/rev/current_chunk
+  // match against cursor. Resolve boundaries using the player's pinned revision
+  // (falling back to the validated chunk's rev only for legacy unpinned cursors).
+  const treeRevision = (cursor?.pinned_tree_revision != null && cursor.pinned_tree_revision !== 0)
+    ? cursor.pinned_tree_revision
+    : currentChunk.revision ?? 0;
+
   let resolvedNextChunk;
   try {
-    resolvedNextChunk = await DialogueResolver.resolveNextChunk(userId, targetChunkKey);
+    resolvedNextChunk = await DialogueResolver.resolveNextChunk(
+      userId, targetChunkKey, currentChunk.tree_id || undefined, treeRevision
+    );
   } catch (err: any) {
     if (err.message && err.message.includes('not found')) {
       return res.status(404).json({
@@ -276,7 +361,7 @@ async function handleChunkBoundaryChoice(
     userId, choiceId, dialogueId,
     validationResult.alignmentChange,
     validationResult.breakthroughStatus,
-    currentChunk.nodes as Record<string, any>
+    (effectiveSourceNodes || currentChunk.nodes) as Record<string, any>
   );
 
   const isEnd = !nextNode || nextNode.is_end === true || (!nextNode?.choices || nextNode.choices.length === 0);
@@ -336,6 +421,11 @@ function applyTBReceipt(mergedNodes: Record<string, any>, nextNodeId: string, tb
   return { mergedNodes: finalNodes, receiptString };
 }
 
+/**
+ * Persist the post-boundary cursor state (player_states + player_dialogue_states).
+ * Called after a successful chunk-boundary choice. Writes both the logical
+ * node and the owning chunk id atomically.
+ */
 export async function persistChunkBoundaryState(
   userId: string, treeId: string, nextNodeId: string,
   nextChunkId: string, choiceId: string, currentChunkId: string
