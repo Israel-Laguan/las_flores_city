@@ -16,7 +16,13 @@ import { handleAlignmentSideEffects, handleBreakthroughSideEffects, handleJoinMy
 import { handleLegacyChoiceIndex } from './dialogue-legacy.js';
 import { mapDialogueWriteError } from './dialogue-errors.js';
 
-// ── main handler ────────────────────────────────────────────
+/**
+ * Handle POST /dialogue/:id/choose for chunk-based dialogue.
+ * Validates the posted current_chunk_id against the player's cursor
+ * (tree, revision, exact chunk) then scopes the choice lookup to the
+ * server-side current_node_id using the effective (overlay-merged) node.
+ * Supports both intra-chunk and chunk-boundary transitions.
+ */
 export async function handleChoose(req: any, res: any): Promise<any> {
   try {
     const { id } = req.params;
@@ -79,14 +85,26 @@ export async function handleChoose(req: any, res: any): Promise<any> {
       });
     }
 
-    const leaves = currentChunk.leaves as Record<string, any>;
-    const chunkNodes = currentChunk.nodes as Record<string, any>;
+    const baseLeaves = currentChunk.leaves as Record<string, any>;
+    const baseChunkNodes = currentChunk.nodes as Record<string, any>;
 
-    // Bind choice to cursor.current_node_id first (via its rewritten next_node_id)
-    // to prevent accepting a choice_id that exists on a different node in the chunk.
-    // This protects FREE leaves and repeated choice ids across nodes.
+    // Resolve with overlays so that overlay-injected choices (e.g. mystery hooks)
+    // are visible for matching. Scope lookup to server cursor's current_node_id
+    // (prevents client from supplying a choice_id belonging to a different node).
+    let effectiveNodes: Record<string, any> = baseChunkNodes;
+    try {
+      const resolved = await DialogueResolver.resolveChunkForUser(
+        userId,
+        current_chunk_id,
+        currentChunk.chunk_key
+      );
+      effectiveNodes = resolved.mergedNodes || baseChunkNodes;
+    } catch {
+      // fall back to base; validation below will still use server cursor node
+    }
+
     const currentNodeId = cursor?.current_node_id;
-    const currentNode = currentNodeId ? chunkNodes[currentNodeId] : null;
+    const currentNode = currentNodeId ? effectiveNodes[currentNodeId] : null;
     const matchedChoice = currentNode && Array.isArray(currentNode.choices)
       ? currentNode.choices.find((c: any) => c.id === choice_id || c.next_node_id === choice_id)
       : null;
@@ -98,10 +116,10 @@ export async function handleChoose(req: any, res: any): Promise<any> {
       });
     }
 
-    const leaf = leaves[matchedChoice.next_node_id];
+    const leaf = baseLeaves[matchedChoice.next_node_id];
 
     if (!leaf) {
-      return handleIntraChunkChoice(id, userId, current_chunk_id, choice_id, currentChunk, chunkNodes, leaves, cursor, res);
+      return handleIntraChunkChoice(id, userId, current_chunk_id, choice_id, matchedChoice, currentChunk, effectiveNodes, baseLeaves, cursor, res);
     }
 
     return handleChunkBoundaryChoice(id, userId, current_chunk_id, choice_id, currentChunk, leaf, cursor, res);
@@ -121,19 +139,18 @@ async function handleIntraChunkChoice(
   userId: string,
   currentChunkId: string,
   choiceId: string,
+  matchedChoice: any,
   currentChunk: any,
-  chunkNodes: Record<string, any>,
-  leaves: Record<string, any>,
+  effectiveNodes: Record<string, any>,
+  baseLeaves: Record<string, any>,
   cursor: any,
   res: any
 ) {
-  // Scope choice lookup to cursor.current_node_id so a client cannot
-  // supply a choice_id that exists in some other node of the chunk.
-  const currentNodeId = cursor?.current_node_id;
-  const currentNode = currentNodeId ? chunkNodes[currentNodeId] : null;
-  const matchedChoice = currentNode && Array.isArray(currentNode.choices)
-    ? currentNode.choices.find((c: any) => c.id === choiceId)
-    : null;
+  // matchedChoice passed from outer (already bound to cursor.current_node_id
+  // via c.id === choiceId || c.next_node_id === choiceId). This keeps the
+  // two choice-matching sites in sync for intra vs leaf and for repeated-id
+  // protection. choiceId param is the client-supplied value (may be .id or
+  // .next_node_id form) and is echoed for API contract / telemetry.
   if (!matchedChoice) {
     return res.status(400).json({
       success: false,
@@ -142,11 +159,11 @@ async function handleIntraChunkChoice(
     });
   }
 
-  // processChoiceInTransaction owns the transaction: a rejected choice
-  // (e.g. insufficient TB on a choice that also unlocks a vault item)
-  // rolls back every mutation instead of committing the partial ones.
+  const currentNodeId = cursor?.current_node_id;
+
+  // processChoiceInTransaction owns the transaction.
   const choiceResult: ProcessChoiceResult = await processChoiceInTransaction(
-    userId, dialogueId, 0, matchedChoice, currentNodeId, chunkNodes
+    userId, dialogueId, 0, matchedChoice, currentNodeId, effectiveNodes
   );
 
   if (!choiceResult.success) {
@@ -154,7 +171,7 @@ async function handleIntraChunkChoice(
   }
 
   const nextNodeId = matchedChoice.next_node_id;
-  const nextNode = chunkNodes[nextNodeId] ?? null;
+  const nextNode = effectiveNodes[nextNodeId] ?? null;
   const isEnd = !nextNode || (nextNode as any).is_end === true || (!(nextNode as any).choices || (nextNode as any).choices.length === 0);
   const nextChoices = isEnd ? [] : await filterChoices((nextNode as any)?.choices || [], userId, (nextNode as any)?.speaker_id);
   const tbCursor = await PlayerStateRepository.getDialogueCursor(userId);
@@ -165,11 +182,11 @@ async function handleIntraChunkChoice(
   const intraChunkPayload: ChunkPayload = {
     id: currentChunk.id,
     chunk_key: currentChunk.chunk_key,
-    nodes: chunkNodes,
-    leaves,
+    nodes: effectiveNodes,
+    leaves: baseLeaves,
   };
 
-  const speakers = await resolveChunkSpeakers(chunkNodes);
+  const speakers = await resolveChunkSpeakers(effectiveNodes);
 
   return res.json(
     buildChooseResponse(
@@ -385,6 +402,11 @@ function applyTBReceipt(mergedNodes: Record<string, any>, nextNodeId: string, tb
   return { mergedNodes: finalNodes, receiptString };
 }
 
+/**
+ * Persist the post-boundary cursor state (player_states + player_dialogue_states).
+ * Called after a successful chunk-boundary choice. Writes both the logical
+ * node and the owning chunk id atomically.
+ */
 export async function persistChunkBoundaryState(
   userId: string, treeId: string, nextNodeId: string,
   nextChunkId: string, choiceId: string, currentChunkId: string

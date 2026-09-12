@@ -189,6 +189,11 @@ export function compileTree(
  * that already exists. Cache invalidation for these pointers runs after
  * the full migration (see migrate.ts `invalidateCaches`).
  */
+/**
+ * Compile a dialogue tree into chunks and persist append-only under a new revision.
+ * Bumps dialogue_trees.revision and writes dialogue_chunks rows carrying
+ * content_url pointers (M23). Prior revisions are retained for pinned players.
+ */
 export async function compileDialogueTree(treeId: string): Promise<CompiledChunk[]> {
   const result = await queryOLTP<{
     start_node_id: string;

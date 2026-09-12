@@ -49,10 +49,8 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
       }
     }
 
-    // Fetch the tree's current revision for revision-scoped chunk lookups.
-    // Use OLTP (in one tx with pin + chunk lookup) for read-after-write visibility
-    // after compileDialogueTree's OLTP write of rev+chunks. Cursor init also in same
-    // tx decision so current_chunk_id and pinned_tree_revision commit together.
+    // Pin + chunk lookup in one tx for read-after-write after compile and so
+    // pinned_tree_revision + current_chunk_id are written together.
     let startChunkId: string | undefined;
     let startChunkKey: string | undefined;
     let treeRevision = 0;
@@ -62,19 +60,6 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
         [dialogue.id]
       );
       treeRevision = treeRevResult.rows[0]?.revision ?? 0;
-
-      // Pin inside the tx so selection of rev for chunk is consistent.
-      await client.query(
-        `INSERT INTO player_dialogue_states (user_id, dialogue_tree_id, current_node_id, pinned_tree_revision)
-         VALUES ($1, $2, $3, $4)
-         ON CONFLICT (user_id, dialogue_tree_id) DO UPDATE
-         SET pinned_tree_revision = CASE
-           WHEN player_dialogue_states.pinned_tree_revision = 0 THEN $4
-           WHEN $4 > player_dialogue_states.pinned_tree_revision THEN $4
-           ELSE player_dialogue_states.pinned_tree_revision
-         END`,
-        [userId, dialogue.id, dialogue.start_node_id, treeRevision]
-      );
 
       const startChunkResult = await client.query(
         `SELECT id, chunk_key FROM dialogue_chunks
@@ -87,6 +72,24 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
         startChunkId = startChunkResult.rows[0].id;
         startChunkKey = startChunkResult.rows[0].chunk_key;
       }
+
+      // Write both the pinned rev and the start chunk id in the same statement
+      // (append-only rev history means we select the chunk for exactly this rev).
+      const chunkForPds = startChunkId || null;
+      await client.query(
+        `INSERT INTO player_dialogue_states
+           (user_id, dialogue_tree_id, current_node_id, current_chunk_id, pinned_tree_revision)
+         VALUES ($1, $2, $3, $4, $5)
+         ON CONFLICT (user_id, dialogue_tree_id) DO UPDATE
+         SET current_node_id = EXCLUDED.current_node_id,
+             current_chunk_id = EXCLUDED.current_chunk_id,
+             pinned_tree_revision = CASE
+               WHEN player_dialogue_states.pinned_tree_revision = 0 THEN EXCLUDED.pinned_tree_revision
+               WHEN EXCLUDED.pinned_tree_revision > player_dialogue_states.pinned_tree_revision THEN EXCLUDED.pinned_tree_revision
+               ELSE player_dialogue_states.pinned_tree_revision
+             END`,
+        [userId, dialogue.id, dialogue.start_node_id, chunkForPds, treeRevision]
+      );
     });
 
     if (!startChunkId || !startChunkKey) {

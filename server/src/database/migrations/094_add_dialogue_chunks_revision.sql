@@ -75,4 +75,8 @@ COMMENT ON COLUMN dialogue_chunks.revision IS
   'Players pin a revision at /dialogue/start; chunk resolution uses the '
   'pinned value so active sessions are unaffected by later recompiles.';
 
+-- Resume safety: if a prior partial run added the column without backfill
+-- (e.g. crash after ADD but before any writes), ensure 0 for legacy rows.
+UPDATE dialogue_chunks SET revision = 0 WHERE revision IS NULL;
+
 -- Note: no outer BEGIN/COMMIT — this file runs non-transactionally.

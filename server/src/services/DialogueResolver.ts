@@ -451,6 +451,11 @@ export class DialogueResolver {
    *
    * Requirements: 7.1, 7.2, 7.3, 7.4
    */
+  /**
+   * Resolve a dialogue chunk (base + active mystery overlays) for a user.
+   * Revision is carried on the chunk row; callers that have a pinned revision
+   * must look up the chunk row using that revision before calling here.
+   */
   public static async resolveChunkForUser(
     userId: string,
     chunkId: string,
@@ -541,6 +546,10 @@ export class DialogueResolver {
    * to the player's active tree revision.
    *
    * Requirements: 4.1, 4.2
+   */
+  /**
+   * Cross a chunk boundary: load the target chunk (revision-scoped when
+   * treeId+revision supplied) then delegate to resolveChunkForUser for merge.
    */
   public static async resolveNextChunk(
     userId: string,
@@ -645,7 +654,7 @@ export class DialogueResolver {
       `SELECT id, tree_id, chunk_key, content_url, revision
           FROM dialogue_chunks
          WHERE ${where}
-         LIMIT 1`,
+         ${!hasScope ? 'ORDER BY revision DESC ' : ''}LIMIT 1`,
       params
     );
 
