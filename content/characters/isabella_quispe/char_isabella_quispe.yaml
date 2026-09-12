@@ -1,0 +1,24 @@
+id: 841c485c-1daf-43a6-8fec-eb908adddc30
+name: Isabella Quispe
+title: High School Student "Chabela", San Pedro de los Pescadores
+description: A 17-year-old who has chosen to stay in the riverside fishing village of San Pedro de los Pescadores when almost everyone her age dreams of leaving for the city. Known to family and friends as Chabela. After her aunt left for Las Flores and met tragedy, Isabella refuses to abandon her home. The high sun, the Río de las Flores, and the tight-knit community have shaped her; she works to make staying a viable, proud choice for others.
+metadata:
+  type: human
+  role: npc
+  faction: independent
+  personality: steadfast_local
+  age: 17
+  gender: Female
+  occupation: High School Student
+  residence: San Pedro de los Pescadores, Far South
+  background: Grew up in a fishing family along the Río de las Flores. Her aunt left for the city when Isabella was a child and later died in isolation; the loss became the reason Isabella vows never to leave.
+  motivations: Protect and improve life in San Pedro so young people don't have to choose between survival and home. Keep the river and traditions alive.
+  fears: Watching her community empty out. The river changing beyond recognition. Being pitied or mocked for "choosing to stay."
+  quote: "The city took my aunt. It will not take me."
+asset_paths:
+  portrait: isabella_quispe__default.png
+
+lore_path: isabella_quispe.md
+portrait_urls:
+  - url: s3://las-flores/portraits/isabella_quispe/isabella_quispe__default.png
+    label: dev
