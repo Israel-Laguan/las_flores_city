@@ -45,16 +45,14 @@ export async function setDialogueChunkCursor(
 }
 
 /**
- * Upsert the initial dialogue chunk state when a player starts a
- * dialogue. Resets choices_made and started_at so a fresh start
- * is reflected in state.
- *
- * The pinned_tree_revision is supplied from the early rev read in
- * /dialogue/start (so node+chunk + pinned are set from the same
- * decision point, but the actual node/chunk writes happen inside the
- * tx that also does setDialogueCursor on player_states).
- *
- * Requirement 8.2: records initial chunk_id in player_dialogue_states.
+  * Upsert the initial dialogue chunk state when a player starts a
+  * dialogue. Resets choices_made and started_at so a fresh start
+  * is reflected in state.
+  *
+  * The pinned_tree_revision is supplied (and revalidated) inside the
+  * same locked tx as node+chunk writes + ps cursor so they are atomic.
+  *
+  * Requirement 8.2: records initial chunk_id in player_dialogue_states.
  *
  * @param client  - Active pg.PoolClient inside withOLTPTransaction
  * @param userId  - Player's user id

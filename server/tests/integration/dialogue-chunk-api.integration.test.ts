@@ -529,6 +529,9 @@ describe('Dialogue Chunk API Integration Tests (Task 10.1)', () => {
       );
       const chooseBody = await chooseRes.json() as any;
 
+      expect(chooseRes.status).toBe(200);
+      expect(chooseBody.success).toBe(true);
+
       // Requirement 4.1: next_chunk is the guarded_target chunk
       expect(chooseBody.data.next_chunk).toBeDefined();
       expect(chooseBody.data.next_chunk.chunk_key).toBe('guarded_target');

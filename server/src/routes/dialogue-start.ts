@@ -50,13 +50,11 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
     }
 
     // Read rev + start chunk inside one tx (for read-after-write visibility
-    // after content compile). Then upsert *only* pinned_tree_revision (CASE
-    // monotonic: set if 0 or strictly higher). Never write current_node_id or
-    // current_chunk_id from here — those must be written atomically with
-    // ps.current_node_id inside the handleStart* txs below. This fixes the
-    // retry race: an early pds commit of new chunk+node could be observed by
-    // /active together with stale ps.current_node_id (yielding null node) or
-    // leave inconsistent pds on resolver failure.
+    // after content compile). Do NOT write pinned here. Resolve the chunk
+    // (or fall back), then under the player lock in the state tx revalidate the
+    // revision and write pinned_tree_revision atomically together with
+    // current_node_id + current_chunk_id (and ps cursor). This ensures pin is
+    // never committed without matching node/chunk state.
     let startChunkId: string | undefined;
     let startChunkKey: string | undefined;
     let treeRevision = 0;
@@ -78,21 +76,7 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
         startChunkId = startChunkResult.rows[0].id;
         startChunkKey = startChunkResult.rows[0].chunk_key;
       }
-
-      // Upsert ONLY pinned (keep startChunk selection logic for path decision).
-      // For existing rows (restart/retry of active tree) this UPDATEs pinned
-      // without touching node/chunk. For fresh, no-op here; pinned is set from
-      // this treeRevision inside the later initialize/init calls.
-      await client.query(
-        `UPDATE player_dialogue_states
-         SET pinned_tree_revision = CASE
-           WHEN pinned_tree_revision = 0 THEN $3
-           WHEN $3 > pinned_tree_revision THEN $3
-           ELSE pinned_tree_revision
-         END
-         WHERE user_id = $1 AND dialogue_tree_id = $2`,
-        [userId, dialogue.id, treeRevision]
-      );
+      // No pin write here — see above.
     });
 
     if (!startChunkId || !startChunkKey) {
@@ -150,7 +134,16 @@ async function handleStartFallback(userId: string, dialogue: any, pinnedRevision
     const existingCursor = await PlayerStateRepository.lockDialogueCursor(client, userId);
     const isRestart = existingCursor?.active_dialogue_id === dialogue.id;
 
-    await initializeDialogueState(client, userId, dialogue.id, rootNodeId, pinnedRevision);
+    // Revalidate the captured revision under the player lock. Write pin + node
+    // (chunk cleared by initialize for tree fallback) atomically so /active never
+    // sees a pinned rev without matching state, or a stale current_chunk_id.
+    const treeRevResult = await client.query<{ revision: number }>(
+      'SELECT revision FROM dialogue_trees WHERE id = $1',
+      [dialogue.id]
+    );
+    const txRevision = treeRevResult.rows[0]?.revision ?? pinnedRevision;
+
+    await initializeDialogueState(client, userId, dialogue.id, rootNodeId, txRevision);
     if (isRestart) {
       // Mid-dialogue restart: root stat_set already applied on the first
       // start and persists (initializeDialogueState resets the cursor +
@@ -226,8 +219,15 @@ async function handleStartChunk(userId: string, dialogue: any, startChunkId: str
     const existingCursor = await PlayerStateRepository.lockDialogueCursor(client, userId);
     const isRestart = existingCursor?.active_dialogue_id === dialogue.id;
 
+    // Revalidate revision under lock; write pin+node+chunk atomically.
+    const treeRevResult = await client.query<{ revision: number }>(
+      'SELECT revision FROM dialogue_trees WHERE id = $1',
+      [dialogue.id]
+    );
+    const txRevision = treeRevResult.rows[0]?.revision ?? pinnedRevision;
+
     await PlayerStateRepository.setDialogueCursor(client, userId, rootNodeId, dialogue.id);
-    await PlayerStateRepository.initDialogueChunkState(client, userId, dialogue.id, rootNodeId, startChunkId, pinnedRevision);
+    await PlayerStateRepository.initDialogueChunkState(client, userId, dialogue.id, rootNodeId, startChunkId, txRevision);
     if (isRestart) {
       // Mid-dialogue restart: skip re-applying root effects.
       return;

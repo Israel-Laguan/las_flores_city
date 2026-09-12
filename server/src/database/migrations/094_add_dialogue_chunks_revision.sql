@@ -21,20 +21,41 @@
 -- in revision-scoped lookups (start, choose, resolver, dialogue route).
 -- ============================================================
 
-ALTER TABLE dialogue_chunks ADD COLUMN IF NOT EXISTS revision INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE dialogue_chunks ADD COLUMN IF NOT EXISTS revision INTEGER;
 
--- Backfill NULLs immediately after ADD (before any SET NOT NULL or index build).
--- If a prior partial run (or manual DDL) left the column as nullable, ADD IF NOT EXISTS
--- is a no-op so the NOT NULL DEFAULT from the ADD never took effect. We must backfill
--- first (so SET NOT NULL succeeds), then explicitly SET DEFAULT + SET NOT NULL
--- (both idempotent if already correct). This guarantees the column is always
--- NOT NULL DEFAULT 0 at the end of the file, regardless of prior state.
--- These steps are before the CREATE UNIQUE INDEX CONCURRENTLY so the index
--- is built under the final NOT NULL contract (NULLs would be treated specially
--- by unique semantics and revision= queries would miss NULL rows).
-UPDATE dialogue_chunks SET revision = 0 WHERE revision IS NULL;
+-- Backfill + NOT NULL enforcement for the recovery case (nullable column from
+-- prior partial apply of ADD COLUMN ... NOT NULL DEFAULT, or manual DDL).
+-- We use a single-transaction DO block so backfill and the initial constraint
+-- are atomic: no concurrent writer can insert a NULL between backfill and
+-- enforcement. (Writers now always supply revision, but the recovery path must
+-- still be safe.)
+--
+-- We use CHECK ... NOT VALID (quick, no scan) + VALIDATE (scan under weaker lock
+-- that permits reads) + SET NOT NULL (then metadata-only) to avoid a long
+-- ACCESS EXCLUSIVE lock during SET NOT NULL on a populated table.
+-- The index build below happens after the column is guaranteed NOT NULL.
+DO $$
+BEGIN
+  UPDATE dialogue_chunks SET revision = 0 WHERE revision IS NULL;
 
-ALTER TABLE dialogue_chunks ALTER COLUMN revision SET DEFAULT 0;
+  ALTER TABLE dialogue_chunks ALTER COLUMN revision SET DEFAULT 0;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+     WHERE conrelid = 'dialogue_chunks'::regclass
+       AND conname = 'dialogue_chunks_revision_not_null'
+  ) THEN
+    ALTER TABLE dialogue_chunks
+      ADD CONSTRAINT dialogue_chunks_revision_not_null
+      CHECK (revision IS NOT NULL) NOT VALID;
+  END IF;
+END $$;
+
+-- Validate can run outside the DO (still benefits from prior atomicity for new rows).
+-- This performs the null check scan but allows concurrent gameplay reads.
+ALTER TABLE dialogue_chunks VALIDATE CONSTRAINT dialogue_chunks_revision_not_null;
+
+-- SET NOT NULL is now fast (the validated CHECK proves no NULLs).
 ALTER TABLE dialogue_chunks ALTER COLUMN revision SET NOT NULL;
 
 -- Clean up any leftover INVALID index from a prior failed CONCURRENTLY build.
@@ -90,10 +111,10 @@ COMMENT ON COLUMN dialogue_chunks.revision IS
   'pinned value so active sessions are unaffected by later recompiles.';
 
 -- Resume safety (updated for partial-run column-definition case):
--- The backfill + ALTER COLUMN SET DEFAULT + SET NOT NULL (right after ADD)
--- run before index creation. This makes re-runs safe even if a prior partial
--- execution (or manual add) left revision nullable: data is backfilled first,
--- definition is forced to NOT NULL DEFAULT 0, and the unique index is built
--- under the final contract. No late UPDATE remains (would be duplicate).
- 
+-- Backfill + DEFAULT + CHECK NOT VALID happen inside a DO $$ block (single tx)
+-- immediately after ADD. Then VALIDATE + SET NOT NULL. Re-runs are safe:
+-- the constraint guards prevent NULLs, idempotent IF NOT EXISTS on constraint,
+-- and index creation uses the final NOT NULL contract. The DO+VALIDATE/SET
+-- run before the CONCURRENT index.
+  
 -- Note: no outer BEGIN/COMMIT — this file runs non-transactionally.

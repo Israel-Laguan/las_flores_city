@@ -550,6 +550,7 @@ export async function initializeDialogueState(client: any, userId: string, dialo
      VALUES ($1, $2, $3, '[]', $4)
      ON CONFLICT (user_id, dialogue_tree_id) DO UPDATE SET
        current_node_id = EXCLUDED.current_node_id,
+       current_chunk_id = NULL,
        choices_made = '[]',
        started_at = NOW()`,
     [userId, dialogueId, rootNodeId, pinnedTreeRevision]
