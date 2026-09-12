@@ -157,7 +157,7 @@ describe('handleChunkBoundaryChoice — tree revision resolution', () => {
     expect(revisionArg).toBe(0);
   });
 
-  it('prefers cursor pinned revision for boundary (after early validation passes)', async () => {
+  it('uses the cursor pinned revision for boundary when it matches the chunk revision', async () => {
     const currentChunk = baseCurrentChunk({ revision: 5 });
     (DialogueResolver.loadChunkNodesAndLeaves as jest.Mock).mockResolvedValue(currentChunk);
     getDialogueCursorMock.mockResolvedValue({

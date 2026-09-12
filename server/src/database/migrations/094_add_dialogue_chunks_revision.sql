@@ -23,6 +23,21 @@
 
 ALTER TABLE dialogue_chunks ADD COLUMN IF NOT EXISTS revision INTEGER NOT NULL DEFAULT 0;
 
+-- Clean up any leftover INVALID index from a prior failed CONCURRENTLY build.
+-- Without this, IF NOT EXISTS would skip, and the later ADD CONSTRAINT USING INDEX would fail permanently.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM pg_class c
+    JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE c.relname = 'dialogue_chunks_tree_id_chunk_key_revision_key'
+      AND NOT c.relisvalid
+  ) THEN
+    DROP INDEX IF EXISTS dialogue_chunks_tree_id_chunk_key_revision_key;
+  END IF;
+END $$;
+
 -- Create the new 3-column unique index CONCURRENTLY first (outside tx).
 -- This is the backing index for the constraint we will attach.
 CREATE UNIQUE INDEX CONCURRENTLY IF NOT EXISTS dialogue_chunks_tree_id_chunk_key_revision_key

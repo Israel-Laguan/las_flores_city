@@ -20,7 +20,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no East Asian features, no Northern European features, no glasses, no data tablets, no university or lab elements, no city clothing, no polished urban look
+--no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no East Asian features, no Northern European features, no glasses
 
 ## Variations
 

@@ -20,7 +20,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Negative Prompt
 
---no neon, no androids, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no East Asian features, no natural unenhanced face, no plain average looks, no fat pear body, no ugly, no masculine features, no messy hair, no poor clothing
+--no neon, no androids, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no East Asian features, no natural unenhanced face, no ugly, no masculine features
 
 ## Variations
 
@@ -31,12 +31,12 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-- **`__default.png`**: Neutral glam resting face, looking at camera, 3/4 take. Soft melancholy under polish. Same clothing, jewelry, earbud, condo backdrop. Clean confident linework, painterly soft shading.
+- **`__default.png`**: Use the base portrait as reference. Neutral glam resting face, looking at camera, 3/4 take. Soft melancholy under polish. Same clothing, jewelry, earbud, condo backdrop. Keep the same art style as reference. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette with glam highlights, zero conventional beauty templates.
 
-- **`__smirk.png`**: Practiced flirt smirk for the feed, looking at camera, 3/4 take. Fuller lips curved, eyes still a little sad. Same glam look and backdrop.
+- **`__smirk.png`**: Use the base portrait as reference. Practiced flirt smirk for the feed, looking at camera, 3/4 take. Fuller lips curved, eyes still a little sad. Same glam look and backdrop. Keep the same art style as reference. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette with glam highlights, zero conventional beauty templates.
 
-- **`__melancholy.png`**: Mask down — eyes wet-bright, smile gone, looking slightly past camera, 3/4 take. Surgical face still perfect; emotion breaks it. Same clothing.
+- **`__melancholy.png`**: Use the base portrait as reference. Mask down — eyes wet-bright, smile gone, looking slightly past camera, 3/4 take. Surgical face still perfect; emotion breaks it. Same clothing, jewelry, earbud, condo. Keep the same art style as reference. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette with glam highlights, zero conventional beauty templates.
 
-- **`__happy.png`**: Genuine warm smile rare and brief, looking at camera, 3/4 take. Eyes finally match the mouth. Same art style and outfit.
+- **`__happy.png`**: Use the base portrait as reference. Genuine warm smile rare and brief, looking at camera, 3/4 take. Eyes finally match the mouth. Same clothing, jewelry, earbud, condo. Keep the same art style as reference. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette with glam highlights, zero conventional beauty templates.
 
-- **`__afraid.png`**: Fear of the past returning — eyes widened slightly, lips parted, looking at camera as if someone just mentioned the videos, 3/4 take. Same clothing and backdrop.
+- **`__afraid.png`**: Use the base portrait as reference. Fear of the past returning — eyes widened slightly, lips parted, looking at camera as if someone just mentioned the videos, 3/4 take. Same clothing, jewelry, earbud, condo. Keep the same art style as reference. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette with glam highlights, zero conventional beauty templates.

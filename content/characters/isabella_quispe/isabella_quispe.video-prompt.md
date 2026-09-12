@@ -8,13 +8,13 @@ target: content/characters/isabella_quispe/assets/
 
 # Video Prompts: Isabella "Chabela" Quispe
 
-Generate seamless looping portrait videos from each expression variant PNG. Use the corresponding `isabella_quispe__<expression>.png` as the input image for each prompt. The woman on the reference image is the character described in the source prompt file.
+Generate seamless looping portrait videos from each expression variant PNG. Use the corresponding `isabella_quispe__<expression>.png` as the input image for each prompt. The 17-year-old girl on the reference image is the character described in the source prompt file.
 
 ## Base Loop (Default)
 
 **Input**: `assets/isabella_quispe__default.png`
 
-Create a seamless looping video. The young woman on the reference image (known locally as Chabela) holds a calm, quietly determined resting expression with wind-tousled straight dark hair and sun-weathered warm copper skin. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight as if standing on the riverbank, and a barely perceptible blink cycle. Hair moves softly in the steady river breeze. Practical school/village clothes and the small river-stone pendant shift naturally. The bright harsh midday sun on the Río de las Flores in San Pedro remains the backdrop — wooden boats and nets visible, arid hills beyond. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The 17-year-old girl on the reference image (known locally as Chabela) holds a calm, quietly determined resting expression with wind-tousled straight dark hair and sun-weathered warm copper skin. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight as if standing on the riverbank, and a barely perceptible blink cycle. Hair moves softly in the steady river breeze. Practical school/village clothes and the small river-stone pendant shift naturally. The bright harsh midday sun on the Río de las Flores in San Pedro remains the backdrop — wooden boats and nets visible, arid hills beyond. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
 
@@ -22,7 +22,7 @@ Create a seamless looping video. The young woman on the reference image (known l
 
 **Input**: `assets/isabella_quispe__resolute.png`
 
-Create a seamless looping video. The young woman shows firm resolve — chin slightly lifted, eyes clear and unwavering. Subtle idle animation: steady, grounded breathing, a faint firming in the jawline, slow deliberate blinks against the strong sun. Hair lifts gently in the river wind. Same practical clothing and pendant catch the light. Harsh beautiful sunlight on the fishing village riverbank stays constant. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The 17-year-old girl shows firm resolve — chin slightly lifted, eyes clear and unwavering. Subtle idle animation: steady, grounded breathing, a faint firming in the jawline, slow deliberate blinks against the strong sun. Hair lifts gently in the river wind. Same practical clothing and pendant catch the light. Harsh beautiful sunlight on the fishing village riverbank stays constant. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__warm` loop
 

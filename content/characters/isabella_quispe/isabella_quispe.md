@@ -69,4 +69,4 @@ Chabela breaks the most common stereotype of her generation not with anger, but 
 
 ## Quote
 
-Chabela: "The city took my aunt. It will not take me. And if I can help it, it will not take the others either."
+Chabela: "The city took my aunt. It will not take me."

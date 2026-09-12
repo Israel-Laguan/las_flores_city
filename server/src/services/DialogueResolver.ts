@@ -628,9 +628,11 @@ export class DialogueResolver {
     revision?: number
   ): Promise<BaseDialogueChunkRow> {
     // Scope only when BOTH treeId and revision are supplied together.
-    // Partial (e.g. treeId only, or rev defaulted) is avoided to prevent
-    // accidentally selecting a chunk_key from another tree's revision.
-    // When no active dialogue, callers pass neither (unscoped lookup).
+    // Reject partial scope (treeId w/o rev, or rev w/o treeId) to avoid
+    // accidentally selecting a chunk_key from wrong tree/revision.
+    if ((treeId != null && revision == null) || (treeId == null && revision != null)) {
+      throw new Error(`Partial scope for loadBaseChunkByKey (treeId=${treeId}, revision=${revision}) is not allowed`);
+    }
     const hasScope = treeId != null && revision != null;
     const where = hasScope
       ? `chunk_key = $1 AND tree_id = $2 AND revision = $3`

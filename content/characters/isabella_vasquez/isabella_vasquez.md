@@ -7,7 +7,7 @@
 **District:** Las Flores (high-society circuit; Chronicle offices downtown)
 **Role:** Media owner, society power broker, information broker
 **Faction:** Media
-**Descendancy:** m
+**Descendancy:** e
 **Politics:** Far right-leaning; extremist ideas surface under pressure — especially racism and classism
 
 **Physical Description:**
@@ -71,9 +71,6 @@ Her high-society connections still open doors for exclusive content. What the pu
 - Dong or Dragon Head decides she knows too much and must be owned outright — or removed
 - A pretty woman from Isabella's "ruined" list resurfaces with proof and asks the player for help
 - The player finds the 2069 garage near-miss file Juan Pérez was never allowed to publish
-
-
----
 
 
 ---

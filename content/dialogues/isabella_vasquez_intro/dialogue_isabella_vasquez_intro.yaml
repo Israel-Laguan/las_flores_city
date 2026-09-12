@@ -77,13 +77,17 @@ nodes:
         effects:
           relationship_effect:
             romance: 1
+          state_set:
+            last_isabella_vasquez_encounter_at: NOW
       - id: "ask_valeria_flirt"
         text: "I heard there's another Vasquez who photographs easier. That a sore subject?"
         next_node_id: "fab7f378-7513-4c49-a8f1-7d422f776f92"
         effects:
           relationship_effect:
             friendship: -1
-
+          state_set:
+            last_isabella_vasquez_encounter_at: NOW
+ 
   468dac2d-313e-44be-822c-1544969b92ff:
     id: "468dac2d-313e-44be-822c-1544969b92ff"
     type: "character"
@@ -97,6 +101,8 @@ nodes:
         effects:
           relationship_effect:
             friendship: 1
+          state_set:
+            last_isabella_vasquez_encounter_at: NOW
       - id: "leave_cold"
         text: "I'll take my chances."
         next_node_id: "f13d3748-3193-4f25-86b8-20a00a342237"
@@ -114,13 +120,17 @@ nodes:
         effects:
           relationship_effect:
             friendship: -2
+          state_set:
+            last_isabella_vasquez_encounter_at: NOW
       - id: "let_slide"
         text: "I'm not soft. I'm listening. What's the offer?"
         next_node_id: "f00e21d8-1930-4dd0-ab1a-0c553f21d006"
         effects:
           relationship_effect:
             friendship: 1
-
+          state_set:
+            last_isabella_vasquez_encounter_at: NOW
+ 
   ca6cdb20-00e9-4441-992a-193d4f8afbf9:
     id: "ca6cdb20-00e9-4441-992a-193d4f8afbf9"
     type: "character"
@@ -137,7 +147,9 @@ nodes:
         effects:
           relationship_effect:
             friendship: -1
-
+          state_set:
+            last_isabella_vasquez_encounter_at: NOW
+ 
   fab7f378-7513-4c49-a8f1-7d422f776f92:
     id: "fab7f378-7513-4c49-a8f1-7d422f776f92"
     type: "character"
@@ -151,13 +163,17 @@ nodes:
         effects:
           relationship_effect:
             friendship: 1
+          state_set:
+            last_isabella_vasquez_encounter_at: NOW
       - id: "press_valeria"
         text: "So the Chronicle is where envy goes to get a masthead."
         next_node_id: "8c84c9fb-cae7-4c7d-aabc-7d3a33bbe0dd"
         effects:
           relationship_effect:
             friendship: -2
-
+          state_set:
+            last_isabella_vasquez_encounter_at: NOW
+ 
   f00e21d8-1930-4dd0-ab1a-0c553f21d006:
     id: "f00e21d8-1930-4dd0-ab1a-0c553f21d006"
     type: "character"
@@ -171,6 +187,8 @@ nodes:
         effects:
           relationship_effect:
             friendship: 2
+          state_set:
+            last_isabella_vasquez_encounter_at: NOW
       - id: "hesitate_offer"
         text: "I'll think about whose secrets I'm willing to sell."
         next_node_id: "f13d3748-3193-4f25-86b8-20a00a342237"

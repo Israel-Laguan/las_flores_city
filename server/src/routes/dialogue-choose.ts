@@ -62,6 +62,7 @@ export async function handleChoose(req: any, res: any): Promise<any> {
       });
     }
     if (cursor?.pinned_tree_revision != null &&
+        cursor.pinned_tree_revision !== 0 &&
         currentChunk.revision != null &&
         cursor.pinned_tree_revision !== currentChunk.revision) {
       return res.status(409).json({
@@ -70,7 +71,7 @@ export async function handleChoose(req: any, res: any): Promise<any> {
         timestamp: new Date().toISOString(),
       });
     }
-    if (cursor?.current_chunk_id && cursor.current_chunk_id !== current_chunk_id) {
+    if (cursor?.current_chunk_id !== current_chunk_id) {
       return res.status(409).json({
         success: false,
         error: 'dialogue_chunk_mismatch',
@@ -286,7 +287,9 @@ async function handleChunkBoundaryChoice(
   // The early validation in handleChoose already enforced tree/rev/current_chunk
   // match against cursor. Resolve boundaries using the player's pinned revision
   // (falling back to the validated chunk's rev only for legacy unpinned cursors).
-  const treeRevision = cursor?.pinned_tree_revision ?? currentChunk.revision ?? 0;
+  const treeRevision = (cursor?.pinned_tree_revision != null && cursor.pinned_tree_revision !== 0)
+    ? cursor.pinned_tree_revision
+    : currentChunk.revision ?? 0;
 
   let resolvedNextChunk;
   try {
