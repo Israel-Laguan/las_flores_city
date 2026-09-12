@@ -88,7 +88,7 @@ export async function handleChoose(req: any, res: any): Promise<any> {
     const currentNodeId = cursor?.current_node_id;
     const currentNode = currentNodeId ? chunkNodes[currentNodeId] : null;
     const matchedChoice = currentNode && Array.isArray(currentNode.choices)
-      ? currentNode.choices.find((c: any) => c.id === choice_id)
+      ? currentNode.choices.find((c: any) => c.id === choice_id || c.next_node_id === choice_id)
       : null;
     if (!matchedChoice) {
       return res.status(400).json({

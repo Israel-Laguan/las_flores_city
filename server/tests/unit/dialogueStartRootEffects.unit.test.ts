@@ -44,10 +44,14 @@ async function acquireRowLock(): Promise<() => void> {
 // Controls whether a start chunk row exists (chunk path vs. tree fallback path).
 let hasStartChunk = true;
 
+// Captured SQLs executed inside the withOLTPTransaction client (for asserting atomic rev+chunk reads).
+let lastTxClientQueries: string[] = [];
+
 const withOLTPTransactionMock = jest.fn(async (callback: any) => {
   let release: (() => void) | null = null;
   const client = {
     async query(sql: string, params?: any[]) {
+      lastTxClientQueries.push(sql);
       if (/FOR UPDATE/i.test(sql) && !release) {
         release = await acquireRowLock();
       }
@@ -98,17 +102,10 @@ const queryOLTPMock = jest.fn(async (sql: string) => {
   return { rows: [] };
 });
 
-// M19: /dialogue/start reads the tree revision and matching start chunk
-// through the read-only content pool, including after OLTP compile writes.
-const queryContentMock = jest.fn(async (sql: string) => {
-  if (sql.includes('SELECT revision FROM dialogue_trees')) {
-    return { rows: [{ revision: 1 }] };
-  }
-  if (sql.includes('FROM dialogue_chunks')) {
-    return { rows: hasStartChunk ? [{ id: 'chunk-1', chunk_key: 'root' }] : [] };
-  }
-  return { rows: [] };
-});
+// queryContent is used by resolver internals (CDN metadata + overlays)
+// but /dialogue/start reads rev + start chunk via client.query inside withOLTPTransaction (OLTP primary)
+// for read-after-write visibility after compile + atomic pin.
+const queryContentMock = jest.fn(async (_sql: string) => ({ rows: [] }));
 
 jest.mock('@las-flores/infra', () => ({
   queryOLTP: queryOLTPMock,
@@ -226,6 +223,7 @@ describe.each([
     queryOLTPMock.mockClear();
     queryContentMock.mockClear();
     withOLTPTransactionMock.mockClear();
+    lastTxClientQueries = [];
     jest.resetModules();
     const mod = await import('../../src/routes/dialogue-start.js');
     handleStartDialogue = mod.handleStartDialogue;
@@ -236,7 +234,10 @@ describe.each([
 
     // Rev/chunk/pin selection now atomic inside the tx client (no lag vs content replica).
     expect(withOLTPTransactionMock).toHaveBeenCalled();
-    // No longer direct queryContent for these (was changed for visibility+atomicity).
+    // Positive proof: the first tx (rev+chunk+pin) ran inside withOLTP; queries accumulate across the effects tx too.
+    expect(lastTxClientQueries.some((q) => q.includes('SELECT revision FROM dialogue_trees'))).toBe(true);
+    expect(lastTxClientQueries.some((q) => q.includes('FROM dialogue_chunks'))).toBe(true);
+    // No direct queryContent for these.
     expect(queryContentMock).not.toHaveBeenCalledWith(
       expect.stringContaining('SELECT revision FROM dialogue_trees'),
       expect.anything()

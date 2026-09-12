@@ -25,14 +25,17 @@ ALTER TABLE dialogue_chunks ADD COLUMN IF NOT EXISTS revision INTEGER NOT NULL D
 
 -- Clean up any leftover INVALID index from a prior failed CONCURRENTLY build.
 -- Without this, IF NOT EXISTS would skip, and the later ADD CONSTRAINT USING INDEX would fail permanently.
+-- Use pg_index.indisvalid (not pg_class.relisvalid) for compatibility with PG < 12.
 DO $$
 BEGIN
   IF EXISTS (
     SELECT 1
     FROM pg_class c
     JOIN pg_namespace n ON n.oid = c.relnamespace
+    JOIN pg_index x ON x.indexrelid = c.oid
     WHERE c.relname = 'dialogue_chunks_tree_id_chunk_key_revision_key'
-      AND NOT c.relisvalid
+      AND c.relkind = 'i'
+      AND NOT x.indisvalid
   ) THEN
     DROP INDEX IF EXISTS dialogue_chunks_tree_id_chunk_key_revision_key;
   END IF;

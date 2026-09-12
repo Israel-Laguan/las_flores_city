@@ -24,6 +24,8 @@ export interface ListPlansResponse {
       item_count: number;
     }>;
     total: number;
+    limit: number;
+    offset: number;
     filters?: Record<string, string>;
   };
   error?: string;

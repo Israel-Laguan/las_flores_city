@@ -54,7 +54,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   vi.mocked(listPlans).mockResolvedValue({
     success: true,
-    data: { plans: mockPlans, total: mockPlans.length },
+    data: { plans: mockPlans, total: mockPlans.length, limit: 50, offset: 0 },
   });
 });
 
@@ -80,7 +80,7 @@ describe('StoryBuilderPlans', () => {
   it('should show empty state when no plans', async () => {
     vi.mocked(listPlans).mockResolvedValue({
       success: true,
-      data: { plans: [], total: 0 },
+      data: { plans: [], total: 0, limit: 50, offset: 0 },
     });
     render(<StoryBuilderPlans />);
     await waitFor(() => {
@@ -91,7 +91,7 @@ describe('StoryBuilderPlans', () => {
   it('should render New Plan and New from Template buttons', async () => {
     vi.mocked(listPlans).mockResolvedValue({
       success: true,
-      data: { plans: [], total: 0 },
+      data: { plans: [], total: 0, limit: 50, offset: 0 },
     });
     render(<StoryBuilderPlans />);
     await waitFor(() => {
@@ -192,6 +192,8 @@ describe('StoryBuilderPlans', () => {
         data: {
           plans: [{ ...mockPlans[0], id: 'plan-m', status: 'migrated' }],
           total: 1,
+          limit: 50,
+          offset: 0,
         },
       });
       render(<StoryBuilderPlans />);
@@ -238,6 +240,8 @@ describe('StoryBuilderPlans', () => {
         data: {
           plans: [{ ...mockPlans[0], status: 'rejected' }],
           total: 1,
+          limit: 50,
+          offset: 0,
         },
       });
       render(<StoryBuilderPlans />);

@@ -630,7 +630,8 @@ export class DialogueResolver {
     // Scope only when BOTH treeId and revision are supplied together.
     // Reject partial scope (treeId w/o rev, or rev w/o treeId) to avoid
     // accidentally selecting a chunk_key from wrong tree/revision.
-    if ((treeId != null && revision == null) || (treeId == null && revision != null)) {
+    // Revision 0 with no treeId is the explicit unscoped sentinel (no active dialogue).
+    if ((treeId != null && revision == null) || (treeId == null && revision != null && revision !== 0)) {
       throw new Error(`Partial scope for loadBaseChunkByKey (treeId=${treeId}, revision=${revision}) is not allowed`);
     }
     const hasScope = treeId != null && revision != null;

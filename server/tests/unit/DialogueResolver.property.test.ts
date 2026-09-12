@@ -140,6 +140,7 @@ const chunkRowArb = () =>
     tree_id: uuidArb(),
     chunk_key: nodeIdArb(),
     content_url: uuidArb().map((k) => `s3://content/chunks/${k}.json`),
+    revision: fc.integer({ min: 0, max: 10 }),
     nodes: nodesArb(15),
     leaves: leavesArb(),
   });
@@ -225,6 +226,7 @@ function wireQueryOLTP(
         tree_id: chunkRow.tree_id,
         chunk_key: chunkRow.chunk_key,
         content_url: chunkRow.content_url,
+        revision: chunkRow.revision,
       },
     ],
   });
