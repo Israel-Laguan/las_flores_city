@@ -14,5 +14,5 @@ ALTER TABLE dialogue_trees ADD COLUMN IF NOT EXISTS revision INTEGER NOT NULL DE
 
 COMMENT ON COLUMN dialogue_trees.revision IS
   'Monotonic revision counter, bumped +1 by compileDialogueTree() on every chunk recompile. '
-  'Used to scope chunk lookups to the player\'s active tree revision. '
+  'Used to scope chunk lookups to the player''s active tree revision. '
   'Never bumped on unrelated column touches (status, metadata, etc.).';

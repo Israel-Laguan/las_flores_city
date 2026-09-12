@@ -1,4 +1,4 @@
-import { queryOLTP, withOLTPTransaction } from '@las-flores/infra';
+import { queryOLTP, queryContent, withOLTPTransaction } from '@las-flores/infra';
 import {
   resolveDialogueTree,
   filterChoices,
@@ -34,30 +34,7 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
       });
     }
 
-    // Fetch the tree's current revision for revision-scoped chunk lookups.
-    const treeRevResult = await queryOLTP<{ revision: number }>(
-      'SELECT revision FROM dialogue_trees WHERE id = $1',
-      [dialogue.id]
-    );
-    const treeRevision = treeRevResult.rows[0]?.revision ?? 0;
-
-    // Set player-pinned revision to the tree's current revision at activation.
-    // Idempotent: only set if currently 0 (never set) or if the tree revision
-    // has changed since last activation.
-    await queryOLTP(
-      `INSERT INTO player_dialogue_states (user_id, dialogue_tree_id, pinned_tree_revision)
-       VALUES ($1, $2, $3)
-       ON CONFLICT (user_id, dialogue_tree_id) DO UPDATE
-       SET pinned_tree_revision = CASE
-         WHEN player_dialogue_states.pinned_tree_revision = 0 THEN $3
-         -- If already pinned to a newer revision, keep the newer value.
-         WHEN $3 > player_dialogue_states.pinned_tree_revision THEN $3
-         ELSE player_dialogue_states.pinned_tree_revision
-       END`,
-      [userId, dialogue.id, treeRevision]
-    );
-
-    // M15: premium gate check
+    // M15: premium gate check (before any state mutation)
     if (dialogue?.metadata?.requires_premium) {
       const entitlement = await queryOLTP(
         'SELECT is_premium_unlocked FROM user_entitlements WHERE user_id = $1',
@@ -72,7 +49,32 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
       }
     }
 
-    const startChunkResult = await queryOLTP(
+    // Fetch the tree's current revision for revision-scoped chunk lookups.
+    // Use queryContent (read-only content pool) per M19 / AGENTS.md.
+    const treeRevResult = await queryContent<{ revision: number }>(
+      'SELECT revision FROM dialogue_trees WHERE id = $1',
+      [dialogue.id]
+    );
+    const treeRevision = treeRevResult.rows[0]?.revision ?? 0;
+
+    // Set player-pinned revision to the tree's current revision at activation.
+    // Idempotent: only set if currently 0 (never set) or if the tree revision
+    // has changed since last activation.
+    // Must include current_node_id (NOT NULL) on insert path.
+    await queryOLTP(
+      `INSERT INTO player_dialogue_states (user_id, dialogue_tree_id, current_node_id, pinned_tree_revision)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (user_id, dialogue_tree_id) DO UPDATE
+       SET pinned_tree_revision = CASE
+         WHEN player_dialogue_states.pinned_tree_revision = 0 THEN $4
+         -- If already pinned to a newer revision, keep the newer value.
+         WHEN $4 > player_dialogue_states.pinned_tree_revision THEN $4
+         ELSE player_dialogue_states.pinned_tree_revision
+       END`,
+      [userId, dialogue.id, dialogue.start_node_id, treeRevision]
+    );
+
+    const startChunkResult = await queryContent(
       `SELECT id, chunk_key FROM dialogue_chunks
        WHERE tree_id = $1 AND chunk_key = $2 AND revision = $3
        LIMIT 1`,

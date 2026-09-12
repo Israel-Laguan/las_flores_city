@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { queryOLTP, queryOLAP, withOLTPTransaction } from '@las-flores/infra';
+import { queryOLAP, queryContent, withOLTPTransaction } from '@las-flores/infra';
 import {
   filterChoices,
   processChoiceInTransaction,
@@ -252,7 +252,8 @@ async function handleChunkBoundaryChoice(
   if (cursor?.pinned_tree_revision && cursor.pinned_tree_revision > 0) {
     treeRevision = cursor.pinned_tree_revision;
   } else if (currentChunk.tree_id) {
-    const treeRevResult = await queryOLTP<{ revision: number }>(
+    // Use queryContent for dialogue_trees read (content pool).
+    const treeRevResult = await queryContent<{ revision: number }>(
       'SELECT revision FROM dialogue_trees WHERE id = $1',
       [currentChunk.tree_id]
     );

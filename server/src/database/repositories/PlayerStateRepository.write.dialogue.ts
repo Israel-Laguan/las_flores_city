@@ -66,8 +66,8 @@ export async function initDialogueChunkState(
 ): Promise<void> {
   await client.query(
     `INSERT INTO player_dialogue_states
-         (user_id, dialogue_tree_id, current_node_id, current_chunk_id, choices_made)
-       VALUES ($1, $2, $3, $4, '[]')
+         (user_id, dialogue_tree_id, current_node_id, current_chunk_id, choices_made, pinned_tree_revision)
+       VALUES ($1, $2, $3, $4, '[]', 0)
        ON CONFLICT (user_id, dialogue_tree_id) DO UPDATE SET
          current_node_id  = EXCLUDED.current_node_id,
          current_chunk_id = EXCLUDED.current_chunk_id,

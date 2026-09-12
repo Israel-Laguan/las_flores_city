@@ -15,8 +15,7 @@ criteria, "if it cannot beat `ILIKE`, say so" is a complete, valid answer.
 This spike is independent of SC-S1/S2/S3 and SC-103 — it only reads existing
 `characters` rows and existing `content/districts/**/location_*.yaml` name/alias data, and
 runs entirely in a scratch schema. **Corpus scope:** 196 character names + 75 canonical
-location names = 271 rows total (some deduplication may account for the recorded 271 count
-— confirm the actual corpus size from the measurement); no scenes, missions, dialogues, or
+location names = 271 rows total (matches the recorded 271 count — confirm the actual corpus size from the measurement); no scenes, missions, dialogues, or
 overlays were indexed. Any SC-706 threshold derived here is validated only for
 character/location aliases — applying it to other `entity_aliases` types without
 additional labeled pairs is unvalidated.
