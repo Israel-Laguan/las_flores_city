@@ -95,9 +95,23 @@ const queryOLTPMock = jest.fn(async (sql: string) => {
   return { rows: [] };
 });
 
+// M19: /dialogue/start reads the tree's current revision and the start
+// chunk row from the read-only content pool via queryContent, not
+// queryOLTP (see AGENTS.md). Model both lookups here.
+const queryContentMock = jest.fn(async (sql: string) => {
+  if (sql.includes('FROM dialogue_trees')) {
+    return { rows: [{ revision: 1 }] };
+  }
+  if (sql.includes('FROM dialogue_chunks')) {
+    return { rows: hasStartChunk ? [{ id: 'chunk-1', chunk_key: 'root' }] : [] };
+  }
+  return { rows: [] };
+});
+
 jest.mock('@las-flores/infra', () => ({
   queryOLTP: queryOLTPMock,
   queryOLAP: jest.fn(),
+  queryContent: queryContentMock,
   withOLTPTransaction: withOLTPTransactionMock,
   // M48: resolveDialogueTree preloads the speaker's relationship row via
   // the pool-based getter; empty result = missing row (fail-closed gates).

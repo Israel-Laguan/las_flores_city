@@ -90,22 +90,32 @@ describe('Compiler Integration Tests', () => {
   });
 
   it('recompile advances revision and retains prior revision rows (no delete of history)', async () => {
-    const first = await queryOLTP<{ count: string }>(
-      `SELECT count(*)::text AS count FROM dialogue_chunks WHERE tree_id = $1`,
-      [TEST_TREE_ID]
-    );
-    const firstCount = parseInt(first.rows[0].count, 10);
+    // Self-contained baseline: don't rely on row counts left behind by
+    // earlier tests in this describe block — there's no per-test DB
+    // reset, only beforeAll/afterAll. Instead, measure how many chunk
+    // rows ONE compile adds (whatever pre-existing state there is), then
+    // assert a second compile adds exactly that many more.
+    const countChunks = async () => {
+      const result = await queryOLTP<{ count: string }>(
+        `SELECT count(*)::text AS count FROM dialogue_chunks WHERE tree_id = $1`,
+        [TEST_TREE_ID]
+      );
+      return parseInt(result.rows[0].count, 10);
+    };
+
+    const beforeFirst = await countChunks();
+    await compileDialogueTree(TEST_TREE_ID);
+    const afterFirst = await countChunks();
+    const chunksPerCompile = afterFirst - beforeFirst;
+    expect(chunksPerCompile).toBeGreaterThan(0);
 
     await compileDialogueTree(TEST_TREE_ID);
+    const afterSecond = await countChunks();
 
-    const second = await queryOLTP<{ count: string }>(
-      `SELECT count(*)::text AS count FROM dialogue_chunks WHERE tree_id = $1`,
-      [TEST_TREE_ID]
-    );
-    const secondCount = parseInt(second.rows[0].count, 10);
-
-    // Each compile bumps rev and inserts a fresh set for the new rev; priors kept.
-    expect(secondCount).toBe(firstCount * 2);
+    // Each compile bumps rev and inserts a fresh set for the new rev;
+    // priors are kept, so the second compile should add exactly one more
+    // chunk set on top of what the first (in-test) compile produced.
+    expect(afterSecond - afterFirst).toBe(chunksPerCompile);
   });
 
   it('retains prior-revision chunks on recompile (history preserved for pinned players)', async () => {

@@ -178,7 +178,10 @@ export function compileTree(
 
 /**
  * Compile a single dialogue tree and write chunks to the database.
- * Uses DELETE+INSERT per tree for stale-free idempotency.
+ * Append-only revision history: each compile bumps the tree's revision
+ * and inserts a fresh chunk set under that revision. Prior revisions are
+ * retained, not deleted, so players pinned to an older revision keep
+ * working — callers should not expect old chunks to be cleaned up.
  *
  * Publish-first ordering (M23): the tree nodes blob + each compiled
  * chunk blob are externalized to MinIO/CDN BEFORE the DB rows are

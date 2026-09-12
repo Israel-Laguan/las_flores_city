@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { queryOLAP, queryContent, withOLTPTransaction } from '@las-flores/infra';
+import { queryOLAP, withOLTPTransaction } from '@las-flores/infra';
 import {
   filterChoices,
   processChoiceInTransaction,
@@ -245,20 +245,30 @@ async function handleChunkBoundaryChoice(
   const tbDeducted = validationResult.tbDeducted ?? 0;
   const targetChunkKey = leaf.target_chunk as string;
 
-  // Read the player's pinned revision (from start time). Fall back to
-  // querying current tree revision (or 0) only for legacy cursors without a pin.
-  let treeRevision = 0;
+  // Guard against resolving the wrong tree's revision: `currentChunk` is
+  // loaded straight from the client-supplied `current_chunk_id`, so before
+  // trusting its `tree_id` we confirm it actually matches the player's
+  // recorded active dialogue tree. A mismatch means the request/cursor is
+  // in an inconsistent state (e.g. stale client state or cross-session
+  // reuse of a chunk id) — reject it rather than silently resolving the
+  // next chunk against a revision that belongs to a different tree.
   const cursor = await PlayerStateRepository.getDialogueCursor(userId);
-  if (cursor?.pinned_tree_revision && cursor.pinned_tree_revision > 0) {
-    treeRevision = cursor.pinned_tree_revision;
-  } else if (currentChunk.tree_id) {
-    // Use queryContent for dialogue_trees read (content pool).
-    const treeRevResult = await queryContent<{ revision: number }>(
-      'SELECT revision FROM dialogue_trees WHERE id = $1',
-      [currentChunk.tree_id]
-    );
-    treeRevision = treeRevResult.rows[0]?.revision ?? 0;
+  if (currentChunk.tree_id && cursor?.active_dialogue_id !== currentChunk.tree_id) {
+    return res.status(409).json({
+      success: false,
+      error: 'dialogue_tree_mismatch',
+      timestamp: new Date().toISOString(),
+    });
   }
+
+  // Every `dialogue_chunks` row is permanently scoped to the revision it was
+  // compiled at (094: UNIQUE(tree_id, chunk_key, revision), never deleted),
+  // so `currentChunk.revision` is the exact revision this session is already
+  // pinned to — it was resolved under that same revision to get here. Unlike
+  // `cursor.pinned_tree_revision`, this doesn't need a "pinned vs never
+  // pinned" sentinel: revision 0 read off the chunk itself is unambiguous,
+  // it's simply the revision that chunk belongs to.
+  const treeRevision = currentChunk.revision ?? 0;
 
   let resolvedNextChunk;
   try {

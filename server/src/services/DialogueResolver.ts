@@ -59,6 +59,12 @@ interface BaseDialogueChunkRow {
   // `loadBaseChunk` hydrates `nodes`/`leaves` from the CDN exclusively; an
   // unavailable CDN payload is an error (the in-DB JSONB columns are gone).
   content_url?: string | null;
+  // 094: the compile-time revision this specific chunk row belongs to.
+  // Since (tree_id, chunk_key, revision) is unique and `id` is the PK, a
+  // given chunk row's revision is fixed forever — it's the authoritative
+  // revision this chunk was resolved/reached under, independent of
+  // whatever the tree's *current* revision has since become.
+  revision: number;
 }
 
 interface OverlayRow {
@@ -560,7 +566,7 @@ export class DialogueResolver {
   ): Promise<BaseDialogueChunkRow> {
     const where = column === 'id' ? 'id' : 'chunk_key';
     const result = await queryContent<BaseDialogueChunkRow>(
-      `SELECT id, tree_id, chunk_key, content_url
+      `SELECT id, tree_id, chunk_key, content_url, revision
           FROM dialogue_chunks
          WHERE ${where} = $1
          LIMIT 1`,
@@ -625,7 +631,7 @@ export class DialogueResolver {
       ? [chunkKey, treeId, revision ?? 0]
       : [chunkKey];
     const result = await queryContent<BaseDialogueChunkRow>(
-      `SELECT id, tree_id, chunk_key, content_url
+      `SELECT id, tree_id, chunk_key, content_url, revision
           FROM dialogue_chunks
          WHERE ${where}
          LIMIT 1`,
