@@ -44,11 +44,10 @@ async function acquireRowLock(): Promise<() => void> {
 // Controls whether a start chunk row exists (chunk path vs. tree fallback path).
 let hasStartChunk = true;
 
-// Captured SQLs executed inside withOLTPTransaction (flat for legacy; batches for per-tx assertions).
-let lastTxClientQueries: string[] = [];
+// Captured SQLs executed inside withOLTPTransaction (batches for per-tx assertions).
 // Per-invocation batches: txQueryBatches[0] is queries from the FIRST withOLTPTransaction(callback) call
-// (the rev-read + chunk-read + pin-write in handleStartDialogue). This proves the reads were atomic
-// inside the *same* tx invocation as the pin (not spread across separate withOLTP calls).
+// (the rev-read + chunk-read + pin-UPDATE in handleStartDialogue). This proves the reads were atomic
+// inside the *same* tx invocation as the pinned rev write (not spread across separate withOLTP calls).
 let txQueryBatches: string[][] = [];
 
 const withOLTPTransactionMock = jest.fn(async (callback: any) => {
@@ -56,7 +55,6 @@ const withOLTPTransactionMock = jest.fn(async (callback: any) => {
   let release: (() => void) | null = null;
   const client = {
     async query(sql: string, params?: any[]) {
-      lastTxClientQueries.push(sql);
       txQueries.push(sql);
       if (/FOR UPDATE/i.test(sql) && !release) {
         release = await acquireRowLock();
@@ -109,10 +107,11 @@ const queryOLTPMock = jest.fn(async (sql: string) => {
   return { rows: [] };
 });
 
-// queryContent is used by resolver internals (CDN metadata + overlays)
-// but /dialogue/start reads rev + start chunk via client.query inside withOLTPTransaction (OLTP primary)
-// for read-after-write visibility after compile + atomic pin.
-const queryContentMock = jest.fn(async (_sql: string) => ({ rows: [] }));
+  // queryContent is used by resolver internals (CDN metadata + overlays)
+  // but /dialogue/start reads rev + start chunk via client.query inside withOLTPTransaction (OLTP primary)
+  // for read-after-write visibility after compile + atomic pinned-rev write (node/chunk writes are in later tx).
+  const queryContentMock = jest.fn(async (_sql: string) => ({ rows: [] }));
+
 
 jest.mock('@las-flores/infra', () => ({
   queryOLTP: queryOLTPMock,
@@ -230,28 +229,28 @@ describe.each([
     queryOLTPMock.mockClear();
     queryContentMock.mockClear();
     withOLTPTransactionMock.mockClear();
-    lastTxClientQueries = [];
     txQueryBatches = [];
     jest.resetModules();
     const mod = await import('../../src/routes/dialogue-start.js');
     handleStartDialogue = mod.handleStartDialogue;
   });
 
-  it('reads the revision and start chunk inside withOLTPTransaction (atomic with pin)', async () => {
+  it('reads the revision and start chunk inside withOLTPTransaction (atomic with pinned rev)', async () => {
     await handleStartDialogue(makeReq(), makeRes());
 
-    // Rev/chunk/pin selection now atomic inside the tx client (no lag vs content replica).
+    // Rev/chunk + pinned-rev write now atomic inside the tx client (no lag vs content replica).
     expect(withOLTPTransactionMock).toHaveBeenCalled();
     // Positive proof: both critical queries (rev + chunk) fall inside the *first* tx's slice
-    // (the rev+chunk+pin tx in handleStartDialogue). The effects tx (second withOLTP call)
-    // does lock + cursor + applyEffects but never the rev/chunk SELECTs.
+    // (the rev+chunk+pin-UPDATE tx in handleStartDialogue). The effects tx (second withOLTP call)
+    // does lock + cursor + init/set + applyEffects but never the rev/chunk SELECTs.
     // Per-batch capture (not flat global) prevents false-positive if reads were split across tx calls.
     expect(txQueryBatches.length).toBeGreaterThanOrEqual(1);
     const firstTx = txQueryBatches[0];
     expect(firstTx.some((q) => q.includes('SELECT revision FROM dialogue_trees'))).toBe(true);
     expect(firstTx.some((q) => q.includes('FROM dialogue_chunks'))).toBe(true);
-    // The pin INSERT is in the exact same tx batch (atomic with the reads).
-    expect(firstTx.some((q) => /INSERT INTO player_dialogue_states/i.test(q))).toBe(true);
+    // The pin UPDATE (only pinned, no node/chunk) is in the exact same tx batch
+    // (atomic with the reads). Node/chunk writes moved to the effects tx (with ps cursor).
+    expect(firstTx.some((q) => /UPDATE player_dialogue_states[\s\S]*?pinned_tree_revision/i.test(q))).toBe(true);
     // No direct queryContent for these.
     expect(queryContentMock).not.toHaveBeenCalledWith(
       expect.stringContaining('SELECT revision FROM dialogue_trees'),

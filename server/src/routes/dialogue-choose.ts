@@ -116,13 +116,17 @@ export async function handleChoose(req: any, res: any): Promise<any> {
       });
     }
 
-    const leaf = baseLeaves[matchedChoice.next_node_id];
+    let leaf = baseLeaves[matchedChoice.next_node_id];
+    if (!leaf) {
+      const cid = matchedChoice.id || choice_id;
+      leaf = findLeafByChoiceId(baseLeaves, cid);
+    }
 
     if (!leaf) {
       return handleIntraChunkChoice(id, userId, current_chunk_id, choice_id, matchedChoice, currentChunk, effectiveNodes, baseLeaves, cursor, res);
     }
 
-    return handleChunkBoundaryChoice(id, userId, current_chunk_id, choice_id, currentChunk, leaf, cursor, res);
+    return handleChunkBoundaryChoice(id, userId, current_chunk_id, choice_id, currentChunk, leaf, cursor, res, effectiveNodes);
   } catch (error: any) {
     const mapped = mapDialogueWriteError(error);
     if (mapped) {
@@ -178,6 +182,15 @@ async function handleIntraChunkChoice(
 
   emitIntraChunkTelemetry(userId, dialogueId, choiceId, currentChunkId, choiceResult);
   emitIntraChunkSideEffects(userId, dialogueId, choiceId, choiceResult);
+
+  // intra path: scan effective (overlay-merged) for join_mystery too, for consistency with boundary
+  let allChoices: any[] = [];
+  for (const node of Object.values(effectiveNodes)) {
+    if (node && Array.isArray((node as any).choices)) {
+      allChoices = allChoices.concat((node as any).choices);
+    }
+  }
+  handleJoinMystery(allChoices, choiceId, userId);
 
   const intraChunkPayload: ChunkPayload = {
     id: currentChunk.id,
@@ -290,7 +303,8 @@ async function handleChunkBoundaryChoice(
   currentChunk: any,
   leaf: any,
   cursor: any,
-  res: any
+  res: any,
+  effectiveSourceNodes?: Record<string, any>
 ) {
   const validationResult = await IronGateValidator.validateChoice(userId, currentChunkId, choiceId, leaf);
 
@@ -342,7 +356,7 @@ async function handleChunkBoundaryChoice(
     userId, choiceId, dialogueId,
     validationResult.alignmentChange,
     validationResult.breakthroughStatus,
-    currentChunk.nodes as Record<string, any>
+    (effectiveSourceNodes || currentChunk.nodes) as Record<string, any>
   );
 
   const isEnd = !nextNode || nextNode.is_end === true || (!nextNode?.choices || nextNode.choices.length === 0);

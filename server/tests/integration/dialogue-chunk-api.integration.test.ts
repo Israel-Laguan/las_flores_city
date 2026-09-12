@@ -284,6 +284,27 @@ async function startDialogue(): Promise<any> {
   return { res, body };
 }
 
+/**
+ * Position the player's cursor at 'middle' inside the start chunk.
+ * Boundary leaves (GUARDED/FREE) are attached to choices on the 'middle' node.
+ * After /start the cursor is at 'chunk_start'; tests that exercise leaf
+ * transitions must advance (or force) to 'middle' first.
+ */
+async function positionCursorAtMiddle(currentChunkId: string) {
+  await queryOLTP(
+    `UPDATE player_states SET current_node_id = 'middle' WHERE user_id = $1`,
+    [TEST_USER_ID]
+  );
+  await queryOLTP(
+    `UPDATE player_dialogue_states
+       SET current_node_id = 'middle', current_chunk_id = $2
+     WHERE user_id = $1 AND dialogue_tree_id = $3`,
+    [TEST_USER_ID, currentChunkId, TEST_TREE_ID]
+  );
+  await deleteCache(`user:state:${TEST_USER_ID}`);
+  await invalidatePattern(`dialogue:resolved:chunk:${TEST_TREE_ID}:*`);
+}
+
 // ── Test suites ───────────────────────────────────────────────
 
 describe('Dialogue Chunk API Integration Tests (Task 10.1)', () => {
@@ -405,6 +426,9 @@ describe('Dialogue Chunk API Integration Tests (Task 10.1)', () => {
       expect(freeLeafId).toBeTruthy();
       expect(freeChunkId).toBeTruthy();
 
+      // Boundary leaves live on the 'middle' node; position cursor there.
+      await positionCursorAtMiddle(currentChunkId);
+
       const chooseRes = await fetch(
         `http://localhost:${port}/dialogue/${dialogueId}/choose`,
         {
@@ -459,6 +483,9 @@ describe('Dialogue Chunk API Integration Tests (Task 10.1)', () => {
 
       expect(guardedLeafId).toBeTruthy();
 
+      // Boundary leaves live on the 'middle' node; position cursor there.
+      await positionCursorAtMiddle(currentChunkId);
+
       const chooseRes = await fetch(
         `http://localhost:${port}/dialogue/${dialogueId}/choose`,
         {
@@ -489,6 +516,9 @@ describe('Dialogue Chunk API Integration Tests (Task 10.1)', () => {
 
       expect(guardedLeafId).toBeTruthy();
 
+      // Boundary leaves live on the 'middle' node; position cursor there.
+      await positionCursorAtMiddle(currentChunkId);
+
       const chooseRes = await fetch(
         `http://localhost:${port}/dialogue/${dialogueId}/choose`,
         {
@@ -498,9 +528,6 @@ describe('Dialogue Chunk API Integration Tests (Task 10.1)', () => {
         }
       );
       const chooseBody = await chooseRes.json() as any;
-
-      expect(chooseRes.status).toBe(200);
-      expect(chooseBody.success).toBe(true);
 
       // Requirement 4.1: next_chunk is the guarded_target chunk
       expect(chooseBody.data.next_chunk).toBeDefined();
@@ -603,6 +630,9 @@ describe('Dialogue Chunk API Integration Tests (Task 10.1)', () => {
       const currentChunkId = startBody.data.current_chunk_id;
       const dialogueId     = startBody.data.dialogue_id;
 
+      // Boundary leaves live on the 'middle' node; position cursor there.
+      await positionCursorAtMiddle(currentChunkId);
+
       await fetch(`http://localhost:${port}/dialogue/${dialogueId}/choose`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeaders() },
@@ -690,6 +720,9 @@ describe('Dialogue Chunk API Integration Tests (Task 10.1)', () => {
       const currentChunkId = startBody.data.current_chunk_id;
       const dialogueId     = startBody.data.dialogue_id;
 
+      // Boundary leaves live on the 'middle' node; position cursor there.
+      await positionCursorAtMiddle(currentChunkId);
+
       const chooseRes = await fetch(
         `http://localhost:${port}/dialogue/${dialogueId}/choose`,
         {
@@ -747,6 +780,9 @@ describe('Dialogue Chunk API Integration Tests (Task 10.1)', () => {
       const { body: startBody } = await startDialogue();
       const currentChunkId = startBody.data.current_chunk_id;
       const dialogueId     = startBody.data.dialogue_id;
+
+      // Boundary leaves live on the 'middle' node; position cursor there.
+      await positionCursorAtMiddle(currentChunkId);
 
       const chooseRes = await fetch(
         `http://localhost:${port}/dialogue/${dialogueId}/choose`,

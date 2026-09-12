@@ -49,8 +49,14 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
       }
     }
 
-    // Pin + chunk lookup in one tx for read-after-write after compile and so
-    // pinned_tree_revision + current_chunk_id are written together.
+    // Read rev + start chunk inside one tx (for read-after-write visibility
+    // after content compile). Then upsert *only* pinned_tree_revision (CASE
+    // monotonic: set if 0 or strictly higher). Never write current_node_id or
+    // current_chunk_id from here — those must be written atomically with
+    // ps.current_node_id inside the handleStart* txs below. This fixes the
+    // retry race: an early pds commit of new chunk+node could be observed by
+    // /active together with stale ps.current_node_id (yielding null node) or
+    // leave inconsistent pds on resolver failure.
     let startChunkId: string | undefined;
     let startChunkKey: string | undefined;
     let treeRevision = 0;
@@ -73,30 +79,27 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
         startChunkKey = startChunkResult.rows[0].chunk_key;
       }
 
-      // Write both the pinned rev and the start chunk id in the same statement
-      // (append-only rev history means we select the chunk for exactly this rev).
-      const chunkForPds = startChunkId || null;
+      // Upsert ONLY pinned (keep startChunk selection logic for path decision).
+      // For existing rows (restart/retry of active tree) this UPDATEs pinned
+      // without touching node/chunk. For fresh, no-op here; pinned is set from
+      // this treeRevision inside the later initialize/init calls.
       await client.query(
-        `INSERT INTO player_dialogue_states
-           (user_id, dialogue_tree_id, current_node_id, current_chunk_id, pinned_tree_revision)
-         VALUES ($1, $2, $3, $4, $5)
-         ON CONFLICT (user_id, dialogue_tree_id) DO UPDATE
-         SET current_node_id = EXCLUDED.current_node_id,
-             current_chunk_id = EXCLUDED.current_chunk_id,
-             pinned_tree_revision = CASE
-               WHEN player_dialogue_states.pinned_tree_revision = 0 THEN EXCLUDED.pinned_tree_revision
-               WHEN EXCLUDED.pinned_tree_revision > player_dialogue_states.pinned_tree_revision THEN EXCLUDED.pinned_tree_revision
-               ELSE player_dialogue_states.pinned_tree_revision
-             END`,
-        [userId, dialogue.id, dialogue.start_node_id, chunkForPds, treeRevision]
+        `UPDATE player_dialogue_states
+         SET pinned_tree_revision = CASE
+           WHEN pinned_tree_revision = 0 THEN $3
+           WHEN $3 > pinned_tree_revision THEN $3
+           ELSE pinned_tree_revision
+         END
+         WHERE user_id = $1 AND dialogue_tree_id = $2`,
+        [userId, dialogue.id, treeRevision]
       );
     });
 
     if (!startChunkId || !startChunkKey) {
-      return handleStartFallback(userId, dialogue, res);
+      return handleStartFallback(userId, dialogue, treeRevision, res);
     }
 
-    return handleStartChunk(userId, dialogue, startChunkId, startChunkKey, res);
+    return handleStartChunk(userId, dialogue, startChunkId, startChunkKey, treeRevision, res);
   } catch (error: any) {
     const mapped = mapDialogueWriteError(error);
     if (mapped) {
@@ -115,7 +118,7 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
   }
 }
 
-async function handleStartFallback(userId: string, dialogue: any, res: any) {
+async function handleStartFallback(userId: string, dialogue: any, pinnedRevision: number, res: any) {
   console.warn(`[dialogue/start] No chunk found for tree ${dialogue.id}, falling back to tree resolver`);
 
   const resolved = await DialogueResolver.resolveTreeForUser(userId, dialogue.id);
@@ -147,7 +150,7 @@ async function handleStartFallback(userId: string, dialogue: any, res: any) {
     const existingCursor = await PlayerStateRepository.lockDialogueCursor(client, userId);
     const isRestart = existingCursor?.active_dialogue_id === dialogue.id;
 
-    await initializeDialogueState(client, userId, dialogue.id, rootNodeId);
+    await initializeDialogueState(client, userId, dialogue.id, rootNodeId, pinnedRevision);
     if (isRestart) {
       // Mid-dialogue restart: root stat_set already applied on the first
       // start and persists (initializeDialogueState resets the cursor +
@@ -188,7 +191,7 @@ async function handleStartFallback(userId: string, dialogue: any, res: any) {
   );
 }
 
-async function handleStartChunk(userId: string, dialogue: any, startChunkId: string, startChunkKey: string, res: any) {
+async function handleStartChunk(userId: string, dialogue: any, startChunkId: string, startChunkKey: string, pinnedRevision: number, res: any) {
   let resolvedChunk;
   try {
     resolvedChunk = await DialogueResolver.resolveChunkForUser(userId, startChunkId, startChunkKey);
@@ -224,7 +227,7 @@ async function handleStartChunk(userId: string, dialogue: any, startChunkId: str
     const isRestart = existingCursor?.active_dialogue_id === dialogue.id;
 
     await PlayerStateRepository.setDialogueCursor(client, userId, rootNodeId, dialogue.id);
-    await PlayerStateRepository.initDialogueChunkState(client, userId, dialogue.id, rootNodeId, startChunkId);
+    await PlayerStateRepository.initDialogueChunkState(client, userId, dialogue.id, rootNodeId, startChunkId, pinnedRevision);
     if (isRestart) {
       // Mid-dialogue restart: skip re-applying root effects.
       return;

@@ -111,7 +111,7 @@ describe('Lore Path Validation', () => {
       expect(warnings).toEqual([]);
     });
 
-    test('should add warning when asset file does not exist', async () => {
+    test('should not warn for missing asset files (assets are gitignored staging drafts)', async () => {
       const yamlPath = path.join(testYamlDir, 'char_test_slug.yaml');
       const warnings: string[] = [];
       await validateLorePaths(yamlPath, {
@@ -120,9 +120,8 @@ describe('Lore Path Validation', () => {
         },
       }, warnings);
       
-      expect(warnings.length).toBeGreaterThan(0);
-      expect(warnings[0]).toContain('Asset file not found');
-      expect(warnings[0]).toContain('nonexistent.png');
+      // No asset warnings; only lore/narrative missing files are warned about.
+      expect(warnings.every(w => !w.includes('Asset file not found'))).toBe(true);
     });
 
     test('should skip non-string asset paths', async () => {
@@ -157,10 +156,7 @@ describe('Lore Path Validation', () => {
   });
 
   describe('combined validation', () => {
-    test('should validate lore_path, narrative_path, and asset_paths together', async () => {
-      // Create only the asset file
-      await fs.writeFile(path.join(testYamlDir, 'assets', 'background.png'), Buffer.from('test'));
-      
+    test('should validate lore_path and narrative_path (asset paths are not validated on disk)', async () => {
       const yamlPath = path.join(testYamlDir, 'char_test_slug.yaml');
       const warnings: string[] = [];
       await validateLorePaths(yamlPath, {
@@ -171,12 +167,11 @@ describe('Lore Path Validation', () => {
         },
       }, warnings);
       
-      // Should have warnings for missing lore and narrative paths
+      // Should have warnings only for missing lore and narrative paths
       expect(warnings.length).toBe(2);
       expect(warnings.some(w => w.includes('Lore file not found'))).toBe(true);
       expect(warnings.some(w => w.includes('Narrative file not found'))).toBe(true);
-      // No warning for asset path since we created the file
-      expect(warnings.some(w => w.includes('background.png'))).toBe(false);
+      expect(warnings.some(w => w.includes('Asset file not found'))).toBe(false);
     });
   });
 });

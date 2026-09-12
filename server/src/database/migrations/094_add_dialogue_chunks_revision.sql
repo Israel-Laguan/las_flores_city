@@ -23,6 +23,20 @@
 
 ALTER TABLE dialogue_chunks ADD COLUMN IF NOT EXISTS revision INTEGER NOT NULL DEFAULT 0;
 
+-- Backfill NULLs immediately after ADD (before any SET NOT NULL or index build).
+-- If a prior partial run (or manual DDL) left the column as nullable, ADD IF NOT EXISTS
+-- is a no-op so the NOT NULL DEFAULT from the ADD never took effect. We must backfill
+-- first (so SET NOT NULL succeeds), then explicitly SET DEFAULT + SET NOT NULL
+-- (both idempotent if already correct). This guarantees the column is always
+-- NOT NULL DEFAULT 0 at the end of the file, regardless of prior state.
+-- These steps are before the CREATE UNIQUE INDEX CONCURRENTLY so the index
+-- is built under the final NOT NULL contract (NULLs would be treated specially
+-- by unique semantics and revision= queries would miss NULL rows).
+UPDATE dialogue_chunks SET revision = 0 WHERE revision IS NULL;
+
+ALTER TABLE dialogue_chunks ALTER COLUMN revision SET DEFAULT 0;
+ALTER TABLE dialogue_chunks ALTER COLUMN revision SET NOT NULL;
+
 -- Clean up any leftover INVALID index from a prior failed CONCURRENTLY build.
 -- Without this, IF NOT EXISTS would skip, and the later ADD CONSTRAINT USING INDEX would fail permanently.
 -- Use pg_index.indisvalid (not pg_class.relisvalid) for compatibility with PG < 12.
@@ -75,8 +89,11 @@ COMMENT ON COLUMN dialogue_chunks.revision IS
   'Players pin a revision at /dialogue/start; chunk resolution uses the '
   'pinned value so active sessions are unaffected by later recompiles.';
 
--- Resume safety: if a prior partial run added the column without backfill
--- (e.g. crash after ADD but before any writes), ensure 0 for legacy rows.
-UPDATE dialogue_chunks SET revision = 0 WHERE revision IS NULL;
-
+-- Resume safety (updated for partial-run column-definition case):
+-- The backfill + ALTER COLUMN SET DEFAULT + SET NOT NULL (right after ADD)
+-- run before index creation. This makes re-runs safe even if a prior partial
+-- execution (or manual add) left revision nullable: data is backfilled first,
+-- definition is forced to NOT NULL DEFAULT 0, and the unique index is built
+-- under the final contract. No late UPDATE remains (would be duplicate).
+ 
 -- Note: no outer BEGIN/COMMIT — this file runs non-transactionally.
