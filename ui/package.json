@@ -15,8 +15,8 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "react": "~19.2.7",
-    "react-dom": "~19.2.7"
+    "react": "~19.2.8",
+    "react-dom": "^19.2.8"
   },
   "peerDependenciesMeta": {
     "react-dom": {
@@ -24,9 +24,9 @@
     }
   },
   "devDependencies": {
-    "@types/react": "~19.2.17",
+    "@types/react": "~19.2.18",
     "eslint": "~10.8.0",
-    "react": "~19.2.7",
+    "react": "~19.2.8",
     "typescript": "~5.9.3"
   }
 }
