@@ -2,10 +2,12 @@
  * Mission reward anti-double integration test — GAP 2 (M34)
  *
  * The test that would have caught M33 S1 grant_item gap.
- * Processes the SAME choice twice and asserts:
+ * Submits the same start-chunk choice twice and asserts:
+ *   - The replay is rejected (409 dialogue_chunk_mismatch) because the
+ *     cursor already advanced off that chunk after the first grant
  *   - Exactly one balance delta
  *   - Exactly one player_vault row
- *   - Exactly one mission_reward_claims row for the grant key
+ *   - No additional mission_reward_claims rows on the replay
  *
  * Uses dedicated synthetic UUIDs per AGENTS.md isolation rules.
  * Own test user created in beforeAll, cleaned in afterAll.
@@ -112,8 +114,11 @@ describe('Mission reward anti-double (integration)', () => {
       current_chunk_id: chunkId,
       choice_id: 'take',
     });
-    expect(res2.status).toBe(200);
-    await res2.json();
+    // Replaying the start chunk after the cursor moved is a mismatch, not a
+    // second grant. 409 is the anti-double path for chunk-boundary choices.
+    expect(res2.status).toBe(409);
+    const res2Body = await res2.json();
+    expect(res2Body.error).toBe('dialogue_chunk_mismatch');
 
     const finalCredits = (await queryOLTP<{ credits: number }>(
       `SELECT credits FROM player_states WHERE user_id = $1`,

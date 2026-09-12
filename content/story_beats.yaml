@@ -19,6 +19,11 @@ beats:
     order: 30
     description: "After dialogue_first_contact.yaml — the player meets the barista and makes initial contact with the mystery network."
 
+  - slug: act1_isabella_vasquez_intro
+    label: "Act 1 – Isabella Vasquez Intro"
+    order: 40
+    description: "After dialogue_isabella_vasquez_intro.yaml — the player meets the Chronicle publisher and is filed as useful, wary, or hostile."
+
   - slug: act2_mystery_active
     label: "Act 2 – Mystery Active"
     order: 100
