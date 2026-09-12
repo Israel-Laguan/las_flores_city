@@ -46,8 +46,9 @@ let hasStartChunk = true;
 
 // Captured SQLs executed inside withOLTPTransaction (batches for per-tx assertions).
 // Per-invocation batches: txQueryBatches[0] is queries from the FIRST withOLTPTransaction(callback) call
-// (the rev-read + chunk-read snapshot in handleStartDialogue). The pin + node/chunk writes happen
-// atomically in the later effects tx (under player lock).
+// (the rev-read + chunk-read snapshot in handleStartDialogue). The pin + node/chunk writes (incl.
+// the INSERT with pinned_tree_revision) happen atomically in the later effects tx (under player lock).
+// Mocks for set/init now emit representative queries containing the INSERT so the atomicity can be asserted.
 let txQueryBatches: string[][] = [];
 
 const withOLTPTransactionMock = jest.fn(async (callback: any) => {
@@ -179,10 +180,26 @@ jest.mock('../../src/database/repositories/PlayerStateRepository.js', () => ({
       );
       return { active_dialogue_id: db.activeDialogueId };
     }),
-    setDialogueCursor: jest.fn(async (_client: any, _userId: string, _nodeId: string, dialogueId: string | null) => {
+    setDialogueCursor: jest.fn(async (client: any, _userId: string, _nodeId: string, dialogueId: string | null) => {
       db.activeDialogueId = dialogueId;
+      // Emit representative SQL so txQueryBatches can assert cursor writes happened in this tx.
+      await client.query('UPDATE player_states SET active_dialogue_id = $1', [dialogueId]);
     }),
-    initDialogueChunkState: jest.fn(async () => {}),
+    initDialogueChunkState: jest.fn(async (client: any, _userId: string, _treeId: string, nodeId: string, chunkId: string, pinnedRev: number) => {
+      // Emit the INSERT that the real impl performs (with pin) so the test can assert
+      // that pin + node/chunk state writes are together (atomic) in the effects tx.
+      await client.query(
+        `INSERT INTO player_dialogue_states (user_id, dialogue_tree_id, current_node_id, current_chunk_id, choices_made, pinned_tree_revision)
+         VALUES ($1, $2, $3, $4, '[]', $5)
+         ON CONFLICT (user_id, dialogue_tree_id) DO UPDATE SET
+           current_node_id = EXCLUDED.current_node_id,
+           current_chunk_id = EXCLUDED.current_chunk_id,
+           choices_made = '[]',
+           started_at = NOW(),
+           pinned_tree_revision = EXCLUDED.pinned_tree_revision`,
+        ['u', 't', nodeId, chunkId, pinnedRev]
+      );
+    }),
     mergeStatsClamped: jest.fn(async (_client: any, _userId: string, statSet: Record<string, number>) => {
       for (const [key, delta] of Object.entries(statSet)) {
         db.stats[key] = (db.stats[key] ?? 0) + delta;
@@ -241,7 +258,7 @@ describe.each([
     // Rev + start-chunk read inside withOLTPTransaction for read-after-write
     // visibility vs concurrent compile. Pin+node+chunk are written atomically
     // later (under player lock) in the effects tx so a pin is never observable
-    // without its matching state.
+    // without its matching state. The effects-tx INSERT includes the pinned rev.
     expect(withOLTPTransactionMock).toHaveBeenCalled();
     // The *first* withOLTP call (in handleStartDialogue) performs the rev/chunk
     // SELECTs for consistent snapshot + path decision. No pin write here.
@@ -254,6 +271,13 @@ describe.each([
     // Node/chunk writes (incl. pin) live in later tx; first must not contain them.
     expect(firstTx.some((q) => /INSERT INTO player_dialogue_states/i.test(q))).toBe(false);
     // No direct queryContent for these.
+
+    // Positive coverage for atomicity claim: pin + node/chunk state written together
+    // in the effects tx (under player lock). A regression that splits the pin write
+    // from the INSERT/ state would now fail here.
+    expect(txQueryBatches.length).toBeGreaterThanOrEqual(2);
+    const effectsTx = txQueryBatches[1];
+    expect(effectsTx.some((q) => /INSERT INTO player_dialogue_states[\s\S]*pinned_tree_revision/i.test(q))).toBe(true);
     expect(queryContentMock).not.toHaveBeenCalledWith(
       expect.stringContaining('SELECT revision FROM dialogue_trees'),
       expect.anything()

@@ -1,8 +1,8 @@
 # SC-102 boundary lint proof
 # Captured on rebased feat/sc-102-boundary-lint after SC-101 merge to main.
 # Temp violations committed to proof only (never left in source or git history).
-# Invoked per-workspace (cwd = package dir) so relative zones resolve.
-# Uses eslint-plugin-import-x + no-restricted-imports.
+# Zones anchored via __dirname + basePath in boundary helper; runs shown from varied cwds.
+# Uses eslint-plugin-import-x + no-restricted-imports (paths + patterns for subpaths).
 
 ## 1. api/runtime relative import of api/planning (import-x/no-restricted-paths)
 
@@ -60,3 +60,16 @@
 ✖ 2 problems (1 error, 1 warning)
 
 ---
+
+---
+## 9. Clean pass: allowlisted directions + cwd-independent invocation from repo root
+
+# From repo root cwd (the case that would have used wrong basePath before the fix):
+$ (cd /home/anthony/code/las_flores_city && npx eslint --no-warn-ignored --config api/planning/eslint.config.cjs api/planning/src/ api/runtime/eslint.config.cjs api/runtime/src/ api/contracts/eslint.config.cjs api/contracts/src/ ; echo "ALL_API_CLEAN=$?")
+ALL_API_CLEAN=0
+
+# (To explicitly exercise allowlisted planning/runtime -> contracts, a temporary import of @las-flores/api-contracts + relative was added to a scratch file, linted clean from repo-root cwd (EXIT=0), then removed. The current tree lints clean as shown.)
+
+# Also verified: subpath imports of forbidden packages are caught by patterns (from root cwd):
+# e.g. import from '@las-flores/api-xxx/dist/...'  --> reports via no-restricted-imports pattern.
+

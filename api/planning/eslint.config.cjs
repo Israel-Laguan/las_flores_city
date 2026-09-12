@@ -1,3 +1,4 @@
+const path = require('path');
 const { boundaryConfig } = require('../eslint.boundary.cjs');
 
 module.exports = [
@@ -5,8 +6,8 @@ module.exports = [
   boundaryConfig({
     zones: [
       {
-        target: './src',
-        from: '../runtime',
+        target: path.resolve(__dirname, 'src'),
+        from: path.resolve(__dirname, '../runtime'),
         message: 'SC-102: api/planning must not import api/runtime',
       },
     ],
