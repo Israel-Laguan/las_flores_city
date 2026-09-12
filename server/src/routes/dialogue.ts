@@ -53,13 +53,22 @@ dialogueRouter.get('/chunk/:chunkId', authMiddleware, async (req: AuthRequest, r
     const userId = req.userId!;
     const chunkKey = req.params.chunkId as string;
 
-    // Fetch the player's current dialogue cursor to get the active tree_id and revision.
+    // Fetch the player's current dialogue cursor to get the active tree_id and
+    // the pinned_tree_revision (set at /start). Use pinned for chunk resolution
+    // so prefetch matches the revision the player is actually on.
+    // Legacy cursors (pre-pin) fall back to latest tree revision.
     const cursor = await PlayerStateRepository.getDialogueCursor(userId);
-    const treeId = cursor?.active_dialogue_id;
-    const treeRevResult = cursor?.active_dialogue_id
-      ? await queryOLTP<{ revision: number }>('SELECT revision FROM dialogue_trees WHERE id = $1', [cursor.active_dialogue_id])
-      : { rows: [] };
-    const treeRevision = treeRevResult.rows[0]?.revision ?? 0;
+    const treeId = cursor?.active_dialogue_id || undefined;
+    let treeRevision = 0;
+    if (cursor?.pinned_tree_revision && cursor.pinned_tree_revision > 0) {
+      treeRevision = cursor.pinned_tree_revision;
+    } else if (treeId) {
+      const treeRevResult = await queryOLTP<{ revision: number }>(
+        'SELECT revision FROM dialogue_trees WHERE id = $1',
+        [treeId]
+      );
+      treeRevision = treeRevResult.rows[0]?.revision ?? 0;
+    }
 
     let resolvedChunk;
     try {

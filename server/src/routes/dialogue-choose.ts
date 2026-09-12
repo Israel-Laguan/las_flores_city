@@ -1,4 +1,5 @@
-import { queryOLAP, withOLTPTransaction } from '@las-flores/infra';
+/* eslint-disable max-lines */
+import { queryOLTP, queryOLAP, withOLTPTransaction } from '@las-flores/infra';
 import {
   filterChoices,
   processChoiceInTransaction,
@@ -244,17 +245,24 @@ async function handleChunkBoundaryChoice(
   const tbDeducted = validationResult.tbDeducted ?? 0;
   const targetChunkKey = leaf.target_chunk as string;
 
-  // Fetch the tree revision for revision-scoped chunk lookup.
-  const treeRevResult = await queryOLTP<{ revision: number }>(
-    'SELECT revision FROM dialogue_trees WHERE id = $1',
-    [currentChunk.tree_id]
-  );
-  const treeRevision = treeRevResult.rows[0]?.revision ?? 0;
+  // Read the player's pinned revision (from start time). Fall back to
+  // querying current tree revision (or 0) only for legacy cursors without a pin.
+  let treeRevision = 0;
+  const cursor = await PlayerStateRepository.getDialogueCursor(userId);
+  if (cursor?.pinned_tree_revision && cursor.pinned_tree_revision > 0) {
+    treeRevision = cursor.pinned_tree_revision;
+  } else if (currentChunk.tree_id) {
+    const treeRevResult = await queryOLTP<{ revision: number }>(
+      'SELECT revision FROM dialogue_trees WHERE id = $1',
+      [currentChunk.tree_id]
+    );
+    treeRevision = treeRevResult.rows[0]?.revision ?? 0;
+  }
 
   let resolvedNextChunk;
   try {
     resolvedNextChunk = await DialogueResolver.resolveNextChunk(
-      userId, targetChunkKey, currentChunk.tree_id, treeRevision
+      userId, targetChunkKey, currentChunk.tree_id || undefined, treeRevision
     );
   } catch (err: any) {
     if (err.message && err.message.includes('not found')) {

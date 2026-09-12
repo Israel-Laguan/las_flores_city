@@ -74,6 +74,7 @@ export async function getDialogueCursor(userId: string): Promise<{
   time_blocks: number;
   is_in_simulation: boolean;
   simulation_mystery_id: string | null;
+  pinned_tree_revision: number | null;
 } | null> {
   const result = await queryOLTP(
     `SELECT
@@ -82,7 +83,8 @@ export async function getDialogueCursor(userId: string): Promise<{
        ps.time_blocks,
        COALESCE(u.is_in_simulation, FALSE)  AS is_in_simulation,
        u.simulation_mystery_id,
-       pds.current_chunk_id
+       pds.current_chunk_id,
+       pds.pinned_tree_revision
      FROM player_states ps
      JOIN users u ON u.id = ps.user_id
      LEFT JOIN player_dialogue_states pds

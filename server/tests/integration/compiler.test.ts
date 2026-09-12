@@ -89,7 +89,7 @@ describe('Compiler Integration Tests', () => {
     expect(rows.rows.length).toBeGreaterThanOrEqual(2);
   });
 
-  it('is idempotent — second call leaves row count unchanged', async () => {
+  it('recompile advances revision and retains prior revision rows (no delete of history)', async () => {
     const first = await queryOLTP<{ count: string }>(
       `SELECT count(*)::text AS count FROM dialogue_chunks WHERE tree_id = $1`,
       [TEST_TREE_ID]
@@ -104,36 +104,35 @@ describe('Compiler Integration Tests', () => {
     );
     const secondCount = parseInt(second.rows[0].count, 10);
 
-    expect(secondCount).toBe(firstCount);
+    // Each compile bumps rev and inserts a fresh set for the new rev; priors kept.
+    expect(secondCount).toBe(firstCount * 2);
   });
 
-  it('cleans up stale chunks on recompile', async () => {
-    // Insert a fake stale chunk that a previous (buggy) compile
-    // might have left behind. M32: the chunk row stores only `content_url`
-    // (node/leaf maps are externalized); a null content_url is sufficient
-    // to exercise the stale-row cleanup.
+  it('retains prior-revision chunks on recompile (history preserved for pinned players)', async () => {
+    // Insert a fake chunk for a prior revision (simulates legacy or pinned snapshot).
+    // Recompile must NOT delete it.
     await withOLTPTransaction(async (client) => {
       await client.query(
-        `INSERT INTO dialogue_chunks (tree_id, chunk_key)
-         VALUES ($1, 'stale_chunk')`,
+        `INSERT INTO dialogue_chunks (tree_id, chunk_key, revision)
+         VALUES ($1, 'stale_chunk', 0)`,
         [TEST_TREE_ID]
       );
     });
 
-    // Verify it exists
+    // Verify it exists (prior rev)
     const before = await queryOLTP<{ chunk_key: string }>(
       "SELECT chunk_key FROM dialogue_chunks WHERE tree_id = $1 AND chunk_key = 'stale_chunk'",
       [TEST_TREE_ID]
     );
     expect(before.rows).toHaveLength(1);
 
-    // Recompile — stale should be gone (DELETE+INSERT strategy)
+    // Recompile — prior-rev chunk must still be present (we no longer DELETE across revs)
     await compileDialogueTree(TEST_TREE_ID);
 
     const after = await queryOLTP<{ chunk_key: string }>(
       "SELECT chunk_key FROM dialogue_chunks WHERE tree_id = $1 AND chunk_key = 'stale_chunk'",
       [TEST_TREE_ID]
     );
-    expect(after.rows).toHaveLength(0);
+    expect(after.rows).toHaveLength(1);
   });
 });

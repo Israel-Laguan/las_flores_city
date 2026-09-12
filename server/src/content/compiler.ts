@@ -242,26 +242,26 @@ export async function compileDialogueTree(treeId: string): Promise<CompiledChunk
     }
   }
 
-  // DB write: delete stale + insert fresh, in one transaction.
+  // DB write: insert fresh chunks for a new revision (prior revisions are
+  // retained so players pinned to an older revision keep working).
   // `content_url` references the (already-published) CDN objects.
   await withOLTPTransaction(async (client) => {
-    await client.query('DELETE FROM dialogue_chunks WHERE tree_id = $1', [treeId]);
+    // Bump first and capture the revision that will be recorded on chunks.
+    // Bump ONLY on recompile per 092 contract.
+    const bumpRes = await client.query<{ revision: number }>(
+      'UPDATE dialogue_trees SET revision = revision + 1 WHERE id = $1 RETURNING revision',
+      [treeId]
+    );
+    const treeRevision = bumpRes.rows[0]?.revision ?? 1;
 
     for (const chunk of chunks) {
       await client.query(
-        `INSERT INTO dialogue_chunks (tree_id, chunk_key, content_url)
-         VALUES ($1, $2, $3)`,
-        [chunk.tree_id, chunk.chunk_key, chunkContentUrls.get(chunk.chunk_key)]
+        `INSERT INTO dialogue_chunks (tree_id, chunk_key, content_url, revision)
+         VALUES ($1, $2, $3, $4)
+         ON CONFLICT (tree_id, chunk_key, revision) DO NOTHING`,
+        [chunk.tree_id, chunk.chunk_key, chunkContentUrls.get(chunk.chunk_key), treeRevision]
       );
     }
-
-    // Bump the tree's monotonic revision counter.
-    // This only happens when chunks are recompiled (i.e. compileDialogueTree
-    // is called), never on unrelated column touches.
-    await client.query(
-      'UPDATE dialogue_trees SET revision = revision + 1 WHERE id = $1',
-      [treeId]
-    );
 
     // Point the tree row at its externalized nodes blob.
     await client.query(

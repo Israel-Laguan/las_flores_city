@@ -26,6 +26,13 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
     }
 
     const dialogue = await resolveDialogueTree(characterId, sceneId, userId);
+    if (!dialogue) {
+      return res.status(404).json({
+        success: false,
+        error: 'Dialogue tree not found',
+        timestamp: new Date().toISOString(),
+      });
+    }
 
     // Fetch the tree's current revision for revision-scoped chunk lookups.
     const treeRevResult = await queryOLTP<{ revision: number }>(
@@ -63,14 +70,6 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
           timestamp: new Date().toISOString(),
         });
       }
-    }
-
-    if (!dialogue) {
-      return res.status(404).json({
-        success: false,
-        error: 'No dialogue available for this character at this location',
-        timestamp: new Date().toISOString(),
-      });
     }
 
     const startChunkResult = await queryOLTP(

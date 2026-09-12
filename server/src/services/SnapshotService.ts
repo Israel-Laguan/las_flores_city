@@ -426,9 +426,9 @@ async function upsertSnapshotChunk(
     .slice(0, 32);
 
   await queryOLTP(
-    `INSERT INTO dialogue_chunks (id, tree_id, chunk_key, content_url, created_at)
-     VALUES ($1, $2, $3, $4, NOW())
-     ON CONFLICT (tree_id, chunk_key) DO UPDATE
+    `INSERT INTO dialogue_chunks (id, tree_id, chunk_key, content_url, created_at, revision)
+     VALUES ($1, $2, $3, $4, NOW(), 0)
+     ON CONFLICT (tree_id, chunk_key, revision) DO UPDATE
        SET content_url = EXCLUDED.content_url,
            created_at = NOW()`,
     [idHash, treeId, chunkKey, contentUrl]

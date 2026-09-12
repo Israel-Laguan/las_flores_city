@@ -622,7 +622,7 @@ export class DialogueResolver {
       ? `chunk_key = $1 AND tree_id = $2 AND revision = $3`
       : `chunk_key = $1`;
     const params: (string | number)[] = treeId !== undefined
-      ? [chunkKey, treeId, revision]
+      ? [chunkKey, treeId, revision ?? 0]
       : [chunkKey];
     const result = await queryContent<BaseDialogueChunkRow>(
       `SELECT id, tree_id, chunk_key, content_url

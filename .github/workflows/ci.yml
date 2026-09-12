@@ -112,7 +112,10 @@ jobs:
           --health-retries 5
 
       minio:
-        image: ${{ vars.MINIO_IMAGE || 'docker.io/minio/minio:latest' }}
+        # Pinned to immutable digest per security review. If overriding via
+        # vars.MINIO_IMAGE in repo settings, the value MUST also be in
+        # name:tag@sha256:digest form (never bare :latest).
+        image: ${{ vars.MINIO_IMAGE || 'quay.io/minio/minio:latest@sha256:a1a8bd4ac40ad7881a245bab97323e18f971e4d4cba2c2007ec1bedd21cbaba2' }}
         env:
           MINIO_ROOT_USER: minioadmin
           MINIO_ROOT_PASSWORD: minioadmin
