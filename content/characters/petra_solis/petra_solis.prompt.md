@@ -2,7 +2,7 @@
 
 ## Portrait (petra_solis__default.png)
 
-A professional, composed woman in her early fifties with silver-streaked dark hair styled immaculately. She wears a tailored charcoal suit that projects competence and authority. Her expression is carefully managed — warm but guarded, the practiced concern of a career politician. She has high cheekbones, dark brown eyes, and a slight smile that doesn't quite reach her eyes. The lighting is corporate-soft, suggesting a government office environment. The composition is a head-and-shoulders portrait, three-quarter angle, looking slightly off-camera. Style: semi-realistic digital painting, muted earth tones with subtle warm highlights, clean background.
+Premium contemporary graphic novel realism, refined editorial line art illustration, head-and-shoulders portrait of a professional, composed woman in her early fifties with silver-streaked dark hair styled immaculately. She wears a tailored charcoal suit that projects competence and authority. Her expression is carefully managed — warm but guarded, the practiced concern of a career politician. She has high cheekbones, dark brown eyes, and a slight smile that doesn't quite reach her eyes. The lighting is corporate-soft, suggesting a government office environment. The composition is a head-and-shoulders portrait, three-quarter angle, looking slightly off-camera. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Mood
 

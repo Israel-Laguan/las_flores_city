@@ -11,10 +11,10 @@ aspect_ratio: 3:4
 # Prompt: Isabella Rodriguez
 
 ## Prompt (Draft)
-Medium-height Latina woman, solid build, dark expressive eyes, a straight nose, and a defined jaw, warm expression, a subtle, knowing half-smile, dark hair, practical clothing suited to a working environment, with personal items reflecting her role, small sport earbud clipped to earlobe. Weathered urban Latin American building under harsh tropical sun backdrop. premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height Latina woman. Solid build, dark expressive eyes, a straight nose, and a defined jaw, warm expression, a subtle, knowing half-smile. Dark hair, practical clothing suited to a working environment, with personal items reflecting her role, small sport earbud clipped to earlobe. Weathered urban Latin American building under harsh tropical sun backdrop.
 
 ## Prompt
-Medium-height Latina woman, solid build, dark expressive eyes, a straight nose, and a defined jaw, warm expression, a subtle, knowing half-smile, dark hair, practical clothing suited to a working environment, with personal items reflecting her role, small sport earbud clipped to earlobe. Weathered urban Latin American building under harsh tropical sun backdrop. premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height Latina woman. Solid build, dark expressive eyes, a straight nose, and a defined jaw. Warm expression with a subtle, knowing half-smile. Dark hair, practical clothing suited to a working environment, with personal items reflecting her role, small sport earbud clipped to earlobe. The backdrop is a weathered urban Latin American building under harsh tropical sun. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing

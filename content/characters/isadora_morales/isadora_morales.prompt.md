@@ -11,10 +11,10 @@ aspect_ratio: 3:4
 # Prompt: Isadora Morales
 
 ## Prompt (Draft)
-Petite Latina in her late 20s, solid build, dark brown eyes, flirtatious and lively, calm and determined expression, steady, composed bearing, dark brown long hair, practical clothing, small sport earbud clipped to earlobe. Her stance is poised and self-assured. Weathered urban Latin American building under harsh tropical sun backdrop. premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a petite Latina in her late 20s. Solid build, dark brown eyes, flirtatious and lively, calm and determined expression, steady, composed bearing. Dark brown long hair, practical clothing, small sport earbud clipped to earlobe. Her stance is poised and self-assured. Weathered urban Latin American building under harsh tropical sun backdrop.
 
 ## Prompt
-Petite Latina in her late 20s, solid build, dark brown eyes, flirtatious and lively, calm and determined expression, steady, composed bearing, dark brown long hair, practical clothing, small sport earbud clipped to earlobe. Her stance is poised and self-assured. Weathered urban Latin American building under harsh tropical sun backdrop. premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a petite Latina in her late 20s. Solid build, dark brown eyes, flirtatious and lively. Calm and determined expression, steady, composed bearing. Dark brown long hair, practical clothing, small sport earbud clipped to earlobe. Her stance is poised and self-assured. The backdrop is a weathered urban Latin American building under harsh tropical sun. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing

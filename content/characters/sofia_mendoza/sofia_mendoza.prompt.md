@@ -11,7 +11,7 @@ aspect_ratio: 2:3
 # Prompt: Sofia Mendoza
 
 ## Prompt — Base
-A young Latina woman, 18, slightly olive skin, brown curly hair in a ponytail, casual street clothes—a worn canvas jacket with vintage hero comic books tucked inside. Quiet exhaustion, forcing a small smile that doesn't reach her eyes. Resumes and community flyers beside a worn backpack. Warm golden kitchen-window light in a modest working-class South American home; old refrigerator, worn tablecloth, television showing football. She carries past loss and hope—community organizing, protecting her brother. Cinematic comic-book panel, modern colorful graphic novel style, vibrant colors, grounded realism, natural asymmetry, DC/Marvel-quality illustration.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a young Latina woman, 18, slightly olive skin, brown curly hair in a ponytail, casual street clothes—a worn canvas jacket with vintage hero comic books tucked inside. Quiet exhaustion, forcing a small smile that doesn't reach her eyes. Resumes and community flyers beside a worn backpack. Warm golden kitchen-window light in a modest working-class South American home; old refrigerator, worn tablecloth, television showing football. She carries past loss and hope—community organizing, protecting her brother. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no anime, no text, no watermarks, no blurry, no East Asian or Northern European features

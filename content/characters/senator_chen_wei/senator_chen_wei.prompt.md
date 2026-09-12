@@ -11,10 +11,10 @@ aspect_ratio: 3:4
 # Prompt: Senator Chen Wei
 
 ## Prompt (Draft)
-Medium-height Chinese senior statesman in his late 60s, solid build, dark brown calculating, ambitious eyes, calculating expression, narrowed eyes with quiet calculation, black hair, practical work clothing, small sport earbud clipped to earlobe. Weathered urban Latin American building under harsh tropical sun backdrop. premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height Chinese senior statesman in his late 60s. Solid build, dark brown calculating, ambitious eyes, calculating expression, narrowed eyes with quiet calculation. Black hair, practical work clothing, small sport earbud clipped to earlobe. Weathered urban Latin American building under harsh tropical sun backdrop.
 
 ## Prompt
-Medium-height Chinese senior statesman in his late 60s, solid build, dark brown calculating, ambitious eyes, calculating expression, narrowed eyes with quiet calculation, black hair, practical work clothing, small sport earbud clipped to earlobe. Weathered urban Latin American building under harsh tropical sun backdrop. premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height Chinese senior statesman in his late 60s. Solid build, dark brown calculating, ambitious eyes. Calculating expression, narrowed eyes with quiet calculation. Black hair, practical work clothing, small sport earbud clipped to earlobe. The backdrop is a weathered urban Latin American building under harsh tropical sun. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
