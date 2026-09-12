@@ -30,9 +30,20 @@ CREATE UNIQUE INDEX CONCURRENTLY IF NOT EXISTS dialogue_chunks_tree_id_chunk_key
 
 -- Attach the index as the unique constraint (quick catalog update).
 -- Only after the index is fully built and attached do we drop the old constraint.
-ALTER TABLE dialogue_chunks
-  ADD CONSTRAINT dialogue_chunks_tree_id_chunk_key_revision_key
-  UNIQUE USING INDEX dialogue_chunks_tree_id_chunk_key_revision_key;
+-- Guarded for resumability: if a prior partial run already attached it (but
+-- failed before recording schema_migrations), re-execution must not fail.
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+     WHERE conrelid = 'dialogue_chunks'::regclass
+       AND conname = 'dialogue_chunks_tree_id_chunk_key_revision_key'
+  ) THEN
+    ALTER TABLE dialogue_chunks
+      ADD CONSTRAINT dialogue_chunks_tree_id_chunk_key_revision_key
+      UNIQUE USING INDEX dialogue_chunks_tree_id_chunk_key_revision_key;
+  END IF;
+END $$;
 
 -- Drop the old 2-column constraint (from 030) only after the replacement is live.
 ALTER TABLE dialogue_chunks DROP CONSTRAINT IF EXISTS dialogue_chunks_tree_id_chunk_key_key;

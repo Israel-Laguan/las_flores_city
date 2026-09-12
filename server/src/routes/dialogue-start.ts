@@ -50,45 +50,49 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
     }
 
     // Fetch the tree's current revision for revision-scoped chunk lookups.
-    // Use queryOLTP for read-after-write visibility: compileDialogueTree writes
-    // the bumped revision + new chunks via the OLTP writer (withOLTPTransaction);
-    // a player start immediately after must observe the committed rev/chunk or it
-    // can pin an older revision or miss its start chunk (replica lag on CONTENT_DATABASE_URL).
-    const treeRevResult = await queryOLTP<{ revision: number }>(
-      'SELECT revision FROM dialogue_trees WHERE id = $1',
-      [dialogue.id]
-    );
-    const treeRevision = treeRevResult.rows[0]?.revision ?? 0;
+    // Use OLTP (in one tx with pin + chunk lookup) for read-after-write visibility
+    // after compileDialogueTree's OLTP write of rev+chunks. Cursor init also in same
+    // tx decision so current_chunk_id and pinned_tree_revision commit together.
+    let startChunkId: string | undefined;
+    let startChunkKey: string | undefined;
+    let treeRevision = 0;
+    await withOLTPTransaction(async (client) => {
+      const treeRevResult = await client.query<{ revision: number }>(
+        'SELECT revision FROM dialogue_trees WHERE id = $1',
+        [dialogue.id]
+      );
+      treeRevision = treeRevResult.rows[0]?.revision ?? 0;
 
-    // Set player-pinned revision to the tree's current revision at activation.
-    // Idempotent: only set if currently 0 (never set) or if the tree revision
-    // has changed since last activation.
-    // Must include current_node_id (NOT NULL) on insert path.
-    await queryOLTP(
-      `INSERT INTO player_dialogue_states (user_id, dialogue_tree_id, current_node_id, pinned_tree_revision)
-       VALUES ($1, $2, $3, $4)
-       ON CONFLICT (user_id, dialogue_tree_id) DO UPDATE
-       SET pinned_tree_revision = CASE
-         WHEN player_dialogue_states.pinned_tree_revision = 0 THEN $4
-         -- If already pinned to a newer revision, keep the newer value.
-         WHEN $4 > player_dialogue_states.pinned_tree_revision THEN $4
-         ELSE player_dialogue_states.pinned_tree_revision
-       END`,
-      [userId, dialogue.id, dialogue.start_node_id, treeRevision]
-    );
+      // Pin inside the tx so selection of rev for chunk is consistent.
+      await client.query(
+        `INSERT INTO player_dialogue_states (user_id, dialogue_tree_id, current_node_id, pinned_tree_revision)
+         VALUES ($1, $2, $3, $4)
+         ON CONFLICT (user_id, dialogue_tree_id) DO UPDATE
+         SET pinned_tree_revision = CASE
+           WHEN player_dialogue_states.pinned_tree_revision = 0 THEN $4
+           WHEN $4 > player_dialogue_states.pinned_tree_revision THEN $4
+           ELSE player_dialogue_states.pinned_tree_revision
+         END`,
+        [userId, dialogue.id, dialogue.start_node_id, treeRevision]
+      );
 
-    const startChunkResult = await queryOLTP(
-      `SELECT id, chunk_key FROM dialogue_chunks
-       WHERE tree_id = $1 AND chunk_key = $2 AND revision = $3
-       LIMIT 1`,
-      [dialogue.id, dialogue.start_node_id, treeRevision]
-    );
+      const startChunkResult = await client.query(
+        `SELECT id, chunk_key FROM dialogue_chunks
+         WHERE tree_id = $1 AND chunk_key = $2 AND revision = $3
+         LIMIT 1`,
+        [dialogue.id, dialogue.start_node_id, treeRevision]
+      );
 
-    if (startChunkResult.rows.length === 0) {
+      if (startChunkResult.rows.length > 0) {
+        startChunkId = startChunkResult.rows[0].id;
+        startChunkKey = startChunkResult.rows[0].chunk_key;
+      }
+    });
+
+    if (!startChunkId || !startChunkKey) {
       return handleStartFallback(userId, dialogue, res);
     }
 
-    const { id: startChunkId, chunk_key: startChunkKey } = startChunkResult.rows[0];
     return handleStartChunk(userId, dialogue, startChunkId, startChunkKey, res);
   } catch (error: any) {
     const mapped = mapDialogueWriteError(error);

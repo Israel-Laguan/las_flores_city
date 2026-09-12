@@ -80,7 +80,24 @@ export async function handleChoose(req: any, res: any): Promise<any> {
 
     const leaves = currentChunk.leaves as Record<string, any>;
     const chunkNodes = currentChunk.nodes as Record<string, any>;
-    const leaf = leaves[choice_id] ?? findLeafByChoiceId(leaves, choice_id);
+
+    // Bind choice to cursor.current_node_id first (via its rewritten next_node_id)
+    // to prevent accepting a choice_id that exists on a different node in the chunk.
+    // This protects FREE leaves and repeated choice ids across nodes.
+    const currentNodeId = cursor?.current_node_id;
+    const currentNode = currentNodeId ? chunkNodes[currentNodeId] : null;
+    const matchedChoice = currentNode && Array.isArray(currentNode.choices)
+      ? currentNode.choices.find((c: any) => c.id === choice_id)
+      : null;
+    if (!matchedChoice) {
+      return res.status(400).json({
+        success: false,
+        error: 'invalid_choice',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    const leaf = leaves[matchedChoice.next_node_id];
 
     if (!leaf) {
       return handleIntraChunkChoice(id, userId, current_chunk_id, choice_id, currentChunk, chunkNodes, leaves, cursor, res);

@@ -568,7 +568,7 @@ export class DialogueResolver {
     param: string
   ): Promise<BaseDialogueChunkRow> {
     const where = column === 'id' ? 'id' : 'chunk_key';
-    const result = await queryContent<BaseDialogueChunkRow>(
+    const result = await queryOLTP<BaseDialogueChunkRow>(
       `SELECT id, tree_id, chunk_key, content_url, revision
           FROM dialogue_chunks
          WHERE ${where} = $1
@@ -638,7 +638,7 @@ export class DialogueResolver {
     const params: (string | number)[] = hasScope
       ? [chunkKey, treeId, revision]
       : [chunkKey];
-    const result = await queryContent<BaseDialogueChunkRow>(
+    const result = await queryOLTP<BaseDialogueChunkRow>(
       `SELECT id, tree_id, chunk_key, content_url, revision
           FROM dialogue_chunks
          WHERE ${where}

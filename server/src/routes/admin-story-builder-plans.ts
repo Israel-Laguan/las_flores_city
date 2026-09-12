@@ -1,4 +1,3 @@
-/* eslint-disable max-lines-per-function */
 import express from 'express';
 import { adminStoryBuilderPlansTemplatesRouter } from './admin-story-builder-plans-templates.js';
 import { adminStoryBuilderPlansCrudRouter } from './admin-story-builder-plans-crud.js';

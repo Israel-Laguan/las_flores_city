@@ -155,30 +155,24 @@ beforeEach(() => {
 });
 
 /**
- * Wire queryOLTP / queryContent to return the expected rows for one call to
- * resolveChunkForUser.
- *
- * resolveChunkForUser makes these calls, split across the two pools:
- *   queryContent (content reads):
- *     1. loadBaseChunk        → SELECT … FROM dialogue_chunks WHERE id = ?   (awaited first)
- *     2. getActiveMysteries   → SELECT id FROM mysteries …                   (Promise.all[1])
- *     3. loadMysteryOverlays  → SELECT … FROM dialogue_overlays …
- *   queryOLTP (player reads):
- *     a. getActiveMysteryIds → SELECT mystery_id FROM player_mysteries …    (Promise.all[0])
- *     b. getUserNsfwStatus   → SELECT is_nsfw_unlocked …                     (Promise.all[2])
- *     c. getUserState        → SELECT alignment, story_beat …                (Promise.all[3])
- *
- * loadBaseChunk is awaited first (queryContent step 1), THEN the four user-context
- * queries run in parallel via Promise.all (queryContent step 2 interleaves with the
- * queryOLTP a/b/c steps), THEN loadMysteryOverlays (queryContent step 3).
- *
- * Jest mock returns are consumed in call order, so we push them in the exact
- * execution order above per-mock (order is independent across the two mocks).
- *
- * M32: loadBaseChunk's SQL row no longer contains `nodes`/`leaves` (columns
- * dropped); it returns a `content_url` pointer and the resolver hydrates the
- * `{nodes, leaves}` blob via fetchChunkFromContentUrl, which we stub here.
- */
+   * Wire queryOLTP / queryContent to return the expected rows for one call to
+   * resolveChunkForUser.
+   *
+   * Chunk metadata (dialogue_chunks) now read via queryOLTP (for read-after-write
+   * after compile writes and to avoid replica lag on content pool). Overlays still
+   * via queryContent.
+   *
+   *   queryOLTP:
+   *     1. loadBaseChunk (chunk row by id) → SELECT … FROM dialogue_chunks
+   *     a. getActiveMysteryIds ...
+   *     ...
+   *   queryContent (overlays):
+   *     getActiveMysteries, loadMysteryOverlays
+   *
+   * M32: loadBaseChunk's SQL row no longer contains `nodes`/`leaves` (columns
+   * dropped); it returns a `content_url` pointer and the resolver hydrates the
+   * `{nodes, leaves}` blob via fetchChunkFromContentUrl, which we stub here.
+   */
 function wireQueryOLTP(
   chunkRow: {
     id: string;
@@ -202,21 +196,10 @@ function wireQueryOLTP(
     leaves: chunkRow.leaves,
   });
 
-  // queryContent: content reads
-  // 1. loadBaseChunk (called before Promise.all) — post-M32 column set only.
-  mockContent.mockResolvedValueOnce({
-    rows: [
-      {
-        id: chunkRow.id,
-        tree_id: chunkRow.tree_id,
-        chunk_key: chunkRow.chunk_key,
-        content_url: chunkRow.content_url,
-      },
-    ],
-  });
-  // 2. getActiveMysteries (Promise.all[1])
+  // queryContent: overlays only (chunk metadata SELECT moved to queryOLTP)
+  // 1. getActiveMysteries (Promise.all)
   mockContent.mockResolvedValueOnce({ rows: [] });
-  // 3. loadMysteryOverlays — optionally inject overlay
+  // 2. loadMysteryOverlays — optionally inject overlay
   if (hasOverlay) {
     mockContent.mockResolvedValueOnce({
       rows: [
@@ -233,7 +216,18 @@ function wireQueryOLTP(
     mockContent.mockResolvedValueOnce({ rows: [] });
   }
 
-  // queryOLTP: player reads (user context)
+  // queryOLTP: player reads + chunk metadata (id/key/rev/url; per review for lag safety)
+  // loadBaseChunk (id) now via OLTP.
+  mockPlayer.mockResolvedValueOnce({
+    rows: [
+      {
+        id: chunkRow.id,
+        tree_id: chunkRow.tree_id,
+        chunk_key: chunkRow.chunk_key,
+        content_url: chunkRow.content_url,
+      },
+    ],
+  });
   // a. getActiveMysteryIds (Promise.all[0])
   mockPlayer.mockResolvedValueOnce({ rows: [] });
   // b. getUserNsfwStatus (Promise.all[2])

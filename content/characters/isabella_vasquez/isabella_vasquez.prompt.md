@@ -20,7 +20,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no East Asian features, no hourglass figure, no model body, no slim waist, no glamorous beauty, no idealized face, no thin, no athletic, no light brown–dark blonde hair, no warm tan skin
+--no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no East Asian features, no hourglass figure, no model body, no slim waist, no glamorous beauty, no idealized face, no thin, no athletic, no warm tan skin
 
 ## Variations
 
@@ -32,10 +32,10 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 - **`__default.png`**: Use the base portrait as reference. Neutral resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
-- **`__smirk.png`**: Use the base portrait as reference. A knowing, slightly mocking half-smile, looking at the camera, 3/4 take. Wide-set eyes glinting with dry wit, one corner of the full lips pulled up, the arched brow on one side lifting a little higher. Keep the same art style as reference, same tailored blazer, jewelry and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__smirk.png`**: Use the base portrait as reference. A knowing, slightly mocking half-smile, looking at the camera, 3/4 take. Wide-set eyes glinting with dry wit, one corner of the ordinary mouth pulled up, the arched brow on one side lifting a little higher. Keep the same art style as reference, same tailored blazer, jewelry and earbud. Clean confident linework, painterly soft shading, muted natural palette.
 
 - **`__calculating.png`**: Use the base portrait as reference. Sharp assessment mode, looking directly at the camera, 3/4 take. Wide-set eyes narrowed slightly, head tilted, mouth set in a neutral evaluating line, arched brows drawing together in considered judgment, faint lines around the eyes deepening. Keep the same art style as reference, same clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__happy.png`**: Use the base portrait as reference. A warm, gracious smile, looking at the camera, 3/4 take. Wide-set eyes bright, full lips curved warmly, the faint brow droop easing into relaxed openness. Keep the same art style as reference, same blazer, jewelry and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__happy.png`**: Use the base portrait as reference. A warm, gracious smile, looking at the camera, 3/4 take. Wide-set eyes bright, ordinary mouth curved warmly, the faint brow droop easing into relaxed openness. Keep the same art style as reference, same blazer, jewelry and earbud. Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__angry.png`**: Use the base portrait as reference. Her jaw tightens in restrained irritation, looking at the camera, 3/4 take. Wide-set eyes narrowed, arched brows angled down, full lips pressed thin, the soft jawline composed even in displeasure. Keep the same art style as reference, same clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__angry.png`**: Use the base portrait as reference. Her jaw tightens in restrained irritation, looking at the camera, 3/4 take. Wide-set eyes narrowed, arched brows angled down, ordinary mouth pressed thin, the soft jawline composed even in displeasure. Keep the same art style as reference, same clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.

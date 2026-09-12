@@ -98,13 +98,18 @@ const TREE_ID = 'tree-A';
 const CHOICE_ID = 'choice-1';
 
 function baseCurrentChunk(overrides: Partial<{ tree_id: string; revision: number }> = {}) {
+  const leafKey = `nodeX:${CHOICE_ID}`;
   return {
     id: CHUNK_ID,
     tree_id: TREE_ID,
     chunk_key: 'ck1',
-    nodes: {},
+    nodes: {
+      nodeX: {
+        choices: [{ id: CHOICE_ID, next_node_id: leafKey }],
+      },
+    },
     leaves: {
-      [`nodeX:${CHOICE_ID}`]: { target_chunk: 'ck2', type: 'FREE' },
+      [leafKey]: { target_chunk: 'ck2', type: 'FREE' },
     },
     revision: 3,
     ...overrides,
@@ -134,6 +139,7 @@ describe('handleChunkBoundaryChoice — tree revision resolution', () => {
       active_dialogue_id: TREE_ID,
       pinned_tree_revision: 0,
       current_chunk_id: CHUNK_ID,
+      current_node_id: 'nodeX',
       time_blocks: 5,
     });
 
@@ -158,6 +164,7 @@ describe('handleChunkBoundaryChoice — tree revision resolution', () => {
       active_dialogue_id: TREE_ID,
       pinned_tree_revision: 5,
       current_chunk_id: CHUNK_ID,
+      current_node_id: 'nodeX',
       time_blocks: 5,
     });
 

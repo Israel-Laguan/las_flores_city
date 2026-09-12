@@ -196,20 +196,21 @@ describe('M23 dialogue CDN externalization', () => {
     expect(newTree.rows[0].content_url).not.toBe(treeContentUrl);
     treeContentUrl = newTree.rows[0].content_url;
 
+    // Resolver now serves the new content. Resolve *before* invalidate so that
+    // any rev-1 cache entry is still present; success with v2 data proves rev 2
+    // uses a distinct cache key (would have hit stale v1 data if key collided).
+    const resolved = await DialogueResolver.resolveChunkForUser(TEST_USER_ID, chunkId, chunkKey);
+    expect(resolved.mergedNodes.start.text).toBe('v2');
+    expect(resolved.mergedNodes.next.text).toBe('end-v2');
+
     // Simulate post-migration invalidation (migrate.ts does `invalidateCaches`
     // which clears `dialogue:*`). The versioned key is defense-in-depth, but
     // the explicit clear here ensures the publish-first read path is exercised
     // regardless of key computation.
     await invalidatePattern(`dialogue:resolved:chunk:${TEST_TREE_ID}:*`);
 
-    // Resolver now serves the new content.
-    const resolved = await DialogueResolver.resolveChunkForUser(TEST_USER_ID, chunkId, chunkKey);
-    expect(resolved.mergedNodes.start.text).toBe('v2');
-    expect(resolved.mergedNodes.next.text).toBe('end-v2');
-
-    // Follow-up resolve (no extra invalidate) should also see v2 — either via
-    // the cache entry just written under the new versioned key, or a fresh CDN
-    // load if the key differed.
+    // Follow-up resolve (after the invalidate) should also see v2 via fresh populate
+    // under its distinct rev key.
     const resolved2 = await DialogueResolver.resolveChunkForUser(TEST_USER_ID, chunkId, chunkKey);
     expect(resolved2.mergedNodes.start.text).toBe('v2');
   });

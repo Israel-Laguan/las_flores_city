@@ -47,9 +47,15 @@ let hasStartChunk = true;
 const withOLTPTransactionMock = jest.fn(async (callback: any) => {
   let release: (() => void) | null = null;
   const client = {
-    async query(sql: string) {
+    async query(sql: string, params?: any[]) {
       if (/FOR UPDATE/i.test(sql) && !release) {
         release = await acquireRowLock();
+      }
+      if (sql.includes('SELECT revision FROM dialogue_trees')) {
+        return { rows: [{ revision: 1 }] };
+      }
+      if (sql.includes('FROM dialogue_chunks')) {
+        return { rows: hasStartChunk ? [{ id: 'chunk-1', chunk_key: 'root' }] : [] };
       }
       return { rows: [] };
     },
@@ -89,22 +95,17 @@ const queryOLTPMock = jest.fn(async (sql: string) => {
       ],
     };
   }
-  if (sql.includes('FROM dialogue_chunks')) {
-    return { rows: hasStartChunk ? [{ id: 'chunk-1', chunk_key: 'root' }] : [] };
-  }
-  // tree rev lookup for pinning at /start (read via OLTP for read-after-write
-  // vs compile writes; see dialogue-start.ts)
-  if (sql.includes('SELECT revision FROM dialogue_trees')) {
-    return { rows: [{ revision: 1 }] };
-  }
   return { rows: [] };
 });
 
-// queryContent is still used by resolver internals (CDN metadata + overlays)
-// but the revision-sensitive start chunk decision uses queryOLTP.
+// M19: /dialogue/start reads the tree revision and matching start chunk
+// through the read-only content pool, including after OLTP compile writes.
 const queryContentMock = jest.fn(async (sql: string) => {
-  if (sql.includes('FROM dialogue_trees')) {
+  if (sql.includes('SELECT revision FROM dialogue_trees')) {
     return { rows: [{ revision: 1 }] };
+  }
+  if (sql.includes('FROM dialogue_chunks')) {
+    return { rows: hasStartChunk ? [{ id: 'chunk-1', chunk_key: 'root' }] : [] };
   }
   return { rows: [] };
 });
@@ -228,6 +229,18 @@ describe.each([
     jest.resetModules();
     const mod = await import('../../src/routes/dialogue-start.js');
     handleStartDialogue = mod.handleStartDialogue;
+  });
+
+  it('reads the revision and start chunk inside withOLTPTransaction (atomic with pin)', async () => {
+    await handleStartDialogue(makeReq(), makeRes());
+
+    // Rev/chunk/pin selection now atomic inside the tx client (no lag vs content replica).
+    expect(withOLTPTransactionMock).toHaveBeenCalled();
+    // No longer direct queryContent for these (was changed for visibility+atomicity).
+    expect(queryContentMock).not.toHaveBeenCalledWith(
+      expect.stringContaining('SELECT revision FROM dialogue_trees'),
+      expect.anything()
+    );
   });
 
   it('applies root stat effects on a fresh run', async () => {
