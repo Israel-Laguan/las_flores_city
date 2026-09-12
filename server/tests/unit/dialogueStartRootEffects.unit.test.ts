@@ -190,7 +190,7 @@ jest.mock('../../src/database/repositories/PlayerStateRepository.js', () => ({
   },
 }));
 
-import { handleStartDialogue } from '../../src/routes/dialogue-start.js';
+let handleStartDialogue: (req: any, res: any) => Promise<any>;
 
 function makeReq() {
   return { userId: USER_ID, body: { characterId: CHARACTER_ID, sceneId: SCENE_ID } } as any;
@@ -216,11 +216,17 @@ describe.each([
   ['chunk path', true],
   ['tree fallback path', false],
 ])('/dialogue/start root effects — %s', (_label, chunkExists) => {
-  beforeEach(() => {
+  beforeEach(async () => {
     db.activeDialogueId = null;
     db.stats = {};
     rowLockTail = Promise.resolve();
     hasStartChunk = chunkExists;
+    queryOLTPMock.mockClear();
+    queryContentMock.mockClear();
+    withOLTPTransactionMock.mockClear();
+    jest.resetModules();
+    const mod = await import('../../src/routes/dialogue-start.js');
+    handleStartDialogue = mod.handleStartDialogue;
   });
 
   it('applies root stat effects on a fresh run', async () => {

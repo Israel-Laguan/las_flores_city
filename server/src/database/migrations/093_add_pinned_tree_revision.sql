@@ -15,15 +15,16 @@ ALTER TABLE player_dialogue_states ADD COLUMN IF NOT EXISTS pinned_tree_revision
 -- Without this, players who started before 093 would have pinned=0 (the default)
 -- even if their tree's revision was already >0; on next boundary cross they would
 -- fall through to the *current* tree revision instead of the one pinned at their
--- activation. We snapshot only the currently-active ones (joined via users.active_dialogue_id
--- or player_states) so historical finished-dialogue rows keep 0 and will be (re)pinned
--- on their next /dialogue/start.
+-- activation. We snapshot only the currently-active ones (joined via
+-- player_states.active_dialogue_id, which owns this column post-029) so
+-- historical finished-dialogue rows keep 0 and will be (re)pinned on their
+-- next /dialogue/start.
 UPDATE player_dialogue_states pds
    SET pinned_tree_revision = COALESCE(dt.revision, 0)
-  FROM users u
-  LEFT JOIN player_states ps ON ps.user_id = u.id
- WHERE pds.user_id = u.id
-   AND pds.dialogue_tree_id = COALESCE(u.active_dialogue_id, ps.active_dialogue_id)
+  FROM player_states ps
+  JOIN dialogue_trees dt ON dt.id = ps.active_dialogue_id
+ WHERE pds.user_id = ps.user_id
+   AND pds.dialogue_tree_id = ps.active_dialogue_id
    AND pds.pinned_tree_revision = 0;
 
 COMMENT ON COLUMN player_dialogue_states.pinned_tree_revision IS
