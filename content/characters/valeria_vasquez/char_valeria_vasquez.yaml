@@ -1,0 +1,13 @@
+id: 04d558a2-5cad-430e-899a-f695396e4860
+name: Valeria Vasquez
+title: Model, Society Face & Status Survivalist
+description: Surgically exaggerated hourglass doll who was already pretty (Isabella's grudge). Social profile still pays; post-divorce leak left her with a kid, condo fight, melancholy, and dating that dares love while fearing the past will return.
+metadata:
+  type: human
+  role: npc
+  faction: society
+  personality: status_survivalist_model
+asset_paths:
+  portrait: valeria_vasquez__default.png
+
+lore_path: valeria_vasquez.md

@@ -1,0 +1,220 @@
+id: "aa6b11fd-ef18-43ef-b722-0f74f42b7641"
+name: "Isabella Vasquez - Intro"
+description: "First conversation with Isabella Vasquez, owner of The Las Flores Chronicle. She tests usefulness, beauty, and discretion."
+scene_id: "00000000-0000-0000-0000-000000000000"
+character_id: "6aa475b4-ac67-47e1-9b8e-46cf2a967f2b"
+dialogue_scope: "character"
+start_node_id: "07e154ef-8af9-4e1e-9b69-dfefcd64862d"
+nodes:
+  07e154ef-8af9-4e1e-9b69-dfefcd64862d:
+    id: "07e154ef-8af9-4e1e-9b69-dfefcd64862d"
+    type: "character"
+    speaker_id: "6aa475b4-ac67-47e1-9b8e-46cf2a967f2b"
+    text: "You don't look lost. You look like someone who walked in on purpose. I'm Isabella Vasquez — The Chronicle. Pretty is a loan. Power is the principal. Which are you here to discuss?"
+    thought: "(Expression: calculating smile. She inventories the player's clothes, posture, and face in one glance — status first, then usefulness, then beauty.)"
+    choices:
+      - id: "reply_useful"
+        text: "I deal in information. I thought that might interest a publisher."
+        next_node_id: "c2b295b1-cba4-4261-aed5-0f3d7ebc9cba"
+        effects:
+          relationship_effect:
+            friendship: 1
+          state_set:
+            last_isabella_vasquez_encounter_at: NOW
+      - id: "reply_flirt"
+        text: "I was hoping for a drink first. Then we can decide what I am."
+        next_node_id: "df470a17-5000-43b6-a346-280ef33469b9"
+        required_relationship:
+          axes:
+            tension: "lte:60"
+          neutral_default: true
+        effects:
+          relationship_effect:
+            romance: 1
+          state_set:
+            last_isabella_vasquez_encounter_at: NOW
+      - id: "reply_cold"
+        text: "Neither. I don't perform for magazines."
+        next_node_id: "468dac2d-313e-44be-822c-1544969b92ff"
+        effects:
+          relationship_effect:
+            friendship: -1
+          state_set:
+            last_isabella_vasquez_encounter_at: NOW
+      - id: "reply_callout"
+        text: "That line about pretty and power — you rehearse that on everyone, or just people you size up?"
+        next_node_id: "41c04711-7a66-4d9d-979d-000514fc6eed"
+        effects:
+          relationship_effect:
+            friendship: 1
+          state_set:
+            last_isabella_vasquez_encounter_at: NOW
+
+  c2b295b1-cba4-4261-aed5-0f3d7ebc9cba:
+    id: "c2b295b1-cba4-4261-aed5-0f3d7ebc9cba"
+    type: "character"
+    speaker_id: "6aa475b4-ac67-47e1-9b8e-46cf2a967f2b"
+    text: "Good. My star reporter, Juan Pérez, digs until the elite sweat. I decide what prints. If you have something that makes a councilwoman or a syndicate lieutenant nervous, we can talk arrangements — not charity."
+    thought: "(Expression: interested. She has filed the player as potentially useful.)"
+    choices:
+      - id: "ask_deal"
+        text: "What kind of arrangement?"
+        next_node_id: "f00e21d8-1930-4dd0-ab1a-0c553f21d006"
+      - id: "ask_juan"
+        text: "Juan Pérez — he really free to chase any scandal, or only the ones you allow?"
+        next_node_id: "ca6cdb20-00e9-4441-992a-193d4f8afbf9"
+
+  df470a17-5000-43b6-a346-280ef33469b9:
+    id: "df470a17-5000-43b6-a346-280ef33469b9"
+    type: "character"
+    speaker_id: "6aa475b4-ac67-47e1-9b8e-46cf2a967f2b"
+    text: "A drink is cheap. Discretion is not. I don't do trophy partners — I do people who keep their mouths shut and their calendars flexible. Still interested?"
+    thought: "(Expression: amused, slightly mocking. Testing whether the player wants her or her access.)"
+    choices:
+      - id: "still_interested"
+        text: "Still interested. Tell me the rules."
+        next_node_id: "f00e21d8-1930-4dd0-ab1a-0c553f21d006"
+        effects:
+          relationship_effect:
+            romance: 1
+      - id: "ask_valeria_flirt"
+        text: "I heard there's another Vasquez who photographs easier. That a sore subject?"
+        next_node_id: "fab7f378-7513-4c49-a8f1-7d422f776f92"
+        effects:
+          relationship_effect:
+            friendship: -1
+
+  468dac2d-313e-44be-822c-1544969b92ff:
+    id: "468dac2d-313e-44be-822c-1544969b92ff"
+    type: "character"
+    speaker_id: "6aa475b4-ac67-47e1-9b8e-46cf2a967f2b"
+    text: "Everyone performs. Some of us just own the stage. Fine — stay boring. When you need a door opened in this city, remember who prints the guest list."
+    thought: "(Expression: polite dismissal. She already downgraded the player.)"
+    choices:
+      - id: "reconsider"
+        text: "Wait. Maybe I spoke too fast."
+        next_node_id: "f00e21d8-1930-4dd0-ab1a-0c553f21d006"
+        effects:
+          relationship_effect:
+            friendship: 1
+      - id: "leave_cold"
+        text: "I'll take my chances."
+        next_node_id: "f13d3748-3193-4f25-86b8-20a00a342237"
+
+  41c04711-7a66-4d9d-979d-000514fc6eed:
+    id: "41c04711-7a66-4d9d-979d-000514fc6eed"
+    type: "character"
+    speaker_id: "6aa475b4-ac67-47e1-9b8e-46cf2a967f2b"
+    text: "I size up everyone. Including the districts that breed stories and the ones that breed people who should stay out of mine. You don't like that? Good. Soft people don't last around Juan's deadlines — or my enemies."
+    thought: "(Expression: mask slip — classist edge, then smoothed into a smile. Testing whether the player flinches.)"
+    choices:
+      - id: "challenge_classism"
+        text: "Say that louder. I want to hear how the Chronicle's owner talks about 'those districts.'"
+        next_node_id: "8c84c9fb-cae7-4c7d-aabc-7d3a33bbe0dd"
+        effects:
+          relationship_effect:
+            friendship: -2
+      - id: "let_slide"
+        text: "I'm not soft. I'm listening. What's the offer?"
+        next_node_id: "f00e21d8-1930-4dd0-ab1a-0c553f21d006"
+        effects:
+          relationship_effect:
+            friendship: 1
+
+  ca6cdb20-00e9-4441-992a-193d4f8afbf9:
+    id: "ca6cdb20-00e9-4441-992a-193d4f8afbf9"
+    type: "character"
+    speaker_id: "6aa475b4-ac67-47e1-9b8e-46cf2a967f2b"
+    text: "Juan exposes what I tell him the city can survive reading. Ambitious boy. Excellent nose. He thinks we're partners in truth. Partners don't choose the kill page — owners do. Bring me a secret and I'll tell you if it lives."
+    thought: "(Expression: fond contempt. Protective of her control over Juan.)"
+    choices:
+      - id: "accept_after_juan"
+        text: "Then here's how we work together."
+        next_node_id: "f00e21d8-1930-4dd0-ab1a-0c553f21d006"
+      - id: "side_with_juan"
+        text: "Sounds like he deserves a better editor."
+        next_node_id: "8c84c9fb-cae7-4c7d-aabc-7d3a33bbe0dd"
+        effects:
+          relationship_effect:
+            friendship: -1
+
+  fab7f378-7513-4c49-a8f1-7d422f776f92:
+    id: "fab7f378-7513-4c49-a8f1-7d422f776f92"
+    type: "character"
+    speaker_id: "6aa475b4-ac67-47e1-9b8e-46cf2a967f2b"
+    text: "Valeria. My prima. She got the body the family wanted, then paid clinics to exaggerate it. I got the paper. She's got a kid, a condo she worships, and a past the whole web already rented. If you're here to collect pretty Vasquezes, wrong conversation — Juan wants her story, and I won't print rehab without a price she hasn't paid."
+    thought: "(Expression: cold. Gene-wound briefly visible, then armored again.)"
+    choices:
+      - id: "apologize_valeria"
+        text: "Fair. I won't poke that. What's the deal on the table?"
+        next_node_id: "f00e21d8-1930-4dd0-ab1a-0c553f21d006"
+        effects:
+          relationship_effect:
+            friendship: 1
+      - id: "press_valeria"
+        text: "So the Chronicle is where envy goes to get a masthead."
+        next_node_id: "8c84c9fb-cae7-4c7d-aabc-7d3a33bbe0dd"
+        effects:
+          relationship_effect:
+            friendship: -2
+
+  f00e21d8-1930-4dd0-ab1a-0c553f21d006:
+    id: "f00e21d8-1930-4dd0-ab1a-0c553f21d006"
+    type: "character"
+    speaker_id: "6aa475b4-ac67-47e1-9b8e-46cf2a967f2b"
+    text: "Simple. You bring me something true that someone powerful wants buried. I decide if it prints, trades, or sleeps in a drawer. In return: introductions, silence of my own, or a night that stays off the society page. Break discretion and I don't need Dong's people to ruin you — I have ink."
+    thought: "(Expression: business warmth. Trust ladder step 1 — useful stranger.)"
+    choices:
+      - id: "accept_offer"
+        text: "Deal. I'll be in touch."
+        next_node_id: "08ce0117-8b63-4a73-bc97-c72b5b494975"
+        effects:
+          relationship_effect:
+            friendship: 2
+      - id: "hesitate_offer"
+        text: "I'll think about whose secrets I'm willing to sell."
+        next_node_id: "f13d3748-3193-4f25-86b8-20a00a342237"
+
+  08ce0117-8b63-4a73-bc97-c72b5b494975:
+    id: "08ce0117-8b63-4a73-bc97-c72b5b494975"
+    type: "character"
+    speaker_id: "6aa475b4-ac67-47e1-9b8e-46cf2a967f2b"
+    text: "Smart. My office knows your name now — or it will by morning. Don't make me regret the ink."
+    thought: "(Expression: satisfied. Player filed as soft ally candidate.)"
+    is_end: true
+    effects:
+      flag_set:
+        isabella_vasquez_intro_complete: true
+        isabella_vasquez_offer_open: true
+      state_set:
+        isabella_vasquez_initial_tone: "useful"
+      story_beat: act1_isabella_vasquez_intro
+
+  f13d3748-3193-4f25-86b8-20a00a342237:
+    id: "f13d3748-3193-4f25-86b8-20a00a342237"
+    type: "character"
+    speaker_id: "6aa475b4-ac67-47e1-9b8e-46cf2a967f2b"
+    text: "Thinking is free. Access is not. When you're ready to be useful, find me — or Juan will find you first, asking questions with my smile on them."
+    thought: "(Expression: polite close. Door left ajar.)"
+    is_end: true
+    effects:
+      flag_set:
+        isabella_vasquez_intro_complete: true
+      state_set:
+        isabella_vasquez_initial_tone: "wary"
+      story_beat: act1_isabella_vasquez_intro
+
+  8c84c9fb-cae7-4c7d-aabc-7d3a33bbe0dd:
+    id: "8c84c9fb-cae7-4c7d-aabc-7d3a33bbe0dd"
+    type: "character"
+    speaker_id: "6aa475b4-ac67-47e1-9b8e-46cf2a967f2b"
+    text: "Cute speech. I've buried prettier mouths than yours. Enjoy the party — and check tomorrow's blotter. You might recognize a neighborhood."
+    thought: "(Expression: cold smile. Classism and threat braided together.)"
+    is_end: true
+    effects:
+      flag_set:
+        isabella_vasquez_intro_complete: true
+        isabella_vasquez_friction: true
+      state_set:
+        isabella_vasquez_initial_tone: "hostile"
+      story_beat: act1_isabella_vasquez_intro

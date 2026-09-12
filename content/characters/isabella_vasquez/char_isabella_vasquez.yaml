@@ -1,12 +1,12 @@
 id: 6aa475b4-ac67-47e1-9b8e-46cf2a967f2b
 name: Isabella Vasquez
 title: Owner, The Las Flores Chronicle
-description: Petite, soft-bodied Chronicle owner who turned envy and early beauty-standard critiques into social leverage. She trades gossip, scandals, and silence across politicians, influencers, and gangs — unmarried in her 40s, wanting a child, living on a knife-edge of favors.
+description: Fat, petite Chronicle owner — pale, light brown–dark blonde, pear build she hates. Right-wing power broker tangled with Solis, Chen, Flowers, and Dragon Head; skeletons include ruining pretty rivals and surviving a 2069 hit scare. Dates for power and safety; wants a child.
 metadata:
   type: human
   role: npc
   faction: media
-  personality: society_mogul
+  personality: society_mogul_rightwing
   lore_doc: organizations/las_flores_chronicle.md
 asset_paths:
   portrait: isabella_vasquez__default.png
