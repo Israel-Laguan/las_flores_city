@@ -120,8 +120,7 @@ describe('Lore Path Validation', () => {
         },
       }, warnings);
       
-      // No asset warnings; only lore/narrative missing files are warned about.
-      expect(warnings.every(w => !w.includes('Asset file not found'))).toBe(true);
+      expect(warnings).toEqual([]);
     });
 
     test('should skip non-string asset paths', async () => {

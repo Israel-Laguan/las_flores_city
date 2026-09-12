@@ -117,6 +117,11 @@ export async function handleChoose(req: any, res: any): Promise<any> {
     }
 
     let leaf = baseLeaves[matchedChoice.next_node_id];
+    if (!leaf && currentNodeId) {
+      const cid = matchedChoice.id || choice_id;
+      const scopedKey = `__leaf__:${currentNodeId}:${cid}`;
+      leaf = baseLeaves[scopedKey];
+    }
     if (!leaf) {
       const cid = matchedChoice.id || choice_id;
       leaf = findLeafByChoiceId(baseLeaves, cid);
@@ -190,7 +195,7 @@ async function handleIntraChunkChoice(
       allChoices = allChoices.concat((node as any).choices);
     }
   }
-  handleJoinMystery(allChoices, choiceId, userId);
+  await handleJoinMystery(allChoices, matchedChoice.id, userId);
 
   const intraChunkPayload: ChunkPayload = {
     id: currentChunk.id,
