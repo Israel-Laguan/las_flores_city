@@ -92,18 +92,19 @@ const queryOLTPMock = jest.fn(async (sql: string) => {
   if (sql.includes('FROM dialogue_chunks')) {
     return { rows: hasStartChunk ? [{ id: 'chunk-1', chunk_key: 'root' }] : [] };
   }
+  // tree rev lookup for pinning at /start (read via OLTP for read-after-write
+  // vs compile writes; see dialogue-start.ts)
+  if (sql.includes('SELECT revision FROM dialogue_trees')) {
+    return { rows: [{ revision: 1 }] };
+  }
   return { rows: [] };
 });
 
-// M19: /dialogue/start reads the tree's current revision and the start
-// chunk row from the read-only content pool via queryContent, not
-// queryOLTP (see AGENTS.md). Model both lookups here.
+// queryContent is still used by resolver internals (CDN metadata + overlays)
+// but the revision-sensitive start chunk decision uses queryOLTP.
 const queryContentMock = jest.fn(async (sql: string) => {
   if (sql.includes('FROM dialogue_trees')) {
     return { rows: [{ revision: 1 }] };
-  }
-  if (sql.includes('FROM dialogue_chunks')) {
-    return { rows: hasStartChunk ? [{ id: 'chunk-1', chunk_key: 'root' }] : [] };
   }
   return { rows: [] };
 });

@@ -127,14 +127,13 @@ beforeEach(() => {
 });
 
 describe('handleChunkBoundaryChoice — tree revision resolution', () => {
-  it('derives treeRevision from currentChunk.revision even when it is 0 (not the "unpinned" sentinel)', async () => {
-    // Bug 1: a session legitimately pinned at revision 0 must NOT fall
-    // through to whatever the tree's current (possibly newer) revision is.
+  it('derives treeRevision from pinned (even when 0) after cursor validation', async () => {
     const currentChunk = baseCurrentChunk({ revision: 0 });
     (DialogueResolver.loadChunkNodesAndLeaves as jest.Mock).mockResolvedValue(currentChunk);
     getDialogueCursorMock.mockResolvedValue({
       active_dialogue_id: TREE_ID,
       pinned_tree_revision: 0,
+      current_chunk_id: CHUNK_ID,
       time_blocks: 5,
     });
 
@@ -152,13 +151,13 @@ describe('handleChunkBoundaryChoice — tree revision resolution', () => {
     expect(revisionArg).toBe(0);
   });
 
-  it('uses the current chunk\'s own (non-zero) revision, ignoring a stale pinned_tree_revision', async () => {
-    const currentChunk = baseCurrentChunk({ revision: 3 });
+  it('prefers cursor pinned revision for boundary (after early validation passes)', async () => {
+    const currentChunk = baseCurrentChunk({ revision: 5 });
     (DialogueResolver.loadChunkNodesAndLeaves as jest.Mock).mockResolvedValue(currentChunk);
-    // Cursor pin is stale/legacy-zero; must not leak into resolution.
     getDialogueCursorMock.mockResolvedValue({
       active_dialogue_id: TREE_ID,
-      pinned_tree_revision: 0,
+      pinned_tree_revision: 5,
+      current_chunk_id: CHUNK_ID,
       time_blocks: 5,
     });
 
@@ -172,18 +171,16 @@ describe('handleChunkBoundaryChoice — tree revision resolution', () => {
     await handleChoose(req, res);
 
     const [, , , revisionArg] = resolveNextChunkMock.mock.calls[0];
-    expect(revisionArg).toBe(3);
+    expect(revisionArg).toBe(5);
   });
 
   it('rejects with dialogue_tree_mismatch when currentChunk.tree_id differs from the player\'s active dialogue', async () => {
-    // Bug 2: currentChunk belongs to a different tree than the player's
-    // recorded active_dialogue_id — must reject rather than silently
-    // resolving the next chunk against a mismatched revision.
     const currentChunk = baseCurrentChunk({ tree_id: 'tree-A' });
     (DialogueResolver.loadChunkNodesAndLeaves as jest.Mock).mockResolvedValue(currentChunk);
     getDialogueCursorMock.mockResolvedValue({
       active_dialogue_id: 'tree-B',
       pinned_tree_revision: 1,
+      current_chunk_id: CHUNK_ID,
       time_blocks: 5,
     });
 
@@ -209,6 +206,7 @@ describe('handleChunkBoundaryChoice — tree revision resolution', () => {
     getDialogueCursorMock.mockResolvedValue({
       active_dialogue_id: null,
       pinned_tree_revision: 0,
+      current_chunk_id: CHUNK_ID,
       time_blocks: 5,
     });
 
@@ -223,5 +221,31 @@ describe('handleChunkBoundaryChoice — tree revision resolution', () => {
 
     expect(resolveNextChunkMock).not.toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(409);
+  });
+
+  it('rejects with dialogue_revision_mismatch when supplied chunk rev differs from pinned', async () => {
+    const currentChunk = baseCurrentChunk({ revision: 2 });
+    (DialogueResolver.loadChunkNodesAndLeaves as jest.Mock).mockResolvedValue(currentChunk);
+    getDialogueCursorMock.mockResolvedValue({
+      active_dialogue_id: TREE_ID,
+      pinned_tree_revision: 7,
+      current_chunk_id: CHUNK_ID,
+      time_blocks: 5,
+    });
+
+    const req: any = {
+      params: { id: CHUNK_ID },
+      userId: 'user-1',
+      body: { current_chunk_id: CHUNK_ID, choice_id: CHOICE_ID },
+    };
+    const res = makeRes();
+
+    await handleChoose(req, res);
+
+    expect(resolveNextChunkMock).not.toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(409);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ success: false, error: 'dialogue_revision_mismatch' })
+    );
   });
 });

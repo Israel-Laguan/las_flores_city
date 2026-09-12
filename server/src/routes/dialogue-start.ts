@@ -1,4 +1,4 @@
-import { queryOLTP, queryContent, withOLTPTransaction } from '@las-flores/infra';
+import { queryOLTP, withOLTPTransaction } from '@las-flores/infra';
 import {
   resolveDialogueTree,
   filterChoices,
@@ -50,8 +50,11 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
     }
 
     // Fetch the tree's current revision for revision-scoped chunk lookups.
-    // Use queryContent (read-only content pool) per M19 / AGENTS.md.
-    const treeRevResult = await queryContent<{ revision: number }>(
+    // Use queryOLTP for read-after-write visibility: compileDialogueTree writes
+    // the bumped revision + new chunks via the OLTP writer (withOLTPTransaction);
+    // a player start immediately after must observe the committed rev/chunk or it
+    // can pin an older revision or miss its start chunk (replica lag on CONTENT_DATABASE_URL).
+    const treeRevResult = await queryOLTP<{ revision: number }>(
       'SELECT revision FROM dialogue_trees WHERE id = $1',
       [dialogue.id]
     );
@@ -74,7 +77,7 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
       [userId, dialogue.id, dialogue.start_node_id, treeRevision]
     );
 
-    const startChunkResult = await queryContent(
+    const startChunkResult = await queryOLTP(
       `SELECT id, chunk_key FROM dialogue_chunks
        WHERE tree_id = $1 AND chunk_key = $2 AND revision = $3
        LIMIT 1`,

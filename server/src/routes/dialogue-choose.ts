@@ -49,15 +49,44 @@ export async function handleChoose(req: any, res: any): Promise<any> {
       throw err;
     }
 
+    // Validate client-supplied current_chunk_id against the player's cursor
+    // BEFORE any leaf/intra dispatch. This binds the chunk (and its tree/rev)
+    // to the active dialogue and pinned revision so a historical chunk id from
+    // the same tree cannot cause a revision jump.
+    const cursor = await PlayerStateRepository.getDialogueCursor(userId);
+    if (currentChunk.tree_id && cursor?.active_dialogue_id !== currentChunk.tree_id) {
+      return res.status(409).json({
+        success: false,
+        error: 'dialogue_tree_mismatch',
+        timestamp: new Date().toISOString(),
+      });
+    }
+    if (cursor?.pinned_tree_revision != null &&
+        currentChunk.revision != null &&
+        cursor.pinned_tree_revision !== currentChunk.revision) {
+      return res.status(409).json({
+        success: false,
+        error: 'dialogue_revision_mismatch',
+        timestamp: new Date().toISOString(),
+      });
+    }
+    if (cursor?.current_chunk_id && cursor.current_chunk_id !== current_chunk_id) {
+      return res.status(409).json({
+        success: false,
+        error: 'dialogue_chunk_mismatch',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
     const leaves = currentChunk.leaves as Record<string, any>;
     const chunkNodes = currentChunk.nodes as Record<string, any>;
     const leaf = leaves[choice_id] ?? findLeafByChoiceId(leaves, choice_id);
 
     if (!leaf) {
-      return handleIntraChunkChoice(id, userId, current_chunk_id, choice_id, currentChunk, chunkNodes, leaves, res);
+      return handleIntraChunkChoice(id, userId, current_chunk_id, choice_id, currentChunk, chunkNodes, leaves, cursor, res);
     }
 
-    return handleChunkBoundaryChoice(id, userId, current_chunk_id, choice_id, currentChunk, leaf, res);
+    return handleChunkBoundaryChoice(id, userId, current_chunk_id, choice_id, currentChunk, leaf, cursor, res);
   } catch (error: any) {
     const mapped = mapDialogueWriteError(error);
     if (mapped) {
@@ -77,20 +106,23 @@ async function handleIntraChunkChoice(
   currentChunk: any,
   chunkNodes: Record<string, any>,
   leaves: Record<string, any>,
+  cursor: any,
   res: any
 ) {
-  const matched = findChoiceInNodes(chunkNodes, choiceId);
-  if (!matched) {
+  // Scope choice lookup to cursor.current_node_id so a client cannot
+  // supply a choice_id that exists in some other node of the chunk.
+  const currentNodeId = cursor?.current_node_id;
+  const currentNode = currentNodeId ? chunkNodes[currentNodeId] : null;
+  const matchedChoice = currentNode && Array.isArray(currentNode.choices)
+    ? currentNode.choices.find((c: any) => c.id === choiceId)
+    : null;
+  if (!matchedChoice) {
     return res.status(400).json({
       success: false,
       error: 'invalid_choice',
       timestamp: new Date().toISOString(),
     });
   }
-
-  const { choice: matchedChoice, fromNodeId: matchedFromNodeId } = matched;
-  const cursor = await PlayerStateRepository.getDialogueCursor(userId);
-  const currentNodeId = cursor?.current_node_id ?? matchedFromNodeId;
 
   // processChoiceInTransaction owns the transaction: a rejected choice
   // (e.g. insufficient TB on a choice that also unlocks a vault item)
@@ -132,18 +164,6 @@ async function handleIntraChunkChoice(
       speakers
     )
   );
-}
-
-function findChoiceInNodes(chunkNodes: Record<string, any>, choiceId: string) {
-  for (const [nodeId, node] of Object.entries(chunkNodes)) {
-    if (node && Array.isArray((node as any).choices)) {
-      const found = (node as any).choices.find((c: any) => c.id === choiceId);
-      if (found) {
-        return { choice: found, fromNodeId: nodeId };
-      }
-    }
-  }
-  return null;
 }
 
 export function findLeafByChoiceId(leaves: Record<string, any>, choiceId: string): any | undefined {
@@ -234,6 +254,7 @@ async function handleChunkBoundaryChoice(
   choiceId: string,
   currentChunk: any,
   leaf: any,
+  cursor: any,
   res: any
 ) {
   const validationResult = await IronGateValidator.validateChoice(userId, currentChunkId, choiceId, leaf);
@@ -245,30 +266,10 @@ async function handleChunkBoundaryChoice(
   const tbDeducted = validationResult.tbDeducted ?? 0;
   const targetChunkKey = leaf.target_chunk as string;
 
-  // Guard against resolving the wrong tree's revision: `currentChunk` is
-  // loaded straight from the client-supplied `current_chunk_id`, so before
-  // trusting its `tree_id` we confirm it actually matches the player's
-  // recorded active dialogue tree. A mismatch means the request/cursor is
-  // in an inconsistent state (e.g. stale client state or cross-session
-  // reuse of a chunk id) — reject it rather than silently resolving the
-  // next chunk against a revision that belongs to a different tree.
-  const cursor = await PlayerStateRepository.getDialogueCursor(userId);
-  if (currentChunk.tree_id && cursor?.active_dialogue_id !== currentChunk.tree_id) {
-    return res.status(409).json({
-      success: false,
-      error: 'dialogue_tree_mismatch',
-      timestamp: new Date().toISOString(),
-    });
-  }
-
-  // Every `dialogue_chunks` row is permanently scoped to the revision it was
-  // compiled at (094: UNIQUE(tree_id, chunk_key, revision), never deleted),
-  // so `currentChunk.revision` is the exact revision this session is already
-  // pinned to — it was resolved under that same revision to get here. Unlike
-  // `cursor.pinned_tree_revision`, this doesn't need a "pinned vs never
-  // pinned" sentinel: revision 0 read off the chunk itself is unambiguous,
-  // it's simply the revision that chunk belongs to.
-  const treeRevision = currentChunk.revision ?? 0;
+  // The early validation in handleChoose already enforced tree/rev/current_chunk
+  // match against cursor. Resolve boundaries using the player's pinned revision
+  // (falling back to the validated chunk's rev only for legacy unpinned cursors).
+  const treeRevision = cursor?.pinned_tree_revision ?? currentChunk.revision ?? 0;
 
   let resolvedNextChunk;
   try {

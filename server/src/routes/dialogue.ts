@@ -3,7 +3,7 @@ import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { handleStartDialogue } from './dialogue-start.js';
 import { handleChoose } from './dialogue-choose.js';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
-import { withOLTPTransaction, queryContent } from '@las-flores/infra';
+import { withOLTPTransaction, queryOLTP } from '@las-flores/infra';
 import { DialogueResolver } from '../services/DialogueResolver.js';
 import { buildDialogueResponse, stripGuardedTargetChunks, type ChunkPayload } from './dialogue-response-helpers.js';
 import { resolveChunkSpeakers } from './dialogue-speakers.js';
@@ -60,10 +60,10 @@ dialogueRouter.get('/chunk/:chunkId', authMiddleware, async (req: AuthRequest, r
     const cursor = await PlayerStateRepository.getDialogueCursor(userId);
     const treeId = cursor?.active_dialogue_id || undefined;
     let treeRevision = 0;
-    if (cursor?.pinned_tree_revision && cursor.pinned_tree_revision > 0) {
+    if (cursor?.pinned_tree_revision != null) {
       treeRevision = cursor.pinned_tree_revision;
     } else if (treeId) {
-      const treeRevResult = await queryContent<{ revision: number }>(
+      const treeRevResult = await queryOLTP<{ revision: number }>(
         'SELECT revision FROM dialogue_trees WHERE id = $1',
         [treeId]
       );
@@ -120,7 +120,7 @@ dialogueRouter.get('/active', authMiddleware, async (req: AuthRequest, res) => {
 
     const { active_dialogue_id, current_node_id } = cursor;
 
-    const dialogueResult = await queryContent(
+    const dialogueResult = await queryOLTP(
       'SELECT id, name, description, start_node_id, metadata FROM dialogue_trees WHERE id = $1',
       [active_dialogue_id]
     );
@@ -136,7 +136,7 @@ dialogueRouter.get('/active', authMiddleware, async (req: AuthRequest, res) => {
     // If we have a chunk ID, use chunk-based resolution (new path)
     if (currentChunkId) {
       // Load the chunk to get its chunk_key
-      const chunkResult = await queryContent(
+      const chunkResult = await queryOLTP(
         `SELECT id, chunk_key FROM dialogue_chunks WHERE id = $1`,
         [currentChunkId]
       );

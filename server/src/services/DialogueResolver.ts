@@ -484,7 +484,10 @@ export class DialogueResolver {
     // the resolved tree, so cache is partitioned correctly across
     // the same (tree, chunk) pair for different users. `storyBeat`
     // is included so a player whose beat advances re-resolves.
-    const cacheKey = `dialogue:resolved:chunk:${chunkRow.tree_id}:${chunkKey}:nsfw:${isNsfwUnlocked}:align:${alignment}:beat:${storyBeat}:mysteries:${cacheSuffix}`;
+    // Include revision (and implicitly the row via rev) so that after an identical
+    // recompile a revision-scoped chunk row does not hit a cache entry for another
+    // revision of the same logical chunkKey.
+    const cacheKey = `dialogue:resolved:chunk:${chunkRow.tree_id}:${chunkKey}:rev:${chunkRow.revision}:nsfw:${isNsfwUnlocked}:align:${alignment}:beat:${storyBeat}:mysteries:${cacheSuffix}`;
     // M23: include the chunk's content version (from its content_url pointer)
     // so re-published chunks under a new key force fresh resolution.
     const versionedCacheKey = `${cacheKey}:content:${contentVersionFromUrl(chunkRow.content_url, JSON.stringify({ nodes: chunkRow.nodes, leaves: chunkRow.leaves }))}`;
@@ -616,19 +619,24 @@ export class DialogueResolver {
   /**
    * Load a base chunk from dialogue_chunks by its chunk_key.
    * Used by resolveNextChunk when crossing boundaries.
-   * If treeId and revision are provided, the lookup is scoped
-   * to the player's active tree revision.
+   * Scoped lookup only when BOTH treeId and revision are supplied;
+   * otherwise unscoped (used when no active dialogue pins a revision).
    */
   private static async loadBaseChunkByKey(
     chunkKey: string,
     treeId?: string,
     revision?: number
   ): Promise<BaseDialogueChunkRow> {
-    const where = treeId !== undefined
+    // Scope only when BOTH treeId and revision are supplied together.
+    // Partial (e.g. treeId only, or rev defaulted) is avoided to prevent
+    // accidentally selecting a chunk_key from another tree's revision.
+    // When no active dialogue, callers pass neither (unscoped lookup).
+    const hasScope = treeId != null && revision != null;
+    const where = hasScope
       ? `chunk_key = $1 AND tree_id = $2 AND revision = $3`
       : `chunk_key = $1`;
-    const params: (string | number)[] = treeId !== undefined
-      ? [chunkKey, treeId, revision ?? 0]
+    const params: (string | number)[] = hasScope
+      ? [chunkKey, treeId, revision]
       : [chunkKey];
     const result = await queryContent<BaseDialogueChunkRow>(
       `SELECT id, tree_id, chunk_key, content_url, revision
