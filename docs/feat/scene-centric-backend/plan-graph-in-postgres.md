@@ -340,6 +340,14 @@ mistake impossible.
 
 At team-of-one, rungs 3 and 4 buy nothing until there is player traffic to protect.
 
+**Rung-3 trigger (scheduled as SC-M7):** fire when the SC-M3 slice is green on rung 2
+*and* SC-M6 exit criteria are met — the new backend no longer needs anything from the
+legacy schema. Provision `postgres-planning` + `postgres-runtime` (same instance),
+move to per-DB migration folders (`SC-1102`), freeze the legacy OLTP/OLAP pair
+read-only, do one final extraction run (functions/ideas port, never data write-back),
+archive both legacy DBs with versioned dumps, then delete them (`SC-905–SC-908`).
+Both generations run independently until cutover; new work never lands in legacy.
+
 ### 9.5 Where "OLAP-ish" legitimately appears — on the planning side
 
 The tier-3 checks (`proposal.md` §4.2) are the closest thing to analytical queries in the

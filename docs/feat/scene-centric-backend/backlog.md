@@ -136,7 +136,12 @@
 
 > **Sequencing note:** SC-1001–SC-1003 (S14) can start once SC-S8 answers and `S1` projection exists; SC-1004–SC-1005 (S15) needs S8 to exist; SC-1006 is the only item that can ship without a spike (pure TB arithmetic). SC-1007 is explicitly gated on SC-S10's precision measurement — do not build it until the spike says the cheap model is viable.
 
-## SC-E9 — Old-path retirement · post-SC-M6
+## SC-E9 — Old-path retirement · SC-M6 → SC-M7
+
+*SC-901–SC-904 retire old code paths slice by slice; SC-905–SC-908 (new) retire the
+legacy databases themselves: freeze → final extraction run → archive → delete.
+The legacy OLTP/OLAP pair stays untouched and independent throughout — new work never
+lands there, so nothing pollutes the current DB while the new one grows.*
 
 | ID | Story | Size | State |
 |---|---|---|---|
@@ -144,6 +149,24 @@
 | SC-902 | Retire the old dialogue serving path once its kill condition is met | M | Blocked: SC-901 |
 | SC-903 | Retire entity-shaped `FILL_TARGETS` intake | M | Blocked: SC-605 |
 | SC-904 | Retire three-registry portrait resolution once coverage shows zero silent fallbacks | M | Blocked: SC-808 |
+| SC-905 | Freeze legacy DBs read-only (`ALTER DATABASE las_flores SET default_transaction_read_only = on`, same for analytics); compose profile keeps old stack bootable but no writer runs against it | S | Blocked: SC-M6 exit |
+| SC-906 | Final `server/` extraction run against the frozen snapshot — port reusable functions/ideas into `api/`, recorded in a port log (code/ideas only, never data write-back) | M | Blocked: SC-905 |
+| SC-907 | Archive: versioned `pg_dump -Fc` of `las_flores` + `las_flores_analytics` stored against the release tag (object storage + checksum in the port log) | S | Blocked: SC-906 |
+| SC-908 | Delete: drop `postgres-oltp` / `postgres-olap` compose services + volumes, remove `server/src/database/migrations/` + `migration-targets.json`, grep-prove zero references | S | Blocked: SC-907 |
+
+## SC-E11 — Rung-3 physical separation · SC-M7 · F10
+
+*Provisions the independent databases the new backend runs on. Blocked until the SC-M3
+slice is green on rung 2 — separation without a working slice is infrastructure without
+a customer. Compose uses a `--profile new-backend` so the default local boot stays
+2 DBs until cutover.*
+
+| ID | Story | Size | State |
+|---|---|---|---|
+| SC-1101 | Compose + CI: `postgres-planning` + `postgres-runtime` services (same `postgres:16-alpine` image, new volumes `postgres-planning-data` / `postgres-runtime-data`, new host ports, healthchecks mirroring `postgres-oltp`); `.env.example` + CI env promote `PLANNING_DATABASE_URL` / `RUNTIME_DATABASE_URL` from test-only to real | M | Blocked: SC-M3 exit |
+| SC-1102 | Migration layout (Option A): `db/planning/migrations/` + `db/runtime/migrations/` with independent per-DB sequences and per-DB `schema_migrations PK(version)`; runner resolves target by folder and `migration-targets.json` is deleted; `server/src/database/migrate.ts` kept as a shim for legacy `oltp`/`olap` during coexistence | M | Blocked: SC-1101 |
+| SC-1103 | Schema bootstrap: fresh `CREATE SCHEMA` + role/grant DDL per new DB (no cross-DB `ALTER DEFAULT PRIVILEGES` — each DB gets its own owner + restricted role); `api/planning` → planning DB, `api/runtime` → runtime DB | M | Blocked: SC-1102 |
+| SC-1104 | Cutover proof: each module boots with only its own URL set (no `DATABASE_URL` fallback); SC-106 re-pointed at physical hosts passes; Podman scripts + `probe_leaderboard.ts` updated | S | Blocked: SC-1103 |
 
 ---
 

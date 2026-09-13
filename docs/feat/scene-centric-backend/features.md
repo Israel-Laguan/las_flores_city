@@ -113,6 +113,11 @@ Not deferred — **not planned**, unless something changes:
 | Separate planning/runtime deployables | Rung 4 of §9.4. Nothing forces it yet; the seam keeps it a config change |
 | Rewriting the existing asset generation pipeline | It works. F-track only changes where its output is *recorded* |
 
+**Scheduled, not out of scope:** rung-3 physical separation (dedicated
+`postgres-planning` / `postgres-runtime` + per-DB migration folders) and legacy
+DB archive/delete are planned as SC-M7 (`SC-E11` + `SC-905–SC-908`). Rung 2
+(shared-DB schemas + roles) is the stepping stone, not the destination.
+
 ## 5. Two live bugs, tracked outside this feature set
 
 These are defects in the **current** `server/`, not features of the new backend. They are

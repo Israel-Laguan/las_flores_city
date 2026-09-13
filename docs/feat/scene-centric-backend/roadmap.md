@@ -129,6 +129,25 @@ being wrong. A roadmap that assumes 100% is a roadmap that lies at the first ret
   expression warns and degrades along the documented chain.
 - A stat crossing a threshold sets a flag as an event, and gating still reads only flags.
 
+### SC-M7 — Physical independence & legacy archive
+
+*After SC-M6. The new backend runs on its own databases; the old `server/` path gets a final run, then is archived and deleted.*
+
+| Contents | Feature |
+|---|---|
+| `postgres-planning` + `postgres-runtime` services, same instance (rung 3 of `plan-graph-in-postgres.md` §9.4); `db/planning/migrations/` + `db/runtime/migrations/` with independent sequences, no `migration-targets.json` | F10 |
+| New DBs boot with only `PLANNING_DATABASE_URL` / `RUNTIME_DATABASE_URL` (no `DATABASE_URL` fallback); legacy `las_flores` / `las_flores_analytics` untouched | F10 |
+| Legacy freeze: old OLTP/OLAP set read-only; final `server/` run extracts reusable functions/ideas into `api/` (port log, not data) | SC-E9 |
+| Archive + delete: versioned `pg_dump` of both legacy DBs stored alongside the repo tag, then compose services/volumes and `server/src/database/migrations/` removed | SC-E9 |
+
+**Trigger (when this fires):** SC-M3 slice is green on rung 2 **and** SC-M6 exit criteria are met — i.e. the new backend no longer needs anything from the legacy schema. Do not start SC-M7 early to "avoid pollution": separation is the point, so new work lands in the new DBs from SC-E11 onward and legacy stays frozen.
+
+**Exit criteria**
+- `api/planning` migrates and serves from `postgres-planning` alone; `api/runtime` from `postgres-runtime` alone (proven by booting each with only its own URL set).
+- SC-106 negative test passes against the physical hosts (runtime role cannot even connect to the planning DB — stronger than the rung-2 schema-USAGE denial).
+- Legacy `server/` suite runs green one final time against a frozen snapshot, the extraction log (functions/ideas ported) is recorded, dumps are stored, and the old services/volumes/migration folder are deleted.
+- No code path references `postgres-oltp` / `postgres-olap` or `server/src/database/migrations/`.
+
 ---
 
 ## 2. Timeline shape
@@ -147,6 +166,8 @@ gantt
   SC-M5 Validation depth     :m5, after m4, 28d
   section Depth
   SC-M6 Content model        :m6, after m5, 42d
+  section Independence
+  SC-M7 Physical + archive   :m7, after m6, 14d
 ```
 
 Dates are **shape, not commitment.** SC-M1 and SC-M2 are planned in detail; anything past
@@ -177,6 +198,13 @@ owner of canon at every moment, a one-way old→new import and never a write-bac
 Nothing is deleted before its kill condition is written down and met. A component whose
 kill condition slips twice gets re-examined at retro — the parallel-system failure mode is
 both paths living forever, and slipping kill conditions is its earliest symptom.
+
+**Legacy databases (SC-M7):** the old `postgres-oltp` / `postgres-olap` pair is frozen
+(read-only) once SC-M6 closes, gets one final green `server/` run for function/idea
+extraction, then is `pg_dump`-archived against the repo tag and deleted along with
+`server/src/database/migrations/`. New work lands only in `postgres-planning` /
+`postgres-runtime` — never back-ported — so the current DB is never polluted and both
+generations run independently until the cutover.
 
 ## 5. The retro contract
 
