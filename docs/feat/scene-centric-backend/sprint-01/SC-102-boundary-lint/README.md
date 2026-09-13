@@ -84,7 +84,7 @@ grammar or contracts content in this pass — that's separate follow-on work.
 - Chose `eslint-plugin-import-x@~4.17.1` (+ `eslint-import-resolver-node`) added to root `devDependencies` because the original `eslint-plugin-import` has peer dep on ESLint <=9 and will not install cleanly on the project's ESLint ~10.8.
 - Boundary helper lives in `api/eslint.boundary.cjs`; each `api/*/eslint.config.cjs` pulls it in and supplies its zone + restrictedPackages.
 - Zones use api/-relative paths + explicit `basePath` (computed from `__dirname` in helper) so `import-x/no-restricted-paths` is cwd-independent (works from repo root, editors, etc.). `no-restricted-imports` (paths + patterns) is also cwd-independent.
-- Patterns added for subpath imports (e.g. `@las-flores/api-*/dist/...`, `@las-flores/api-*/**`) so deep imports are covered.
-- All 8 required violation forms (plus subpath) proven in `lint-proof.txt`; clean allowlisted runs (planning/runtime → contracts) also captured.
-- Verified: per-workspace lint clean; root-invoked via explicit config clean; full root lint clean; api/* typecheck + build succeed.
+- `no-restricted-imports` patterns per restricted package (e.g. `@las-flores/api-runtime/**`) cover subpath/deep imports like `@las-flores/api-runtime/dist/...`.
+- All 8 required violation forms (plus subpath) were demonstrated; clean allowlisted runs (planning/runtime → contracts) also captured.
+- Verified: per-workspace lint clean (planning + runtime + contracts, each with its own --config); root-invoked via explicit config clean; full root lint clean; api/* typecheck + build succeed. Per-workspace validation is asserted only after all three independent runs report clean.
 - The deliberate violations for proof were never committed to source.

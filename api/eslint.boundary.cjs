@@ -5,7 +5,7 @@ const importX = require('eslint-plugin-import-x');
 const path = require('path');
 
 function boundaryConfig({ zones, restrictedPackages }) {
-  const apiDir = path.resolve(__dirname);
+  const apiDir = __dirname;
   return {
     files: ['**/*.ts'],
     plugins: { 'import-x': importX },
