@@ -14,20 +14,28 @@
 -- provisioning on managed Postgres (often no CREATEROLE) is an open question —
 -- do not treat this file as production-ready role setup.
 --
--- 095 creates the initial grants to las_flores (kept for stable "095 applied" state
--- across legacy vs fresh manual applies). The lockdown (revoke las_flores access)
--- is in 097; see 096/097 for required apply order.
+-- Security: 095 deliberately does NOT issue USAGE or CREATE on planning/runtime
+-- to las_flores (the DATABASE_URL / app role). The two GRANT USAGE,CREATE TO
+-- las_flores lines that existed in earlier revisions (after the ALTER SCHEMA
+-- OWNER transfer) have been removed. This guarantees that a partial manual
+-- apply (stop after 095, omitting 096+097) cannot grant write access into the
+-- isolated schemas.
 --
--- Grants do not touch existing server/ tables or the las_flores app role beyond
--- default privileges on the NEW schemas so future migration-created objects are
--- usable by the matching role.
+-- Apply order for manual: 095 → 096 → 097.
+--
+-- All DDL targeting planning/ or runtime/ objects must run while connected as
+-- the owning role (planning or runtime) — e.g. via the dedicated *_DATABASE_URL
+-- or `SET ROLE planning;` after connecting as las_flores. The ALTER DEFAULT
+-- PRIVILEGES below only fire for objects las_flores would create (they would
+-- auto-grant to the owner role); under the intended flow las_flores never
+-- receives CREATE on these schemas.
 --
 -- Rollback: forward-only (SC-104). Dropping login roles that may own objects is
 -- not a safe automatic reverse.
 -- ============================================================
 
--- Roles first (non-transactional), then schemas owned by them so the
--- DATABASE_URL migration user (las_flores) does not remain owner.
+-- Roles first, then schemas owned by them so the DATABASE_URL migration user
+-- (las_flores) does not remain owner. (CREATE ROLE is non-transactional in PG.)
 DO $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'planning') THEN
@@ -44,12 +52,6 @@ CREATE SCHEMA IF NOT EXISTS runtime AUTHORIZATION runtime;
 -- Ensure owner even on re-run or pre-existing schema (idempotent).
 ALTER SCHEMA planning OWNER TO planning;
 ALTER SCHEMA runtime OWNER TO runtime;
-
--- The DATABASE_URL user (las_flores) and server app role must be able to create
--- objects in these schemas (future migrations, default-privs mechanism). After
--- AUTHORIZATION/OWNER change the implicit rights are gone; grant explicitly.
-GRANT USAGE, CREATE ON SCHEMA planning TO las_flores;
-GRANT USAGE, CREATE ON SCHEMA runtime TO las_flores;
 
 COMMENT ON SCHEMA planning IS
   'SC-103: planning canon, plan deltas, entity_edges. Written only by planning.';

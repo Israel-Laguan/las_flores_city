@@ -5,12 +5,15 @@ import {
   initializeDialogueState,
   applyEffects,
   grantDialogueRewards,
+  captureUserResolutionContext,
+  getCurrentResolutionContext,
+  resolutionContextsMatch,
 } from './dialogue-helpers.js';
 import { buildDialogueResponse, type ChunkPayload } from './dialogue-response-helpers.js';
 import { resolveChunkSpeakers } from './dialogue-speakers.js';
 import { DialogueResolver } from '../services/DialogueResolver.js';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
-import { mapDialogueWriteError, isDialogueStartChunkRace } from './dialogue-errors.js';
+import { mapDialogueWriteError, isDialogueStartChunkRace, isDialogueStartContextRace } from './dialogue-errors.js';
 
 export async function handleStartDialogue(req: any, res: any): Promise<any> {
   try {
@@ -85,10 +88,10 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
     });
 
     if (!startChunkId || !startChunkKey) {
-      return handleStartFallback(userId, dialogue, treeRevision, res);
+      return await handleStartFallback(userId, dialogue, treeRevision, res);
     }
 
-    return handleStartChunk(userId, dialogue, startChunkId, startChunkKey, treeRevision, res);
+    return await handleStartChunk(userId, dialogue, startChunkId, startChunkKey, treeRevision, res);
   } catch (error: any) {
     const mapped = mapDialogueWriteError(error);
     if (mapped) {
@@ -106,6 +109,14 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
         timestamp: new Date().toISOString(),
       });
     }
+    if (isDialogueStartContextRace(error)) {
+      console.warn('[dialogue-start] player state context race on start pre-resolve vs locked tx; returning retryable 409', error?.message);
+      return res.status(409).json({
+        success: false,
+        error: 'dialogue_start_context_race',
+        timestamp: new Date().toISOString(),
+      });
+    }
     console.error('Start dialogue error:', error);
     res.status(500).json({
       success: false,
@@ -118,6 +129,7 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
 async function handleStartFallback(userId: string, dialogue: any, pinnedRevision: number, res: any) {
   console.warn(`[dialogue/start] No chunk found for tree ${dialogue.id}, falling back to tree resolver`);
 
+  const preContext = await captureUserResolutionContext(userId);
   const resolved = await DialogueResolver.resolveTreeForUser(userId, dialogue.id);
   const rootNodeId = resolved.rootId;
   const rootNode = resolved.nodes[rootNodeId];
@@ -155,6 +167,19 @@ async function handleStartFallback(userId: string, dialogue: any, pinnedRevision
       [dialogue.id]
     );
     const txRevision = treeRevResult.rows[0]?.revision ?? pinnedRevision;
+
+    // Revalidate the user resolution context (story_beat, alignment, mysteries)
+    // captured before the pre-resolve*ForUser call. If it differs, a concurrent
+    // player-state mutation (choice, mystery join, alignment) changed the
+    // inputs to overlay merge while we waited for the FOR UPDATE. The
+    // pre-resolved root/effects would be stale for the state at claim time.
+    // Throw retryable so caller restarts with fresh pre-resolve; never apply
+    // mismatched overlay view. Uses cheap queries only (no resolver, respects
+    // no-nested-pool contract inside tx).
+    const currentContext = await getCurrentResolutionContext(client, userId);
+    if (!resolutionContextsMatch(preContext, currentContext)) {
+      throw new Error('dialogue start user context mismatch during start (player state race); aborting to avoid applying stale overlay effects');
+    }
 
     await initializeDialogueState(client, userId, dialogue.id, rootNodeId, txRevision);
     if (isRestart) {
@@ -198,6 +223,7 @@ async function handleStartFallback(userId: string, dialogue: any, pinnedRevision
 }
 
 async function handleStartChunk(userId: string, dialogue: any, startChunkId: string, startChunkKey: string, pinnedRevision: number, res: any) {
+  const preContext = await captureUserResolutionContext(userId);
   let resolvedChunk;
   try {
     resolvedChunk = await DialogueResolver.resolveChunkForUser(userId, startChunkId, startChunkKey);
@@ -255,6 +281,19 @@ async function handleStartChunk(userId: string, dialogue: any, startChunkId: str
 
     if (pinnedChunkId !== startChunkId || pinnedRev !== pinnedRevision) {
       throw new Error('dialogue chunk revision mismatch during start (compile race); aborting to avoid inconsistent pin');
+    }
+
+    // Revalidate the user resolution context (story_beat, alignment, mysteries)
+    // captured before the pre-resolve*ForUser call. If it differs, a concurrent
+    // player-state mutation (choice, mystery join, alignment) changed the
+    // inputs to overlay merge while we waited for the FOR UPDATE. The
+    // pre-resolved root/effects would be stale for the state at claim time.
+    // Throw retryable so caller restarts with fresh pre-resolve; never apply
+    // mismatched overlay view. Uses cheap queries only (no resolver, respects
+    // no-nested-pool contract inside tx).
+    const currentContext = await getCurrentResolutionContext(client, userId);
+    if (!resolutionContextsMatch(preContext, currentContext)) {
+      throw new Error('dialogue start user context mismatch during start (player state race); aborting to avoid applying stale overlay effects');
     }
 
     // Use the pre-resolved value (validated to match pinned rev). No resolver call here.

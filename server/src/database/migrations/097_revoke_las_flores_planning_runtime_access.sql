@@ -5,15 +5,17 @@
 -- schemas. This is the permission lockdown step.
 --
 -- Execution order for manual application (all "manual" entries):
---   095_planning_runtime_schemas.sql (creates roles, schemas owned by them,
---     and the *temporary* USAGE,CREATE grants to las_flores so that 095's
---     effect on first apply stays stable for DBs that ran prior revisions)
---   096_migrate_to_planning_runtime_roles.sql (legacy long-role rename)
---   097 (this file: revokes the las_flores grants)
+--   095_planning_runtime_schemas.sql (creates roles, schemas owned by them;
+--     deliberately does *not* issue any GRANT USAGE/CREATE TO las_flores
+--     (removed after ownership transfer) for partial-apply safety)
+--   096_migrate_to_planning_runtime_roles.sql (legacy long-role rename + revokes)
+--   097 (this file: final revoke of any las_flores grants from legacy 095)
 --
 -- After 097, only the owner roles (planning, runtime) hold CREATE/USAGE
 -- on their schemas. The las_flores DATABASE_URL user and server app role
 -- must not be able to write planning/runtime objects.
+--
+-- DDL for planning/runtime objects must always be run as/under the owner roles.
 --
 -- Scope: dev/CI only. 095/096/097 are not production-ready:
 -- hard-coded dev passwords; CREATE ROLE assumes CREATEROLE (not available
@@ -24,8 +26,8 @@
 -- The runner (migrate.ts) never applies "manual" entries.
 -- ============================================================
 
--- Revoke any CREATE/USAGE (and more) that las_flores may hold from 095/096.
--- Idempotent; safe if re-run or on fresh DBs (no-op if no privilege).
+-- Revoke any CREATE/USAGE (and more) that las_flores may hold from legacy 095/096.
+-- (Current 095 issues none.) Idempotent; safe if re-run or on fresh DBs (no-op if no privilege).
 REVOKE ALL ON SCHEMA planning FROM las_flores;
 REVOKE ALL ON SCHEMA runtime FROM las_flores;
 

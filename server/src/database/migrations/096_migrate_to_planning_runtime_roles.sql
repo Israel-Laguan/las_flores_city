@@ -6,8 +6,9 @@
 -- Renames the roles to the short canonical names (planning / runtime) and
 -- ensures schema ownership + required grants.
 --
--- Execution order (manual applies only): 095 (base schemas/roles + temp grants),
--- then 096 (legacy role rename), then 097 (revoke las_flores access for boundary).
+-- Execution order (manual applies only): 095 (base schemas/roles; deliberately
+-- issues no USAGE/CREATE grants to las_flores for partial-apply safety),
+-- then 096 (legacy role rename + revokes), then 097 (final revoke + lockdown).
 -- Idempotent. Safe to run on fresh DBs (no-op if target roles already exist).
 -- Listed under "manual" in migration-targets.json (never auto-applied by runner).
 -- ============================================================
@@ -46,7 +47,8 @@ COMMENT ON SCHEMA planning IS
 COMMENT ON SCHEMA runtime IS
   'SC-103: player runtime state. Written only by runtime.';
 
--- Grants that 095 performs (idempotent re-application for transitioned DBs).
+-- Owner grants + default-privs (idempotent re-application for transitioned DBs).
+-- 095 itself no longer issues any grants to las_flores.
 GRANT CONNECT ON DATABASE las_flores TO planning;
 GRANT CONNECT ON DATABASE las_flores TO runtime;
 
@@ -66,16 +68,17 @@ ALTER DEFAULT PRIVILEGES FOR ROLE las_flores IN SCHEMA runtime
 ALTER DEFAULT PRIVILEGES FOR ROLE las_flores IN SCHEMA runtime
   GRANT ALL PRIVILEGES ON SEQUENCES TO runtime;
 
--- On legacy DBs that received USAGE,CREATE grants to las_flores from 095
--- (or prior 096), removing the GRANT statements does not revoke them.
--- Explicitly revoke here (and 097 re-asserts) so app role cannot create
--- objects in the dedicated schemas.
+-- On legacy DBs that received USAGE,CREATE grants to las_flores from older
+-- revisions of 095 (before the P2 violation fix that removed the grants
+-- after ownership transfer), the GRANTs are not removed by just deleting
+-- the statements from 095. Explicitly revoke here (and 097 re-asserts) so
+-- app role cannot create objects in the dedicated schemas.
 REVOKE ALL ON SCHEMA planning FROM las_flores;
 REVOKE ALL ON SCHEMA runtime FROM las_flores;
 
--- No CREATE grants to the app role (las_flores). See 095+097.
--- Migrations targeting planning/runtime schemas must be executed under
--- the owning role (or dedicated migration role with env creds).
+-- No CREATE grants to the app role (las_flores) after 095/097.
+-- DDL targeting planning/runtime schemas must be executed under the owning
+-- role (or dedicated migration role with env creds). Apply order: 095→096→097.
 
 -- Explicit denials (re-assert).
 REVOKE ALL ON SCHEMA planning FROM PUBLIC;

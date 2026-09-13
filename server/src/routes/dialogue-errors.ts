@@ -62,3 +62,12 @@ export function isDialogueStartChunkRace(error: unknown): boolean {
     typeof (error as any).message === 'string' &&
     (error as any).message.includes(START_CHUNK_REVISION_RACE));
 }
+
+/** Expected concurrency race on user resolution context (story_beat/alignment/mystery) vs pre-resolved overlay merge. */
+const START_CONTEXT_RACE = 'dialogue start user context mismatch during start (player state race)';
+
+export function isDialogueStartContextRace(error: unknown): boolean {
+  return !!(error && typeof error === 'object' && 'message' in (error as any) &&
+    typeof (error as any).message === 'string' &&
+    (error as any).message.includes(START_CONTEXT_RACE));
+}

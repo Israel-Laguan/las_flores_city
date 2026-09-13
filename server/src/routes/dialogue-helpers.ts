@@ -1,4 +1,4 @@
-import { queryOLTP, withOLTPTransaction } from '@las-flores/infra';
+import { queryOLTP, withOLTPTransaction, queryContent } from '@las-flores/infra';
 import { DialogueResolver } from '../services/DialogueResolver.js';
 import {
   processBreakthroughSolve,
@@ -39,6 +39,79 @@ export function snapshotToConditionState(
     flags: snapshot.flags ?? {},
     memory: snapshot.memory ?? {},
   };
+}
+
+export interface UserResolutionContext {
+  alignment: 'neutral' | 'loyalist' | 'fugitive';
+  storyBeat: string;
+  investigatingMysteryIds: string[];
+  isNsfwUnlocked: boolean;
+  activeMysteryIds: string[];
+}
+
+export async function captureUserResolutionContext(userId: string): Promise<UserResolutionContext> {
+  const [stateRes, mystRes, nsfwRes, activeRes] = await Promise.all([
+    queryOLTP<{ alignment: string | null; story_beat: string | null }>(
+      `SELECT alignment, story_beat FROM player_states WHERE user_id = $1`,
+      [userId]
+    ),
+    queryOLTP<{ mystery_id: string }>(
+      `SELECT mystery_id FROM player_mysteries WHERE user_id = $1 AND status = 'INVESTIGATING'`,
+      [userId]
+    ),
+    queryOLTP<{ is_nsfw_unlocked: boolean | null }>(
+      `SELECT is_nsfw_unlocked FROM user_entitlements WHERE user_id = $1`,
+      [userId]
+    ),
+    queryContent<{ id: string }>(
+      `SELECT id FROM mysteries WHERE status = 'ACTIVE'`
+    ),
+  ]);
+  return {
+    alignment: (stateRes.rows[0]?.alignment as 'neutral' | 'loyalist' | 'fugitive') ?? 'neutral',
+    storyBeat: stateRes.rows[0]?.story_beat || 'prologue',
+    investigatingMysteryIds: mystRes.rows.map((r) => r.mystery_id).sort(),
+    isNsfwUnlocked: !!nsfwRes.rows[0]?.is_nsfw_unlocked,
+    activeMysteryIds: activeRes.rows.map((r) => r.id).sort(),
+  };
+}
+
+export async function getCurrentResolutionContext(
+  client: any,
+  userId: string
+): Promise<UserResolutionContext> {
+  const [stateRes, mystRes, nsfwRes, activeRes] = await Promise.all([
+    client.query(
+      `SELECT alignment, COALESCE(story_beat, 'prologue') as story_beat FROM player_states WHERE user_id = $1`,
+      [userId]
+    ),
+    client.query(
+      `SELECT mystery_id FROM player_mysteries WHERE user_id = $1 AND status = 'INVESTIGATING' ORDER BY mystery_id`,
+      [userId]
+    ),
+    client.query(
+      `SELECT COALESCE(is_nsfw_unlocked, false) as is_nsfw_unlocked FROM user_entitlements WHERE user_id = $1`,
+      [userId]
+    ),
+    queryContent<{ id: string }>(`SELECT id FROM mysteries WHERE status = 'ACTIVE'`),
+  ]);
+  return {
+    alignment: (stateRes.rows[0]?.alignment as 'neutral' | 'loyalist' | 'fugitive') ?? 'neutral',
+    storyBeat: stateRes.rows[0]?.story_beat || 'prologue',
+    investigatingMysteryIds: mystRes.rows.map((r: any) => r.mystery_id).sort(),
+    isNsfwUnlocked: !!nsfwRes.rows[0]?.is_nsfw_unlocked,
+    activeMysteryIds: activeRes.rows.map((r: any) => r.id).sort(),
+  };
+}
+
+export function resolutionContextsMatch(a: UserResolutionContext, b: UserResolutionContext): boolean {
+  return (
+    a.alignment === b.alignment &&
+    a.storyBeat === b.storyBeat &&
+    JSON.stringify(a.investigatingMysteryIds) === JSON.stringify(b.investigatingMysteryIds) &&
+    a.isNsfwUnlocked === b.isNsfwUnlocked &&
+    JSON.stringify(a.activeMysteryIds) === JSON.stringify(b.activeMysteryIds)
+  );
 }
 
 /**
