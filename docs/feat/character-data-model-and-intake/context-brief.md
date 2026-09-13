@@ -128,12 +128,14 @@ active, whether a choice is actually reachable) stay enforced.
   There's no lighter-weight path for "a nameless NPC who exists to make a scene feel
   populated" versus "a named character with a story arc," so any future crowd/mob
   content would currently cost the same per-instance as a fully authored character.
-- **The dialogue-caching layer intends server-side reachability enforcement**
+- **The dialogue-caching layer performs server-side reachability enforcement**
   (client never hits CDN directly; resolver is used so "whether a choice is actually
-  reachable" stays enforced on serve), but it is unverified whether a client-submitted
-  `/choose` is fully validated as reachable from the player's current node *before*
-  effects are applied. This is an open correctness question independent of character
-  schema.
+  reachable" stays enforced on serve). A client-submitted `/choose` is validated as
+  reachable from the player's current node (`cursor.current_node_id`) *before* effects
+  are applied: `dialogue-choose.ts` scopes the choice lookup to the cursor's node and
+  returns `400 invalid_choice` for any choice not present there; chunk-boundary choices
+  are additionally validated by `IronGateValidator.validateChoice` first. Effects (via
+  `processChoiceInTransaction`) are only applied after this check.
 - **There's no serving benchmark today.** "Serve fast" is a stated goal with no current
   measurement to compare against.
 

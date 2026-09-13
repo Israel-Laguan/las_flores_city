@@ -201,7 +201,7 @@ both paths living forever, and slipping kill conditions is its earliest symptom.
 
 **Legacy databases (SC-M7):** cutover to `postgres-planning` / `postgres-runtime` happens
 when SC-M6 exit is met (new traffic and writers use only the new URLs). Legacy OLTP/OLAP
-pair stays untouched and bootable during a rollback window so the old generation can be
+pair stays untouched and bootable during a rollback window (duration and close condition set at the SC-M6 retro, e.g. one sprint or a successful rollback drill) so the old generation can be
 reinstated if needed. Only after the window: freeze (SC-905), final extraction (SC-906),
 archive (SC-907), delete (SC-908). New work never lands in legacy.
 

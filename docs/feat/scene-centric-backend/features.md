@@ -41,7 +41,7 @@ and choice-reachability validation.*
 | **S5** | **Asset look/expression model + mob pool** | Slice needs one portrait. The model matters at content volume | SC-M6 |
 | **S6** | **Character tier enforcement** | Tiers are declared in F9's shape checks; *enforcement* against assets needs S5 | SC-M6 |
 | **S7** | **Missions** — ordered scene collection + win condition | Needs F2 and F3 first; a mission is a composition of things that must exist | post-M6 |
-| **S8** | **Items** — objects given on unlock condition | Same grammar as F2, no new machinery. Pure content feature | post-M6 |
+| **S8** | **Items** — objects given on unlock condition | Same grammar as F2, no new machinery. Pure content feature | SC-M5/SC-M6 |
 | **S9** | **Casting by description** — participant slots cast or spawn from a description | Makes scene authoring fast; scene authoring works without it | post-M6 |
 | **S10** | **`pg_trgm` alias detection** — "did you mean `central-market`?" | A tier-2 quality improvement, not a tier-2 prerequisite | SC-M5 |
 | **S11** | **Lazy asset generation** — plan approval enqueues generation for newly required looks | Ship with hand-picked assets first | post-M6 |

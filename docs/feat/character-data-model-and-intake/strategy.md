@@ -54,8 +54,7 @@ in **every one of them it is consumed as free-text LLM authoring context**, neve
 (`028_metaplot_oltp.sql:23`) on `users.alignment` and `user_reputations.faction`; neither joins
 to `characters.metadata->>'faction'`.
 
-**The dialogue serving path reads exactly five character columns: `id, name, title, avatar_url,
-portrait_urls`.** Everything the 4-layer schema promotes is, from the runtime's perspective,
+**The dialogue serving path (`resolveChunkSpeakers` on start/choose/active) reads five character columns: `id, name, title, avatar_url, portrait_urls`; the archive route's `getSpeaker` reads four (`id, name, title, avatar_url`).** Everything the 4-layer schema promotes is, from the runtime's perspective,
 **write-only.** For its only actual consumer — an LLM reading prose — 182 snowflakes are
 *better* signal than 16 archetypes, not worse. The snowflake problem is a **prompt-quality and
 future-casting** problem. Framing it as a runtime or serving problem would be wrong.
@@ -288,7 +287,7 @@ initiative failed regardless of how clean the tables are.
 
 | Metric | Current baseline (measured) | 6-month target | 12-month target |
 |---|---|---|---|
-| **Characters with any authored dialogue** | **7 / 195** | 60 | 55 |
+| **Characters with any authored dialogue** | **7 / 195** | 25 | 55 |
 | **Total dialogue nodes** | **~280** | 900 | 2,500 |
 | **Missions** | **1** | 5 | 15 |
 | Characters with ≥2 expressions that actually **resolve** at runtime | **~0** (10/195 carry `expression:` keys; most are unmatchable compound tags; publish path never writes the field) | 55 | 195 |

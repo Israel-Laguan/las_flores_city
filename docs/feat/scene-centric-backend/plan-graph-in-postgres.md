@@ -346,7 +346,7 @@ legacy schema. Provision `postgres-planning` + `postgres-runtime` (same instance
 move to per-DB migration folders (`SC-1102`). Cutover traffic to the new DBs (new sessions
 and writers use only planning/runtime URLs). Legacy generation is preserved (untouched)
 during the rollback window. Only after the window closes: freeze legacy, final extraction,
-archive dumps, delete (`SC-905–SC-908`). Both generations run independently until cutover;
+archive dumps, delete (`SC-905–SC-908`). Both generations run independently through the rollback window;
 new work never lands in legacy.
 
 ### 9.5 Where "OLAP-ish" legitimately appears — on the planning side

@@ -53,3 +53,12 @@ export function mapDialogueWriteError(error: unknown): MappedDialogueError | nul
   }
   return null;
 }
+
+/** Expected concurrency race during pinned chunk claim in /start. */
+const START_CHUNK_REVISION_RACE = 'dialogue chunk revision mismatch during start (compile race)';
+
+export function isDialogueStartChunkRace(error: unknown): boolean {
+  return !!(error && typeof error === 'object' && 'message' in (error as any) &&
+    typeof (error as any).message === 'string' &&
+    (error as any).message.includes(START_CHUNK_REVISION_RACE));
+}

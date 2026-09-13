@@ -33,7 +33,7 @@ rather than permanent untraceable debris.
   button is `PUT /plans/:id { plan, status: 'approved' }`
   (`useStoryBuilderApi.ts:240-248`) — the exact same unguarded endpoint a
   script can hit with `status: 'verified'` or any other enum value.
-  `server/src/routes/admin-story-builder-plans-updates.ts:12-143` (PUT /plans/:id)
+  `server/src/routes/admin-story-builder-plans-updates.ts:12-140` (PUT /plans/:id)
   already applies a `validStatuses` whitelist, protects transient pipeline
   statuses (`pending`/`staging`/`migrating`/`verifying`), routes `rejected`
   through `GraphIntakeService.rejectPlan`, and uses `updated_at` optimistic
@@ -100,7 +100,7 @@ Targets the legacy plan routes (`server/src/routes/admin-story-builder-plans-upd
    After `stagePlan` or `runStagingPipeline` writes files but fails before a
    terminal status, `loadPlanForStaging` and handlers reconcile `staging`
    rows safely on retry/cleanup using the provenance stamp. Recovery is
-   retry-safe. DELETE and PUT behavior unchanged.
+    retry-safe. DELETE and PUT behavior unchanged (sweep of orphaned files on delete is out of scope for this gate hardening).
 5. **Retire or fix `latency_probe.ts`.** It currently targets deleted
    routes and would fail at step 2 if run. Either delete it, or update it
    to exercise the current API surface (`plan:intake`/`GraphIntakeService`
@@ -115,7 +115,7 @@ Targets the legacy plan routes (`server/src/routes/admin-story-builder-plans-upd
 - Any UI change beyond what's needed to keep the existing Approve button
   working under the new transition validation.
 - Neo4j-authored (`GraphIntakeService`) plans — already excluded from this
-  route's write path (`server/src/routes/admin-story-builder-plans-updates.ts:87-108` Neo4j-authored guard).
+  route's write path (`server/src/routes/admin-story-builder-plans-updates.ts:72-85` Neo4j-authored guard).
 
 ## Acceptance criteria
 
@@ -126,8 +126,8 @@ Targets the legacy plan routes (`server/src/routes/admin-story-builder-plans-upd
 3. Every file written by `atomicWriteYaml` carries a `plan_id` (and
    `generated_at`) field.
 4. A plan left in `staging` after file writes but pre-terminal status is
-   reconciled safely on /retry or cleanup (provenance-based, retry-safe);
-   DELETE/PUT unchanged.
+    reconciled safely on /retry or cleanup (provenance-based, retry-safe).
+    DELETE/PUT unchanged (no sweep of staged files on delete).
 5. `latency_probe.ts` either no longer exists or runs successfully against
    the current API surface end to end.
 6. No regression to the legitimate approve → stage → migrate → verify
@@ -141,8 +141,8 @@ Targets the legacy plan routes (`server/src/routes/admin-story-builder-plans-upd
       (valid and invalid transitions)
 - [ ] Unit test asserting `plan_id`/`generated_at` are present in written
       YAML
-- [ ] Integration test: delete a `staged` plan, assert its files are
-      removed (or reported)
+- [ ] Integration test: interrupted staging (files written, status not terminal)
+      is recovered on POST /retry using provenance stamp.
 - [ ] `npm run typecheck --workspace=server`
 - [ ] `npm run lint --workspace=server`
 - [ ] Manual admin-UI smoke: create → approve → stage → migrate → verify

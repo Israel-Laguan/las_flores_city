@@ -57,7 +57,7 @@
      files can never be written before a genuine review.
    - Add status-transition validation to `PUT /plans/:id`.
    - Stamp `plan_id`/`generated_at` provenance into written content at
-     stage time, and sweep orphaned staged files on plan deletion.
+      stage time (sweep of orphaned staged files on deletion is not part of M54).
    - Retire or fix the now-dead `latency_probe.ts`.
    - File target: 10–15.
 
