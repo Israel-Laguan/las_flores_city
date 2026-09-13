@@ -272,9 +272,10 @@ describe.each([
     expect(firstTx.some((q) => /INSERT INTO player_dialogue_states/i.test(q))).toBe(false);
     // No direct queryContent for these.
 
-    // Positive coverage for atomicity claim: pin + node/chunk state written together
-    // in the effects tx (under player lock). A regression that splits the pin write
-    // from the INSERT/ state would now fail here.
+    // Invocation contract check: the effects tx (under player lock) must include the
+    // dialogue-state write (with pin) via the repository. This asserts the route
+    // performs the write inside the tx. It does not prove the repo implementation's
+    // SQL cannot be split, because the INSERT text is supplied by the test mock.
     expect(txQueryBatches.length).toBeGreaterThanOrEqual(2);
     const effectsTx = txQueryBatches[1];
     expect(effectsTx.some((q) => /INSERT INTO player_dialogue_states[\s\S]*pinned_tree_revision/i.test(q))).toBe(true);
