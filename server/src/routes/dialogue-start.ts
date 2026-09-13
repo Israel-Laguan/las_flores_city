@@ -52,9 +52,10 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
     // Read rev + start chunk inside one tx (for read-after-write visibility
     // after content compile). Do NOT write pinned here. Resolve the chunk
     // (or fall back), then under the player lock in the state tx revalidate the
-    // revision and write pinned_tree_revision atomically together with
-    // current_node_id + current_chunk_id (and ps cursor). This ensures pin is
-    // never committed without matching node/chunk state.
+    // revision, select the exact chunk row for the tx rev, resolve its merged
+    // root content, and write pinned_tree_revision atomically together with
+    // current_node_id + current_chunk_id (and ps cursor) + root effects.
+    // This ensures pin+state+effects are never committed without matching root.
     let startChunkId: string | undefined;
     let startChunkKey: string | undefined;
     let treeRevision = 0;
@@ -248,43 +249,44 @@ async function handleStartChunk(userId: string, dialogue: any, startChunkId: str
       pinnedRev = pinnedRevision;
     }
 
-    await PlayerStateRepository.setDialogueCursor(client, userId, rootNodeId, dialogue.id);
-    await PlayerStateRepository.initDialogueChunkState(client, userId, dialogue.id, rootNodeId, pinnedChunkId, pinnedRev);
+    // Resolve the exact selected chunk revision (by the pinned id chosen above)
+    // inside the transaction, *before* any state writes or effect application.
+    // This binds the merged root (and its effects) to the specific chunk row
+    // we pin. setCursor / init / applyEffects all use this resolution's root.
+    // Resolution errors abort the tx (rollback) instead of leaving inconsistent
+    // state + post-commit response.
+    const txResolvedChunk = await DialogueResolver.resolveChunkForUser(userId, pinnedChunkId, startChunkKey);
+    const txRootNodeId = txResolvedChunk.currentNodeId;
+    const txRootNode = txResolvedChunk.mergedNodes[txRootNodeId];
+    if (!txRootNode) {
+      throw new Error('Dialogue chunk has invalid root node');
+    }
+
+    await PlayerStateRepository.setDialogueCursor(client, userId, txRootNodeId, dialogue.id);
+    await PlayerStateRepository.initDialogueChunkState(client, userId, dialogue.id, txRootNodeId, pinnedChunkId, pinnedRev);
     if (isRestart) {
       // Mid-dialogue restart: skip re-applying root effects.
       return;
     }
     // Apply the root node's stat_set / flag_set / state_set exactly once.
-    await applyEffects(client, userId, rootNode.effects);
+    await applyEffects(client, userId, txRootNode.effects);
     // Root-level grant_credits / grant_item flow through the shared
     // idempotent reward helper (distinct `grant_root` claim key).
     await grantDialogueRewards(
       client,
       userId,
       dialogue.id,
-      rootNodeId,
-      rootNode.effects,
+      txRootNodeId,
+      txRootNode.effects,
       'grant_root'
     );
-  });
 
-  // If a compile advanced the rev and we pinned a different chunk id, re-resolve
-  // so the payload we return to the client carries a chunk.id whose .revision
-  // matches the pinned_tree_revision written in state (prevents chunk_mismatch).
-  if (pinnedChunkId !== startChunkId) {
-    try {
-      resolvedChunk = await DialogueResolver.resolveChunkForUser(userId, pinnedChunkId, startChunkKey);
-      const newRootId = resolvedChunk.currentNodeId;
-      const newRoot = resolvedChunk.mergedNodes[newRootId];
-      if (newRoot) {
-        rootNodeId = newRootId;
-        rootNode = newRoot;
-      }
-    } catch {
-      // keep the snapshot chunk; at worst client will see chunk_mismatch on next
-      // action and will re-start.
-    }
-  }
+    // Expose the tx-bound resolution for response payload (ensures chunk.id
+    // and merged nodes match the pinned revision written in state).
+    resolvedChunk = txResolvedChunk;
+    rootNodeId = txRootNodeId;
+    rootNode = txRootNode;
+  });
 
   const availableChoices = await filterChoices(rootNode.choices || [], userId, rootNode.speaker_id);
   const isEnd = rootNode.is_end === true || (!rootNode.choices || rootNode.choices.length === 0);
