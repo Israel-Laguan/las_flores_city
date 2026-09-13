@@ -90,7 +90,8 @@
   },
   "manual": [
     "095_planning_runtime_schemas.sql",
-    "096_migrate_to_planning_runtime_roles.sql"
+    "096_migrate_to_planning_runtime_roles.sql",
+    "097_revoke_las_flores_planning_runtime_access.sql"
   ],
   "olap": [
     "000_schema_migrations.sql",

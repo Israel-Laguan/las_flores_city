@@ -4,8 +4,10 @@
 -- Transition migration for databases that applied an earlier revision of 095
 -- which created the long-named roles (las_flores_planning / las_flores_runtime).
 -- Renames the roles to the short canonical names (planning / runtime) and
--- ensures schema ownership + required grants to the las_flores app role.
+-- ensures schema ownership + required grants.
 --
+-- Execution order (manual applies only): 095 (base schemas/roles + temp grants),
+-- then 096 (legacy role rename), then 097 (revoke las_flores access for boundary).
 -- Idempotent. Safe to run on fresh DBs (no-op if target roles already exist).
 -- Listed under "manual" in migration-targets.json (never auto-applied by runner).
 -- ============================================================
@@ -64,8 +66,16 @@ ALTER DEFAULT PRIVILEGES FOR ROLE las_flores IN SCHEMA runtime
 ALTER DEFAULT PRIVILEGES FOR ROLE las_flores IN SCHEMA runtime
   GRANT ALL PRIVILEGES ON SEQUENCES TO runtime;
 
--- No CREATE grants to the app role (las_flores). See 095. Migrations targeting
--- planning/runtime schemas must be executed under the owning role.
+-- On legacy DBs that received USAGE,CREATE grants to las_flores from 095
+-- (or prior 096), removing the GRANT statements does not revoke them.
+-- Explicitly revoke here (and 097 re-asserts) so app role cannot create
+-- objects in the dedicated schemas.
+REVOKE ALL ON SCHEMA planning FROM las_flores;
+REVOKE ALL ON SCHEMA runtime FROM las_flores;
+
+-- No CREATE grants to the app role (las_flores). See 095+097.
+-- Migrations targeting planning/runtime schemas must be executed under
+-- the owning role (or dedicated migration role with env creds).
 
 -- Explicit denials (re-assert).
 REVOKE ALL ON SCHEMA planning FROM PUBLIC;

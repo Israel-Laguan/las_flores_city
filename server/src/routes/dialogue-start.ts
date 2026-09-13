@@ -222,7 +222,11 @@ async function handleStartChunk(userId: string, dialogue: any, startChunkId: str
 
   let pinnedChunkId = startChunkId;
   let pinnedRev = pinnedRevision;
-  let txResolved: any;
+  // Pre-resolve (outside the player FOR UPDATE tx) per the contract in handleStartDialogue.
+  // Validation below guarantees the pinned* pair matches the pre-resolved chunk, so we
+  // can use it after the tx without re-entering the resolver while the lock is held.
+  // (Avoids pool exhaustion deadlock when resolver needs additional queryOLTP clients.)
+  let txResolved: any = resolvedChunk;
   await withOLTPTransaction(async (client) => {
     const existingCursor = await PlayerStateRepository.lockDialogueCursor(client, userId);
     const isRestart = existingCursor?.active_dialogue_id === dialogue.id;
@@ -253,9 +257,7 @@ async function handleStartChunk(userId: string, dialogue: any, startChunkId: str
       throw new Error('dialogue chunk revision mismatch during start (compile race); aborting to avoid inconsistent pin');
     }
 
-    // Resolve inside the tx (after pin/rev validation) so the response base reflects
-    // the exact pinned revision that was written. Capture for post-tx fallback.
-    txResolved = await DialogueResolver.resolveChunkForUser(userId, pinnedChunkId, startChunkKey);
+    // Use the pre-resolved value (validated to match pinned rev). No resolver call here.
     const txRootNodeId = txResolved.currentNodeId;
     const txRootNode = txResolved.mergedNodes[txRootNodeId];
     if (!txRootNode) throw new Error('Dialogue chunk has invalid root node');
