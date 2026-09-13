@@ -51,11 +51,15 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
 
     // Read rev + start chunk inside one tx (for read-after-write visibility
     // after content compile). Do NOT write pinned here. Resolve the chunk
-    // (or fall back), then under the player lock in the state tx revalidate the
-    // revision, select the exact chunk row for the tx rev, resolve its merged
-    // root content, and write pinned_tree_revision atomically together with
-    // current_node_id + current_chunk_id (and ps cursor) + root effects.
-    // This ensures pin+state+effects are never committed without matching root.
+    // (heavy CDN+overlay+user queries) *before* the player FOR UPDATE tx.
+    // Under the lock: only fast metadata queries to revalidate rev + select
+    // the current-rev chunk id for the key (to decide pinnedChunkId/pinnedRev).
+    // Re-validate chosen pinned* exactly matches the pre-resolved chunk; if
+    // not (rare compile race in claim window), throw to rollback so no
+    // inconsistent pin is ever written. Use the pre-resolved root/effects.
+    // After tx the pre-resolved is guaranteed consistent with written state
+    // (or tx rolled back). Eliminates nested queryOLTP inside tx + shortens
+    // lock to metadata only.
     let startChunkId: string | undefined;
     let startChunkKey: string | undefined;
     let treeRevision = 0;
@@ -229,10 +233,9 @@ async function handleStartChunk(userId: string, dialogue: any, startChunkId: str
     );
     const txRevision = treeRevResult.rows[0]?.revision ?? pinnedRevision;
 
-    // Re-resolve the start chunk *under the player lock* using the tx's revision.
-    // This guarantees the chunk id we pin has an immutable revision equal to
-    // the pinned_tree_revision we write (prevents dialogue_revision_mismatch on
-    // subsequent /choose after a compile raced between snapshot and lock).
+    // Select current-rev chunk id for the key (fast metadata only).
+    // (Heavy resolveChunkForUser — which does queryOLTP + CDN fetch + overlay
+    // merge + cache — was already done *before* this tx using the snapshot rev.)
     const txChunkRes = await client.query(
       `SELECT id FROM dialogue_chunks
        WHERE tree_id = $1 AND chunk_key = $2 AND revision = $3
@@ -249,15 +252,19 @@ async function handleStartChunk(userId: string, dialogue: any, startChunkId: str
       pinnedRev = pinnedRevision;
     }
 
-    // Resolve the exact selected chunk revision (by the pinned id chosen above)
-    // inside the transaction, *before* any state writes or effect application.
-    // This binds the merged root (and its effects) to the specific chunk row
-    // we pin. setCursor / init / applyEffects all use this resolution's root.
-    // Resolution errors abort the tx (rollback) instead of leaving inconsistent
-    // state + post-commit response.
-    const txResolvedChunk = await DialogueResolver.resolveChunkForUser(userId, pinnedChunkId, startChunkKey);
-    const txRootNodeId = txResolvedChunk.currentNodeId;
-    const txRootNode = txResolvedChunk.mergedNodes[txRootNodeId];
+    // Re-validate that the chosen pinned* matches the pre-resolved chunk.
+    // If a compile raced between the outer snapshot and this locked claim,
+    // the tx rev may have a different chunk id for the start key: abort the
+    // tx (throw) so we never write an inconsistent pin+state. Caller will
+    // fail this start cleanly; retry will see updated rev in outer snapshot.
+    // (Semantics preserved: resolution failure before tx aborts start;
+    // rev race aborts claim tx.)
+    if (pinnedChunkId !== startChunkId || pinnedRev !== pinnedRevision) {
+      throw new Error('dialogue chunk revision mismatch during start (compile race); aborting to avoid inconsistent pin');
+    }
+
+    const txRootNodeId = resolvedChunk.currentNodeId;
+    const txRootNode = resolvedChunk.mergedNodes[txRootNodeId];
     if (!txRootNode) {
       throw new Error('Dialogue chunk has invalid root node');
     }
@@ -265,14 +272,9 @@ async function handleStartChunk(userId: string, dialogue: any, startChunkId: str
     await PlayerStateRepository.setDialogueCursor(client, userId, txRootNodeId, dialogue.id);
     await PlayerStateRepository.initDialogueChunkState(client, userId, dialogue.id, txRootNodeId, pinnedChunkId, pinnedRev);
 
-    // Always expose the tx-resolved chunk (and its root at the pinned rev) for the
-    // response payload. Must precede the isRestart guard: restarts that raced with
-    // a compile must still return nodes/choices matching the newly pinned rev+chunk+node
-    // we just wrote (prevents stale snapshot root in response vs new state/cursor).
-    // Resolution happened before any writes; failure would have aborted the tx.
-    resolvedChunk = txResolvedChunk;
-    rootNodeId = txRootNodeId;
-    rootNode = txRootNode;
+    // Pre-resolved chunk (and its root) is used for response + effects.
+    // The match check above guarantees it corresponds to the pinned we just
+    // wrote. (No inner resolve under lock.)
 
     if (isRestart) {
       // Mid-dialogue restart: skip re-applying root effects.

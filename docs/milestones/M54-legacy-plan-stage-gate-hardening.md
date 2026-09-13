@@ -33,10 +33,12 @@ rather than permanent untraceable debris.
   button is `PUT /plans/:id { plan, status: 'approved' }`
   (`useStoryBuilderApi.ts:240-248`) — the exact same unguarded endpoint a
   script can hit with `status: 'verified'` or any other enum value.
-  `admin-story-builder-plans.ts:168-233` performs zero transition
-  validation: any admin-authenticated caller can set `status` to *any*
-  value in the enum at *any* time, with no check on the plan's current
-  status.
+  `server/src/routes/admin-story-builder-plans-updates.ts:12-143` (PUT /plans/:id)
+  already applies a `validStatuses` whitelist, protects transient pipeline
+  statuses (`pending`/`staging`/`migrating`/`verifying`), routes `rejected`
+  through `GraphIntakeService.rejectPlan`, and uses `updated_at` optimistic
+  concurrency. The remaining gap is the lack of *forward-transition*
+  validation (e.g. `proposed` → `verified` only via the intended path).
 - **Written content carries zero provenance until `migrate`, the step
   *after* stage.** `StoryBuilderFileWriter.ts:20-67`'s `atomicWriteYaml`
   writes the file at stage time with no `plan_id`/`generated_at` stamped
@@ -46,7 +48,7 @@ rather than permanent untraceable debris.
   or because its row was deleted first — leaves a file with **no trace of
   which plan produced it.**
 - **`DELETE /plans/:id` never touches the filesystem**
-  (`admin-story-builder-plans.ts:236-268`): it removes the `content_plans`
+  (`server/src/routes/admin-story-builder-plans-updates.ts:143-168`): it removes the `content_plans`
   row and best-effort Neo4j deltas only. A plan that reached `staged` and
   is then deleted leaves its written files behind permanently.
 - **`server/scripts/latency_probe.ts`** is itself now dead code — it calls
@@ -75,7 +77,7 @@ rather than permanent untraceable debris.
 
 ## Scope
 
-Targets the legacy plan routes (`admin-story-builder-plans.ts`,
+Targets the legacy plan routes (`server/src/routes/admin-story-builder-plans-updates.ts`,
 `admin-story-builder-actions.ts`, `admin-story-builder-staging.ts`),
 `StoryBuilderFileWriter.ts`, and `latency_probe.ts`.
 
@@ -113,7 +115,7 @@ Targets the legacy plan routes (`admin-story-builder-plans.ts`,
 - Any UI change beyond what's needed to keep the existing Approve button
   working under the new transition validation.
 - Neo4j-authored (`GraphIntakeService`) plans — already excluded from this
-  route's write path (`admin-story-builder-plans.ts:180-193`).
+  route's write path (`server/src/routes/admin-story-builder-plans-updates.ts:87-108` Neo4j-authored guard).
 
 ## Acceptance criteria
 

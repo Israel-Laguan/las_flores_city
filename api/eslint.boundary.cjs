@@ -20,10 +20,8 @@ function boundaryConfig({ zones, restrictedPackages }) {
       'no-restricted-imports': [
         'error',
         {
-          paths: restrictedPackages.map((name) => ({
-            name,
-            message: `SC-102: do not import ${name} across the planning/runtime/contracts boundary`,
-          })),
+          // Use only `patterns` (covers bare package name + subpaths via `/**`).
+          // `paths` + `patterns` for the same spec caused duplicate SC-102 diagnostics.
           patterns: restrictedPackages.map((name) => ({
             group: [name, `${name}/**`],
             message: `SC-102: do not import ${name} across the planning/runtime/contracts boundary`,

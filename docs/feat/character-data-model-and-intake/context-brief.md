@@ -128,13 +128,12 @@ active, whether a choice is actually reachable) stay enforced.
   There's no lighter-weight path for "a nameless NPC who exists to make a scene feel
   populated" versus "a named character with a story arc," so any future crowd/mob
   content would currently cost the same per-instance as a fully authored character.
-- **The dialogue-caching layer has open correctness questions**, independent of the
-  character schema: whether the cache key for a served chunk correctly scopes to the
-  active content revision, and whether a client-submitted choice is validated as
-  actually reachable from where the player currently is, before any effect is applied.
-  These matter regardless of what the character schema ends up looking like, because a
-  cache or state bug here is a player-facing correctness bug, not just a modeling
-  cleanliness issue.
+- **The dialogue-caching layer intends server-side reachability enforcement**
+  (client never hits CDN directly; resolver is used so "whether a choice is actually
+  reachable" stays enforced on serve), but it is unverified whether a client-submitted
+  `/choose` is fully validated as reachable from the player's current node *before*
+  effects are applied. This is an open correctness question independent of character
+  schema.
 - **There's no serving benchmark today.** "Serve fast" is a stated goal with no current
   measurement to compare against.
 
@@ -143,9 +142,10 @@ active, whether a choice is actually reachable) stay enforced.
 - **Team size: one person**, full stack, across all of authoring tooling, backend,
   and client. There is no parallelism to hide investment behind — time spent on
   infrastructure is time not spent on content, directly and without offset.
-- **Current content volume:** on the order of ~190 authored characters, of which a
+- **Current content volume:** on the order of ~195 authored characters, of which a
   small minority (single digits) have any dialogue at all; total dialogue content is a
-  few hundred nodes across roughly two dozen files; one mission exists.
+  few hundred nodes across ~60 YAML files (25 top-level + subdirectories); one mission exists.
+  (Numbers can drift; re-measure if using for estimation.)
 - **No confirmed launch date, platform deadline, or competitive clock** exists in any
   project document. Any urgency framing should be treated as unconfirmed until stated
   otherwise.

@@ -101,7 +101,7 @@ being wrong. A roadmap that assumes 100% is a roadmap that lies at the first ret
 | Recursive-CTE reachability from game start | S1 |
 | `pg_trgm` alias/duplicate detection | S10 |
 | Hint engine over tier-3 results | S2 |
-| Knowledge ledger shape + deterministic TB-cost linter (S14/S16 groundwork) — spikes SC-S8, SC-S10; stories SC-1001 (ledger type), SC-1006 (TB linter) | S14, S16 |
+| Knowledge ledger shape + deterministic TB-cost linter (S14/S16 groundwork) — spike SC-S8; stories SC-1001 (ledger type), SC-1006 (TB linter, ships without a spike; SC-S10 gates SC-1007 in SC-M6) | S14, S16 |
 | Inventory ledger shape spike SC-S9 (feeds SC-M6) | S15 |
 
 **Exit criteria**
@@ -146,7 +146,7 @@ being wrong. A roadmap that assumes 100% is a roadmap that lies at the first ret
 - `api/planning` migrates and serves from `postgres-planning` alone; `api/runtime` from `postgres-runtime` alone (proven by booting each with only its own URL set).
 - SC-106 negative test passes against the physical hosts (runtime role cannot even connect to the planning DB — stronger than the rung-2 schema-USAGE denial).
 - Legacy `server/` suite runs green one final time against a frozen snapshot, the extraction log (functions/ideas ported) is recorded, dumps are stored, and the old services/volumes/migration folder are deleted.
-- No code path references `postgres-oltp` / `postgres-olap` or `server/src/database/migrations/`.
+- No code path references `postgres-oltp` / `postgres-olap` or `server/src/database/migrations/`, and the `server/src/database/migrate.ts` shim is removed alongside them.
 
 ---
 

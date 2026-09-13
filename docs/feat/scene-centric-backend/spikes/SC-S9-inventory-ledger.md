@@ -7,8 +7,8 @@
 
 S15 (inventory possession ledger) needs `has_item` / `item_at_location` edges so the checker can flag giving/using an item never acquired, or carrying something marked lost/consumed. Two variables block `SC-1004`:
 
-1. **Owner model:** per-character possession (`has_item` between character and item) vs. per-location stash (`item_at_location`). Player inventory already exists (`player_states` + shop/vault), but NPC possession does not. The proposal's `S8` Items are "objects given on unlock condition" (`proposal.md:165`); that is item existence, not ledger.
-2. **Consumption/loss semantics:** is an item consumed on use (single-use clue), retained, or lost via a flag? Needs the flag grammar's `latching` vs. `tracking` distinction (`SC-201` / `proposal.md:253`).
+1. **Owner model:** per-character possession (`has_item` between character and item) vs. per-location stash (`item_at_location`). Player inventory already exists (`player_states` + shop/vault), but NPC possession does not. The proposal's `S8` Items are "objects given on unlock condition" (`proposal.md:166`); that is item existence, not ledger.
+2. **Consumption/loss semantics:** is an item consumed on use (single-use clue), retained, or lost via a flag? Needs the flag grammar's `latching` vs. `tracking` distinction (`SC-201` / `proposal.md:254`).
 
 ## What was run
 

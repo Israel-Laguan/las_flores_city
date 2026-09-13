@@ -43,13 +43,13 @@ Targets client API wrapper, Vite proxy, and game-server route compatibility.
 
 1. Client can start and log in against a migrated database.
 2. Client can load map, location, dialogue, and player state from the API.
-3. Client tests pass: `npm run test --workspace=client`.
+3. Client tests pass: `npm run test:client:e2e`.
 4. Server game-route contract tests pass.
 5. `npm run build --workspace=client` succeeds.
 
 ## Verification checklist
 
-- [ ] Client unit/smoke tests pass
+- [ ] Client e2e smoke tests pass
 - [ ] Server contract tests pass
 - [ ] `npm run lint --workspace=client`
 - [ ] `npm run typecheck --workspace=client`

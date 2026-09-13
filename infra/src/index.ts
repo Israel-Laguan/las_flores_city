@@ -16,8 +16,6 @@ export {
   oltpPool,
   olapPool,
   contentPool,
-  planningPool,
-  runtimePool,
   queryOLTP,
   queryContent,
   queryOLAP,

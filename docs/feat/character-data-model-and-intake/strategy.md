@@ -38,7 +38,7 @@ Problem B. It is a *partial and indirect* answer to Problem A.
 | Dimension | Answer |
 |---|---|
 | **Who** is affected | The sole developer-author, wearing the "writer" hat, when authoring character #200+ and their dialogue; and, later, a casting/variant-generation system that does not yet exist. |
-| **What** is the current situation | `characters` is `name / title / description / avatar_url / metadata JSONB` (migration `001`). Every casting-relevant attribute lives in unqueried JSONB. Measured: **182 distinct `personality` values across 192 files** (top value appears 3×); **55 of 194 characters are `faction: independent`** — NULL wearing a costume; `occupation` 57/194 as prose; `age` 57/194 mixing `45` and `"Early 20s"`; `gender` 47/194; `status` 10/194 as prose-with-date. **The doc's corpus audit was independently reproduced field-by-field and is accurate** — the only error is the denominator (194 files, not 193). Credit where due: this is an unusually honest diagnosis. |
+| **What** is the current situation | `characters` is `name / title / description / avatar_url / metadata JSONB` (migration `001`). Every casting-relevant attribute lives in unqueried JSONB. Measured: **182 distinct `personality` values across 192 files** (top value appears 3×); **55 of 195 characters are `faction: independent`** — NULL wearing a costume; `occupation` 57/195 as prose; `age` 57/195 mixing `45` and `"Early 20s"`; `gender` 47/195; `status` 10/195 as prose-with-date. **The doc's corpus audit was independently reproduced field-by-field and is accurate** — the only error is the denominator (195 files, not 193). Credit where due: this is an unusually honest diagnosis. |
 | **Where** does it occur | Authoring time (plan intake fills up to 17 metadata fields per character) and, prospectively, casting/variant-generation time. |
 | **When** does it occur | Every new character; and at the moment someone tries to write a query like "who is alive, unaffiliated, a student, in this district, at night." That query has **never been run**, because nothing consumes these fields structurally. |
 | **Why** is it important to solve | It is a hard blocker for mob casting and relationship-keyed dialogue variants — the M54+ casting vision. It is **not** a blocker for anything shipping today. |
@@ -83,8 +83,8 @@ a sound instinct. The risk is that a well-built pipe invites you to keep improvi
 | Metric | Value |
 |---|---|
 | Contributors | **1 human** (2,296 commits since 2026-06-15, ~12 weeks) + dependabot |
-| Character YAMLs | **194** |
-| Dialogue YAMLs | **25** |
+| Character YAMLs | **195** |
+| Dialogue YAMLs | **60** (25 top-level + 35 in relationship subdirectories) |
 | Characters with any dialogue attached | **7** |
 | Total dialogue nodes (approx.) | **~280** |
 | Missions | **1** |
@@ -93,7 +93,7 @@ a sound instinct. The risk is that a well-built pipe invites you to keep improvi
 | DB migrations | 91 |
 | Live players | **0** — no launch date, audience, or release statement exists in any doc |
 
-**187 of 194 characters are mute.** The roster is ~28× larger than the dialogue that uses
+**188 of 195 characters are mute.** The roster is ~28× larger than the dialogue that uses
 it. Migration velocity (91 in 12 weeks) proves schema change is *cheap* here. Dialogue
 authoring is what is expensive.
 
@@ -288,13 +288,13 @@ initiative failed regardless of how clean the tables are.
 
 | Metric | Current baseline (measured) | 6-month target | 12-month target |
 |---|---|---|---|
-| **Characters with any authored dialogue** | **7 / 194** | 25 | 55 |
+| **Characters with any authored dialogue** | **7 / 195** | 60 | 55 |
 | **Total dialogue nodes** | **~280** | 900 | 2,500 |
 | **Missions** | **1** | 5 | 15 |
-| Characters with ≥2 expressions that actually **resolve** at runtime | **~0** (10/194 carry `expression:` keys; most are unmatchable compound tags; publish path never writes the field) | 55 | 194 |
+| Characters with ≥2 expressions that actually **resolve** at runtime | **~0** (10/195 carry `expression:` keys; most are unmatchable compound tags; publish path never writes the field) | 55 | 195 |
 | Manual YAML repairs per intake run | `[TBD — instrument before requirement phase]` | −50% | −80% |
 | Plan-intake round-trip (describe→migrated) | `[TBD — latency_probe gives partial data]` | — | — |
-| `faction: independent` used as a NULL stand-in | 55 / 194 | 0 | 0 |
+| `faction: independent` used as a NULL stand-in | 55 / 195 | 0 | 0 |
 
 **Challenge on the source docs' implied metrics:** `CHARACTER_DATA_MODEL.md` offers no success
 metric at all — only a schema and a phase plan. A schema that cannot fail is a schema that
@@ -336,7 +336,7 @@ without them:
 **Estimated coverage of the three stated goals by this reduced path: writer intake UX ~80%,
 efficient DB population ~90%, fast/complete serving ~95%** (serving was never the schema's
 problem). Cost: roughly 1 migration + 2 service edits + 1 Zod change, versus ~10 tables, a
-backfill of 194 files, and a dual-read window.
+backfill of 195 files, and a dual-read window.
 
 ---
 
@@ -347,9 +347,9 @@ backfill of 194 files, and a dual-read window.
 | **Organizational** | **Team of one.** Every hour on schema is an hour not on dialogue. There is no parallelism to hide the cost behind. | **High** |
 | **Sequencing / collision** | M52 + M52b are **unmerged**, 9 commits on `feat/plan-intake-admin-integration`, mid-review (CodeRabbit/cubic fixes already applied). The schema proposal changes `TODO_FIELDS.character` and `FILL_TARGETS` — the exact surface those commits touch (`StoryBuilderPlanOps.ts:499-521`). | **High** |
 | **Phantom deadline** | The doc anchors its entire 4-phase plan to "before M54." **M54 is `legacy-plan-stage-gate-hardening` — narrowing `allowedStatuses` on the legacy stage endpoint, provenance stamping, and retiring `latency_probe.ts`.** It explicitly disclaims graph-intake and has *nothing to do with characters or casting.* Its own doc states "Predecessor: none," and the milestones README says it "**can run at any time — it targets a different pipeline entirely.**" The "M54" in `DIALOGUE_CACHING…md:5` was a *placeholder number* that the real M54 has since taken. **There is no deadline. The sequencing pressure in the source doc is an artifact of a naming collision.** | **High** |
-| **Process** | `docs/milestones/README.md:92-93`: "Each milestone should be independently reviewable and mergeable. **Keep changes mechanical; avoid bundling refactors or unrelated cleanup into these milestones.**" A 4-layer schema + 194-file backfill + dual-read window is the definition of a non-mechanical bundled refactor. It needs its own milestone, cleanly after M52/M52b merge. | **Medium** |
+| **Process** | `docs/milestones/README.md:92-93`: "Each milestone should be independently reviewable and mergeable. **Keep changes mechanical; avoid bundling refactors or unrelated cleanup into these milestones.**" A 4-layer schema + 195-file backfill + dual-read window is the definition of a non-mechanical bundled refactor. It needs its own milestone, cleanly after M52/M52b merge. | **Medium** |
 | **Architectural contradiction** | Layer-1 vocabulary tables are specified as DB-authored/admin-editable, contradicting the YAML-is-source-of-truth contract (§3, Company). Unresolved, this manufactures a fourth registry. | **High** |
-| **Technical** | 91 existing migrations (next is `092`); `characters` was created in `001_initial_schema.sql:10` and has received exactly two column additions since (`038_character_portrait_urls`, `039_character_atlas_url`) — everything else lives untyped in `metadata` JSONB. Everything promoted must be backfilled from prose across 194 files, much of it LLM-inferred and therefore requiring human review. | **Medium** |
+| **Technical** | 91 existing migrations (next is `092`); `characters` was created in `001_initial_schema.sql:10` and has received exactly two column additions since (`038_character_portrait_urls`, `039_character_atlas_url`) — everything else lives untyped in `metadata` JSONB. Everything promoted must be backfilled from prose across 195 files, much of it LLM-inferred and therefore requiring human review. | **Medium** |
 | **Precedent** | **There is essentially no lookup/vocabulary-table precedent in this codebase.** Exactly one `CREATE TYPE ... AS ENUM` exists across all 91 migrations (`faction_alignment`, `028`). Layer 1 would introduce five new lookup tables and a pattern the project has never used — worth weighing against `CHECK` constraints, which it also barely uses. | **Medium** |
 | **Financial** | Owner's time only. No cash ceiling; the ceiling is attention. | **High** (as time) |
 | **Timeline** | **No real deadline exists.** No launch date, no contract, no competitor clock, no player cohort in any doc. Verified across the milestone tree and `game_design.md`. | Low — *and this is good news*: it removes the only justification for locking decisions early |
@@ -368,7 +368,7 @@ backfill of 194 files, and a dual-read window.
 1. **Tooling substitutes for content.** The schema ships, is beautiful, and 12 months later
    there are still ~280 dialogue nodes. The most likely failure. The §7 top-row metric exists
    specifically to detect it early.
-2. **Backfill review debt.** 194 characters × LLM-inferred archetype/life_role/lifecycle, each
+2. **Backfill review debt.** 195 characters × LLM-inferred archetype/life_role/lifecycle, each
    needing human review ("prompt for review" appears three times in the backfill plan). That is
    a multi-hundred-decision queue for one person, producing no new content. Half-finished, it
    strands the codebase in the dual-read window indefinitely.
@@ -391,7 +391,7 @@ backfill of 194 files, and a dual-read window.
 | `docs/DATA_INTAKE.md` "Historical intake exercise (2026-08-27)" | Evidence the current `content_plans`/`job_runs` model is adequate: 60/60 terminal, <10s drain, worker interrupt resumed, "found no coordination gap requiring a task graph or swarm" | In-repo |
 | `server/src/services/AssetPublishService.ts:89-170`, `AssetNeedsService.ts:57` | Root cause of the dark expression system — plumbing, not schema | In-repo |
 | `docs/milestones/M54-legacy-plan-stage-gate-hardening.md` + `docs/milestones/README.md:83-93` | Proof the "before M54" deadline is a naming collision | In-repo |
-| Corpus itself (`content/characters/*`, `content/dialogues/*`) | 194 / 25 / 7-speaking / ~280 nodes — the numbers that reframe the whole initiative | `git`-tracked; re-measure before requirement |
+| Corpus itself (`content/characters/*`, `content/dialogues/*`) | 195 / 60 / 7-speaking / ~280 nodes — the numbers that reframe the whole initiative | `git`-tracked; re-measure before requirement |
 | **A first external playtester** | The missing input. Every expressivity claim is unfalsifiable without one. | `[TBD — no cohort exists]` |
 | Ink / Yarn Spinner / Ren'Py authoring models | Prior art on narrative authoring ergonomics for small teams | External — worth one teardown before designing intake UX |
 
@@ -420,7 +420,7 @@ naming collision.
 |---|---|---|---|
 | 1 | Do lifecycle changes invalidate graph revisions? | Option B makes character death a **content-recompile event** — an ongoing compile-cost tax and a cache-invalidation surface across every published chunk. | **Defer.** Take Option A (lifecycle is not graph-triggering) as the *reversible* default; a gated `lifecycle=deceased` tree costs nothing and can be revisited. Do not add the `graph_revision_invalidates_on_lifecycle` column at all until a second mission needs it — a boolean column defaulting to FALSE that nothing reads is exactly the JSONB-snowflake pattern being cured, in a new costume. |
 | 2 | Is `economic_class` a weak generation key or a pure filter? | As a generation key it **multiplies every variant by 4**, permanently, across the whole corpus. This is the highest-cost decision on the list and it is the one framed most casually. | **Defer, and default to filter-only.** Promoting a filter to a key later is additive; demoting a key means regenerating and re-QA'ing every variant. Asymmetric risk — take the cheap side. |
-| 3 | Does `character_presence` carry confidence scores, or yes/no? | Weighted pools commit you to tuning a distribution and to explaining "why did I meet this NPC" bugs. Also: presence data must be *authored* for 194 characters × 4 time bands. | **Do not build the table yet.** 1 mission, 0 role-slots. This decision has no consumer. |
+| 3 | Does `character_presence` carry confidence scores, or yes/no? | Weighted pools commit you to tuning a distribution and to explaining "why did I meet this NPC" bugs. Also: presence data must be *authored* for 195 characters × 4 time bands. | **Do not build the table yet.** 1 mission, 0 role-slots. This decision has no consumer. |
 | 4 | How many trait tags per character? (2–3 chosen) | Variant multiplicity ×N, and the answer is already asserted in-doc without evidence ("we chose 2–3 as the sweet spot"). | **Not a real decision at this stage** — it is a generation-time knob. Make traits a validated array with no hard cap; discover the sweet spot from the first 10 authored characters. Locking it now optimizes a curve nobody has plotted. |
 | 5 | Mobs generated on-demand or pre-authored? | The largest fork in the document: on-demand commits to name pools, portrait pools, trait composition, and per-save instantiation persistence — a whole subsystem. | **Defer entirely.** Zero mobs exist; zero role-slots exist. Revisit when mission #5 is authored and the pool-sizing metric can actually be computed. |
 
@@ -438,7 +438,7 @@ collision surfaces:
    (`CHARACTER_DATA_MODEL.md:348-361`) while M52/M52b are actively editing the same intake
    path on an unmerged branch.
 2. **The dual-read window is a *permanent* liability if backfill stalls.** Stage 3 says "flip
-   reads when backfill is >95% complete." For 194 characters requiring human review on
+   reads when backfill is >95% complete." For 195 characters requiring human review on
    archetype and life_role assignment, by one person who also has to write dialogue, >95% is a
    real risk of never arriving. Additive migrations are cheap; **half-finished migrations are
    not** — they double every read path indefinitely.

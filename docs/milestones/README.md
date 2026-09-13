@@ -31,7 +31,7 @@
 
 - **M51**: Generalize Plan Intake to Admin HTTP Endpoint. `POST /admin/story-builder/plans/intake`
   added as a cleaner alias of `/plans/graph-intake` with proper actor attribution and
-  `plan_intake` event emission. Unit tests (`plan-intake.route.test.ts`) and integration
+  `plan_intake` event emission. Unit tests (`plan-intake-cli.test.ts`) and integration
   tests (`plans-intake.integration.test.ts`) cover all acceptance criteria. Ops docs
   updated in `docs/STORY_BUILDER_OPERATIONS.md` §1.2. Standalone doc retired.
 
