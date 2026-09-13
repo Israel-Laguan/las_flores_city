@@ -53,3 +53,6 @@ A spike without this section is not finished.
 | SC-S4 | `pg_trgm` alias detection — does it beat plain `ILIKE`? | done — depends: beats ILIKE on recall (83% vs 42% @ threshold 0.30) but at low precision (35%); misses pure translation/synonym/acronym aliases entirely; see write-up |
 | SC-S5 | Where does a live weather value come from? | done — district-level default (new `districts.weather` column) + scene-level author override, resolved before `buildBackgroundHints`; see write-up |
 | SC-S6 | Dialogue serving baseline — p50/p95 | done — full endpoint p50≈25ms/p95≈35-39ms; `resolveChunkSpeakers` is ~29-45% of that, not the majority — the suspected "uncached bulk SELECT" is sub-ms; presigning is the real (but minority) cost; see write-up |
+| SC-S8 | Knowledge-ledger shape — `fact_id` granularity + explicit vs. inferred exposure | not started — blocks SC-1001/S14 |
+| SC-S9 | Inventory-ledger shape — per-character vs. per-location + consumption semantics | not started — blocks SC-1004/S15 |
+| SC-S10 | Time-vs-prose cheap-model extraction — precision/recall for claimed elapsed time | not started — blocks SC-1007/S16 |

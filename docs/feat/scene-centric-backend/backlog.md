@@ -119,6 +119,23 @@
 | SC-811 | Relationship stats with scene-emitted deltas; deltas to mobs/cameos dropped not stored | M | Blocked: SC-206 |
 | SC-812 | Validator flags a relationship effect authored on a cameo or mob | S | Blocked: SC-811 |
 
+## SC-E10 — Narrative consistency checkers · S14, S15, S16 · SC-M5/SC-M6
+
+*Writer + cheap-checker pattern: expensive model (Opus-class) writes, cheap models lint. Reuses the existing `LLM_MODEL` / `LLM_DEEP_MODEL` two-model split (`LiteLLMProvider.ts`) and the tier-3 `entity_edges` projection. All three checkers run at plan time (F9 review step), never at runtime.*
+
+| ID | Story | Size | State |
+|---|---|---|---|
+| SC-1001 | Knowledge ledger schema in `contracts/knowledge` — `fact_id` (stable secret/utterance id), `source_scene`, `acquired_via` (`witnessed`/`told`/`inferred`), `story_beat` visibility, plus `CharacterKnowsFact` edge type | M | Blocked: SC-S8, SC-701 |
+| SC-1002 | `knows_fact` edge projection — from explicit `fact_refs` on dialogue nodes/overlays + hand-authored `fact` registry; array-aware merge for MODIFY deltas (same pitfall as SC-702 / SC-S3) | M | Blocked: SC-1001 |
+| SC-1003 | Metagame checker — flags any NPC line referencing a `fact_id` not in that NPC's ledger at the requesting `story_beat` (covers "said in their head / wasn't there" cases); emits tier-3 diagnostic with fix hint ("add acquisition scene or gate line behind flag") | M | Blocked: SC-1002, SC-703 |
+| SC-1004 | Inventory possession ledger — `has_item` / `item_at_location` edges, `acquired`/`consumed`/`lost` lifecycle; projection from `gives_item` + explicit possession deltas | M | Blocked: SC-S9, S8, SC-701 |
+| SC-1005 | Inventory consistency checker — flags `requires_item` / gives/uses without prior `has_item`, or `has_item` after `consumed` without re-acquisition | M | Blocked: SC-1004, SC-703 |
+| SC-1006 | Time-block consistency checker (deterministic) — sums `time_block_cost` across a scene path and flags prose-vs-cost mismatch (e.g. "three hours passed" vs TB cost 1); runs as pure lint in the review step, zero LLM | S | Blocked: SC-301, SC-701 |
+| SC-1007 | Time-vs-prose LLM assist (cheap model) — extracts claimed elapsed time from dialogue prose and compares to TB sum; cheap-model pass (`LLM_MODEL`), writer model (`LLM_DEEP_MODEL`) stays for generation. Precision/recall gated on SC-S10 | M | Blocked: SC-S10, SC-1006 |
+| SC-1008 | Wire all three checkers into `SC-703`/`SC-605` review step + CI — fail on `error` severity, warn on `hint`; add hint-engine hooks (S2) for "characters in this role usually know X" | M | Blocked: SC-1003, SC-1005, SC-1007 |
+
+> **Sequencing note:** SC-1001–SC-1003 (S14) can start once SC-S8 answers and `S1` projection exists; SC-1004–SC-1005 (S15) needs S8 to exist; SC-1006 is the only item that can ship without a spike (pure TB arithmetic). SC-1007 is explicitly gated on SC-S10's precision measurement — do not build it until the spike says the cheap model is viable.
+
 ## SC-E9 — Old-path retirement · post-SC-M6
 
 | ID | Story | Size | State |
@@ -143,12 +160,16 @@ in `spikes/` and the affected story is re-planned rather than quietly re-attempt
 | SC-S4 | `pg_trgm` alias detection over existing location and character names — does it catch known duplicate phrasings? | 0.5 day | SC-706 |
 | SC-S5 | Where does weather come from? `AGENTS.md:36` says it is a hook with no live source and callers pass `undefined`. Propose the source. | 0.5 day | A6, SC-305 |
 | SC-S6 | Dialogue serving baseline — p50/p95 for chunk fetch and portrait load on the current path, including `resolveChunkSpeakers` | 1 day | SC-508, R13 |
+| SC-S8 | Knowledge-ledger shape — what is a `fact_id` (secret granularity), how to author `fact_refs` on nodes, can cheap model infer exposure vs. requiring explicit ledger writes? | 0.5 day | SC-1001, S14 |
+| SC-S9 | Inventory-ledger shape — per-character vs. per-location possession, consumption/loss semantics, projection from `gives_item` | 0.5 day | SC-1004, S15 |
+| SC-S10 | Time-vs-prose cheap-model check — given a dialogue prose sample + TB sum, can `LLM_MODEL` extract claimed elapsed time with usable precision/recall? Measure vs. hand-labeled fixture | 0.5 day | SC-1007, S16 |
 
 ### Spike follow-ups
 
 | ID | Story | Size | State |
 |---|---|---|---|
 | SC-S7 | Commit the spike harnesses (SC-S1 projection script, SC-S2 run/duplicate scripts, SC-S3 overlay script, SC-S4 corpus/analysis files, S6 serving baseline) under `server/scripts/`, or replace each write-up with fully self-contained inline repro commands. Until then the recorded spike numbers are not re-runnable from the repo. | S | Ready |
+| SC-S11 | Commit SC-S8/S9/S10 harnesses (knowledge/inventory/time fixtures + cheap-model eval script) under `server/scripts/` or inline repro, same reproducibility rule as SC-S7 | S | Blocked: SC-S8, SC-S9, SC-S10 |
 
 ## Defects
 

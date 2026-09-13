@@ -264,6 +264,16 @@ async function handleStartChunk(userId: string, dialogue: any, startChunkId: str
 
     await PlayerStateRepository.setDialogueCursor(client, userId, txRootNodeId, dialogue.id);
     await PlayerStateRepository.initDialogueChunkState(client, userId, dialogue.id, txRootNodeId, pinnedChunkId, pinnedRev);
+
+    // Always expose the tx-resolved chunk (and its root at the pinned rev) for the
+    // response payload. Must precede the isRestart guard: restarts that raced with
+    // a compile must still return nodes/choices matching the newly pinned rev+chunk+node
+    // we just wrote (prevents stale snapshot root in response vs new state/cursor).
+    // Resolution happened before any writes; failure would have aborted the tx.
+    resolvedChunk = txResolvedChunk;
+    rootNodeId = txRootNodeId;
+    rootNode = txRootNode;
+
     if (isRestart) {
       // Mid-dialogue restart: skip re-applying root effects.
       return;
@@ -280,12 +290,6 @@ async function handleStartChunk(userId: string, dialogue: any, startChunkId: str
       txRootNode.effects,
       'grant_root'
     );
-
-    // Expose the tx-bound resolution for response payload (ensures chunk.id
-    // and merged nodes match the pinned revision written in state).
-    resolvedChunk = txResolvedChunk;
-    rootNodeId = txRootNodeId;
-    rootNode = txRootNode;
   });
 
   const availableChoices = await filterChoices(rootNode.choices || [], userId, rootNode.speaker_id);

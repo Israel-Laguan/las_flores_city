@@ -101,6 +101,8 @@ being wrong. A roadmap that assumes 100% is a roadmap that lies at the first ret
 | Recursive-CTE reachability from game start | S1 |
 | `pg_trgm` alias/duplicate detection | S10 |
 | Hint engine over tier-3 results | S2 |
+| Knowledge ledger shape + deterministic TB-cost linter (S14/S16 groundwork) — spikes SC-S8, SC-S10; stories SC-1001 (ledger type), SC-1006 (TB linter) | S14, S16 |
+| Inventory ledger shape spike SC-S9 (feeds SC-M6) | S15 |
 
 **Exit criteria**
 - Tier-3 runs in CI and fails the build on a dead-end flag.
@@ -119,6 +121,7 @@ being wrong. A roadmap that assumes 100% is a roadmap that lies at the first ret
 | `asset_fallback` consumer — compile-time coverage report (prerequisite gap) | S5 |
 | Character tier enforcement against asset requirements | S6 |
 | Relationship stats and threshold→flag emission | S3 |
+| Metagame checker (S14) + inventory checker (S15) + time-vs-prose LLM assist (S16) — stories SC-1002–SC-1005, SC-1007–SC-1008; wired into review step + CI | S14, S15, S16 |
 
 **Exit criteria**
 - A mob pool serves several characters with no per-character asset rows.
@@ -151,9 +154,13 @@ SC-M3 is an ordering claim with a duration guess attached.
 
 ## 3. What comes after SC-M6
 
-Unordered, unscheduled, revisited when SC-M6 closes: missions (S7), items (S8), casting by
+Unordered, unscheduled, revisited when SC-M6 closes: missions (S7), casting by
 description (S9), lazy asset generation (S11), interactive activity and
 `activity_sets_flag` (S12), and the decision on importing existing YAML content (S13).
+Items (S8) and its inventory-ledger checker (S15) now have a scheduled path in SC-M5/SC-M6
+(SC-E10); if SC-M6 slips they fall back here. Knowledge (S14) and time-vs-prose (S16)
+likewise have a path, but any checker gated on a "no" spike answer returns here for
+re-planning rather than being quietly re-attempted.
 
 ## 4. Retirement of the old path
 

@@ -47,6 +47,9 @@ and choice-reachability validation.*
 | **S11** | **Lazy asset generation** — plan approval enqueues generation for newly required looks | Ship with hand-picked assets first | post-M6 |
 | **S12** | **Interactive activity + `activity_sets_flag`** | Needs F1 flag plumbing and a real minigame to return into | post-M6 |
 | **S13** | **Content import from existing YAML** | Open question #8 — may be "let it age out" instead | undecided |
+| **S14** | **Metagame / character-knowledge consistency** — per-character knowledge ledger (`knows_fact` edges: `fact_id`, `source_scene`, `acquired_via`, `story_beat`) + authoring-time checker that flags any dialogue/overlay line where an NPC references a fact not in their ledger at that beat (covers "said in their head / wasn't there" cases) | Same tier-3 family as S1. Needs `entity_edges` + scene model + `LLM_DEEP_MODEL` cheap-checker pattern (`LiteLLMProvider.ts` two-model split). Slice is playable without it; value scales with authored secrets | SC-M5 (ledger shape) → SC-M6 (checker) |
+| **S15** | **Inventory possession ledger + consistency checker** — per-character/per-location possession state (`has_item` / `item_at_location` edges) + checker that flags giving/using an item never acquired, or still carrying an item marked lost/consumed | Extends S8 (Items) with ledger semantics. Uses same condition grammar (`F2`) and `entity_edges` projection as S1. Slice works without items; checker only matters once items exist | SC-M6 (ledger shape with S8) → post-M6 (checker) |
+| **S16** | **Time-block / narrative-elapsed consistency checker** — validates `time_block_cost` declarations against narrative prose claims ("three hours passed") and against `timeBlocks` clock (`client/src/utils/time.ts`, `PhoneStore.ts`). Flags prose/time-cost mismatches and scene sequences whose declared TB span contradicts achievable elapsed time | Authoring-time analogue of runtime `time_blocks` enforcement. Needs `F3` scene time + `F2` grammar. No new runtime machinery; purely deterministic lint over plan deltas | SC-M5 (deterministic cost linter) → SC-M6 (prose-vs-cost LLM assist via cheap model) |
 
 ## 3. Dependency graph
 
@@ -74,15 +77,22 @@ flowchart TD
   S3[S3 Relationship stats]
   S4[S4 Activity]
   S5[S5 Assets]
+  S14[S14 Knowledge ledger]
+  S15[S15 Inventory ledger]
+  S16[S16 Time consistency]
   F9 --> S1 --> S2[S2 Hints]
   F1 --> S3
   F3 --> S4
   F4 --> S5
+  S1 --> S14
+  S1 --> S15
+  S1 --> S16
+  S14 -.->|cheap model| S16
 
   classDef primary fill:#1f4e5f,stroke:#0d2b35,color:#fff
   classDef secondary fill:#3a3a3a,stroke:#222,color:#ddd
   class F1,F2,F3,F4,F5,F6,F7,F8,F9,F10 primary
-  class S1,S2,S3,S4,S5 secondary
+  class S1,S2,S3,S4,S5,S14,S15,S16 secondary
 ```
 
 **The critical path is `F10 → F1 → F2 → F3 → F7 → F4 → F5`, with `F6` required before F5.**
@@ -124,3 +134,6 @@ Discovered during review; each blocks a feature and none has an owner yet.
 | **No dialogue serving benchmark** | F5 | Nothing in the repo measures chunk fetch or portrait load. R13 forbids a performance goal without a baseline |
 | **`asset_fallback` signal has no consumer** | S5 | A signal nobody reads is why expressions went dark. Needs at minimum a compile-time coverage report |
 | **File-canonical vs. DB-canonical undecided** | F8, S13 | Open question #8. The external reviewer never engaged it because the brief underplayed it |
+| **Knowledge-ledger shape** | S14 | No `knows_fact` projection exists yet; needs SC-S8 spike to decide `fact_id` granularity (secret vs. per-utterance) and whether facts are authored explicitly or inferred via LLM cheap-checker |
+| **Inventory-ledger shape** | S15 | `has_item` edges not yet projected; needs SC-S9 spike to decide per-character vs. per-location possession and consumption semantics |
+| **Time-vs-prose checker calibration** | S16 | Deterministic TB-sum check is trivial; LLM-assist "prose claims 3 hours" detection needs SC-S10 spike to measure cheap-model precision/recall |
