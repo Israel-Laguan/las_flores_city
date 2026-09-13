@@ -1,3 +1,20 @@
-// Extends the shared base config at the repo root; add workspace-specific
-// overrides here rather than duplicating the base rules.
-module.exports = [...require('../../eslint.config.base.cjs')];
+const { boundaryConfig } = require('../eslint.boundary.cjs');
+
+module.exports = [
+  ...require('../../eslint.config.base.cjs'),
+  boundaryConfig({
+    zones: [
+      {
+        target: 'contracts/src',
+        from: 'planning',
+        message: 'SC-102: api/contracts must not import api/planning',
+      },
+      {
+        target: 'contracts/src',
+        from: 'runtime',
+        message: 'SC-102: api/contracts must not import api/runtime',
+      },
+    ],
+    restrictedPackages: ['@las-flores/api-planning', '@las-flores/api-runtime'],
+  }),
+];

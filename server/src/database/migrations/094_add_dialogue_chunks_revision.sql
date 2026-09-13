@@ -21,14 +21,14 @@
 -- in revision-scoped lookups (start, choose, resolver, dialogue route).
 -- ============================================================
 
-ALTER TABLE dialogue_chunks ADD COLUMN IF NOT EXISTS revision INTEGER;
+ALTER TABLE dialogue_chunks ADD COLUMN IF NOT EXISTS revision INTEGER NOT NULL DEFAULT 0;
 
 -- Backfill + NOT NULL enforcement for the recovery case (nullable column from
--- prior partial apply of ADD COLUMN ... NOT NULL DEFAULT, or manual DDL).
--- We use a single-transaction DO block so backfill and the initial constraint
--- are atomic: no concurrent writer can insert a NULL between backfill and
--- enforcement. (Writers now always supply revision, but the recovery path must
--- still be safe.)
+-- prior partial apply of this migration (or an older variant of the ADD), or manual DDL).
+-- The ADD COLUMN itself now uses NOT NULL DEFAULT 0 so fresh applies never expose
+-- a window for NULL inserts by concurrent writers. The DO block (single tx) plus
+-- VALIDATE/SET NOT NULL protect re-runs and pre-existing nullables.
+-- Writers are expected to supply revision; recovery is defensive.
 --
 -- We use CHECK ... NOT VALID (quick, no scan) + VALIDATE (scan under weaker lock
 -- that permits reads) + SET NOT NULL (then metadata-only) to avoid a long
@@ -110,11 +110,10 @@ COMMENT ON COLUMN dialogue_chunks.revision IS
   'Players pin a revision at /dialogue/start; chunk resolution uses the '
   'pinned value so active sessions are unaffected by later recompiles.';
 
--- Resume safety (updated for partial-run column-definition case):
--- Backfill + DEFAULT + CHECK NOT VALID happen inside a DO $$ block (single tx)
--- immediately after ADD. Then VALIDATE + SET NOT NULL. Re-runs are safe:
--- the constraint guards prevent NULLs, idempotent IF NOT EXISTS on constraint,
--- and index creation uses the final NOT NULL contract. The DO+VALIDATE/SET
--- run before the CONCURRENT index.
+-- Resume safety:
+-- ADD COLUMN uses NOT NULL DEFAULT 0 (fresh applies have no NULL window).
+-- For partial prior runs (column added nullable), backfill + DEFAULT + CHECK NOT VALID
+-- happen inside a DO $$ block (single tx) immediately after the (no-op) ADD.
+-- Then VALIDATE + SET NOT NULL. Re-runs safe via guards + idempotency.
   
 -- Note: no outer BEGIN/COMMIT — this file runs non-transactionally.

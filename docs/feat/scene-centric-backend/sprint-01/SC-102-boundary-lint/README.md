@@ -26,9 +26,7 @@ per `architecture.md` §2, "an unenforced architectural rule is a comment."
 
 ## Acceptance criteria
 
-- Concrete tool chosen and installed: `eslint-plugin-import` (or note here, before
-  starting, if a different concrete package was chosen instead — never leave "a lint
-  rule" unspecified).
+- Concrete tool chosen and installed: `eslint-plugin-import-x` (see notes below; `eslint-plugin-import` is incompatible with ESLint ~10.8).
 - Rule configured via `no-restricted-paths` (or equivalent) and passing on the empty
   tree from SC-101. **Coverage MUST include both relative-path and workspace package-name
   import forms** — the repo exposes `@las-flores/api-planning`, `@las-flores/api-runtime`,
@@ -80,3 +78,13 @@ Steps:
 Do not touch server/, client/, scripts/, or content/. Do not build the actual condition
 grammar or contracts content in this pass — that's separate follow-on work.
 ```
+
+## Implementation notes (completed)
+
+- Chose `eslint-plugin-import-x@~4.17.1` (+ `eslint-import-resolver-node`) added to root `devDependencies` because the original `eslint-plugin-import` has peer dep on ESLint <=9 and will not install cleanly on the project's ESLint ~10.8.
+- Boundary helper lives in `api/eslint.boundary.cjs`; each `api/*/eslint.config.cjs` pulls it in and supplies its zone + restrictedPackages.
+- Zones use api/-relative paths + explicit `basePath` (computed from `__dirname` in helper) so `import-x/no-restricted-paths` is cwd-independent (works from repo root, editors, etc.). `no-restricted-imports` (paths + patterns) is also cwd-independent.
+- `no-restricted-imports` patterns per restricted package (e.g. `@las-flores/api-runtime/**`) cover subpath/deep imports like `@las-flores/api-runtime/dist/...`.
+- All 8 required violation forms (plus subpath) were demonstrated; clean allowlisted runs (planning/runtime → contracts) also captured.
+- Verified: per-workspace lint clean (planning + runtime + contracts, each with its own --config); root-invoked via explicit config clean; full root lint clean; api/* typecheck + build succeed. Per-workspace validation is asserted only after all three independent runs report clean.
+- The deliberate violations for proof were never committed to source.
