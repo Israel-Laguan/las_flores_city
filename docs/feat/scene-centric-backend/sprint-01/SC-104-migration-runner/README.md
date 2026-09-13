@@ -15,10 +15,11 @@ databases (`las_flores`, `las_flores_analytics`) via `migration-targets.json`, w
 generic `applySQLMigrations()` that applies any `.sql` file registered there, tracks it in
 `schema_migrations`, and skips it idempotently on re-run. **Adding `planning`/`runtime`
 schemas is mostly a new `.sql` migration file** (shared with or adjacent to SC-103's
-role-creation file) plus one entry in `migration-targets.json`'s `"oltp"` array.
+role-creation file) plus one entry in `migration-targets.json`'s `"nontransactional"` map.
 **One narrow runner change IS NOT required:** SC-103 now uses fixed dev passwords
-(`dev_runtime` / `dev_planning`) wrapped in `DO $$ ... EXCEPTION WHEN duplicate_object`
-blocks for idempotency, so `migrate.ts`'s verbatim `client.query(sql)` does not need
+(`dev_runtime` / `dev_planning`) wrapped in `IF NOT EXISTS` guards (e.g.
+`IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'planning')`) for
+idempotency, so `migrate.ts`'s verbatim `client.query(sql)` does not need
 `${VAR}` expansion. The runner stays generic. The file is registered under
 "nontransactional" (CREATE ROLE is illegal inside a tx) rather than the "oltp" array.
 
@@ -34,12 +35,12 @@ blocks for idempotency, so `migrate.ts`'s verbatim `client.query(sql)` does not 
   `"nontransactional"` map (targeting "las_flores") — CREATE ROLE cannot run inside a
   transaction; no new target database, no runner code changes.
 - `server/src/database/migrate.ts` requires no modifications for SC-103 — the migration
-  uses `DO $$ ... EXCEPTION WHEN duplicate_object` for idempotency and fixed dev passwords,
+  uses `IF NOT EXISTS` guards for idempotency and fixed dev passwords,
   so no `${VAR}` expansion is needed.
-- A no-op re-run of `npm run migrate` after the schemas exist skips the file (confirmed
+- A no-op re-run of `npm run schema:migrate --workspace=server` after the schemas exist skips the file (confirmed
   via `schema_migrations` row / log output showing "already applied"), proving idempotency
   is inherited rather than reimplemented.
-- `npm run migrate` handles old and new schemas in one invocation — this is already true
+- `npm run schema:migrate --workspace=server` handles old and new schemas in one invocation — this is already true
   by construction if the migration is registered correctly; the acceptance test is that
   no special-casing was added to `migrate.ts`.
 - Rollback path: recorded as **forward-only**, with the reason (per `roadmap.md` §5's
@@ -52,7 +53,7 @@ blocks for idempotency, so `migrate.ts`'s verbatim `client.query(sql)` does not 
   Register the planning/runtime schema-creation migration (written in SC-103) into the
   existing migration runner. The runner already generically applies any .sql file
   registered in migration-targets.json and tracks it in schema_migrations for
-  idempotency. SC-103 uses fixed dev passwords and `DO $$ ... EXCEPTION WHEN duplicate_object`
+   idempotency. SC-103 uses fixed dev passwords and `IF NOT EXISTS` guards
   so no runner changes are needed.
 
   Steps:
