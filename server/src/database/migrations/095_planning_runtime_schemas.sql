@@ -19,14 +19,8 @@
 -- not a safe automatic reverse.
 -- ============================================================
 
-CREATE SCHEMA IF NOT EXISTS planning;
-CREATE SCHEMA IF NOT EXISTS runtime;
-
-COMMENT ON SCHEMA planning IS
-  'SC-103: planning canon, plan deltas, entity_edges. Written only by planning.';
-COMMENT ON SCHEMA runtime IS
-  'SC-103: player runtime state. Written only by runtime.';
-
+-- Roles first (non-transactional), then schemas owned by them so the
+-- DATABASE_URL migration user (las_flores) does not remain owner.
 DO $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'planning') THEN
@@ -37,6 +31,17 @@ BEGIN
   END IF;
 END
 $$;
+
+CREATE SCHEMA IF NOT EXISTS planning AUTHORIZATION planning;
+CREATE SCHEMA IF NOT EXISTS runtime AUTHORIZATION runtime;
+-- Ensure owner even on re-run or pre-existing schema (idempotent).
+ALTER SCHEMA planning OWNER TO planning;
+ALTER SCHEMA runtime OWNER TO runtime;
+
+COMMENT ON SCHEMA planning IS
+  'SC-103: planning canon, plan deltas, entity_edges. Written only by planning.';
+COMMENT ON SCHEMA runtime IS
+  'SC-103: player runtime state. Written only by runtime.';
 
 GRANT CONNECT ON DATABASE las_flores TO planning;
 GRANT CONNECT ON DATABASE las_flores TO runtime;
