@@ -54,7 +54,7 @@ in **every one of them it is consumed as free-text LLM authoring context**, neve
 (`028_metaplot_oltp.sql:23`) on `users.alignment` and `user_reputations.faction`; neither joins
 to `characters.metadata->>'faction'`.
 
-**The dialogue serving path reads exactly four character columns: `id, name, title, avatar_url,
+**The dialogue serving path reads exactly five character columns: `id, name, title, avatar_url,
 portrait_urls`.** Everything the 4-layer schema promotes is, from the runtime's perspective,
 **write-only.** For its only actual consumer — an LLM reading prose — 182 snowflakes are
 *better* signal than 16 archetypes, not worse. The snowflake problem is a **prompt-quality and

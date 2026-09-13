@@ -2,7 +2,7 @@
 
 > **Status:** Proposed
 > **Owner:** client / narrative systems
-> **Predecessor:** M52
+> **Predecessor:** none (may run in parallel with M52)
 
 ## Goal
 

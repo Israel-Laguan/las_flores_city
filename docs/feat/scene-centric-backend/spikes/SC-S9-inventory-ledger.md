@@ -13,7 +13,7 @@ S15 (inventory possession ledger) needs `has_item` / `item_at_location` edges so
 ## What was run
 
 - Inventory current item surface: audit `content/vault/*.yaml`, `content/shop/*.yaml`, and `content/dialogues/**` for any `gives_item` / `requires_item` usage and flag-driven item gates.
-- Draft ledger edges in a scratch `api/contracts/inventory` type: `(character_id, item_id, state: acquired|consumed|lost, source_scene, story_beat)` + `(location_id, item_id)` variant; test projection on 2–3 hand-authored acquisition/consumption sequences, including the array-aware MODIFY case (`SC-S3` / `SC-702` pitfall: naive `jsonb ||` fails).
+- Draft ledger edges in a scratch `api/contracts/inventory` type: `(character_id, item_id, state: acquired|consumed|lost, source_scene, story_beat)` + `(location_id, item_id)` variant (restricted to current presence only: no state/provenance, excluded from consumption/loss/transfer checks; location edges represent stash snapshot, not lifecycle). Test projection on 2–3 hand-authored acquisition/consumption sequences, including the array-aware MODIFY case (`SC-S3` / `SC-702` pitfall: naive `jsonb ||` fails).
 - Confirm the checker can share the `entity_edges` table shape planned for S1/SC-701, or needs a separate projection.
 
 **Reproducibility:** commit fixtures + probe script under `server/scripts/spike_sc_s9_inventory_ledger.ts` or inline them here.

@@ -63,11 +63,9 @@
 
 ## Suggested execution order
 
-M52 → M53
-
-M52 builds on M51 (already shipped). M53 is independent and can run in
-parallel. M54 targets a different pipeline (`ContentPlanService`) entirely and
-can run at any time.
+M53 is independent (parallel execution with M52 is allowed). M52 builds on M51
+(already shipped). M54 targets a different pipeline (`ContentPlanService`) entirely
+and can run at any time.
 
 Each milestone should be independently reviewable and mergeable. Keep changes
 mechanical; avoid bundling refactors or unrelated cleanup into these milestones.

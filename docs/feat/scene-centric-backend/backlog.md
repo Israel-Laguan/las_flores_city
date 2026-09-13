@@ -132,7 +132,7 @@
 | SC-1005 | Inventory consistency checker — flags `requires_item` / gives/uses without prior `has_item`, or `has_item` after `consumed` without re-acquisition | M | Blocked: SC-1004, SC-703 |
 | SC-1006 | Time-block consistency checker (deterministic) — sums `time_block_cost` across a scene path and flags prose-vs-cost mismatch (e.g. "three hours passed" vs TB cost 1); runs as pure lint in the review step, zero LLM | S | Blocked: SC-301, SC-701 |
 | SC-1007 | Time-vs-prose LLM assist (cheap model) — extracts claimed elapsed time from dialogue prose and compares to TB sum; cheap-model pass (`LLM_MODEL`), writer model (`LLM_DEEP_MODEL`) stays for generation. Precision/recall gated on SC-S10 | M | Blocked: SC-S10, SC-1006 |
-| SC-1008 | Wire all three checkers into `SC-703`/`SC-605` review step + CI — fail on `error` severity, warn on `hint`; add hint-engine hooks (S2) for "characters in this role usually know X" | M | Blocked: SC-1003, SC-1005, SC-1007 |
+| SC-1008 | Wire all three checkers into `SC-703`/`SC-605` review step + CI — fail on `error` severity, warn on `hint`; add hint-engine hooks (S2) for "characters in this role usually know X" | M | Blocked: SC-1003, SC-1005, SC-1006, SC-1007 |
 
 > **Sequencing note:** SC-1001–SC-1003 (S14) can start once SC-S8 answers and `S1` projection exists; SC-1004–SC-1005 (S15) needs S8 to exist; SC-1006 is the only item that can ship without a spike (pure TB arithmetic). SC-1007 is explicitly gated on SC-S10's precision measurement — do not build it until the spike says the cheap model is viable.
 
@@ -149,7 +149,7 @@ lands there, so nothing pollutes the current DB while the new one grows.*
 | SC-902 | Retire the old dialogue serving path once its kill condition is met | M | Blocked: SC-901 |
 | SC-903 | Retire entity-shaped `FILL_TARGETS` intake | M | Blocked: SC-605 |
 | SC-904 | Retire three-registry portrait resolution once coverage shows zero silent fallbacks | M | Blocked: SC-808 |
-| SC-905 | Freeze legacy DBs read-only (`ALTER DATABASE las_flores SET default_transaction_read_only = on`, same for analytics); compose profile keeps old stack bootable but no writer runs against it | S | Blocked: SC-1104, SC-M6 exit |
+| SC-905 | Freeze legacy DBs read-only (enforceable procedure: stop+drain writers, terminate sessions, REVOKE write privs from roles, then `ALTER DATABASE ... SET default_transaction_read_only = on`; equivalent controls OK). Must prevent all writes between SC-905 and SC-906. Compose profile remains bootable with no writers. | S | Blocked: SC-1104, SC-M6 exit |
 | SC-906 | Final `server/` extraction run against the frozen snapshot — port reusable functions/ideas into `api/`, recorded in a port log (code/ideas only, never data write-back) | M | Blocked: SC-905 |
 | SC-907 | Archive: versioned `pg_dump -Fc` of `las_flores` + `las_flores_analytics` stored against the release tag (object storage + checksum in the port log) | S | Blocked: SC-906 |
 | SC-908 | Delete: drop `postgres-oltp` / `postgres-olap` compose services + volumes, remove `server/src/database/migrations/` + `migration-targets.json` + `server/src/database/migrate.ts` (the coexistence shim), grep-prove zero references | S | Blocked: SC-907, SC-1104 |

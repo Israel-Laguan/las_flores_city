@@ -17,7 +17,7 @@ The answer may be a hybrid: explicit secrets for tier-3 blocking checks, plus ch
 ## What was run
 
 - Inventory existing secrets: grep `content/` for flags that already encode secrets (e.g. `trust_level`, vault clues) and list candidates for a `fact` registry.
-- Draft the minimal ledger type in a scratch branch under `api/contracts/knowledge` (no DB migration yet) — `fact_id`, `source_scene`, `acquired_via` (`witnessed`/`told`/`inferred`), `story_beat` visibility — and try projecting 2–3 hand-authored examples (one fact learned by witnessing a scene, one by being told in dialogue, one "internal thought" that should NOT create exposure).
+- Draft the minimal ledger type in a scratch branch under `api/contracts/knowledge` (no DB migration yet) — `fact_id`, `character_id` (the NPC subject of the knows_fact edge), `source_scene`, `acquired_via` (`witnessed`/`told`/`inferred`), `story_beat` visibility — and try projecting 2–3 hand-authored examples (one fact learned by witnessing a scene, one by being told in dialogue, one "internal thought" that should NOT create exposure). CharacterKnowsFact (or equivalent) stores the subject NPC explicitly via character_id.
 - Cheap-model probe: hand-label 10–15 dialogue excerpts with the facts an NPC would know, then prompt `LLM_MODEL` cheap path to infer exposure; measure whether a single cheap pass is precise enough for a blocking check or only a hint.
 
 **Reproducibility:** commit the probe fixtures under `server/scripts/spike_sc_s8_knowledge_ledger.ts` or inline the prompts + hand-labels here, per `spikes/README.md` harness rule. Without committed fixtures the "cheap model viable?" claim is not re-runnable.

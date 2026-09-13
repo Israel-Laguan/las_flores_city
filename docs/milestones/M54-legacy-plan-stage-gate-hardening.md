@@ -96,11 +96,11 @@ Targets the legacy plan routes (`server/src/routes/admin-story-builder-plans-upd
    `plan_id` (and `generated_at`) to the YAML `atomicWriteYaml` writes in
    `StoryBuilderFileWriter.ts`, so any file on disk — staged or migrated —
    can be traced back to the plan that produced it.
-4. **Sweep staged-but-unmigrated files on plan deletion.** When
-   `DELETE /plans/:id` runs against a plan whose status is `staged` (files
-   written, never migrated), use the provenance stamp from #3 to find and
-   remove those files (or at minimum log them for manual review) instead
-   of silently abandoning them.
+4. **Add recovery for interrupted staging on POST /plans/:id/stage and /retry.**
+   After `stagePlan` or `runStagingPipeline` writes files but fails before a
+   terminal status, `loadPlanForStaging` and handlers reconcile `staging`
+   rows safely on retry/cleanup using the provenance stamp. Recovery is
+   retry-safe. DELETE and PUT behavior unchanged.
 5. **Retire or fix `latency_probe.ts`.** It currently targets deleted
    routes and would fail at step 2 if run. Either delete it, or update it
    to exercise the current API surface (`plan:intake`/`GraphIntakeService`
@@ -125,8 +125,9 @@ Targets the legacy plan routes (`server/src/routes/admin-story-builder-plans-upd
    forward step from the plan's current status.
 3. Every file written by `atomicWriteYaml` carries a `plan_id` (and
    `generated_at`) field.
-4. Deleting a `staged` plan removes (or at minimum reports) the files it
-   wrote, using that provenance stamp.
+4. A plan left in `staging` after file writes but pre-terminal status is
+   reconciled safely on /retry or cleanup (provenance-based, retry-safe);
+   DELETE/PUT unchanged.
 5. `latency_probe.ts` either no longer exists or runs successfully against
    the current API surface end to end.
 6. No regression to the legitimate approve → stage → migrate → verify

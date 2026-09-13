@@ -101,7 +101,7 @@ being wrong. A roadmap that assumes 100% is a roadmap that lies at the first ret
 | Recursive-CTE reachability from game start | S1 |
 | `pg_trgm` alias/duplicate detection | S10 |
 | Hint engine over tier-3 results | S2 |
-| Knowledge ledger shape + deterministic TB-cost linter (S14/S16 groundwork) — spike SC-S8; stories SC-1001 (ledger type), SC-1006 (TB linter, ships without a spike; SC-S10 gates SC-1007 in SC-M6) | S14, S16 |
+| Knowledge ledger shape + deterministic TB-cost linter (S14/S16 groundwork) — spike SC-S8; stories SC-1001 (ledger type), SC-1006 (TB linter, ships without spike and independent of SC-S10) | S14, S16 |
 | Inventory ledger shape spike SC-S9 (feeds SC-M6) | S15 |
 
 **Exit criteria**
@@ -121,7 +121,7 @@ being wrong. A roadmap that assumes 100% is a roadmap that lies at the first ret
 | `asset_fallback` consumer — compile-time coverage report (prerequisite gap) | S5 |
 | Character tier enforcement against asset requirements | S6 |
 | Relationship stats and threshold→flag emission | S3 |
-| Metagame checker (S14) + inventory checker (S15) + time-vs-prose LLM assist (S16) — stories SC-1002–SC-1005, SC-1007–SC-1008; wired into review step + CI | S14, S15, S16 |
+| Metagame checker (S14) + inventory checker (S15) + (time-vs-prose LLM assist (S16) only if SC-S10 records blocking-viable) — stories SC-1002–SC-1005; SC-1007–SC-1008 begin only after SC-S10 answer recorded (do not commit to review/CI until then) | S14, S15, S16 |
 
 **Exit criteria**
 - A mob pool serves several characters with no per-character asset rows.
@@ -199,12 +199,11 @@ Nothing is deleted before its kill condition is written down and met. A componen
 kill condition slips twice gets re-examined at retro — the parallel-system failure mode is
 both paths living forever, and slipping kill conditions is its earliest symptom.
 
-**Legacy databases (SC-M7):** the old `postgres-oltp` / `postgres-olap` pair is frozen
-(read-only) once SC-M6 closes, gets one final green `server/` run for function/idea
-extraction, then is `pg_dump`-archived against the repo tag and deleted along with
-`server/src/database/migrations/`. New work lands only in `postgres-planning` /
-`postgres-runtime` — never back-ported — so the current DB is never polluted and both
-generations run independently until the cutover.
+**Legacy databases (SC-M7):** cutover to `postgres-planning` / `postgres-runtime` happens
+when SC-M6 exit is met (new traffic and writers use only the new URLs). Legacy OLTP/OLAP
+pair stays untouched and bootable during a rollback window so the old generation can be
+reinstated if needed. Only after the window: freeze (SC-905), final extraction (SC-906),
+archive (SC-907), delete (SC-908). New work never lands in legacy.
 
 ## 5. The retro contract
 
