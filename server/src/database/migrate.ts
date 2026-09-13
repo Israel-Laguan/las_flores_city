@@ -22,6 +22,12 @@ interface MigrateTargets {
    * (per the one-migration-one-database rule).
    */
   nontransactional?: Record<string, string>;
+  /**
+   * Manual-only entries (e.g. 095/096/097). Present so the registry accounts
+   * for every .sql on disk (per AGENTS.md). Deliberately ignored by runner;
+   * see applySQLMigrations and the "manual" key handling comment.
+   */
+  manual?: string[];
 }
 
 async function ensureSchemaMigrationsTable(): Promise<void> {
@@ -180,8 +186,9 @@ async function applySQLMigrations(): Promise<void> {
   // "manual" (or any other) keys are intentionally ignored by the runner.
   // They exist in the registry only so that *every* .sql file on disk is
   // accounted for in the canonical targets file (per AGENTS.md rule).
-  // 095/096 are here because they must never be auto-run by intake-worker
-  // against production (hard-coded dev passwords + grants to main role).
+  // 095/096/097 are here because they must never be auto-run by intake-worker
+  // against production (hard-coded dev passwords; role+schema provisioning
+  // for planning/runtime must use env-specific creds out of band).
 
   await ensureSchemaMigrationsTable();
 

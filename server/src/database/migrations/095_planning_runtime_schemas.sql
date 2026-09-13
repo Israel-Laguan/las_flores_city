@@ -14,6 +14,10 @@
 -- provisioning on managed Postgres (often no CREATEROLE) is an open question —
 -- do not treat this file as production-ready role setup.
 --
+-- 095 creates the initial grants to las_flores (kept for stable "095 applied" state
+-- across legacy vs fresh manual applies). The lockdown (revoke las_flores access)
+-- is in 097; see 096/097 for required apply order.
+--
 -- Grants do not touch existing server/ tables or the las_flores app role beyond
 -- default privileges on the NEW schemas so future migration-created objects are
 -- usable by the matching role.
@@ -41,10 +45,11 @@ CREATE SCHEMA IF NOT EXISTS runtime AUTHORIZATION runtime;
 ALTER SCHEMA planning OWNER TO planning;
 ALTER SCHEMA runtime OWNER TO runtime;
 
--- No app-role (las_flores) CREATE grants on planning/runtime.
--- Schema migrations for these schemas are run as the schema owner (planning/runtime)
--- or a dedicated migration role. The boundary must not be undermined by broad
--- app-role write grants on the dedicated schemas.
+-- The DATABASE_URL user (las_flores) and server app role must be able to create
+-- objects in these schemas (future migrations, default-privs mechanism). After
+-- AUTHORIZATION/OWNER change the implicit rights are gone; grant explicitly.
+GRANT USAGE, CREATE ON SCHEMA planning TO las_flores;
+GRANT USAGE, CREATE ON SCHEMA runtime TO las_flores;
 
 COMMENT ON SCHEMA planning IS
   'SC-103: planning canon, plan deltas, entity_edges. Written only by planning.';
