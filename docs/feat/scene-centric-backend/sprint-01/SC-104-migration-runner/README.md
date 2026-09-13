@@ -19,7 +19,8 @@ role-creation file) plus one entry in `migration-targets.json`'s `"oltp"` array.
 **One narrow runner change IS NOT required:** SC-103 now uses fixed dev passwords
 (`dev_runtime` / `dev_planning`) wrapped in `DO $$ ... EXCEPTION WHEN duplicate_object`
 blocks for idempotency, so `migrate.ts`'s verbatim `client.query(sql)` does not need
-`${VAR}` expansion. The runner stays generic.
+`${VAR}` expansion. The runner stays generic. The file is registered under
+"nontransactional" (CREATE ROLE is illegal inside a tx) rather than the "oltp" array.
 
 ## Dependencies
 
@@ -30,7 +31,8 @@ blocks for idempotency, so `migrate.ts`'s verbatim `client.query(sql)` does not 
 ## Acceptance criteria
 
 - The schema-creation migration (from SC-103) is registered in `migration-targets.json`'s
-  `"oltp"` array — no new target database, no runner code changes.
+  `"nontransactional"` map (targeting "las_flores") — CREATE ROLE cannot run inside a
+  transaction; no new target database, no runner code changes.
 - `server/src/database/migrate.ts` requires no modifications for SC-103 — the migration
   uses `DO $$ ... EXCEPTION WHEN duplicate_object` for idempotency and fixed dev passwords,
   so no `${VAR}` expansion is needed.
@@ -55,7 +57,7 @@ blocks for idempotency, so `migrate.ts`'s verbatim `client.query(sql)` does not 
 
   Steps:
   1. Add the SC-103 migration filename to server/src/database/migrations/migration-targets.json's
-     "oltp" array, following the existing entries' format.
+     "nontransactional" (as "095_....sql": "las_flores"), following the existing entries' format.
   2. Run `npm run schema:migrate --workspace=server` once — confirm the schemas/roles are created.
   3. Run `npm run schema:migrate --workspace=server` a second time — confirm the migration is skipped (idempotent),
      via the schema_migrations table or the runner's log output.

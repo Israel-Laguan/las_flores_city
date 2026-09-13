@@ -1,41 +1,7 @@
--- ============================================================
 -- 095_planning_runtime_schemas.sql
---
--- SC-103: `planning` and `runtime` schemas plus two LOGIN roles on the
--- existing las_flores OLTP database (same target as migrate.ts / CI postgres-oltp).
---
--- Listed under the "manual" key in migration-targets.json.
--- The runner (migrate.ts) only processes oltp / olap / nontransactional.
--- "manual" entries are never auto-applied (by design, after security review).
--- Apply by hand only when doing local SC-103 planning/runtime schema work.
---
--- Scope: dev/CI bootstrap for SC-103 rung-2 schemas only. CREATE ROLE assumes CREATEROLE,
--- which the official postgres image grants to POSTGRES_USER=las_flores. Production
--- provisioning on managed Postgres (often no CREATEROLE) is an open question —
--- do not treat this file as production-ready role setup.
---
--- Security: 095 deliberately does NOT issue USAGE or CREATE on planning/runtime
--- to las_flores (the DATABASE_URL / app role). The two GRANT USAGE,CREATE TO
--- las_flores lines that existed in earlier revisions (after the ALTER SCHEMA
--- OWNER transfer) have been removed. This guarantees that a partial manual
--- apply (stop after 095, omitting 096+097) cannot grant write access into the
--- isolated schemas.
---
--- Apply order for manual: 095 → 096 → 097.
---
--- All DDL targeting planning/ or runtime/ objects must run while connected as
--- the owning role (planning or runtime) — e.g. via the dedicated *_DATABASE_URL
--- or `SET ROLE planning;` after connecting as las_flores. The ALTER DEFAULT
--- PRIVILEGES below only fire for objects las_flores would create (they would
--- auto-grant to the owner role); under the intended flow las_flores never
--- receives CREATE on these schemas.
---
--- Rollback: forward-only (SC-104). Dropping login roles that may own objects is
--- not a safe automatic reverse.
--- ============================================================
+-- SC-103: planning + runtime schemas and LOGIN roles (nontransactional).
+-- Full context and scope notes at end of file.
 
--- Roles first, then schemas owned by them so the DATABASE_URL migration user
--- (las_flores) does not remain owner. (CREATE ROLE is non-transactional in PG.)
 DO $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'planning') THEN
@@ -47,16 +13,14 @@ BEGIN
 END
 $$;
 
-CREATE SCHEMA IF NOT EXISTS planning AUTHORIZATION planning;
-CREATE SCHEMA IF NOT EXISTS runtime AUTHORIZATION runtime;
--- Ensure owner even on re-run or pre-existing schema (idempotent).
+CREATE SCHEMA IF NOT EXISTS planning;
+CREATE SCHEMA IF NOT EXISTS runtime;
+
 ALTER SCHEMA planning OWNER TO planning;
 ALTER SCHEMA runtime OWNER TO runtime;
 
-COMMENT ON SCHEMA planning IS
-  'SC-103: planning canon, plan deltas, entity_edges. Written only by planning.';
-COMMENT ON SCHEMA runtime IS
-  'SC-103: player runtime state. Written only by runtime.';
+COMMENT ON SCHEMA planning IS 'SC-103 rung 2: planning canon, plan_deltas, entity_edges etc. Owned by planning role.';
+COMMENT ON SCHEMA runtime IS 'SC-103 rung 2: player runtime state. Owned by runtime role.';
 
 GRANT CONNECT ON DATABASE las_flores TO planning;
 GRANT CONNECT ON DATABASE las_flores TO runtime;
@@ -64,21 +28,29 @@ GRANT CONNECT ON DATABASE las_flores TO runtime;
 GRANT USAGE, CREATE ON SCHEMA planning TO planning;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA planning TO planning;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA planning TO planning;
-ALTER DEFAULT PRIVILEGES FOR ROLE las_flores IN SCHEMA planning
-  GRANT ALL PRIVILEGES ON TABLES TO planning;
-ALTER DEFAULT PRIVILEGES FOR ROLE las_flores IN SCHEMA planning
-  GRANT ALL PRIVILEGES ON SEQUENCES TO planning;
+ALTER DEFAULT PRIVILEGES IN SCHEMA planning GRANT ALL ON TABLES TO planning;
+ALTER DEFAULT PRIVILEGES IN SCHEMA planning GRANT ALL ON SEQUENCES TO planning;
 
 GRANT USAGE, CREATE ON SCHEMA runtime TO runtime;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA runtime TO runtime;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA runtime TO runtime;
-ALTER DEFAULT PRIVILEGES FOR ROLE las_flores IN SCHEMA runtime
-  GRANT ALL PRIVILEGES ON TABLES TO runtime;
-ALTER DEFAULT PRIVILEGES FOR ROLE las_flores IN SCHEMA runtime
-  GRANT ALL PRIVILEGES ON SEQUENCES TO runtime;
+ALTER DEFAULT PRIVILEGES IN SCHEMA runtime GRANT ALL ON TABLES TO runtime;
+ALTER DEFAULT PRIVILEGES IN SCHEMA runtime GRANT ALL ON SEQUENCES TO runtime;
 
--- Explicit denials: runtime must not even USAGE planning, and vice versa.
 REVOKE ALL ON SCHEMA planning FROM PUBLIC;
 REVOKE ALL ON SCHEMA runtime FROM PUBLIC;
 REVOKE ALL ON SCHEMA planning FROM runtime;
 REVOKE ALL ON SCHEMA runtime FROM planning;
+REVOKE ALL ON SCHEMA planning FROM las_flores;
+REVOKE ALL ON SCHEMA runtime FROM las_flores;
+
+-- ============================================================
+-- SC-103 implementation notes (per ticket + architecture.md §3):
+-- - nontransactional registration (CREATE ROLE)
+-- - fixed dev passwords, LOGIN roles (required for SC-106 raw client)
+-- - owner + explicit grants + default privs
+-- - zero grants to las_flores / cross-role / public
+-- - dev/CI only; CREATEROLE assumed; prod provisioning open
+-- - no new pools; existing server/ tables untouched
+-- - forward only for this sprint
+-- ============================================================
