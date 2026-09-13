@@ -164,7 +164,7 @@ a customer. Compose uses a `--profile new-backend` so the default local boot sta
 | ID | Story | Size | State |
 |---|---|---|---|
 | SC-1101 | Compose + CI: `postgres-planning` + `postgres-runtime` services (same `postgres:16-alpine` image, new volumes `postgres-planning-data` / `postgres-runtime-data`, new host ports, healthchecks mirroring `postgres-oltp`); `.env.example` + CI env promote `PLANNING_DATABASE_URL` / `RUNTIME_DATABASE_URL` from test-only to real | M | Blocked: SC-M3 exit |
-| SC-1102 | Migration layout (Option A): `db/planning/migrations/` + `db/runtime/migrations/` with independent per-DB sequences and per-DB `schema_migrations PK(version)`; runner resolves target by folder and `migration-targets.json` is deleted; `server/src/database/migrate.ts` kept as a shim for legacy `oltp`/`olap` during coexistence | M | Blocked: SC-1101 |
+| SC-1102 | Migration layout (Option A): `db/planning/migrations/` + `db/runtime/migrations/` with independent per-DB sequences and per-DB `schema_migrations PK(version)`; runner resolves target by folder; `migration-targets.json` remains while `server/src/database/migrate.ts` still reads it for the legacy shim during coexistence (removed only in SC-908) | M | Blocked: SC-1101 |
 | SC-1103 | Schema bootstrap: fresh `CREATE SCHEMA` + role/grant DDL per new DB (no cross-DB `ALTER DEFAULT PRIVILEGES` — each DB gets its own owner + restricted role); `api/planning` → planning DB, `api/runtime` → runtime DB | M | Blocked: SC-1102 |
 | SC-1104 | Cutover proof: each module boots with only its own URL set (no `DATABASE_URL` fallback); SC-106 re-pointed at physical hosts passes; `--profile new-backend` promoted to default compose boot; Podman scripts + `probe_leaderboard.ts` updated | S | Blocked: SC-1103 |
 

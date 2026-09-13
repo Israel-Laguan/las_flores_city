@@ -7,20 +7,26 @@
 -- ensures schema ownership + required grants to the las_flores app role.
 --
 -- Idempotent. Safe to run on fresh DBs (no-op if target roles already exist).
--- Registered in oltp so the whole transition + grants are atomic.
+-- Listed under "manual" in migration-targets.json (never auto-applied by runner).
 -- ============================================================
 
 DO $$
 BEGIN
   -- Rename old roles to canonical short names if the old ones exist and the
   -- new ones do not. Role rename updates ownership references automatically.
+  -- Collision (both legacy and canonical present) is explicit failure: do not
+  -- silently leave the legacy principal active with its old grants.
   IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'las_flores_planning')
-     AND NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'planning') THEN
+     AND EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'planning') THEN
+    RAISE EXCEPTION 'Role collision: both las_flores_planning and planning exist. Retire legacy role (revoke, transfer ownership, DROP) before re-running 096.';
+  ELSIF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'las_flores_planning') THEN
     ALTER ROLE las_flores_planning RENAME TO planning;
   END IF;
 
   IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'las_flores_runtime')
-     AND NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'runtime') THEN
+     AND EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'runtime') THEN
+    RAISE EXCEPTION 'Role collision: both las_flores_runtime and runtime exist. Retire legacy role (revoke, transfer ownership, DROP) before re-running 096.';
+  ELSIF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'las_flores_runtime') THEN
     ALTER ROLE las_flores_runtime RENAME TO runtime;
   END IF;
 END
@@ -58,11 +64,8 @@ ALTER DEFAULT PRIVILEGES FOR ROLE las_flores IN SCHEMA runtime
 ALTER DEFAULT PRIVILEGES FOR ROLE las_flores IN SCHEMA runtime
   GRANT ALL PRIVILEGES ON SEQUENCES TO runtime;
 
--- Ensure the migration user / app role can create objects in the schemas
--- (required for future migrations and for the ALTER DEFAULT PRIVILEGES
--- grants above to be effective when las_flores is the creator).
-GRANT USAGE, CREATE ON SCHEMA planning TO las_flores;
-GRANT USAGE, CREATE ON SCHEMA runtime TO las_flores;
+-- No CREATE grants to the app role (las_flores). See 095. Migrations targeting
+-- planning/runtime schemas must be executed under the owning role.
 
 -- Explicit denials (re-assert).
 REVOKE ALL ON SCHEMA planning FROM PUBLIC;

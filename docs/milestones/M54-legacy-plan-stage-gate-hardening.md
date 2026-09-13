@@ -97,10 +97,12 @@ Targets the legacy plan routes (`server/src/routes/admin-story-builder-plans-upd
    `StoryBuilderFileWriter.ts`, so any file on disk — staged or migrated —
    can be traced back to the plan that produced it.
 4. **Add recovery for interrupted staging on POST /plans/:id/stage and /retry.**
-   After `stagePlan` or `runStagingPipeline` writes files but fails before a
-   terminal status, `loadPlanForStaging` and handlers reconcile `staging`
-   rows safely on retry/cleanup using the provenance stamp. Recovery is
-    retry-safe. DELETE and PUT behavior unchanged (sweep of orphaned files on delete is out of scope for this gate hardening).
+    After `stagePlan` or `runStagingPipeline` writes files but fails before a
+    terminal status, `loadPlanForStaging` and handlers reconcile `staging`
+    rows safely on retry/cleanup using the provenance stamp. Recovery is
+    retry-safe. DELETE file-cleanup behavior is unchanged (sweep of orphaned
+    files on delete is out of scope). PUT /plans/:id status transitions now
+    enforce forward-transition validation from the current DB status.
 5. **Retire or fix `latency_probe.ts`.** It currently targets deleted
    routes and would fail at step 2 if run. Either delete it, or update it
    to exercise the current API surface (`plan:intake`/`GraphIntakeService`

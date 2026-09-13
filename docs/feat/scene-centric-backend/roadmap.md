@@ -200,10 +200,9 @@ kill condition slips twice gets re-examined at retro — the parallel-system fai
 both paths living forever, and slipping kill conditions is its earliest symptom.
 
 **Legacy databases (SC-M7):** cutover to `postgres-planning` / `postgres-runtime` happens
-when SC-M6 exit is met (new traffic and writers use only the new URLs). Legacy OLTP/OLAP
-pair stays untouched and bootable during a rollback window (duration and close condition set at the SC-M6 retro, e.g. one sprint or a successful rollback drill) so the old generation can be
-reinstated if needed. Only after the window: freeze (SC-905), final extraction (SC-906),
-archive (SC-907), delete (SC-908). New work never lands in legacy.
+when SC-M6 exit is met (new traffic and writers use only the new URLs). 
+
+**Rollback boundary:** the legacy pair may be reinstated only before the first write commits to the new DBs after cutover. Any post-cutover write to planning/runtime makes legacy state stale; rollback would lose committed work. The window exists only to allow an immediate revert of the URL flip before writers start (duration decided at SC-M6 retro). After first new-DB write, rollback is unavailable; proceed only to freeze (SC-905) etc. Legacy remains untouched/read-only-bootable strictly inside that pre-write window. New work never lands in legacy.
 
 ## 5. The retro contract
 

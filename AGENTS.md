@@ -360,6 +360,8 @@ CREATE TRIGGER trigger_name ...;
 
 **Hard rule:** a single migration file must NEVER target both databases, and there is **no `both` key** in `migration-targets.json` — do not add one. `migrate.ts` only reads `oltp`, `olap`, and `nontransactional`; a `both` entry is dead code.
 
+**Exception — "manual" key:** A small number of dangerous migrations (currently 095 + 096) live under the top-level `"manual"` array. They are present in the registry (so every file on disk is accounted for) but are deliberately ignored by the runner. These create privileged roles with passwords and must only ever be applied by hand with environment-specific credentials. New entries in "manual" require a comment explaining why they cannot go through the normal path.
+
 If a change touches both OLTP and OLAP schema, file **two migrations with the same version prefix**, one per array. Precedent: the former `028_metaplot_alignment.sql` used a single file with a `current_database()` dispatch; that fragile pattern (hardcoded DB names fails on any differently-named scratch/CI/staging DB, and the untargeted branch was never tested) was split into `028_metaplot_oltp.sql` (`oltp`) + `028_metaplot_olap.sql` (`olap`). Do not reintroduce `current_database()` inside migration SQL:
 
 - ✅ `028_metaplot_oltp.sql` (in `oltp`) + `028_metaplot_olap.sql` (in `olap`)

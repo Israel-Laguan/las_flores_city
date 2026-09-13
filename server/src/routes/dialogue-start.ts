@@ -222,6 +222,7 @@ async function handleStartChunk(userId: string, dialogue: any, startChunkId: str
 
   let pinnedChunkId = startChunkId;
   let pinnedRev = pinnedRevision;
+  let txResolved: any;
   await withOLTPTransaction(async (client) => {
     const existingCursor = await PlayerStateRepository.lockDialogueCursor(client, userId);
     const isRestart = existingCursor?.active_dialogue_id === dialogue.id;
@@ -252,7 +253,9 @@ async function handleStartChunk(userId: string, dialogue: any, startChunkId: str
       throw new Error('dialogue chunk revision mismatch during start (compile race); aborting to avoid inconsistent pin');
     }
 
-    const txResolved = await DialogueResolver.resolveChunkForUser(userId, pinnedChunkId, startChunkKey);
+    // Resolve inside the tx (after pin/rev validation) so the response base reflects
+    // the exact pinned revision that was written. Capture for post-tx fallback.
+    txResolved = await DialogueResolver.resolveChunkForUser(userId, pinnedChunkId, startChunkKey);
     const txRootNodeId = txResolved.currentNodeId;
     const txRootNode = txResolved.mergedNodes[txRootNodeId];
     if (!txRootNode) throw new Error('Dialogue chunk has invalid root node');
@@ -265,7 +268,17 @@ async function handleStartChunk(userId: string, dialogue: any, startChunkId: str
     await grantDialogueRewards(client, userId, dialogue.id, txRootNodeId, txRootNode.effects, 'grant_root');
   });
 
-  const finalResolved = await DialogueResolver.resolveChunkForUser(userId, pinnedChunkId, startChunkKey);
+  // Capture txResolved (hoisted) outside; use as fallback only if the post-commit
+  // final resolution fails. Prefer final on success so applyEffects-driven updates
+  // (e.g. story_beat affecting overlays) are reflected in the response.
+  let finalResolved: any = txResolved;
+  try {
+    finalResolved = await DialogueResolver.resolveChunkForUser(userId, pinnedChunkId, startChunkKey);
+  } catch {
+    // Committed start (cursor + effects written). Do not turn it into a 500 for the
+    // caller by letting the post-commit resolve failure propagate.
+    finalResolved = txResolved;
+  }
   const finalRootNodeId = finalResolved.currentNodeId;
   const finalRootNode = finalResolved.mergedNodes[finalRootNodeId] || {};
   const availableChoices = await filterChoices(finalRootNode.choices || [], userId, finalRootNode.speaker_id);

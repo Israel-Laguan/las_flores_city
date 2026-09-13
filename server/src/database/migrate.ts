@@ -177,6 +177,12 @@ async function applySQLMigrations(): Promise<void> {
   const targetsRaw = await fs.readFile(TARGETS_PATH, 'utf-8');
   const targets: MigrateTargets = JSON.parse(targetsRaw);
 
+  // "manual" (or any other) keys are intentionally ignored by the runner.
+  // They exist in the registry only so that *every* .sql file on disk is
+  // accounted for in the canonical targets file (per AGENTS.md rule).
+  // 095/096 are here because they must never be auto-run by intake-worker
+  // against production (hard-coded dev passwords + grants to main role).
+
   await ensureSchemaMigrationsTable();
 
   const dbConfigs: Array<{ name: string; key: 'oltp' | 'olap' }> = [

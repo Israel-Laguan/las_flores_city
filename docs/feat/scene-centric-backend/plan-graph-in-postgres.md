@@ -344,10 +344,9 @@ At team-of-one, rungs 3 and 4 buy nothing until there is player traffic to prote
 *and* SC-M6 exit criteria are met — the new backend no longer needs anything from the
 legacy schema. Provision `postgres-planning` + `postgres-runtime` (same instance),
 move to per-DB migration folders (`SC-1102`). Cutover traffic to the new DBs (new sessions
-and writers use only planning/runtime URLs). Legacy generation is preserved (untouched)
-during the rollback window. Only after the window closes: freeze legacy, final extraction,
-archive dumps, delete (`SC-905–SC-908`). Both generations run independently through the rollback window;
-new work never lands in legacy.
+and writers use only planning/runtime URLs). 
+
+**Rollback boundary (SC-M7):** rollback (re-pointing traffic at legacy) is supported only until the first write commits to a new DB after cutover. After any new-DB write, legacy is divergent; restoring it would drop post-cutover writes. The rollback window is strictly for validating the URL flip itself before production writers start. Once the first write succeeds on planning/runtime, the window is closed; only forward path (freeze/archive/delete) remains. Legacy stays untouched and read-only-bootable for the (short) pre-write window only.
 
 ### 9.5 Where "OLAP-ish" legitimately appears — on the planning side
 
