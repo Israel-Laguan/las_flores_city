@@ -10,7 +10,7 @@ import { buildDialogueResponse, type ChunkPayload } from './dialogue-response-he
 import { resolveChunkSpeakers } from './dialogue-speakers.js';
 import { DialogueResolver } from '../services/DialogueResolver.js';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
-import { mapDialogueWriteError } from './dialogue-errors.js';
+import { mapDialogueWriteError, isDialogueStartChunkRace } from './dialogue-errors.js';
 
 export async function handleStartDialogue(req: any, res: any): Promise<any> {
   try {
@@ -51,10 +51,15 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
 
     // Read rev + start chunk inside one tx (for read-after-write visibility
     // after content compile). Do NOT write pinned here. Resolve the chunk
-    // (or fall back), then under the player lock in the state tx revalidate the
-    // revision and write pinned_tree_revision atomically together with
-    // current_node_id + current_chunk_id (and ps cursor). This ensures pin is
-    // never committed without matching node/chunk state.
+    // (heavy CDN+overlay+user queries) *before* the player FOR UPDATE tx.
+    // Under the lock: only fast metadata queries to revalidate rev + select
+    // the current-rev chunk id for the key (to decide pinnedChunkId/pinnedRev).
+    // Re-validate chosen pinned* exactly matches the pre-resolved chunk; if
+    // not (rare compile race in claim window), throw to rollback so no
+    // inconsistent pin is ever written. Use the pre-resolved root/effects.
+    // After tx the pre-resolved is guaranteed consistent with written state
+    // (or tx rolled back). Eliminates nested queryOLTP inside tx + shortens
+    // lock to metadata only.
     let startChunkId: string | undefined;
     let startChunkKey: string | undefined;
     let treeRevision = 0;
@@ -90,6 +95,14 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
       return res.status(mapped.status).json({
         success: false,
         error: mapped.code,
+        timestamp: new Date().toISOString(),
+      });
+    }
+    if (isDialogueStartChunkRace(error)) {
+      console.warn('[dialogue-start] compile race on chunk pin; returning retryable 409', error?.message);
+      return res.status(409).json({
+        success: false,
+        error: 'dialogue_start_chunk_revision_race',
         timestamp: new Date().toISOString(),
       });
     }
@@ -199,10 +212,7 @@ async function handleStartChunk(userId: string, dialogue: any, startChunkId: str
     throw err;
   }
 
-  let rootNodeId = resolvedChunk.currentNodeId;
-  let rootNode = resolvedChunk.mergedNodes[rootNodeId];
-
-  if (!rootNode) {
+  if (!resolvedChunk.mergedNodes[resolvedChunk.currentNodeId]) {
     return res.status(500).json({
       success: false,
       error: 'Dialogue chunk has invalid root node',
@@ -210,28 +220,23 @@ async function handleStartChunk(userId: string, dialogue: any, startChunkId: str
     });
   }
 
-  // Gate root-effect application to NEW dialogue runs only (see
-  // handleStartFallback for the rationale: a mid-dialogue restart would
-  // otherwise re-apply additive root stat_set deltas). The cursor is read
-  // with `FOR UPDATE` inside the transaction so concurrent first starts
-  // serialize on the player row and only one applies the root effects.
   let pinnedChunkId = startChunkId;
   let pinnedRev = pinnedRevision;
+  // Pre-resolve (outside the player FOR UPDATE tx) per the contract in handleStartDialogue.
+  // Validation below guarantees the pinned* pair matches the pre-resolved chunk, so we
+  // can use it after the tx without re-entering the resolver while the lock is held.
+  // (Avoids pool exhaustion deadlock when resolver needs additional queryOLTP clients.)
+  let txResolved: any = resolvedChunk;
   await withOLTPTransaction(async (client) => {
     const existingCursor = await PlayerStateRepository.lockDialogueCursor(client, userId);
     const isRestart = existingCursor?.active_dialogue_id === dialogue.id;
 
-    // Revalidate revision under lock.
     const treeRevResult = await client.query<{ revision: number }>(
       'SELECT revision FROM dialogue_trees WHERE id = $1',
       [dialogue.id]
     );
     const txRevision = treeRevResult.rows[0]?.revision ?? pinnedRevision;
 
-    // Re-resolve the start chunk *under the player lock* using the tx's revision.
-    // This guarantees the chunk id we pin has an immutable revision equal to
-    // the pinned_tree_revision we write (prevents dialogue_revision_mismatch on
-    // subsequent /choose after a compile raced between snapshot and lock).
     const txChunkRes = await client.query(
       `SELECT id FROM dialogue_chunks
        WHERE tree_id = $1 AND chunk_key = $2 AND revision = $3
@@ -248,62 +253,54 @@ async function handleStartChunk(userId: string, dialogue: any, startChunkId: str
       pinnedRev = pinnedRevision;
     }
 
-    await PlayerStateRepository.setDialogueCursor(client, userId, rootNodeId, dialogue.id);
-    await PlayerStateRepository.initDialogueChunkState(client, userId, dialogue.id, rootNodeId, pinnedChunkId, pinnedRev);
-    if (isRestart) {
-      // Mid-dialogue restart: skip re-applying root effects.
-      return;
+    if (pinnedChunkId !== startChunkId || pinnedRev !== pinnedRevision) {
+      throw new Error('dialogue chunk revision mismatch during start (compile race); aborting to avoid inconsistent pin');
     }
-    // Apply the root node's stat_set / flag_set / state_set exactly once.
-    await applyEffects(client, userId, rootNode.effects);
-    // Root-level grant_credits / grant_item flow through the shared
-    // idempotent reward helper (distinct `grant_root` claim key).
-    await grantDialogueRewards(
-      client,
-      userId,
-      dialogue.id,
-      rootNodeId,
-      rootNode.effects,
-      'grant_root'
-    );
+
+    // Use the pre-resolved value (validated to match pinned rev). No resolver call here.
+    const txRootNodeId = txResolved.currentNodeId;
+    const txRootNode = txResolved.mergedNodes[txRootNodeId];
+    if (!txRootNode) throw new Error('Dialogue chunk has invalid root node');
+
+    await PlayerStateRepository.setDialogueCursor(client, userId, txRootNodeId, dialogue.id);
+    await PlayerStateRepository.initDialogueChunkState(client, userId, dialogue.id, txRootNodeId, pinnedChunkId, pinnedRev);
+
+    if (isRestart) return;
+    await applyEffects(client, userId, txRootNode.effects);
+    await grantDialogueRewards(client, userId, dialogue.id, txRootNodeId, txRootNode.effects, 'grant_root');
   });
 
-  // If a compile advanced the rev and we pinned a different chunk id, re-resolve
-  // so the payload we return to the client carries a chunk.id whose .revision
-  // matches the pinned_tree_revision written in state (prevents chunk_mismatch).
-  if (pinnedChunkId !== startChunkId) {
-    try {
-      resolvedChunk = await DialogueResolver.resolveChunkForUser(userId, pinnedChunkId, startChunkKey);
-      const newRootId = resolvedChunk.currentNodeId;
-      const newRoot = resolvedChunk.mergedNodes[newRootId];
-      if (newRoot) {
-        rootNodeId = newRootId;
-        rootNode = newRoot;
-      }
-    } catch {
-      // keep the snapshot chunk; at worst client will see chunk_mismatch on next
-      // action and will re-start.
-    }
+  // Capture txResolved (hoisted) outside; use as fallback only if the post-commit
+  // final resolution fails. Prefer final on success so applyEffects-driven updates
+  // (e.g. story_beat affecting overlays) are reflected in the response.
+  let finalResolved: any = txResolved;
+  try {
+    finalResolved = await DialogueResolver.resolveChunkForUser(userId, pinnedChunkId, startChunkKey);
+  } catch {
+    // Committed start (cursor + effects written). Do not turn it into a 500 for the
+    // caller by letting the post-commit resolve failure propagate.
+    finalResolved = txResolved;
   }
-
-  const availableChoices = await filterChoices(rootNode.choices || [], userId, rootNode.speaker_id);
-  const isEnd = rootNode.is_end === true || (!rootNode.choices || rootNode.choices.length === 0);
+  const finalRootNodeId = finalResolved.currentNodeId;
+  const finalRootNode = finalResolved.mergedNodes[finalRootNodeId] || {};
+  const availableChoices = await filterChoices(finalRootNode.choices || [], userId, finalRootNode.speaker_id);
+  const isEnd = finalRootNode.is_end === true || (!finalRootNode.choices || finalRootNode.choices.length === 0);
   const tbCursor = await PlayerStateRepository.getDialogueCursor(userId);
 
   const chunkPayload: ChunkPayload = {
-    id: resolvedChunk.chunk.id,
-    chunk_key: resolvedChunk.chunk.chunk_key,
-    nodes: resolvedChunk.mergedNodes,
-    leaves: resolvedChunk.chunk.leaves,
+    id: finalResolved.chunk.id,
+    chunk_key: finalResolved.chunk.chunk_key,
+    nodes: finalResolved.mergedNodes,
+    leaves: finalResolved.chunk.leaves,
   };
 
-  const speakers = await resolveChunkSpeakers(resolvedChunk.mergedNodes);
+  const speakers = await resolveChunkSpeakers(finalResolved.mergedNodes);
 
   return res.status(201).json(
     buildDialogueResponse(
       chunkPayload,
-      resolvedChunk.chunk.id,
-      rootNodeId,
+      finalResolved.chunk.id,
+      finalRootNodeId,
       availableChoices,
       isEnd,
       0,

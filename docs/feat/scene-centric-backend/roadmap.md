@@ -101,6 +101,8 @@ being wrong. A roadmap that assumes 100% is a roadmap that lies at the first ret
 | Recursive-CTE reachability from game start | S1 |
 | `pg_trgm` alias/duplicate detection | S10 |
 | Hint engine over tier-3 results | S2 |
+| Knowledge ledger shape + deterministic TB-cost linter (S14/S16 groundwork) — spike SC-S8; stories SC-1001 (ledger type), SC-1006 (TB linter, ships without spike and independent of SC-S10) | S14, S16 |
+| Inventory ledger shape spike SC-S9 (feeds SC-M6) | S15 |
 
 **Exit criteria**
 - Tier-3 runs in CI and fails the build on a dead-end flag.
@@ -119,12 +121,32 @@ being wrong. A roadmap that assumes 100% is a roadmap that lies at the first ret
 | `asset_fallback` consumer — compile-time coverage report (prerequisite gap) | S5 |
 | Character tier enforcement against asset requirements | S6 |
 | Relationship stats and threshold→flag emission | S3 |
+| Metagame checker (S14) + inventory checker (S15) + (time-vs-prose LLM assist (S16) only if SC-S10 records blocking-viable) — stories SC-1002–SC-1005; SC-1007–SC-1008 begin only after SC-S10 answer recorded (do not commit to review/CI until then) | S14, S15, S16 |
 
 **Exit criteria**
 - A mob pool serves several characters with no per-character asset rows.
 - A named character missing its base look fails the compile; a missing optional
   expression warns and degrades along the documented chain.
 - A stat crossing a threshold sets a flag as an event, and gating still reads only flags.
+
+### SC-M7 — Physical independence & legacy archive
+
+*After SC-M6. The new backend runs on its own databases; the old `server/` path gets a final run, then is archived and deleted.*
+
+| Contents | Feature |
+|---|---|
+| `postgres-planning` + `postgres-runtime` services, same instance (rung 3 of `plan-graph-in-postgres.md` §9.4); `db/planning/migrations/` + `db/runtime/migrations/` with independent sequences, no `migration-targets.json` | F10 |
+| New DBs boot with only `PLANNING_DATABASE_URL` / `RUNTIME_DATABASE_URL` (no `DATABASE_URL` fallback); legacy `las_flores` / `las_flores_analytics` untouched | F10 |
+| Legacy freeze: old OLTP/OLAP set read-only; final `server/` run extracts reusable functions/ideas into `api/` (port log, not data) | SC-E9 |
+| Archive + delete: versioned `pg_dump` of both legacy DBs stored alongside the repo tag, then compose services/volumes and `server/src/database/migrations/` removed | SC-E9 |
+
+**Trigger (when this fires):** SC-M3 slice is green on rung 2 **and** SC-M6 exit criteria are met — i.e. the new backend no longer needs anything from the legacy schema. Do not start SC-M7 early to "avoid pollution": separation is the point, so new work lands in the new DBs from SC-E11 onward and legacy stays frozen.
+
+**Exit criteria**
+- `api/planning` migrates and serves from `postgres-planning` alone; `api/runtime` from `postgres-runtime` alone (proven by booting each with only its own URL set).
+- SC-106 negative test passes against the physical hosts (runtime role cannot even connect to the planning DB — stronger than the rung-2 schema-USAGE denial).
+- Legacy `server/` suite runs green one final time against a frozen snapshot, the extraction log (functions/ideas ported) is recorded, dumps are stored, and the old services/volumes/migration folder are deleted.
+- No code path references `postgres-oltp` / `postgres-olap` or `server/src/database/migrations/`, and the `server/src/database/migrate.ts` shim is removed alongside them.
 
 ---
 
@@ -144,6 +166,8 @@ gantt
   SC-M5 Validation depth     :m5, after m4, 28d
   section Depth
   SC-M6 Content model        :m6, after m5, 42d
+  section Independence
+  SC-M7 Physical + archive   :m7, after m6, 14d
 ```
 
 Dates are **shape, not commitment.** SC-M1 and SC-M2 are planned in detail; anything past
@@ -151,9 +175,13 @@ SC-M3 is an ordering claim with a duration guess attached.
 
 ## 3. What comes after SC-M6
 
-Unordered, unscheduled, revisited when SC-M6 closes: missions (S7), items (S8), casting by
+Unordered, unscheduled, revisited when SC-M6 closes: missions (S7), casting by
 description (S9), lazy asset generation (S11), interactive activity and
 `activity_sets_flag` (S12), and the decision on importing existing YAML content (S13).
+Items (S8) and its inventory-ledger checker (S15) now have a scheduled path in SC-M5/SC-M6
+(SC-E10); if SC-M6 slips they fall back here. Knowledge (S14) and time-vs-prose (S16)
+likewise have a path, but any checker gated on a "no" spike answer returns here for
+re-planning rather than being quietly re-attempted.
 
 ## 4. Retirement of the old path
 
@@ -170,6 +198,11 @@ owner of canon at every moment, a one-way old→new import and never a write-bac
 Nothing is deleted before its kill condition is written down and met. A component whose
 kill condition slips twice gets re-examined at retro — the parallel-system failure mode is
 both paths living forever, and slipping kill conditions is its earliest symptom.
+
+**Legacy databases (SC-M7):** cutover to `postgres-planning` / `postgres-runtime` happens
+when SC-M6 exit is met (new traffic and writers use only the new URLs).
+
+**Rollback boundary:** the legacy pair may be reinstated only before the first write commits to the new DBs after cutover. Any post-cutover write to planning/runtime makes legacy state stale; rollback would lose committed work. The window exists only to allow an immediate revert of the URL flip before writers start (duration decided at SC-M6 retro). After first new-DB write, rollback is unavailable; proceed only to freeze (SC-905) etc. Legacy remains untouched/read-only-bootable strictly inside that pre-write window. New work never lands in legacy.
 
 ## 5. The retro contract
 

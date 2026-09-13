@@ -53,9 +53,11 @@ export async function setDialogueChunkCursor(
   * inside the same tx as the node+chunk writes + ps cursor so pin+state are
   * atomic: a pin is never observable without its matching state.
   *
-  * On conflict (mid-dialogue restart) the revalidated pin is also written so a
-  * recompile between outer snapshot and locked claim will update the pin to
-  * match the start chunk resolved for the tx rev.
+  * On INSERT (new dialogue state row) the supplied value is always written
+  * (0 or explicit rev). On conflict (restart) a sentinel 0 is treated as
+  * "do not change": only an explicit (>0) rev overwrites the existing pin.
+  * This prevents legacy/default-0 callers from clobbering a prior pin on
+  * mid-dialogue restarts.
   *
   * Requirement 8.2: records initial chunk_id in player_dialogue_states.
   *
@@ -64,7 +66,9 @@ export async function setDialogueChunkCursor(
   * @param treeId  - Dialogue tree id
   * @param nodeId  - Start node id
   * @param chunkId - Start chunk id (UUID)
-  * @param pinnedTreeRevision - pinned rev captured at start (defaults to 0 for callers that predate pinning)
+  * @param pinnedTreeRevision - pinned rev captured at start; 0 (default) means
+  *   "unset" for legacy callers — on conflict preserves existing pin, on
+  *   fresh INSERT writes 0.
   */
 export async function initDialogueChunkState(
   client: pg.PoolClient,
@@ -83,7 +87,9 @@ export async function initDialogueChunkState(
           current_chunk_id      = EXCLUDED.current_chunk_id,
           choices_made          = '[]',
           started_at            = NOW(),
-          pinned_tree_revision  = EXCLUDED.pinned_tree_revision`,
+          pinned_tree_revision  = CASE WHEN EXCLUDED.pinned_tree_revision = 0
+                                       THEN player_dialogue_states.pinned_tree_revision
+                                       ELSE EXCLUDED.pinned_tree_revision END`,
      [userId, treeId, nodeId, chunkId, pinnedTreeRevision]
   );
 }

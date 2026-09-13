@@ -196,7 +196,7 @@ jest.mock('../../src/database/repositories/PlayerStateRepository.js', () => ({
            current_chunk_id = EXCLUDED.current_chunk_id,
            choices_made = '[]',
            started_at = NOW(),
-           pinned_tree_revision = EXCLUDED.pinned_tree_revision`,
+            pinned_tree_revision = CASE WHEN EXCLUDED.pinned_tree_revision = 0 THEN player_dialogue_states.pinned_tree_revision ELSE EXCLUDED.pinned_tree_revision END`,
         ['u', 't', nodeId, chunkId, pinnedRev]
       );
     }),

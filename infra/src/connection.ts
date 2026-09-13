@@ -103,14 +103,14 @@ export const olapPool: pg.Pool = new Proxy({} as pg.Pool, {
 });
 
 // Proxy-based lazy export mirroring `oltpPool`/`olapPool`: no TCPWRAP handle is
-// created until a `.query()`/`.connect()` is actually invoked.
-export const contentPool: pg.Pool = new Proxy({} as pg.Pool, {
-  get(_, prop, receiver) {
-    return Reflect.get(getContentPool(), prop, receiver);
-  },
-});
+  // created until a `.query()`/`.connect()` is actually invoked.
+  export const contentPool: pg.Pool = new Proxy({} as pg.Pool, {
+    get(_, prop, receiver) {
+      return Reflect.get(getContentPool(), prop, receiver);
+    },
+  });
 
-// Test database connections
+  // Test database connections
 export async function testConnections(): Promise<boolean> {
   try {
     // Test OLTP connection

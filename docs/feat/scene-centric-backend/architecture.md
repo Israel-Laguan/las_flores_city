@@ -85,6 +85,12 @@ production transactions actually run as `runtime` (e.g. `SET LOCAL ROLE runtime`
 Per R14, every table declares its writer. A table with two writers is the drift pathology
 this redesign exists to remove.
 
+**Stepping stone, not destination:** rung 2 holds through SC-M6 so the slice is proven
+before infrastructure moves. SC-M7 (`SC-E11`) escalates to rung 3 — dedicated
+`postgres-planning` / `postgres-runtime` databases — and `SC-905–SC-908` freeze, archive,
+and delete the legacy OLTP/OLAP pair. Until then, new-backend work lands only in the
+`planning` / `runtime` schemas and legacy tables stay untouched.
+
 ## 4. The planning↔runtime seam
 
 Exactly two things cross:
