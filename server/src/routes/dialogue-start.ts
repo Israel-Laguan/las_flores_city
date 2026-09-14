@@ -28,7 +28,6 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
       });
     }
 
-    const preContext = await captureUserResolutionContext(userId);
     const dialogue = await resolveDialogueTree(characterId, sceneId, userId);
     if (!dialogue) {
       return res.status(404).json({
@@ -89,7 +88,7 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
     });
 
     if (!startChunkId || !startChunkKey) {
-      return await handleStartFallback(userId, dialogue, treeRevision, preContext, res);
+      return await handleStartFallback(userId, dialogue, treeRevision, res);
     }
 
     return await handleStartChunk(userId, dialogue, startChunkId, startChunkKey, treeRevision, res);
@@ -127,7 +126,7 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
   }
 }
 
-async function handleStartFallback(userId: string, dialogue: any, pinnedRevision: number, preContext: any, res: any) {
+async function handleStartFallback(userId: string, dialogue: any, pinnedRevision: number, res: any) {
   console.warn(`[dialogue/start] No chunk found for tree ${dialogue.id}, falling back to tree resolver`);
 
   const resolved = await DialogueResolver.resolveTreeForUser(userId, dialogue.id);
@@ -176,6 +175,7 @@ async function handleStartFallback(userId: string, dialogue: any, pinnedRevision
     // Throw retryable so caller restarts with fresh pre-resolve; never apply
     // mismatched overlay view. Uses cheap queries only (no resolver, respects
     // no-nested-pool contract inside tx).
+    const preContext = await captureUserResolutionContext(userId);
     const currentContext = await getCurrentResolutionContext(client, userId);
     if (!resolutionContextsMatch(preContext, currentContext)) {
       throw new Error('dialogue start user context mismatch during start (player state race); aborting to avoid applying stale overlay effects');

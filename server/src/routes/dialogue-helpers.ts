@@ -101,7 +101,7 @@ export async function getCurrentResolutionContext(
       `SELECT COALESCE(is_nsfw_unlocked, false) as is_nsfw_unlocked FROM user_entitlements WHERE user_id = $1`,
       [userId]
     ),
-    client.query(`SELECT id FROM mysteries WHERE status = 'ACTIVE'`),
+    queryContent<{ id: string }>(`SELECT id FROM mysteries WHERE status = 'ACTIVE'`),
   ]);
   return {
     alignment: (stateRes.rows[0]?.alignment as 'neutral' | 'loyalist' | 'fugitive') ?? 'neutral',

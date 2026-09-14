@@ -37,7 +37,7 @@ idempotency, so `migrate.ts`'s verbatim `client.query(sql)` does not need
 - `server/src/database/migrate.ts` requires no modifications for SC-103 — the migration
   uses `IF NOT EXISTS` guards for idempotency and fixed dev passwords,
   so no `${VAR}` expansion is needed.
-  - A no-op re-run of `npm run schema:migrate --workspace=server` after the schemas exist skips the file (confirmed
+- A no-op re-run of `npm run schema:migrate --workspace=server` after the schemas exist skips the file (confirmed
   via `schema_migrations` row), proving idempotency
   is inherited rather than reimplemented.
 - `npm run schema:migrate --workspace=server` handles old and new schemas in one invocation — this is already true

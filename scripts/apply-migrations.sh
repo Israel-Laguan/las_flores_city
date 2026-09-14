@@ -168,8 +168,8 @@ get_migrations_for_db() {
       fi
     done
   else
-    # Fallback: use numeric sorting for all SQL files
-    ls -1 "$migrations_dir"/[0-9]*.sql 2>/dev/null | sort -V
+    log_error "migration-targets.json not found at $TARGETS_FILE"
+    return 1
   fi
 }
 
