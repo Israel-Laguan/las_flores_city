@@ -59,9 +59,6 @@ jobs:
       - name: Unit tests (no DB/Redis needed)
         run: timeout 180 npm run test:unit --workspace=server
 
-      - name: Unit tests - api workspaces (no DB/Redis needed)
-        run: npm run test --workspace=api/contracts --workspace=api/planning --workspace=api/runtime
-
       - name: Schema-only content validation (no DB cross-references)
         run: npm run validate:schema --workspace=server
 

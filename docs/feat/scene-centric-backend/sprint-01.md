@@ -100,7 +100,7 @@ completion is explicitly delayed to sprint 3, noted in that retro.
 1. **SC-S4** (`pg_trgm`) — feeds SC-706 in SC-M5, five sprints out.
 2. **SC-S6** (serving baseline) — needed by SC-M3, not SC-M2.
 3. **SC-S3** (overlay view) — needed by SC-M5.
-4. ~~SC-104 rollback documentation~~ — forward-only is an acceptable interim answer. ✅ Done — SC-104/README.md + 095.sql reference corrected to roadmap.md §4.
+4. ~~SC-104 rollback documentation~~ — forward-only is an acceptable interim answer. ✅ Done — SC-104/README.md + 095.sql reference corrected to roadmap.md §5.
 5. ~~SC-105 CI job~~ — verified against actual ci.yml; no changes needed. ✅ Done — SC-105/README.md corrected (typecheck and api test steps already present in no-migrations job).
 
 **Do not cut:** SC-102 (the boundary is the whole point of the sprint), SC-103/SC-106 (the

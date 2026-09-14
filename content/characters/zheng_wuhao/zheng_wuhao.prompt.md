@@ -26,6 +26,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 --no young face, no early 50s, no black hair without gray, no neon, no androids, no clean backgrounds, no glamorous styling, no anime, no cartoon, no text, no watermarks
 
+> **Asset TODO:** Elderly portrait (`zheng_wuhao__default.png` late-70s) is pending generation. Until published and re-selected in `char_zheng_wuhao.yaml` `asset_paths.portrait`/`portrait_urls`, the shipped asset remains the early-50s historical likeness noted in `zheng_wuhao.md`.
+
 ## Variations
 
 - [ ] Zheng Wuhao reflecting on recent events — elderly retiree, guarded memory of the leak

@@ -30,7 +30,7 @@ When the Great Lithium Leak finally occurred on August 15, 2052, Li Wei did not 
 
 If the 2052 cover-up was a corporate decision, the murder of Cecilia Perez in 2049 was a personal one. When the safety auditor's research threatened to expose the pre-leak contamination, Wei first tried the tools of the diplomat: bribery and professional pressure. But Cecilia's integrity was a variable he hadn't accounted for.
 
-In collaboration with Zhang Liang, Wei made the decision to eliminate her. It was the moment he crossed from a ruthless businessman into a murderer. He didn't pull the trigger, but he signed the order, treating a human life as a line item to be erased for the sake of the balance sheet. This act solidified his bond with Zhang Liang—an investor's silence beside an emperor's — mutual survival through shared knowledge.
+In collaboration with Zhang Liang, Wei made the decision to eliminate her. It was the moment he crossed from a ruthless businessman into a murderer. He didn't pull the trigger, but he signed the order, treating a human life as a line item to be erased for the sake of the balance sheet. This act solidified his bond with Zhang Liang—a blood pact of silence that ensured their mutual survival through shared knowledge.
 
 ## The Emperor in the Shadows (2065–2077)
 

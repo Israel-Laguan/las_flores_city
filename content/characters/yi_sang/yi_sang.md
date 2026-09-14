@@ -3,7 +3,7 @@
 > Tags: `#figure` `#lw_group` `#security` `#operations` `#2077` `#handler` `#black_ops`
 >
 > **Born:** ~2027
-> **Age (2077):** ~48
+> **Age (2077):** ~50
 > **Full name / styling:** Yī Sāng (Yi Sang)
 > **Role:** Chief of Operations & Head of Corporate Security, LW Group
 > **Status:** Active (2077)
@@ -24,13 +24,13 @@
 |---|---|---|
 | Rising LW security / early handler work | ~2055 (Liu Fang era) | ~28 |
 | Oversees “Doctor” op from Café de las Mañanas (Student’s Flight) | late 2050s | ~31 |
-| Game present — Chief of Operations | 2077 | **~48** |
+| Game present — Chief of Operations | 2077 | **~50** |
 
 Still mid-career lethal. Not a retiree.
 
 ## Overview
 
-Yī Sāng is Li Wei’s ruthless **Chief of Operations** and **Head of Corporate Security** — the ground fixer who prefers a café table and a wall of monitors to an alley. He coldly oversees black operations and public-relations crises from a safe distance, then lets specialists like **Viktor Reyes (“the Doctor”)** finish the wet geometry. In 2077 he is forty-eight: gray at the temples, scar on the jaw, still the man who decides which problems get a medic who never saves anyone.
+Yī Sāng is Li Wei’s ruthless **Chief of Operations** and **Head of Corporate Security** — the ground fixer who prefers a café table and a wall of monitors to an alley. He coldly oversees black operations and public-relations crises from a safe distance, then lets specialists like **Viktor Reyes (“the Doctor”)** finish the wet geometry. In 2077 he is fifty: gray at the temples, scar on the jaw, still the man who decides which problems get a medic who never saves anyone.
 
 ## Background
 
@@ -117,7 +117,7 @@ Force him into the open, flip an asset under him, or let him almost win by stayi
 - Keep Chinese–Korean heritage, left-jaw scar, athletic-compact build, cold affect
 - He oversees; he rarely stabs — that is Viktor’s lane
 - Name styling: **Yī Sāng** in prose OK; folder slug remains `yi_sang`
-- Age in 2077: **~48** (active)
+- Age in 2077: **~50** (active)
 
 ## Related Lore
 

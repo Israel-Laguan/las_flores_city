@@ -20,14 +20,28 @@ Create a seamless looping video. Overworked warm resting expression, soft fuller
 
 ## Expression Loops
 
+Generate each loop from its corresponding expression PNG.
+
 ### `__happy` loop
+
+**Input**: `assets/lucia_torres__happy.png`
+
 Tired genuine smile; warmer breath; soft eye crinkle cycle; chestnut flyaways drift. Perfect loop.
 
 ### `__contemplative` loop
+
+**Input**: `assets/lucia_torres__contemplative.png`
+
 Reflective pause; slower blink; eyes drift slightly; soft breathing. Perfect loop.
 
 ### `__determined` loop
+
+**Input**: `assets/lucia_torres__determined.png`
+
 Steady resolve under fatigue; controlled breath; firmer micro jaw set. Perfect loop.
 
 ### `__calculating` loop
+
+**Input**: `assets/lucia_torres__calculating.png`
+
 Quiet stock/fee focus; micro brow knit; thoughtful blink. Perfect loop.

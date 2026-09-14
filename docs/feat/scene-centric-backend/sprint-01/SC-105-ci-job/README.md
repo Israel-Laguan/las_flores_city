@@ -42,15 +42,6 @@ SC-105's acceptance criteria describe. The original README's claims that
 - **Blocks:** nothing directly, but SC-106's proof depends on the `with-migrations` chain
   already having a Postgres service — see that ticket.
 
-## ⚠️ Open gap: `with-migrations` env vars for SC-106
-
-The `with-migrations` job (line 73-76) sets `DATABASE_URL`, `ANALYTICS_DATABASE_URL`,
-and `REDIS_URL` but does **not** set `RUNTIME_DATABASE_URL` or `PLANNING_DATABASE_URL`.
-SC-106's negative-permission test needs `RUNTIME_DATABASE_URL` to connect as the
-`runtime` role via a raw `pg` client. These env vars exist in `.env.example`
-(lines 17-18) and `server/src/database/migrate.ts` references them, but they are
-absent from the `with-migrations` CI job. This must be fixed for SC-106 to work.
-
 ## Acceptance criteria
 
 - ✅ CI's `no-migrations` job runs `npm run typecheck --workspaces` (line 44).
@@ -58,8 +49,8 @@ absent from the `with-migrations` CI job. This must be fixed for SC-106 to work.
   `api/runtime` (line 63).
 - ✅ CI's `no-migrations` job runs `npm run test:unit --workspace=server` (line 60).
 - ✅ No new workflow file needed — all steps exist in the existing `no-migrations` job.
-- ⬜ `with-migrations` job env must include `RUNTIME_DATABASE_URL` and
-  `PLANNING_DATABASE_URL` for SC-106's raw `pg` client test (see ⚠️ above).
+- ✅ `with-migrations` job env already includes `RUNTIME_DATABASE_URL` and
+  `PLANNING_DATABASE_URL` (lines 77-78) for SC-106's raw `pg` client test.
 
 ## Prompt to execute
 
@@ -81,8 +72,8 @@ Steps:
    `npm run test` / `--workspaces` invocation already covers them.
 3. Confirm the `no-migrations` job already has `Typecheck all workspaces` (line 44)
    and `Unit tests - api workspaces` (line 63) — no additions needed.
-4. ⚠️ Add `RUNTIME_DATABASE_URL` and `PLANNING_DATABASE_URL` to the `with-migrations`
-   job env (lines 73-76) so SC-106's raw pg client test can connect as the runtime role.
+4. Confirm `with-migrations` job env already includes `RUNTIME_DATABASE_URL` and
+   `PLANNING_DATABASE_URL` (lines 77-78) so SC-106's raw pg client test can connect as the runtime role.
 
 Do not add SC-106's negative-permission test wiring here — that belongs in the
 with-migrations job since it needs a live Postgres connection; keep these separate.

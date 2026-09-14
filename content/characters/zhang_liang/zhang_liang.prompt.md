@@ -24,7 +24,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Negative Prompt
 
---no CFO badge, no nameplate text, no wall titles, no young face, no full black hair, no neon, no anime, no cartoon, no readable text, no watermarks, no Latino features, no European features
+--no CFO badge, no nameplate text, no wall titles, no young face, no full black hair, no neon, no anime, no cartoon, no readable text, no watermarks, no blurry, no low quality, no androids, no Latino features, no European features
 
 ## Expression Variants (2077, age ~78)
 

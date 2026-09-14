@@ -18,5 +18,28 @@ Seamless loop. Composed elderly resting expression, soft prosperous frame, gray-
 
 ## Expression Loops
 
-### `__calculating` / `__smirk` / `__determined` / `__surprised`
-Match each still’s expression with minimal idle motion; perfect seamless loops.
+Generate each loop from its corresponding expression PNG.
+
+### `__calculating` loop
+
+**Input**: `assets/zhang_liang__calculating.png`
+
+Calculating eye-narrowing; slow measured breathing; thoughtful blink cycle. Perfect loop.
+
+### `__smirk` loop
+
+**Input**: `assets/zhang_liang__smirk.png`
+
+Subtle smirk micro-lift at the corner of the mouth; relaxed blink. Perfect loop.
+
+### `__determined` loop
+
+**Input**: `assets/zhang_liang__determined.png`
+
+Determined jaw firming; steady controlled breathing; unwavering blink cycle. Perfect loop.
+
+### `__surprised` loop
+
+**Input**: `assets/zhang_liang__surprised.png`
+
+Surprised eye-widening; momentary catch in breath settling to alert composure. Perfect loop.

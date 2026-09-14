@@ -21,14 +21,28 @@ Create a seamless looping video. Fierce resting defiance, vivid violet-magenta a
 
 ## Expression Loops
 
+Generate each loop from its corresponding expression PNG.
+
 ### `__calculating` loop
+
+**Input**: `assets/maria_gutierrez__calculating.png`
+
 Absorbed piecing a story; eyes narrowed in thought; slow controlled breathing; focused blink cycle. Same hair/piercings/attire. Perfect loop.
 
 ### `__angry` loop
+
+**Input**: `assets/maria_gutierrez__angry.png`
+
 Cold righteous anger; micro-tension in jaw; sharper blink; faint draft on hair. Perfect loop.
 
 ### `__determined` loop
+
+**Input**: `assets/maria_gutierrez__determined.png`
+
 Steady unyielding resolve; measured breathing; firm gaze micro-shifts. Perfect loop.
 
 ### `__sad` loop
+
+**Input**: `assets/maria_gutierrez__sad.png`
+
 Weary burdened pause; slower breath; softer blink; hair drifts lightly. Perfect loop.

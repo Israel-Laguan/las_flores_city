@@ -18,5 +18,28 @@ Seamless loop. Calm determined resting expression, lean frame, neat black hair, 
 
 ## Expression Loops
 
-### `__focused` / `__determined` / `__happy` / `__contemplative`
-Match each still with light idle motion; perfect seamless loops.
+Generate each loop from its corresponding expression PNG.
+
+### `__focused` loop
+
+**Input**: `assets/yifan_wang__focused.png`
+
+Light idle motion matching absorbed concentration; perfect seamless loop.
+
+### `__determined` loop
+
+**Input**: `assets/yifan_wang__determined.png`
+
+Light idle motion matching steady resolve; perfect seamless loop.
+
+### `__happy` loop
+
+**Input**: `assets/yifan_wang__happy.png`
+
+Light idle motion matching warm smile; perfect seamless loop.
+
+### `__contemplative` loop
+
+**Input**: `assets/yifan_wang__contemplative.png`
+
+Light idle motion matching thoughtful pause; perfect seamless loop.

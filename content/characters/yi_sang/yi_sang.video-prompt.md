@@ -18,5 +18,28 @@ Seamless loop. Cold resting expression, athletic-compact frame, sport earbud, da
 
 ## Expression Loops
 
-### `__calculating` / `__determined` / `__smirk` / `__afraid`
-Match each still with minimal micro-expression idle; perfect seamless loops. Afraid = guarded control-loss tension, not panic.
+Generate each loop from its corresponding expression PNG.
+
+### `__calculating` loop
+
+**Input**: `assets/yi_sang__calculating.png`
+
+Calculating micro-narrowing of eyes; slow controlled breathing. Perfect loop.
+
+### `__determined` loop
+
+**Input**: `assets/yi_sang__determined.png`
+
+Steady unflinching resolve; deep controlled breathing; firm jaw micro-motion. Perfect loop.
+
+### `__smirk` loop
+
+**Input**: `assets/yi_sang__smirk.png`
+
+Thin cold smirk micro-lift; relaxed breathing; barely perceptible blink. Perfect loop.
+
+### `__afraid` loop
+
+**Input**: `assets/yi_sang__afraid.png`
+
+Guarded control-loss tension — shallow held breathing, quick blink — not panic. Perfect loop.

@@ -201,8 +201,10 @@ export { AXES, clamp };
  * Batch-read `updated_at` for multiple relationship rows using a tx client.
  * Used to revalidate relationship-gated tree selection inside the player
  * FOR UPDATE transaction (see `validateRelationshipVersions` in dialogue-helpers).
- * Returns a map of characterId → updatedAt. Missing rows get `null`,
- * existing rows never get `null` (COALESCE maps null updated_at to epoch).
+ * Returns a map of characterId → updatedAt. Missing rows get `null`;
+ * existing rows preserve their `updated_at` (including `NULL` for legacy
+ * rows), so the captured `snap.updatedAt ?? null` and the revalidated
+ * value compare with the same `null`-as-`-1` sentinel in `validateRelationshipVersions`.
  */
 export async function getRelationshipUpdatedAts(
   client: pg.PoolClient,
@@ -211,7 +213,7 @@ export async function getRelationshipUpdatedAts(
 ): Promise<Record<string, Date | null>> {
   if (characterIds.length === 0) return {};
   const result = await client.query<{ character_id: string; updated_at: Date | null }>(
-    `SELECT character_id, COALESCE(updated_at, 'epoch'::timestamptz) as updated_at FROM user_relationships WHERE user_id = $1 AND character_id = ANY($2) FOR UPDATE`,
+    `SELECT character_id, updated_at FROM user_relationships WHERE user_id = $1 AND character_id = ANY($2) FOR UPDATE`,
     [userId, characterIds]
   );
   const versions: Record<string, Date | null> = {};
