@@ -23,18 +23,20 @@ Verified facts (all CONFIRMED against actual code):
   `api/planning`, `api/runtime` automatically because the root `package.json`
   (line 29) defines `typecheck` as `npm run typecheck --workspaces`, and the
   workspaces array (lines 5-15) includes all three `api/*` entries.
-- `ci.yml` line 62-63: `no-migrations` job **already** has a `Unit tests - api workspaces`
-  step running `npm run test --workspace=api/contracts --workspace=api/planning --workspace=api/runtime`.
 - `ci.yml` line 60: `no-migrations` job already runs `npm run test:unit --workspace=server`.
-- `ci.yml` line 66: `no-migrations` job already runs `npm run validate:schema --workspace=server`.
+- `ci.yml` line 62: `no-migrations` job runs `npm run validate:schema --workspace=server` (schema-only, no DB).
 - `server/package.json` line 16-21: `lint`, `typecheck`, `test:unit`, `test:integration`,
   `schema:migrate` scripts all exist.
-- `api/*` package.json files all have `build`, `lint`, `typecheck`, `test` scripts.
+- `api/*` package.json files all have `build`, `lint`, `typecheck`, `test` scripts
+  (`test` is a placeholder `process.exit(0)` until real api tests land — covered by
+  `typecheck --workspaces` + `lint` in `no-migrations`; no dedicated `Unit tests - api workspaces` step).
 
 **No CI changes were required.** The `no-migrations` job already covers everything
 SC-105's acceptance criteria describe. The original README's claims that
 `npm run typecheck --workspaces` was missing from `no-migrations` and that the
-`api/*` workspaces weren't being typechecked were factually incorrect.
+`api/*` workspaces weren't being typechecked were factually incorrect. The
+placeholder `Unit tests - api workspaces` step (previously line 62-63) was removed
+as redundant — `api/*` `test` scripts are no-ops.
 
 ## Dependencies
 
@@ -45,12 +47,10 @@ SC-105's acceptance criteria describe. The original README's claims that
 ## Acceptance criteria
 
 - ✅ CI's `no-migrations` job runs `npm run typecheck --workspaces` (line 44).
-- ✅ CI's `no-migrations` job runs unit tests across `api/contracts`, `api/planning`,
-  `api/runtime` (line 63).
-- ✅ CI's `no-migrations` job runs `npm run test:unit --workspace=server` (line 60).
+- ✅ CI's `no-migrations` job runs `npm run test:unit --workspace=server` (line 60) and `validate:schema` (line 62); `api/*` workspaces are covered by `typecheck --workspaces` + `lint` (their `test` scripts are placeholder no-ops, so no dedicated api unit-test step).
 - ✅ No new workflow file needed — all steps exist in the existing `no-migrations` job.
 - ✅ `with-migrations` job env already includes `RUNTIME_DATABASE_URL` and
-  `PLANNING_DATABASE_URL` (lines 77-78) for SC-106's raw `pg` client test.
+  `PLANNING_DATABASE_URL` (lines 74-75) for SC-106's raw `pg` client test.
 
 ## Prompt to execute
 
@@ -69,11 +69,10 @@ Steps:
    `--workspaces` iterates package.json's workspaces array).
 2. Check whether `no-migrations`'s "Unit tests" step (`npm run test:unit --workspace=server`)
    or an equivalent needs a matching entry for the new workspaces, or whether a root
-   `npm run test` / `--workspaces` invocation already covers them.
-3. Confirm the `no-migrations` job already has `Typecheck all workspaces` (line 44)
-   and `Unit tests - api workspaces` (line 63) — no additions needed.
+   `npm run test` / `--workspaces` invocation already covers them — `api/*` `test` scripts are currently placeholder no-ops, so `typecheck --workspaces` + `lint` is sufficient.
+3. Confirm the `no-migrations` job already has `Typecheck all workspaces` (line 44) — no api unit-test step needed while `api/*` tests are placeholders.
 4. Confirm `with-migrations` job env already includes `RUNTIME_DATABASE_URL` and
-   `PLANNING_DATABASE_URL` (lines 77-78) so SC-106's raw pg client test can connect as the runtime role.
+   `PLANNING_DATABASE_URL` (lines 74-75) so SC-106's raw pg client test can connect as the runtime role.
 
 Do not add SC-106's negative-permission test wiring here — that belongs in the
 with-migrations job since it needs a live Postgres connection; keep these separate.

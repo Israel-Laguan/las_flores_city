@@ -2,7 +2,7 @@ id: 8c75df2b-c8db-4c8d-b903-cf7ebbc8ad10
 name: Yī Sāng
 title: Chief of Operations, LW Group
 description: >
-  Li Wei's ruthless Chief of Operations and Head of Corporate Security (~48 in
+  Li Wei's ruthless Chief of Operations and Head of Corporate Security (~50 in
   2077). Chinese–Korean heritage ground fixer who oversees black ops and PR
   crises from a safe distance — handler to Viktor Reyes ("the Doctor"), café
   overwatch in The Student's Flight.
@@ -11,12 +11,12 @@ metadata:
   role: npc
   faction: lw_group
   personality: ruthless_calculating
-  age: "~48"
+  age: "~50"
   gender: Male
   ethnicity: Chinese-Korean
   occupation: Chief of Operations / Head of Corporate Security (LW Group)
   physical_description: >
-    Athletic-compact Chinese–Korean man ~48. Straight dark hair graying and
+    Athletic-compact Chinese–Korean man ~50. Straight dark hair graying and
     receding. Narrow cold eyes, thick brows, thin lips, faint scar on left jaw,
     sport earbud, dark practical security attire.
   background: >

@@ -396,7 +396,10 @@ export async function resolveDialogueTree(
     if (!userId || !targetId || relStateByTarget[targetId]) return;
     const snap = await getRelationshipForFilter(userId, targetId);
     relStateByTarget[targetId] = snapshotToConditionState(snap);
-    relVersions[targetId] = snap?.updatedAt ?? null;
+    // Normalize legacy NULL updated_at to epoch so it matches
+    // getRelationshipUpdatedAts' COALESCE sentinel; missing rows stay null
+    // so deletion (null → missing) is detectable as a race.
+    relVersions[targetId] = snap ? (snap.updatedAt ?? new Date(0)) : null;
   };
   if (characterId) await ensureRelState(characterId);
 

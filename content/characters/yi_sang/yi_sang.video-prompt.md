@@ -6,7 +6,7 @@ source: content/characters/yi_sang/yi_sang.prompt.md
 target: content/characters/yi_sang/assets/
 ---
 
-Game year **2077**: Yī Sāng is **~48**, active LW Chief of Operations. Loops match cold corporate-security portraits — dark graying receding hair, left-jaw scar, athletic-compact build.
+Game year **2077**: Yī Sāng is **~50**, active LW Chief of Operations. Loops match cold corporate-security portraits — dark graying receding hair, left-jaw scar, athletic-compact build.
 
 # Video Prompts: Yī Sāng
 
