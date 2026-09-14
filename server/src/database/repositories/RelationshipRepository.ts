@@ -202,9 +202,12 @@ export { AXES, clamp };
  * Used to revalidate relationship-gated tree selection inside the player
  * FOR UPDATE transaction (see `validateRelationshipVersions` in dialogue-helpers).
  * Returns a map of characterId → updatedAt. Missing rows get `null`;
- * existing rows preserve their `updated_at` (including `NULL` for legacy
- * rows), so the captured `snap.updatedAt ?? null` and the revalidated
- * value compare with the same `null`-as-`-1` sentinel in `validateRelationshipVersions`.
+ * existing rows with `updated_at IS NULL` (legacy) are returned as epoch
+ * (`1970-01-01T00:00:00Z`) via `COALESCE`, so deletion (missing → null) is
+ * distinguishable from an existing legacy row (epoch → 0) and unchanged
+ * legacy rows do not false-positive as races. The capture side
+ * (`dialogue-helpers`) normalizes `snap.updatedAt ?? null` the same way
+ * (`?? epoch`), so both sides compare the same representation.
  */
 export async function getRelationshipUpdatedAts(
   client: pg.PoolClient,
@@ -213,7 +216,7 @@ export async function getRelationshipUpdatedAts(
 ): Promise<Record<string, Date | null>> {
   if (characterIds.length === 0) return {};
   const result = await client.query<{ character_id: string; updated_at: Date | null }>(
-    `SELECT character_id, updated_at FROM user_relationships WHERE user_id = $1 AND character_id = ANY($2) FOR UPDATE`,
+    `SELECT character_id, COALESCE(updated_at, 'epoch'::timestamptz) as updated_at FROM user_relationships WHERE user_id = $1 AND character_id = ANY($2) FOR UPDATE`,
     [userId, characterIds]
   );
   const versions: Record<string, Date | null> = {};
