@@ -9,6 +9,7 @@ import {
   applyLegacyRelationshipChange,
   applyRelationshipDelta,
   getRelationshipForFilter,
+  getRelationshipUpdatedAts,
 } from '../database/repositories/RelationshipRepository.js';
 import type {
   DialogueChoice,
@@ -39,6 +40,54 @@ export function snapshotToConditionState(
     flags: snapshot.flags ?? {},
     memory: snapshot.memory ?? {},
   };
+}
+
+/**
+ * The result of `resolveDialogueTree`. `tree` is the selected dialogue tree
+ * (or null when no eligible tree is found); `relVersions` captures the
+ * `user_relationships.updated_at` version for every character whose
+ * relationship row was read while evaluating tree-metadata gates. The
+ * dialogue start flow revalidates these versions under the player lock so a
+ * concurrent relationship update cannot let stale relationship-gated root
+ * effects apply against a no-longer-eligible tree.
+ */
+export interface ResolvedDialogueTree {
+  tree: {
+    id: string;
+    name: string;
+    description: string | null;
+    start_node_id: string;
+    metadata: any;
+    content_url: string | null;
+    nodes: Record<string, any>;
+  } | null;
+  relVersions: Record<string, Date | null>;
+}
+
+/**
+ * Revalidate relationship versions captured during `resolveDialogueTree`
+ * against the rows visible inside the player FOR UPDATE transaction. Throws
+ * (retryable) when any version differs, indicating a concurrent relationship
+ * update invalidated the tree selection. Called by the dialogue start flow
+ * after `lockDialogueCursor` and before cursor initialization / root effects.
+ * No-op when no character had a relationship read (anonymous or ungated).
+ */
+export async function validateRelationshipVersions(
+  client: any,
+  userId: string,
+  relVersions: Record<string, Date | null>
+): Promise<void> {
+  const characterIds = Object.keys(relVersions);
+  if (characterIds.length === 0) return;
+  const currentVersions = await getRelationshipUpdatedAts(client, userId, characterIds);
+  for (const [characterId, capturedAt] of Object.entries(relVersions)) {
+    const currentAt = currentVersions[characterId] ?? null;
+    if ((currentAt?.getTime() ?? -1) !== (capturedAt?.getTime() ?? -1)) {
+      throw new Error(
+        'dialogue start relationship version mismatch during start (relationship race); aborting to avoid applying stale relationship-gated root effects'
+      );
+    }
+  }
 }
 
 export interface UserResolutionContext {
@@ -305,7 +354,7 @@ export async function resolveDialogueTree(
   characterId: string,
   sceneId: string,
   userId?: string
-) {
+): Promise<ResolvedDialogueTree> {
   // Fetch the player's story beat up-front so we can apply the
   // gate on both the scene-scoped and the fallback queries.
   // Mirrors `location.ts:251-252`: default to 'prologue' if the
@@ -338,10 +387,16 @@ export async function resolveDialogueTree(
   // with the speaker and then augment with any metadata targets as we
   // iterate candidate trees.
   const relStateByTarget: RelationshipStateByTarget = {};
+  // M48+M?: capture the `user_relationships.updated_at` version for each
+  // character whose row we read for tree-metadata gates, so the dialogue
+  // start flow can detect a concurrent relationship update that would
+  // invalidate the gate-based selection (see `validateRelationshipVersions`).
+  const relVersions: Record<string, Date | null> = {};
   const ensureRelState = async (targetId: string) => {
     if (!userId || !targetId || relStateByTarget[targetId]) return;
     const snap = await getRelationshipForFilter(userId, targetId);
     relStateByTarget[targetId] = snapshotToConditionState(snap);
+    relVersions[targetId] = snap?.updatedAt ?? null;
   };
   if (characterId) await ensureRelState(characterId);
 
@@ -377,7 +432,7 @@ export async function resolveDialogueTree(
       isStoryBeatAllowed(tree.metadata?.required_story_beat, storyBeat) &&
       metadataConditionsPass(tree.metadata, playerCondition, relStateByTarget, characterId)
     ) {
-      return tree;
+      return { tree, relVersions };
     }
     // Gated: continue to the next candidate; only fall through
     // to the fallback if no scene-scoped tree passes all gates.
@@ -418,9 +473,9 @@ export async function resolveDialogueTree(
     ) {
       continue;
     }
-    return tree;
+    return { tree, relVersions };
   }
-  return null;
+  return { tree: null, relVersions };
 }
 
 export async function filterChoices(

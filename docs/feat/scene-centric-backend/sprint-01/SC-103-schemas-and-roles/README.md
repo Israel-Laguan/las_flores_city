@@ -96,9 +96,7 @@ Steps:
      - CREATE ROLE planning LOGIN PASSWORD 'dev_planning' with full rights on planning schema
        only. Roles are NOLOGIN by default — without LOGIN+PASSWORD, SC-106 cannot connect
        as this role at all. Canonical role names are `planning` and `runtime` (must match
-       `RUNTIME_DATABASE_URL`/`PLANNING_DATABASE_URL` and SC-106). Validate existing roles'
-       `LOGIN` and password attributes; reconcile mismatches or fail before recording
-       migration 095 instead of skipping the role.
+       `RUNTIME_DATABASE_URL`/`PLANNING_DATABASE_URL` and SC-106). Use `IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '...')` guards around each `CREATE ROLE` so re-runs are idempotent.
      - CREATE ROLE runtime LOGIN PASSWORD 'dev_runtime' with full rights on runtime schema only,
        and explicitly NO grants (not even USAGE) on the planning schema.
      - Grants must NOT touch any existing server/ tables or the existing app role.

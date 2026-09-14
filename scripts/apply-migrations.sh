@@ -40,7 +40,7 @@ log_warn() {
 }
 
 log_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
+    echo -e "${RED}[ERROR]${NC} $1" >&2
 }
 
 log_header() {
@@ -204,7 +204,8 @@ apply_to_database() {
     log_header "Applying migrations to $db_type database ($db_name)"
     log_header "========================================"
     
-    local migrations=$(get_migrations_for_db "$db_type" "$MIGRATIONS_DIR")
+    local migrations
+    migrations=$(get_migrations_for_db "$db_type" "$MIGRATIONS_DIR") || return 1
     local count=0
     local applied=0
     local failed=0
@@ -258,7 +259,8 @@ verify_migrations() {
     log_header "Verifying migrations: $db_type ($db_name)"
     log_header "========================================"
     
-    local migrations=$(get_migrations_for_db "$db_type" "$MIGRATIONS_DIR")
+    local migrations
+    migrations=$(get_migrations_for_db "$db_type" "$MIGRATIONS_DIR") || return 1
     local drift_detected=0
     
     for migration in $migrations; do

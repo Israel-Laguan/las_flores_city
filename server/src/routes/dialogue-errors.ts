@@ -71,3 +71,12 @@ export function isDialogueStartContextRace(error: unknown): boolean {
     typeof (error as any).message === 'string' &&
     (error as any).message.includes(START_CONTEXT_RACE));
 }
+
+/** Expected concurrency race on relationship versions (user_relationships.updated_at) vs tree selection. */
+const START_RELATIONSHIP_RACE = 'dialogue start relationship version mismatch during start (relationship race)';
+
+export function isDialogueStartRelationshipRace(error: unknown): boolean {
+  return !!(error && typeof error === 'object' && 'message' in (error as any) &&
+    typeof (error as any).message === 'string' &&
+    (error as any).message.includes(START_RELATIONSHIP_RACE));
+}
