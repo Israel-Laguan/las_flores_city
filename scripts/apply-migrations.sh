@@ -168,7 +168,7 @@ get_migrations_for_db() {
       fi
     done
   else
-    log_error "migration-targets.json not found at $TARGETS_FILE"
+    log_error "migration-targets.json not found at $TARGETS_FILE" >&2
     return 1
   fi
 }

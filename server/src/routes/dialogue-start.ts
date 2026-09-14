@@ -148,6 +148,12 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
 async function handleStartFallback(userId: string, dialogue: any, pinnedRevision: number, relVersions: Record<string, Date | null>, res: any) {
   console.warn(`[dialogue/start] No chunk found for tree ${dialogue.id}, falling back to tree resolver`);
 
+  // Capture resolution context BEFORE resolveTreeForUser reads player state,
+  // as handleStartChunk already does. If player state mutates concurrently,
+  // both snapshots would see the new state and the mismatch check would pass
+  // while `resolved` remains stale.
+  const preContext = await captureUserResolutionContext(userId);
+
   const resolved = await DialogueResolver.resolveTreeForUser(userId, dialogue.id);
   const rootNodeId = resolved.rootId;
   const rootNode = resolved.nodes[rootNodeId];
@@ -173,7 +179,6 @@ async function handleStartFallback(userId: string, dialogue: any, pinnedRevision
   // first starts serialize on the player row, and the loser observes
   // the winner's committed `active_dialogue_id` instead of a stale
   // pre-start snapshot (which would double-apply the root deltas).
-  const preContext = await captureUserResolutionContext(userId);
   await withOLTPTransaction(async (client) => {
     const existingCursor = await PlayerStateRepository.lockDialogueCursor(client, userId);
     const isRestart = existingCursor?.active_dialogue_id === dialogue.id;
