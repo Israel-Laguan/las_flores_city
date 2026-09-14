@@ -86,13 +86,10 @@
   ],
   "nontransactional": {
     "075_job_runs_run_token_backfill.sql": "las_flores",
-    "094_add_dialogue_chunks_revision.sql": "las_flores"
+    "094_add_dialogue_chunks_revision.sql": "las_flores",
+    "095_planning_runtime_schemas.sql": "las_flores"
   },
-  "manual": [
-    "095_planning_runtime_schemas.sql",
-    "096_migrate_to_planning_runtime_roles.sql",
-    "097_revoke_las_flores_planning_runtime_access.sql"
-  ],
+  "manual": [],
   "olap": [
     "000_schema_migrations.sql",
     "002_analytics_schema.sql",

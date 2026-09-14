@@ -9,25 +9,7 @@ Create `planning` and `runtime` schemas plus two DB roles, with grants per
 separate roles). This is the R9 ("one writer per fact") enforcement mechanism — it must
 not be cut.
 
-## Known drift — needs cleanup
-
-The existing `feat/sc-103-schemas-and-roles` branch was built **before** this ticket was
-revised to forbid new pools, and still has the old shape:
-- `infra/src/connection.ts` exports live `planningPool`/`runtimePool` Proxy pools (plus
-  the backing `_planningPool`/`_runtimePool` singletons and their teardown in the
-  shutdown handler).
-- `infra/src/index.ts` re-exports both.
-- `docs/feat/scene-centric-backend/sprint-01/SC-103-schemas-and-roles/README.md` (the
-  version committed on that branch) and `SC-106-negative-permission-test/README.md` both
-  still describe `runtimePool` as the SC-106 connection path.
-
-Before continuing work on that branch: remove both pool exports and their singletons
-from `infra/src/connection.ts` and `infra/src/index.ts`, and update both READMEs to
-match this revision — SC-106 connects via a raw `pg` client against
-`RUNTIME_DATABASE_URL`, not a pool export. Nothing outside `infra/src/connection.ts` /
-`infra/src/index.ts` references these pools, so the removal is self-contained.
-
-## Data checked against the real repo
+## Data checked against the real repo (verified clean)
 
 - The two schemas live inside the **existing** `las_flores` OLTP database — the same one
   `DATABASE_URL` already points at in CI (`postgres-oltp` service in
@@ -84,7 +66,7 @@ match this revision — SC-106 connects via a raw `pg` client against
   implicit) — document which path is chosen. In either case, `runtime` receives **no
   grants of any kind** on `planning` (not even `USAGE`), and vice versa, and no grant
   touches existing `server/` tables or the app role.
-- Roles are created **with `LOGIN` and a fixed dev password** (`CREATE ROLE runtime LOGIN PASSWORD 'dev_runtime'` / `CREATE ROLE planning LOGIN PASSWORD 'dev_planning'` — canonical names are `runtime` and `planning`, matching `RUNTIME_DATABASE_URL`/`PLANNING_DATABASE_URL` and SC-106's `SET ROLE` fallback). PostgreSQL roles are `NOLOGIN` by default, and SC-106 must actually connect as the `runtime` role — a `NOLOGIN` role leaves that test unable to connect. The migration uses `DO $$ ... EXCEPTION WHEN duplicate_object THEN ... END $$;` for idempotency so re-runs skip existing roles. **Passwords are fixed dev secrets in the migration** — SC-104 does not expand `${VAR}` placeholders in `migrate.ts`; the runner stays generic. Real secrets for production provisioning are a post-SC-M1 concern handled outside the migration runner (e.g. an out-of-runner bootstrap script using the migration-owner credential and `SET ROLE`). **Migration registration:** The role-creation migration must be registered as `nontransactional` in `migration-targets.json` — PostgreSQL 16 (the repo's pinned `postgres:16-alpine` version) disallows `CREATE ROLE` inside a transaction block, so these migrations cannot run inside the standard `BEGIN/COMMIT` wrapper that applies `oltp`-array migrations. Only the `nontransactional` path (e.g. how migration 075 is treated) can successfully execute role creation. CI/dev auth path for SC-106: `RUNTIME_DATABASE_URL=postgresql://runtime:dev_runtime@postgres-oltp:5432/las_flores` (and `PLANNING_DATABASE_URL=postgresql://planning:dev_planning@postgres-oltp:5432/las_flores` if needed). If the environment cannot issue `LOGIN` roles (e.g. managed Postgres without `CREATEROLE`), document the fallback bootstrap connection that authenticates as the migration owner and immediately `SET ROLE runtime` — SC-106 MUST still exercise the grant check, not bypass it. No production pool consumes these URLs.
+- Roles are created **with `LOGIN` and a fixed dev password** (`CREATE ROLE runtime LOGIN PASSWORD 'dev_runtime'` / `CREATE ROLE planning LOGIN PASSWORD 'dev_planning'` — canonical names are `runtime` and `planning`, matching `RUNTIME_DATABASE_URL`/`PLANNING_DATABASE_URL` and SC-106's `SET ROLE` fallback). PostgreSQL roles are `NOLOGIN` by default, and SC-106 must actually connect as the `runtime` role — a `NOLOGIN` role leaves that test unable to connect. The migration uses `IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '...')` guards for idempotency so re-runs skip existing roles. **Passwords are fixed dev secrets in the migration** — SC-104 does not expand `${VAR}` placeholders in `migrate.ts`; the runner stays generic. Real secrets for production provisioning are a post-SC-M1 concern handled outside the migration runner (e.g. an out-of-runner bootstrap script using the migration-owner credential and `SET ROLE`). **Migration registration:** The role-creation migration must be registered as `nontransactional` in `migration-targets.json` — PostgreSQL 16 (the repo's pinned `postgres:16-alpine` version) disallows `CREATE ROLE` inside a transaction block, so these migrations cannot run inside the standard `BEGIN/COMMIT` wrapper that applies `oltp`-array migrations. Only the `nontransactional` path (e.g. how migration 075 is treated) can successfully execute role creation. CI/dev auth path for SC-106 (`.env.example` only — test-only credentials for the raw `pg` client in SC-106's negative-permission test; NOT added to CI's `with-migrations` job env since `RUNTIME_DATABASE_URL`/`PLANNING_DATABASE_URL` were removed from that job): `RUNTIME_DATABASE_URL=postgresql://runtime:dev_runtime@postgres-oltp:5432/las_flores` (and `PLANNING_DATABASE_URL=postgresql://planning:dev_planning@postgres-oltp:5432/las_flores` if needed). If the environment cannot issue `LOGIN` roles (e.g. managed Postgres without `CREATEROLE`), document the fallback bootstrap connection that authenticates as the migration owner and immediately `SET ROLE runtime` — SC-106 MUST still exercise the grant check, not bypass it. No production pool consumes these URLs.
 - Explicitly scoped: *"role creation targets the CI/dev `postgres-oltp` service only this
   sprint; production provisioning path is recorded as an open question, not assumed
   solved."*
@@ -108,20 +90,19 @@ SC-106's negative-permission test, not new app-side pools.
 Steps:
 1. Write the schema+role migration as a new file under
    server/src/database/migrations/ (check the existing numbering scheme and follow it),
-   registered in server/src/database/migrations/migration-targets.json's "oltp" array:
-    - CREATE SCHEMA planning; CREATE SCHEMA runtime;
-    - CREATE ROLE planning LOGIN PASSWORD 'dev_planning' with full rights on planning schema
-      only. Roles are NOLOGIN by default — without LOGIN+PASSWORD, SC-106 cannot connect
-      as this role at all. Canonical role names are `planning` and `runtime` (must match
-      `RUNTIME_DATABASE_URL`/`PLANNING_DATABASE_URL` and SC-106). Use `DO $$ ... EXCEPTION WHEN duplicate_object THEN ... END $$;` around each `CREATE ROLE` so re-runs are idempotent.
-    - CREATE ROLE runtime LOGIN PASSWORD 'dev_runtime' with full rights on runtime schema only,
-      and explicitly NO grants (not even USAGE) on the planning schema.
-    - Grants must NOT touch any existing server/ tables or the existing app role.
-     - Use fixed dev passwords (`dev_runtime` / `dev_planning`) for CI/dev; do NOT add `${VAR}` placeholder expansion to `migrate.ts` — the runner stays generic. Real secrets for production are handled out-of-runner (post-SC-M1 bootstrap).
-2. Add PLANNING_DATABASE_URL and RUNTIME_DATABASE_URL to .env.example and to CI's
-   with-migrations job env, documenting both as TEST-ONLY credentials consumed by
-   SC-106's negative-permission test (a raw pg client in that test file) — not by any
-   production pool.
+    registered in server/src/database/migrations/migration-targets.json's "nontransactional" map:
+     - CREATE SCHEMA IF NOT EXISTS planning;
+     - CREATE SCHEMA IF NOT EXISTS runtime;
+     - CREATE ROLE planning LOGIN PASSWORD 'dev_planning' with full rights on planning schema
+       only. Roles are NOLOGIN by default — without LOGIN+PASSWORD, SC-106 cannot connect
+       as this role at all. Canonical role names are `planning` and `runtime` (must match
+       `RUNTIME_DATABASE_URL`/`PLANNING_DATABASE_URL` and SC-106). Use `IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '...')` guards around each `CREATE ROLE` so re-runs are idempotent.
+     - CREATE ROLE runtime LOGIN PASSWORD 'dev_runtime' with full rights on runtime schema only,
+       and explicitly NO grants (not even USAGE) on the planning schema.
+     - Grants must NOT touch any existing server/ tables or the existing app role.
+      - Use fixed dev passwords (`dev_runtime` / `dev_planning`) for CI/dev; do NOT add `${VAR}` placeholder expansion to `migrate.ts` — the runner stays generic. Real secrets for production are handled out-of-runner (post-SC-M1 bootstrap).
+     - Register under `"nontransactional"` (CREATE ROLE is illegal inside a tx) rather than the `"oltp"` array.
+2. Add PLANNING_DATABASE_URL and RUNTIME_DATABASE_URL to .env.example, documenting both as TEST-ONLY credentials consumed by SC-106's negative-permission test (a raw pg client in that test file) — not by any production pool. These are intentionally NOT added to CI's `with-migrations` job env.
 3. Do NOT modify infra/src/connection.ts — no planningPool/runtimePool exports.
 4. Scope note to record explicitly in a comment or this ticket's follow-up: role
    creation via migration assumes CREATEROLE rights, which the CI postgres-oltp service

@@ -62,3 +62,21 @@ export function isDialogueStartChunkRace(error: unknown): boolean {
     typeof (error as any).message === 'string' &&
     (error as any).message.includes(START_CHUNK_REVISION_RACE));
 }
+
+/** Expected concurrency race on user resolution context (story_beat/alignment/mystery) vs pre-resolved overlay merge. */
+const START_CONTEXT_RACE = 'dialogue start user context mismatch during start (player state race)';
+
+export function isDialogueStartContextRace(error: unknown): boolean {
+  return !!(error && typeof error === 'object' && 'message' in (error as any) &&
+    typeof (error as any).message === 'string' &&
+    (error as any).message.includes(START_CONTEXT_RACE));
+}
+
+/** Expected concurrency race on relationship versions (user_relationships.updated_at) vs tree selection. */
+const START_RELATIONSHIP_RACE = 'dialogue start relationship version mismatch during start (relationship race)';
+
+export function isDialogueStartRelationshipRace(error: unknown): boolean {
+  return !!(error && typeof error === 'object' && 'message' in (error as any) &&
+    typeof (error as any).message === 'string' &&
+    (error as any).message.includes(START_RELATIONSHIP_RACE));
+}

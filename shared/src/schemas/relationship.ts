@@ -42,5 +42,6 @@ export const RelationshipSnapshotSchema = z.object({
   lastInteractionDay: z.number().int().nullable(), lastMilestoneDay: z.number().int().nullable(),
   memory: z.record(z.string(), z.number().int()).default({}),
   flags: z.record(z.string(), z.boolean()).default({}),
+  updatedAt: z.date().nullable(),
 });
 export type RelationshipSnapshot = z.infer<typeof RelationshipSnapshotSchema>;

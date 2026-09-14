@@ -39,6 +39,7 @@ yarn-error.log*
 .kilo/
 .kiro/
 .mimocode/
+opencode.json
 
 # OS
 .DS_Store

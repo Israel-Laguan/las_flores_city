@@ -44,6 +44,12 @@ async function acquireRowLock(): Promise<() => void> {
 // Controls whether a start chunk row exists (chunk path vs. tree fallback path).
 let hasStartChunk = true;
 
+// Controls simulation of context race (player state changed while waiting for lock).
+let simulateContextRace = false;
+
+// Controls simulation of relationship version race (user_relationships.updated_at changed).
+let simulateRelationshipRace = false;
+
 // Captured SQLs executed inside withOLTPTransaction (batches for per-tx assertions).
 // Per-invocation batches: txQueryBatches[0] is queries from the FIRST withOLTPTransaction(callback) call
 // (the rev-read + chunk-read snapshot in handleStartDialogue). The pin + node/chunk writes (incl.
@@ -53,7 +59,7 @@ let txQueryBatches: string[][] = [];
 
 const withOLTPTransactionMock = jest.fn(async (callback: any) => {
   const txQueries: string[] = [];
-  let release: (() => void) | null = null;
+  let release: (() => void) | null = null as (() => void) | null;
   const client = {
     async query(sql: string, params?: any[]) {
       txQueries.push(sql);
@@ -65,6 +71,29 @@ const withOLTPTransactionMock = jest.fn(async (callback: any) => {
       }
       if (sql.includes('FROM dialogue_chunks')) {
         return { rows: hasStartChunk ? [{ id: 'chunk-1', chunk_key: 'root' }] : [] };
+      }
+      // Context revalidation queries (cheap SELECTs under lock for race abort)
+      // Match on SELECT alignment alone; the lock query uses FOR UPDATE, not SELECT alignment
+      if (sql.includes('SELECT alignment')) {
+        if (simulateContextRace) {
+          return { rows: [{ alignment: 'fugitive', story_beat: 'mid_start_beat', flags: {}, state: {}, stats: {}, time_blocks: 0 }] };
+        }
+        return { rows: [{ alignment: 'neutral', story_beat: 'prologue', flags: {}, state: {}, stats: {}, time_blocks: 0 }] };
+      }
+      if (sql.includes('FROM player_mysteries WHERE user_id')) {
+        return { rows: [] };
+      }
+      if (sql.includes('FROM user_entitlements WHERE user_id')) {
+        return { rows: [{ is_nsfw_unlocked: false }] };
+      }
+      // Relationship version revalidation under the player lock (getRelationshipUpdatedAts).
+      // The pre-lock capture (oltpPool.query) returns no rows ⇒ relVersions[id] === null;
+      // the in-tx read must match (no rows) OR abort when simulating a relationship race.
+      if (sql.includes('FROM user_relationships') && sql.includes('ANY($')) {
+        if (simulateRelationshipRace) {
+          return { rows: [{ character_id: CHARACTER_ID, updated_at: new Date() }] };
+        }
+        return { rows: [] };
       }
       return { rows: [] };
     },
@@ -104,6 +133,16 @@ const queryOLTPMock = jest.fn(async (sql: string) => {
         },
       ],
     };
+  }
+  // Context capture for overlay resolution race checks (story_beat/alignment/mystery)
+  if (sql.includes('FROM player_states') && sql.includes('user_id')) {
+    return { rows: [{ alignment: 'neutral', story_beat: 'prologue' }] };
+  }
+  if (sql.includes('FROM player_mysteries') && sql.includes('INVESTIGATING')) {
+    return { rows: [] };
+  }
+  if (sql.includes('FROM user_entitlements') && sql.includes('user_id')) {
+    return { rows: [{ is_nsfw_unlocked: false }] };
   }
   return { rows: [] };
 });
@@ -243,6 +282,8 @@ describe.each([
     db.stats = {};
     rowLockTail = Promise.resolve();
     hasStartChunk = chunkExists;
+    simulateContextRace = false;
+    simulateRelationshipRace = false;
     queryOLTPMock.mockClear();
     queryContentMock.mockClear();
     withOLTPTransactionMock.mockClear();
@@ -279,7 +320,7 @@ describe.each([
     expect(txQueryBatches.length).toBeGreaterThanOrEqual(2);
     const effectsTx = txQueryBatches[1];
     expect(effectsTx.some((q) => /INSERT INTO player_dialogue_states[\s\S]*pinned_tree_revision/i.test(q))).toBe(true);
-    expect(queryContentMock).not.toHaveBeenCalledWith(
+    expect(queryContentMock as jest.Mock).not.toHaveBeenCalledWith(
       expect.stringContaining('SELECT revision FROM dialogue_trees'),
       expect.anything()
     );
@@ -310,5 +351,27 @@ describe.each([
     // Without the in-transaction FOR UPDATE claim both requests would
     // observe a null cursor and each add the root delta.
     expect(db.stats.adeyemi_trust).toBe(ROOT_TRUST_DELTA);
+  });
+
+  it('aborts with 409 retryable on user resolution context race (player state changed while waiting for lock)', async () => {
+    simulateContextRace = true;
+    const res = makeRes();
+    await handleStartDialogue(makeReq(), res);
+
+    expect(res.statusCode).toBe(409);
+    expect(res.body.error).toBe('dialogue_start_context_race');
+    // No effects applied on abort
+    expect(db.stats.adeyemi_trust).toBeUndefined();
+  });
+
+  it('aborts with 409 retryable on relationship version race (user_relationships changed while waiting for lock)', async () => {
+    simulateRelationshipRace = true;
+    const res = makeRes();
+    await handleStartDialogue(makeReq(), res);
+
+    expect(res.statusCode).toBe(409);
+    expect(res.body.error).toBe('dialogue_start_relationship_race');
+    // No effects applied on abort
+    expect(db.stats.adeyemi_trust).toBeUndefined();
   });
 });
