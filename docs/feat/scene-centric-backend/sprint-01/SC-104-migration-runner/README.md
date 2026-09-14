@@ -34,9 +34,10 @@ idempotency, so `migrate.ts`'s verbatim `client.query(sql)` does not need
 - The schema-creation migration (from SC-103) is registered in `migration-targets.json`'s
   `"nontransactional"` map (targeting "las_flores") — CREATE ROLE cannot run inside a
   transaction; no new target database, no runner code changes.
-- `server/src/database/migrate.ts` requires no modifications for SC-103 — the migration
-  uses `IF NOT EXISTS` guards for idempotency and fixed dev passwords,
-  so no `${VAR}` expansion is needed.
+- `server/src/database/migrate.ts` requires no new migration-execution logic for SC-103 — the migration
+   uses `IF NOT EXISTS` guards for idempotency and fixed dev passwords,
+   so no `${VAR}` expansion is needed. The runner was annotated (validDbNames fail-fast,
+   095 CREATEROLE comment) but no new execution path was added.
 - A no-op re-run of `npm run schema:migrate --workspace=server` after the schemas exist skips the file (confirmed
   via `schema_migrations` row), proving idempotency
   is inherited rather than reimplemented.

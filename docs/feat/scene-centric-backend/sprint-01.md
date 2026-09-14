@@ -90,7 +90,7 @@ minimum SC-S1, SC-S2, and SC-S5 have written answers (mandatory load = 4.5 + 1 +
 are **not** required for this sprint's success and may slip to sprint 2 per §5 without the
 sprint being a failure; if capacity runs short they are cut in the order SC-S4 → SC-S6 → SC-S3
 before any mandatory item is deferred. **Critical:** SC-M1's exit criteria require every
-sprint-1 spike to have a written answer (`roadmap.md` §SC-M1, exit criteria). Spikes that
+sprint-1 spike to have a written answer (`roadmap.md` §1, exit criteria). Spikes that
 slip to sprint 2 MUST be completed in sprint 2 before SC-M1 is closed — they cannot remain
 open into sprint 3. If sprint 2's capacity cannot accommodate the spillover, SC-M1's
 completion is explicitly delayed to sprint 3, noted in that retro.
@@ -100,7 +100,8 @@ completion is explicitly delayed to sprint 3, noted in that retro.
 1. **SC-S4** (`pg_trgm`) — feeds SC-706 in SC-M5, five sprints out.
 2. **SC-S6** (serving baseline) — needed by SC-M3, not SC-M2.
 3. **SC-S3** (overlay view) — needed by SC-M5.
-4. **SC-104** rollback documentation — forward-only is an acceptable interim answer.
+4. ~~SC-104 rollback documentation~~ — forward-only is an acceptable interim answer. ✅ Done — SC-104/README.md + 095.sql reference corrected to roadmap.md §4.
+5. ~~SC-105 CI job~~ — verified against actual ci.yml; no changes needed. ✅ Done — SC-105/README.md corrected (typecheck and api test steps already present in no-migrations job).
 
 **Do not cut:** SC-102 (the boundary is the whole point of the sprint), SC-103/SC-106 (the
 role split is the R9 enforcement mechanism), D1/D2 (live bugs), SC-S1/SC-S2 (they gate

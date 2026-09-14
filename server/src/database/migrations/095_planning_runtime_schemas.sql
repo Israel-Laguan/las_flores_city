@@ -6,7 +6,7 @@
 -- re-creatable by re-running this migration (IF NOT EXISTS guards).
 -- No down-migration is provided; deleting the schemas would require
 -- manual REVOKEN/ALTER OWNER steps and is not worth the maintenance
--- cost for an interim sprint-1 artifact. See roadmap.md §5.
+-- cost for an interim sprint-1 artifact. See roadmap.md §4 rollback boundary.
 
 DO $$
 BEGIN
