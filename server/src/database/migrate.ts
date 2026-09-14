@@ -22,14 +22,24 @@ interface MigrateTargets {
    * (per the one-migration-one-database rule).
    */
   nontransactional?: Record<string, string>;
-   /**
-    * Manual-only entries. Present so the registry accounts for every .sql
-    * on disk (per AGENTS.md). Deliberately ignored by runner; see
-    * applySQLMigrations and the "manual" key handling comment.
-    * (Currently empty — 095 runs automatically as nontransactional;
-    * 096/097 were deleted in refactor 000ad975.)
-    */
-   manual?: string[];
+    /**
+     * Manual-only entries. Present so the registry accounts for every .sql
+     * file on disk (per AGENTS.md). Deliberately ignored by runner; see
+     * applySQLMigrations and the "manual" key handling comment.
+     * (Currently empty — 095 runs automatically as nontransactional;
+     * 096/097 were deleted in refactor 000ad975.)
+     *
+     * NOTE: 095_planning_runtime_schemas.sql is in "nontransactional"
+     * because CREATE ROLE cannot run inside a transaction. It executes
+     * CREATE ROLE which requires CREATEROLE on the connecting user.
+     * Only environments whose migration user has the required bootstrap
+     * privilege (superuser or CREATEROLE) should auto-run this migration.
+     * On managed Postgres without CREATEROLE, this migration will fail
+     * before schema_migrations is recorded; later runs will retry it.
+     * Ensure the migration user has CREATEROLE or provision roles
+     * out-of-band before running intake-worker in production.
+     */
+    manual?: string[];
 }
 
 async function ensureSchemaMigrationsTable(): Promise<void> {
@@ -185,12 +195,17 @@ async function applySQLMigrations(): Promise<void> {
   const targetsRaw = await fs.readFile(TARGETS_PATH, 'utf-8');
   const targets: MigrateTargets = JSON.parse(targetsRaw);
 
-   // The "manual" key (currently empty) holds migrations that must never be
-   // auto-run by intake-worker against production. They exist in the registry
-   // only so that every .sql file on disk is accounted for (per AGENTS.md rule).
-   // 095_planning_runtime_schemas.sql now runs automatically as nontransactional
-   // (it uses fixed dev passwords and IF NOT EXISTS guards, so no env expansion
-   // is needed and no CREATEROLE assumption is required in the runner).
+    // The "manual" key (currently empty) holds migrations that must never be
+    // auto-run by intake-worker against production. They exist in the registry
+    // only so that every .sql file on disk is accounted for (per AGENTS.md rule).
+    // 095_planning_runtime_schemas.sql now runs automatically as nontransactional,
+    // but it executes CREATE ROLE which requires CREATEROLE on the connecting
+    // user. Only environments whose migration user has the required bootstrap
+    // privilege (superuser or CREATEROLE) should auto-run this migration.
+    // On managed Postgres without CREATEROLE, this migration will fail before
+    // schema_migrations is recorded; later runs will retry it. Ensure the
+    // migration user has CREATEROLE or provision roles out-of-band before
+    // running intake-worker in production.
 
   await ensureSchemaMigrationsTable();
 

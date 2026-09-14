@@ -47,12 +47,16 @@ export interface UserResolutionContext {
   investigatingMysteryIds: string[];
   isNsfwUnlocked: boolean;
   activeMysteryIds: string[];
+  flags: Record<string, boolean>;
+  state: Record<string, string>;
+  stats: Record<string, number>;
+  timeBlocks: number;
 }
 
 export async function captureUserResolutionContext(userId: string): Promise<UserResolutionContext> {
   const [stateRes, mystRes, nsfwRes, activeRes] = await Promise.all([
-    queryOLTP<{ alignment: string | null; story_beat: string | null }>(
-      `SELECT alignment, story_beat FROM player_states WHERE user_id = $1`,
+    queryOLTP<{ alignment: string | null; story_beat: string | null; flags: Record<string, boolean>; state: Record<string, string>; stats: Record<string, number>; time_blocks: number }>(
+      `SELECT alignment, story_beat, flags, state, stats, time_blocks FROM player_states WHERE user_id = $1`,
       [userId]
     ),
     queryOLTP<{ mystery_id: string }>(
@@ -73,6 +77,10 @@ export async function captureUserResolutionContext(userId: string): Promise<User
     investigatingMysteryIds: mystRes.rows.map((r) => r.mystery_id).sort(),
     isNsfwUnlocked: !!nsfwRes.rows[0]?.is_nsfw_unlocked,
     activeMysteryIds: activeRes.rows.map((r) => r.id).sort(),
+    flags: stateRes.rows[0]?.flags ?? {},
+    state: stateRes.rows[0]?.state ?? {},
+    stats: stateRes.rows[0]?.stats ?? {},
+    timeBlocks: stateRes.rows[0]?.time_blocks ?? 0,
   };
 }
 
@@ -82,7 +90,7 @@ export async function getCurrentResolutionContext(
 ): Promise<UserResolutionContext> {
   const [stateRes, mystRes, nsfwRes, activeRes] = await Promise.all([
     client.query(
-      `SELECT alignment, COALESCE(story_beat, 'prologue') as story_beat FROM player_states WHERE user_id = $1`,
+      `SELECT alignment, COALESCE(story_beat, 'prologue') as story_beat, flags, state, stats, time_blocks FROM player_states WHERE user_id = $1`,
       [userId]
     ),
     client.query(
@@ -93,7 +101,7 @@ export async function getCurrentResolutionContext(
       `SELECT COALESCE(is_nsfw_unlocked, false) as is_nsfw_unlocked FROM user_entitlements WHERE user_id = $1`,
       [userId]
     ),
-    queryContent<{ id: string }>(`SELECT id FROM mysteries WHERE status = 'ACTIVE'`),
+    client.query(`SELECT id FROM mysteries WHERE status = 'ACTIVE'`),
   ]);
   return {
     alignment: (stateRes.rows[0]?.alignment as 'neutral' | 'loyalist' | 'fugitive') ?? 'neutral',
@@ -101,6 +109,10 @@ export async function getCurrentResolutionContext(
     investigatingMysteryIds: mystRes.rows.map((r: any) => r.mystery_id).sort(),
     isNsfwUnlocked: !!nsfwRes.rows[0]?.is_nsfw_unlocked,
     activeMysteryIds: activeRes.rows.map((r: any) => r.id).sort(),
+    flags: stateRes.rows[0]?.flags ?? {},
+    state: stateRes.rows[0]?.state ?? {},
+    stats: stateRes.rows[0]?.stats ?? {},
+    timeBlocks: stateRes.rows[0]?.time_blocks ?? 0,
   };
 }
 
@@ -110,7 +122,11 @@ export function resolutionContextsMatch(a: UserResolutionContext, b: UserResolut
     a.storyBeat === b.storyBeat &&
     JSON.stringify(a.investigatingMysteryIds) === JSON.stringify(b.investigatingMysteryIds) &&
     a.isNsfwUnlocked === b.isNsfwUnlocked &&
-    JSON.stringify(a.activeMysteryIds) === JSON.stringify(b.activeMysteryIds)
+    JSON.stringify(a.activeMysteryIds) === JSON.stringify(b.activeMysteryIds) &&
+    JSON.stringify(a.flags) === JSON.stringify(b.flags) &&
+    JSON.stringify(a.state) === JSON.stringify(b.state) &&
+    JSON.stringify(a.stats) === JSON.stringify(b.stats) &&
+    a.timeBlocks === b.timeBlocks
   );
 }
 

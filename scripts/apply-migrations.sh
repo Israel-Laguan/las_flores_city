@@ -151,21 +151,26 @@ apply_migration() {
 }
 
 # Get migrations for a database type from the targets file
+# NOTE: This only reads the .oltp[] and .olap[] arrays from
+# migration-targets.json. It does NOT consult the "nontransactional"
+# map. Nontransactional migrations (e.g. 095_planning_runtime_schemas.sql
+# which uses CREATE ROLE) are applied only by the intake-worker runner
+# (server/src/database/migrate.ts), not by this script.
 get_migrations_for_db() {
-    local db_type="$1"
-    local migrations_dir="$2"
-    
-    if [ -f "$TARGETS_FILE" ]; then
-        # Extract migration filenames for the given database type
-        jq -r ".$db_type[]" "$TARGETS_FILE" 2>/dev/null | while read -r filename; do
-            if [ -f "$migrations_dir/$filename" ]; then
-                echo "$migrations_dir/$filename"
-            fi
-        done
-    else
-        # Fallback: use numeric sorting for all SQL files
-        ls -1 "$migrations_dir"/[0-9]*.sql 2>/dev/null | sort -V
-    fi
+  local db_type="$1"
+  local migrations_dir="$2"
+  
+  if [ -f "$TARGETS_FILE" ]; then
+    # Extract migration filenames for the given database type
+    jq -r ".$db_type[]" "$TARGETS_FILE" 2>/dev/null | while read -r filename; do
+      if [ -f "$migrations_dir/$filename" ]; then
+        echo "$migrations_dir/$filename"
+      fi
+    done
+  else
+    # Fallback: use numeric sorting for all SQL files
+    ls -1 "$migrations_dir"/[0-9]*.sql 2>/dev/null | sort -V
+  fi
 }
 
 # Apply all migrations to a database

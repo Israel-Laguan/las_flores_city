@@ -71,14 +71,6 @@ jobs:
       DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
       ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
       REDIS_URL: redis://localhost:6379
-      # SC-103: TEST-ONLY credentials for the planning/runtime schemas (rung 2).
-      # Consumed exclusively by SC-106's negative-permission test via raw `pg` client.
-      # NOT used by any production pool (AGENTS.md: only oltpPool + sanctioned contentPool).
-      # These point at the *same* postgres-oltp service (las_flores DB) as DATABASE_URL.
-      # Role creation in 095 assumes CREATEROLE (available in CI's POSTGRES_USER=las_flores);
-      # production managed Postgres provisioning of the roles is an explicit open question.
-      PLANNING_DATABASE_URL: postgresql://planning:dev_planning@localhost:5434/las_flores
-      RUNTIME_DATABASE_URL: postgresql://runtime:dev_runtime@localhost:5434/las_flores
 
     services:
       postgres-oltp:

@@ -356,7 +356,7 @@ CREATE TRIGGER trigger_name ...;
 
 - `oltp` — player read/write schema (`las_flores`)
 - `olap` — analytics schema (`las_flores_analytics`)
-- `nontransactional` — migrations that must run outside a transaction (e.g. `CREATE INDEX CONCURRENTLY`). Prefer making the migration transactional and removing it from here rather than relying on it; the runner executes the whole file as one implicit transaction.
+- `nontransactional` — migrations that must run outside a transaction (e.g. `CREATE INDEX CONCURRENTLY` or `CREATE ROLE`). Each statement runs individually in autocommit mode — the runner does NOT execute the whole file as one implicit transaction. Migrations may be partially applied and must be safe to retry after a failure. Prefer making the migration transactional and removing it from here rather than relying on it; the runner executes each statement as its own `client.query()`. Note: `scripts/apply-migrations.sh` reads only the `.oltp[]` and `.olap[]` arrays via jq and does not consult the `nontransactional` map — nontransactional entries are applied only by the intake-worker runner (`server/src/database/migrate.ts`).
 
 **Hard rule:** a single migration file must NEVER target both databases, and there is **no `both` key** in `migration-targets.json` — do not add one. `migrate.ts` only reads `oltp`, `olap`, and `nontransactional`; a `both` entry is dead code.
 

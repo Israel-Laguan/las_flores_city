@@ -28,6 +28,7 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
       });
     }
 
+    const preContext = await captureUserResolutionContext(userId);
     const dialogue = await resolveDialogueTree(characterId, sceneId, userId);
     if (!dialogue) {
       return res.status(404).json({
@@ -88,7 +89,7 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
     });
 
     if (!startChunkId || !startChunkKey) {
-      return await handleStartFallback(userId, dialogue, treeRevision, res);
+      return await handleStartFallback(userId, dialogue, treeRevision, preContext, res);
     }
 
     return await handleStartChunk(userId, dialogue, startChunkId, startChunkKey, treeRevision, res);
@@ -126,10 +127,9 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
   }
 }
 
-async function handleStartFallback(userId: string, dialogue: any, pinnedRevision: number, res: any) {
+async function handleStartFallback(userId: string, dialogue: any, pinnedRevision: number, preContext: any, res: any) {
   console.warn(`[dialogue/start] No chunk found for tree ${dialogue.id}, falling back to tree resolver`);
 
-  const preContext = await captureUserResolutionContext(userId);
   const resolved = await DialogueResolver.resolveTreeForUser(userId, dialogue.id);
   const rootNodeId = resolved.rootId;
   const rootNode = resolved.nodes[rootNodeId];

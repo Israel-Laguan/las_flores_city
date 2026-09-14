@@ -70,11 +70,12 @@ const withOLTPTransactionMock = jest.fn(async (callback: any) => {
         return { rows: hasStartChunk ? [{ id: 'chunk-1', chunk_key: 'root' }] : [] };
       }
       // Context revalidation queries (cheap SELECTs under lock for race abort)
-      if (sql.includes('SELECT alignment') || (sql.includes('FROM player_states') && sql.includes('user_id'))) {
+      // Match on SELECT alignment alone; the lock query uses FOR UPDATE, not SELECT alignment
+      if (sql.includes('SELECT alignment')) {
         if (simulateContextRace) {
-          return { rows: [{ alignment: 'fugitive', story_beat: 'mid_start_beat' }] };
+          return { rows: [{ alignment: 'fugitive', story_beat: 'mid_start_beat', flags: {}, state: {}, stats: {}, time_blocks: 0 }] };
         }
-        return { rows: [{ alignment: 'neutral', story_beat: 'prologue' }] };
+        return { rows: [{ alignment: 'neutral', story_beat: 'prologue', flags: {}, state: {}, stats: {}, time_blocks: 0 }] };
       }
       if (sql.includes('FROM player_mysteries WHERE user_id')) {
         return { rows: [] };
@@ -137,12 +138,7 @@ const queryOLTPMock = jest.fn(async (sql: string) => {
   // queryContent is used by resolver internals (CDN metadata + overlays)
   // but /dialogue/start reads rev + start chunk via client.query inside withOLTPTransaction (OLTP primary)
   // for read-after-write visibility after compile. Pin/node/chunk written together in effects tx.
-  const queryContentMock = jest.fn(async (sql: string) => {
-    if (sql.includes('FROM mysteries WHERE status')) {
-      return { rows: [] };
-    }
-    return { rows: [] };
-  });
+  const queryContentMock = jest.fn(async (_sql: string) => ({ rows: [] }));
 
 
 jest.mock('@las-flores/infra', () => ({
