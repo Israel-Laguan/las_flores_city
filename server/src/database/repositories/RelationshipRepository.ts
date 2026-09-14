@@ -189,37 +189,10 @@ export async function getRelationshipForFilter(
     status: row.status,
     lastInteractionDay: row.last_interaction_day,
     lastMilestoneDay: row.last_milestone_day,
-    updatedAt: row.updated_at,
     memory: row.memory ?? {},
     flags: row.flags ?? {},
     updatedAt: row.updated_at ?? null,
   };
-}
-
-/**
- * Batch-read `updated_at` for multiple relationship rows using a tx client.
- * Used to revalidate relationship-gated tree selection inside the player
- * FOR UPDATE transaction (see `validateRelationshipVersions` in dialogue-helpers).
- * Returns a map of characterId → updatedAt (null when the row does not exist).
- */
-export async function getRelationshipUpdatedAts(
-  client: pg.PoolClient,
-  userId: string,
-  characterIds: readonly string[]
-): Promise<Record<string, Date | null>> {
-  if (characterIds.length === 0) return {};
-  const result = await client.query<{ character_id: string; updated_at: Date | null }>(
-    `SELECT character_id, updated_at FROM user_relationships WHERE user_id = $1 AND character_id = ANY($2)`,
-    [userId, characterIds]
-  );
-  const versions: Record<string, Date | null> = {};
-  for (const row of result.rows) {
-    versions[row.character_id] = row.updated_at;
-  }
-  for (const id of characterIds) {
-    if (!(id in versions)) versions[id] = null;
-  }
-  return versions;
 }
 
 export { AXES, clamp };
