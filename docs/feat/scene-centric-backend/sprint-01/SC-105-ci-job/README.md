@@ -24,7 +24,7 @@ Verified facts (all CONFIRMED against actual code):
   (line 29) defines `typecheck` as `npm run typecheck --workspaces`, and the
   workspaces array (lines 5-15) includes all three `api/*` entries.
 - `ci.yml` line 60: `no-migrations` job already runs `npm run test:unit --workspace=server`.
-- `ci.yml` line 62: `no-migrations` job runs `npm run validate:schema --workspace=server` (schema-only, no DB).
+- `ci.yml` line 63: `no-migrations` job runs `npm run validate:schema --workspace=server` (schema-only, no DB).
 - `server/package.json` line 16-21: `lint`, `typecheck`, `test:unit`, `test:integration`,
   `schema:migrate` scripts all exist.
 - `api/*` package.json files all have `build`, `lint`, `typecheck`, `test` scripts
@@ -47,7 +47,7 @@ as redundant — `api/*` `test` scripts are no-ops.
 ## Acceptance criteria
 
 - ✅ CI's `no-migrations` job runs `npm run typecheck --workspaces` (line 44).
-- ✅ CI's `no-migrations` job runs `npm run test:unit --workspace=server` (line 60) and `validate:schema` (line 62); `api/*` workspaces are covered by `typecheck --workspaces` + `lint` (their `test` scripts are placeholder no-ops, so no dedicated api unit-test step).
+- ✅ CI's `no-migrations` job runs `npm run test:unit --workspace=server` (line 60) and `validate:schema` (line 63); `api/*` workspaces are covered by `typecheck --workspaces` + `lint` (their `test` scripts are placeholder no-ops, so no dedicated api unit-test step).
 - ✅ No new workflow file needed — all steps exist in the existing `no-migrations` job.
 - ✅ `with-migrations` job env already includes `RUNTIME_DATABASE_URL` and
   `PLANNING_DATABASE_URL` (lines 74-75) for SC-106's raw `pg` client test.
