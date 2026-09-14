@@ -1,16 +1,45 @@
 id: 8c75df2b-c8db-4c8d-b903-cf7ebbc8ad10
 name: Yī Sāng
 title: Chief of Operations, LW Group
-description: Li Wei's ruthless Head of Corporate Security and ground fixer. He coldly oversees black operations and public relations crises from a safe distance.
+description: >
+  Li Wei's ruthless Chief of Operations and Head of Corporate Security (~50 in
+  2077). Chinese–Korean heritage ground fixer who oversees black ops and PR
+  crises from a safe distance — handler to Viktor Reyes ("the Doctor"), café
+  overwatch in The Student's Flight.
 metadata:
   type: human
   role: npc
   faction: lw_group
   personality: ruthless_calculating
+  age: "~50"
+  gender: Male
+  ethnicity: Chinese-Korean
+  occupation: Chief of Operations / Head of Corporate Security (LW Group)
+  physical_description: >
+    Athletic-compact Chinese–Korean man ~50. Straight dark hair graying and
+    receding. Narrow cold eyes, thick brows, thin lips, faint scar on left jaw,
+    sport earbud, dark practical security attire.
+  background: >
+    Born ~2027. Rose through LW security after the leak years. Handler for
+    Viktor Reyes by the mid-2050s; oversaw the Student’s Flight assassination
+    optics from Café de las Mañanas. Still active Chief of Operations in 2077.
+  mannerisms: >
+    Speaks in short operational lines. Cold stillness. Thin smirk instead of
+    warmth. Treats people as risk ratings.
+  motivations: >
+    Keep Li Wei’s machine deniable. Contain leaks. Maintain distance from blood.
+  fears: >
+    Loss of control — loud assets, uncontrollable players, evidence that puts
+    him in the alley instead of the café.
+  goals: >
+    Manage outcomes from a safe distance; cut liabilities; remain indispensable.
+  challenges: >
+    Documentary trails, flipped assets, resistance that does not fear medics.
+  quote: I manage outcomes. Other people manage blood.
+  status: Active (2077)
+lore_path: yi_sang.md
 asset_paths:
   portrait: yi_sang__default.png
-
-lore_path: yi_sang.md
 portrait_urls:
   - url: s3://las-flores/portraits/yi_sang/yi_sang__default.png
     label: dev

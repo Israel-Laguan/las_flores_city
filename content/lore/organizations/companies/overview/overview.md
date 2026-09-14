@@ -85,7 +85,7 @@ In a secret meeting (August 19, 2052), the inner circle approved a cover-up stra
 - Stage the scene as an electrical failure
 - Fabricate evidence of a controlled explosion
 - Regulate media narrative through Elena Torres
-- Manage bribes and witness elimination through Zhang Liang
+- Quiet cover-up money and counsel through investor Zhang Liang
 - Oversee technical fabrication through Qiu Bo
 
 ### Inner Circle During Crisis
@@ -93,7 +93,7 @@ In a secret meeting (August 19, 2052), the inner circle approved a cover-up stra
 | Name | Role | Function |
 |---|---|---|
 | Li Wei | CEO (transitioned to advisor post-crisis) | Approved cover-up, "emperor in the shadows" |
-| Zhang Liang | CFO | Managed covert operations, bribes, witness elimination |
+| Zhang Liang | Investor / shadow advisor | Capital delays, quiet cover-up facilitation, mentoring leverage |
 | Elena Torres | Sustainability Lead | Media relations, narrative control, later advocated transparency |
 | Qiu Bo | Tech & Innovation Head | Oversaw fabrication of electrical failure evidence |
 
@@ -147,7 +147,7 @@ After the Andean mine deal in 2024, the LW Group underwent explosive growth thro
 
 | Name | Role | Function |
 |---|---|---|
-| Zhang Liang | CFO | Financial prudence, strategic investment |
+| Zhang Liang | Investor / elder advisor | Financial prudence, strategic investment, light shadow mentoring |
 | Elena Torres | Sustainability Lead | Local Las Flores environmental scientist turned strategist |
 | Qiu Bo | Head of Tech & Innovation | Next-gen lithium extraction, renewables |
 
@@ -176,7 +176,7 @@ This makes the LW Group the single most powerful corporate entity in Las Flores 
 | Character | Role | Status |
 |---|---|---|
 | Xiao Chen | CEO | Active leadership |
-| Zhang Liang | CFO | Inner circle |
+| Zhang Liang | Investor / shadow advisor | Inner circle |
 | Elena Torres | Sustainability Lead | Inner circle |
 | Qiu Bo | Tech & Innovation Head | Inner circle |
 | Senator Ricardo Chen | Political ally / power broker | Active in city council, facilitates regulatory approvals |

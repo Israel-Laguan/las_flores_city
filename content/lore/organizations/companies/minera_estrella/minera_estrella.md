@@ -47,7 +47,7 @@ On August 15, 2052, a high-pressure pipe carrying lithium hydroxide exploded at 
 - Nicknamed "The Great Lithium Leak" by the media
 
 ### Internal Warnings Ignored
-Months before the disaster, internal reports highlighted structural weaknesses in the containment systems. **Qiu Bo** proposed a new containment system, but **Zhang Liang** imposed financial barriers that delayed approval. An independent audit in 2049 confirmed critical vulnerabilities, yet no action was taken.
+Months before the disaster, internal reports highlighted structural weaknesses in the containment systems. **Qiu Bo** proposed a new containment system, but investor **Zhang Liang** imposed financial barriers that delayed approval. An independent audit in 2049 confirmed critical vulnerabilities, yet no action was taken.
 
 ### The Cover-Up
 After the disaster, Minera Estrella's leadership orchestrated an elaborate cover-up:
@@ -138,7 +138,7 @@ In essence, Minera Estrella stands as a testament to the transformative impact o
 | Name | Role | Status |
 |---|---|---|
 | Míngzé Luo | President of Minera Estrella | Active — denied responsibility at trial |
-| Zheng Wuhao | Facility Supervisor | Unknown |
+| Zheng Wuhao | Facility Supervisor (retired ~2056) | Alive in 2077 — long retired |
 | Liu Xiaoping | Chief Engineer | Involved in cover-up fabrication |
 | Liu Fang | Former Employee / Whistleblower | Disappeared 2055 |
 

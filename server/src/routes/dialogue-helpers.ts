@@ -396,7 +396,10 @@ export async function resolveDialogueTree(
     if (!userId || !targetId || relStateByTarget[targetId]) return;
     const snap = await getRelationshipForFilter(userId, targetId);
     relStateByTarget[targetId] = snapshotToConditionState(snap);
-    relVersions[targetId] = snap?.updatedAt ?? null;
+    // Normalize legacy NULL updated_at to epoch so it matches
+    // getRelationshipUpdatedAts' COALESCE sentinel; missing rows stay null
+    // so deletion (null → missing) is detectable as a race.
+    relVersions[targetId] = snap ? (snap.updatedAt ?? new Date(0)) : null;
   };
   if (characterId) await ensureRelState(characterId);
 
@@ -438,7 +441,7 @@ export async function resolveDialogueTree(
     // to the fallback if no scene-scoped tree passes all gates.
   }
 
-    // Also include trees with NULL character_id (scene/onboarding-scoped trees
+  // Also include trees with NULL character_id (scene/onboarding-scoped trees
   // whose speaker is encoded in CDN node maps, not the FK). Migration 057
   // left character_id nullable without backfilling, so a speaker-based
   // fallback is required to find these trees.

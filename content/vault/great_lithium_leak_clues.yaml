@@ -17,7 +17,7 @@ vault_items:
 
   - id: "b0000000-e29b-41d4-a716-446655440003"
     title: "Email Chain: Zhang Liang Delays Containment Upgrade"
-    description: "Emails between Zhang Liang and the procurement department showing deliberate budget cuts that blocked Qiu Bo's proposed containment system upgrade in 2049."
+    description: "Emails involving investor Zhang Liang and the procurement department showing deliberate budget pressure that blocked Qiu Bo's proposed containment system upgrade in 2049."
     thumbnail_url: "https://cdn.lasflores2077.com/clues/thumb_email_chain.png"
     media_path: "/clues/clue_email_chain.png"
     item_type: "clue"

@@ -1,24 +1,43 @@
 id: df2cde6a-f29c-40cd-bf38-b8661fc967ee
-name: Lucia Torres
-title: Airport Stand Vendor, Seller of Local Crafts and Andean Products
-description: |
-  Lucia Torres, 28, from Camino Verde neighborhood of Las Flores. Grew up in family that operated small shop, learning values of dedication and customer service. Runs stand at Aeropuerto Internacional de Las Flores selling local crafts, snacks, and traditional Andean products including handmade textiles, artisanal cheeses, and souvenirs. Emphasizes quality/authenticity, sharing cultural stories behind each product. Popular with locals/tourists for genuine representation of Las Flores heritage. Warm, optimistic, humorous presence in airport environment. Hardworking spirit of Camino Verde reflected in her business approach.
+name: Lucía Torres
+title: Airport Stand Vendor — Local Crafts & Andean Products
+description: >
+  Overworked 28-year-old vendor from Camino Verde who runs a stand at
+  Aeropuerto Internacional de Las Flores selling authentic Andean crafts,
+  snacks, and textiles. Soft build, chestnut hair, colorful apron, tired eyes —
+  still shares the story behind every product between flight banks.
 metadata:
   type: human
   role: npc
   faction: civilian
-  personality: friendly_adaptable_optimistic
-  age: 28
+  personality: tired_warm_entrepreneur
+  age: "~28"
   gender: Female
   ethnicity: Latina
   occupation: Airport Stand Vendor
-  background: grew up in Camino Verde neighborhood, family operated small local shop, learned hard work and entrepreneurship
-  residence: Camino Verde neighborhood, Las Flores
-  business: stand at Aeropuerto Internacional de Las Flores
-  mannerisms: friendly greeting to customers, shares stories about products and local culture, infectious optimism
-  motivations: create better life through honest entrepreneurship, share authentic culture, build successful business
-  quote: Every product has a story, and every story connects us to our community.
-  methods: quality/authenticity emphasis, cultural storytelling, warm customer relationships, continuous innovation
+  physical_description: >
+    Medium height Latina woman ~28, a bit overweight / soft solid frame.
+    Chestnut wavy-curly hair in a loosening ponytail, warm tired brown eyes,
+    under-eye shadows. Colorful apron over practical clothes, sport earbud,
+    thermos, calloused hands.
+  background: >
+    Raised in a Camino Verde family shop; opened an airport stand to reach
+    travelers and fund a future café. Chronically long hours, seasonal sales swings.
+  residence: Camino Verde, Las Flores
+  business: Stand at Aeropuerto Internacional de Las Flores
+  mannerisms: >
+    Vendor warmth on autopilot; real humor late in the shift; offers stories with
+    products; apologizes when fatigue makes her short.
+  motivations: >
+    Keep the stand alive, represent Camino Verde honestly, one day open a small café.
+  fears: >
+    Losing the lease, becoming kitsch, burning out before the café exists.
+  goals: >
+    Pay suppliers, survive rush seasons, save toward a Camino Verde café-cultural hub.
+  challenges: >
+    Airport fees, competition, irregular meals/sleep, shrinking personal life.
+  quote: Every product has a story — I just hope I still have a voice left to tell it after the next bank.
+  status: Active (2077)
 lore_path: lucia_torres.md
 asset_paths:
   portrait: lucia_torres__default.png

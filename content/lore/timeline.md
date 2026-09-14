@@ -72,7 +72,7 @@ After serving two terms (2033–2041), **Juan Pablo Ramos** is succeeded by **Al
 A catastrophic failure of high-pressure pipes at Minera Estrella's processing facility releases massive quantities of lithium hydroxide into an affluent of the Río de las Flores. **Hundreds of people** in downstream communities die from exposure to toxic waste. The river's vibrant blue waters turn to sickly yellow-green sludge. The once-verdant hills surrounding Las Flores bear a sickly yellow hue; trees are bare, leaves withered and brown. The flowers that gave Las Flores its name all but vanish, replaced by hardy weeds thriving on poisoned soil.
 
 ### 2052 — Cover-Up Begins (August 18–19)
-Li Wei, CEO of LW Group, is briefed on the disaster. In a secret meeting, the inner circle approves a cover-up strategy: stage the scene as an electrical failure. Elena Torres takes charge of media relations; Zhang Liang manages bribes and witness elimination. Qiu Bo oversees the fabrication of evidence.
+Li Wei, CEO of LW Group, is briefed on the disaster. In a secret meeting, the inner circle approves a cover-up strategy: stage the scene as an electrical failure. Elena Torres takes charge of media relations; investor Zhang Liang quietly facilitates money and counsel around bribes and witness pressure. Qiu Bo oversees the fabrication of evidence.
 
 *Note: Ramos left office in 2041. He is not governor during the 2052 crisis — see Governor Succession Table below.*
 
