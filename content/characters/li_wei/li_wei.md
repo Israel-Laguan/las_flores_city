@@ -22,7 +22,7 @@ His early years were spent orchestrating high-stakes investments across Africa a
 
 The central tragedy of Li Wei's life is not that he was blind to disaster, but that he saw it coming. In 2048-2049, driven by a characteristic, almost obsessive prudence, Wei initiated a discreet, independent audit of the lithium containment systems. He didn't do this out of a desire to protect the environment, but to protect his investment. The audit returned a sobering reality: the pipes were corroding, and a catastrophic failure was not a possibility, but a mathematical certainty.
 
-For three years, Wei oscillated between immediate remedial measures and the cold calculus of public relations. He watched as CFO Zhang Liang blocked necessary upgrades to save costs, and Wei—the man who knew the truth—did nothing to override him. He weighed the cost of the upgrades against the probability of the leak and the potential cost of a cover-up. He chose the latter.
+For three years, Wei oscillated between immediate remedial measures and the cold calculus of public relations. He watched as investor Zhang Liang blocked necessary upgrades through capital pressure, and Wei—the man who knew the truth—did nothing to override him. He weighed the cost of the upgrades against the probability of the leak and the potential cost of a cover-up. He chose the latter.
 
 When the Great Lithium Leak finally occurred on August 15, 2052, Li Wei did not panic. He had already run the scenarios. In the secret emergency meeting on August 19, he looked at Elena Torres, who had confirmed the devastation, and decided that the truth was a luxury the LW Group could not afford. He approved the "electrical failure" narrative, transforming a corporate crime into an "unforeseeable accident."
 
@@ -30,7 +30,7 @@ When the Great Lithium Leak finally occurred on August 15, 2052, Li Wei did not 
 
 If the 2052 cover-up was a corporate decision, the murder of Cecilia Perez in 2049 was a personal one. When the safety auditor's research threatened to expose the pre-leak contamination, Wei first tried the tools of the diplomat: bribery and professional pressure. But Cecilia's integrity was a variable he hadn't accounted for.
 
-In collaboration with Zhang Liang, Wei made the decision to eliminate her. It was the moment he crossed from a ruthless businessman into a murderer. He didn't pull the trigger, but he signed the order, treating a human life as a line item to be erased for the sake of the balance sheet. This act solidified his bond with Zhang Liang—a blood pact of silence that ensured their mutual survival.
+In collaboration with Zhang Liang, Wei made the decision to eliminate her. It was the moment he crossed from a ruthless businessman into a murderer. He didn't pull the trigger, but he signed the order, treating a human life as a line item to be erased for the sake of the balance sheet. This act solidified his bond with Zhang Liang—an investor's silence beside an emperor's — mutual survival through shared knowledge.
 
 ## The Emperor in the Shadows (2065–2077)
 
@@ -50,7 +50,7 @@ Now in his 90s, Li Wei spends his days in a meticulously curated estate in Meado
 Li Wei is a frail man who projects an aura of immense weight. He is typically seen in traditional high-collared Chinese tunics made of the finest silk, his posture slightly stooped but his gaze remains unnervingly sharp. He speaks in a soft, measured cadence that forces others to lean in, creating an instinctive feeling of submission. His hands, though spotted with age, are steady, often clutching a piece of polished jade or a small, antique folding fan.
 
 **Key Relationships:**
-- **Zhang Liang:** His co-conspirator. Their relationship is built on the shared trauma and triumph of the 2052 cover-up. They trust each other because they are the only two people who know exactly how deep the graves are.
+- **Zhang Liang:** His investor co-conspirator and quiet counselor. Their relationship is built on shared knowledge of the 2052 cover-up and the capital that made it possible. In later years Zhang mentors younger LW talent with Li Wei's shadow still in the room. They trust each other because neither can expose the other without mutual destruction.
 - **Elena Torres:** A tool he personally sharpened. He views her with a mix of professional respect and paternalistic control, knowing that her rise within the company is a direct result of her complicity in his crimes.
 - **Xiao Chen:** The successor. He sees in her the modern version of himself—diplomatic and visionary—but he remains the ghost in her machine, ensuring the "old ways" of the state are never forgotten.
 - **Senator Ricardo Chen:** His primary political asset. A relationship of mutual exploitation where Wei provides the capital and Chen provides the legislative shield.

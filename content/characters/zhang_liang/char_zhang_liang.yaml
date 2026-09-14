@@ -1,16 +1,42 @@
 id: 8292fd66-e69a-4444-ae6c-4ca506381d6a
 name: Zhang Liang
-title: CFO of LW Group
-description: A long-serving CFO providing financial prudence and strategic investment insights. Crucial for navigating the economic complexities between China and Las Flores.
+title: LW Group Investor & Elder Shadow Advisor
+description: >
+  Long-time LW Group investor (~78 in 2077) who used capital leverage to delay
+  the 2049 containment upgrade, then quietly facilitated cover-up money and
+  counsel. Semi-retired; does light shadow work advising younger LW talent.
 metadata:
   type: human
   role: npc
   faction: lw_group
   personality: prudent_strategist
+  age: "~78"
+  gender: Male
+  ethnicity: Chinese
+  occupation: Investor / Elder Shadow Advisor (LW Group)
+  physical_description: >
+    Elderly Chinese man ~78. Soft-rounded prosperous build. Thin gray-white
+    receded hair. Deep-set prudent eyes, thick brows, thin lips. Small mole on
+    right cheek. Muted tailored investor attire, sport earbud, tablet or brief.
+  background: >
+    Born ~1999. Major LW investor bridging China–Las Flores capital. Starved
+    containment spend in 2049; soft-handed cover-up facilitation in 2052.
+    Now mentors younger executives with quiet strings attached.
+  mannerisms: >
+    Soft voice, tea-table silences, generational advice that doubles as leverage.
+  motivations: >
+    Protect capital legacy, shape the next LW cohort, keep old allocations buried.
+  fears: >
+    Email trails, protégés who talk, a player who cannot be mentored or bought.
+  goals: >
+    Advise the young; trade soft intel only under pressure; die without a public ledger.
+  challenges: >
+    Age, documentary evidence, shifting loyalties under Xiao Chen’s era.
+  quote: I never held the pen on the org chart. I held the patience of the purse.
+  status: Alive — semi-retired investor, light shadow mentor (2077)
+lore_path: zhang_liang.md
 asset_paths:
   portrait: zhang_liang__default.png
-
-lore_path: zhang_liang.md
 portrait_urls:
   - url: s3://las-flores/portraits/zhang_liang/zhang_liang__default.png
     label: dev

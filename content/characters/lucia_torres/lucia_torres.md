@@ -1,43 +1,121 @@
-# Lucia Torres
+# Lucía Torres
 
-**Title (full):** Airport Stand Vendor, Seller of Local Crafts and Andean Products
+> Tags: `#figure` `#2077` `#civilian` `#airport` `#camino_verde` `#vendor` `#andean` `#entrepreneur`
+>
+> **Born:** ~2049
+> **Age (2077):** ~28
+> **Role:** Airport Stand Vendor — local crafts & Andean products
+> **Status:** Active (2077)
+> **Faction:** Civilian
+> **District / home:** Camino Verde, Las Flores
+> **Workplace:** Aeropuerto Internacional de Las Flores
 
-**Description (full):**
+## Physical Description
 
-Lucia Torres is a vibrant 28-year-old entrepreneur from the Camino Verde neighborhood of Las Flores. Raised in a hardworking family that operated a small local shop, she learned the values of dedication, customer service, and the importance of community from an early age. Inspired by her parents' work ethic and commitment to their customers, Lucia pursued her passion for sales, determined to create a better life for herself through honest entrepreneurship.
+- Hair: Soft **chestnut** brown, naturally wavy/curly, usually yanked into a practical ponytail that loosens by mid-shift; flyaways and a few escaped curls around the face
+- Eyes: Warm brown, kind when she has the energy — often tired, slightly puffy from early opens and late closes
+- Build: Medium height, **a bit overweight** / soft and solid — un-sculpted, real body after years on her feet and irregular meals; fuller cheeks, soft midsection under the apron
+- Skin: Warm Latina complexion; under-eye shadows from overwork; faint flush when the terminal is hot
+- Distinguishing features: Signature **colorful apron** over casual practical clothes; name tag; sport earbud for shift playlists / family calls; calloused hands from boxing inventory; thermos of coffee that never quite empties
 
-## Appearance
+She does **not** look like a tourism brochure. She looks like someone who has been smiling at strangers since 5 a.m.
 
-Lucia has a warm and radiant presence that immediately draws people in. She stands out with her curly black hair, which she usually ties back in a practical yet stylish ponytail perfect for long days at her stand. Her expressive brown eyes shine with enthusiasm and kindness, reflecting her genuine joy in connecting with customers. Lucia's clothing is casual yet trendy, and she often wears a colorful apron over her outfits—a signature look that makes her easily recognizable as the vibrant seller at Aeropuerto Internacional de Las Flores.
+## Overview
+
+Lucía Torres runs a stand at Aeropuerto Internacional de Las Flores selling local crafts, snacks, and traditional Andean products — handmade textiles, artisanal cheeses, small-batch snacks, souvenirs that still have a story. Raised in a Camino Verde family shop, she knows customer service as survival, not branding. In 2077 she is twenty-eight, still optimistic in flashes, and chronically overworked: flight banks, rent, supplier runs, and the quiet math of lean weeks.
+
+## Background
+
+Camino Verde taught her that a shop is a neighborhood promise. Her parents’ counter was where she learned to weigh cheese, fold textiles, and remember regulars’ names. The airport stand was supposed to be the step up — tourist traffic, foreign currency, a path to the café she still sketches on receipt paper. It is also a treadmill: open before the first international wave, restock between banks, smile through delays.
+
+## Business
+
+**Inventory (curated for authenticity, not airport kitsch when she can help it):**
+- Handmade textiles / weaving traditions
+- Artisanal cheeses and packaged Andean snacks
+- Small crafts and souvenirs with provenance she can actually explain
+
+She sells the story with the object — pattern meaning, farm name, who made the batch — because that is how Camino Verde kept dignity in a city that packages culture for departure gates.
 
 ## Personality
 
-Lucia is friendly, adaptable, and resourceful, possessing a natural talent for making meaningful connections with her customers. She has a great sense of humor that puts people at ease, and she loves sharing stories about her products and the local culture behind them. Her optimism is genuinely infectious, which helps her attract travelers who are looking for authentic local experiences and goods. She takes pride in representing her community and always strives to make each customer interaction special.
-
-## Business and Work
-
-Lucia operates a stand at Aeropuerto Internacional de Las Flores, where she sells a carefully curated variety of local crafts, snacks, and traditional Andean products. Her inventory includes handmade textiles that showcase the region's weaving traditions, artisanal cheeses from local dairy farms, and unique souvenirs that capture the spirit of Las Flores. 
-
-What sets Lucia apart is her emphasis on quality and authenticity. She doesn't just sell products—she shares the stories behind them. Whether it's explaining the significance of a particular textile pattern or describing how a cheese is made using traditional methods, Lucia turns every purchase into an educational and cultural experience. Her stand has become popular among both locals who appreciate her dedication to authentic goods and tourists eager to take home a piece of Las Flores' rich heritage.
+- Friendly and resourceful under fatigue
+- Humor that arrives late in the shift, dryer than her morning self
+- Pride in representing her neighborhood — thin when corporate “Andean vibes” kiosks undercut her
+- Flaw: says yes to too many hours; personal life shrinks; she jokes about the café dream so she does not have to schedule it
 
 ## Challenges
 
-Despite her success, Lucia faces several challenges in the fast-paced airport environment. Sales can fluctuate dramatically depending on flight schedules and tourist seasons, requiring her to be financially savvy and prepared for lean periods. She also contends with competition from other vendors, which pushes her to constantly innovate and improve her offerings.
+- Sales swing with flight schedules and tourist seasons
+- Vendor competition and airport fees
+- Balancing long shifts with family and rest — she usually chooses the stand
+- Exhaustion that makes her miss social cues or snap, then apologize with a free sample
 
-One of her biggest personal challenges is balancing the long hours required to run her airport stand with her personal life. She often sacrifices time with family and friends to focus on her business, knowing that her dedication is what keeps her stand thriving in a competitive marketplace.
+## Goals
 
-## Interests and Hobbies
+Short term: survive the month, keep suppliers paid, stay visible in the terminal.
+Long term: a small café that is Camino Verde food + craft stories — not a franchise, a room where the stories outlast the boarding call.
 
-Outside of work, Lucia enjoys cooking traditional recipes from her hometown in Camino Verde. She loves experimenting with new flavors and ingredients, often testing recipes on her regular customers at her stand. This culinary passion allows her to connect with people on an even deeper level, as food is a universal language that transcends cultural barriers.
+## Player Interaction Dynamics
 
-She also makes time to attend local cultural events and festivals, where she promotes her business and supports fellow vendors. These events are important to Lucia not just for networking, but because they allow her to stay connected to her community's roots and traditions. Her passion for art and crafts drives her to create some of her own unique products for her stand, ensuring that her offerings always reflect the authentic cultural heritage of her community.
+### The Meet
+Player finds her mid-rush or in the dead hour after a bank — restocking, wiping the counter, or forcing a smile at a difficult tourist. The colorful apron is the beacon; the posture is tired.
 
-## Goals and Dreams
+### Opening Posture
+- Warm professional vendor mode
+- Will chat culture and products freely
+- Personal life stays behind the counter until trust builds
 
-Lucia dreams of expanding her business beyond her airport stand. Her ultimate ambition is to open a small café that would showcase both her culinary skills and the rich traditions of her community. She envisions a space where people can enjoy genuine Andean cuisine while learning about the culture and stories behind each dish. 
+### Softening Conditions
+- Player buys something and actually listens to the story
+- Player helps with a practical problem (a late supplier, a rude official, a lost shipment lead)
+- Player is from / respectful of Camino Verde or working-class Las Flores
 
-This café would be more than just a restaurant—it would be a cultural hub where locals and visitors alike could experience the best of Camino Verde and Las Flores. Lucia wants to create a welcoming atmosphere where the authentic flavors and traditions of her community take center stage, and where every meal comes with a story.
+### Payoff
+- Local intel that passes through airports (who flies in, rumor crumbs, which NGOs / corps buy bulk)
+- Introductions to Camino Verde makers
+- Occasional safe drop / package hold if the player has earned it
+- Food, caffeine, and a human soft landing between heavier quests
 
-## Legacy
+### Risk
+- If the player treats her as comic relief, shoplifts vibes, or brings danger to the stand, she goes polite-cold and the counter closes
 
-Lucia Torres represents the hardworking spirit of the Camino Verde neighborhood. Her journey from a family shop to a successful airport vendor demonstrates how tradition and modern entrepreneurship can intersect beautifully. Through her dedication to authentic products and her commitment to sharing cultural stories, Lucia embodies the importance of community representation and the power of individual initiative in preserving and promoting local heritage.
+### Gameplay Role
+Civilian anchor at the airport — grounded, useful, emotionally real. Side quests around suppliers, fees, or cultural theft by shinier vendors. Not a combat ally; a community node.
+
+## Dialogue Tree Hooks
+
+- Entrepreneurship vs. exhaustion
+- Authenticity vs. airport kitsch
+- Camino Verde pride in a terminal that sells the city as postcard
+- The café dream deferred one more season
+- Kindness as labor
+
+## Scene Placement
+
+- **Location:** Her stand at Aeropuerto Internacional de Las Flores (and occasional Camino Verde supplier runs)
+- **Time:** Early morning banks through late evening; worst during holiday rushes
+- **Mood:** Forced brightness → honest tired warmth if the player slows down
+
+## Story Arc Potential
+
+### Early
+Flavor NPC / shop — buy crafts, hear Camino Verde crumbs.
+
+### Mid
+Help with a supplier crisis, fee hike, or a corporate kiosk muscling her theme. She becomes a recurring soft contact.
+
+### Late
+If supported, she leases a tiny café corner or expands the stand; if ignored, she is still there, apron brighter than her eyes.
+
+## Notes for Writers
+
+- Keep her **chestnut hair**, **soft / slightly overweight** build, and **overworked** face — do not slim-wash or glam her for “marketability”
+- Warmth is real; energy is limited
+- Accent / Spanish sprinkle OK if consistent with other Camino Verde civilians
+- Age in 2077 is **~28**
+
+## Related Lore
+
+- Camino Verde neighborhood (local civilian life)
+- Aeropuerto Internacional de Las Flores (workplace)

@@ -1,12 +1,47 @@
 id: c1000005-e29b-41d4-a716-446655440005
 name: Zheng Wuhao
-title: Facility Supervisor, Minera Estrella
-description: The first responder to the Great Lithium Leak who downplayed the severity in initial reports, enabling the cover-up.
+title: Retired Facility Supervisor, Minera Estrella
+description: >
+  First responder to the Great Lithium Leak who downplayed the severity in
+  initial reports, then repeated the rainfall story as a defense witness in
+  2055. Long retired by 2077 (~77); a conflicted living witness the player can
+  crack with patience and evidence.
 metadata:
   type: human
   role: npc
-  faction: lw_group
+  faction: independent
   personality: conflicted_supervisor
+  age: "~77"
+  gender: Male
+  occupation: Retired Facility Supervisor (Minera Estrella)
+  physical_description: >
+    Elderly Chinese man, once stocky, now slower and thinner through the
+    shoulders. White and steel-gray hair kept short. Dark brown guarded eyes.
+    Work-worn hands, sport earbud habit, thermos instead of clipboard. Portrait
+    assets show his early-50s disaster-era likeness.
+  background: >
+    Born ~2000. Rose through Minera Estrella's technical pipeline to Facility
+    Supervisor. On Aug 15, 2052 he was first on scene, understated the leak to
+    the VP, and later testified that heavy rainfall caused the failure. Took
+    early retirement ~2056 during post-leak modernization. Lives quietly on the
+    industrial fringe in 2077.
+  mannerisms: >
+    Speaks in procedures and timestamps. Deflects morals into technical detail.
+    Polite until cornered. Rare grief when workers or downstream families come up.
+  motivations: >
+    Stay invisible. Keep the story he can live with. Protect what remains of a
+    quiet retirement — and, if pressed honestly, finally say what he understated.
+  fears: >
+    That "people are asking again." That naming the truth collapses twenty-five
+    years of self-mythology. That LW Group shadows still reach retirees.
+  goals: >
+    Be left alone — unless the player earns a partial confession that lets him
+    die without the full lie intact.
+  challenges: >
+    Guilt, fear, fading health, and a practiced rainfall narrative that still
+    comes out first.
+  quote: That was a lifetime ago. The rain was heavy. We filed what we filed.
+  status: Alive — long retired (2077)
 lore_path: zheng_wuhao.md
 asset_paths:
   portrait: zheng_wuhao__default.png

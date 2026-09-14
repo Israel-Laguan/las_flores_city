@@ -1,16 +1,46 @@
 id: c4d5e6f7-a8b9-4c0d-9e2f-3a4b5c6d7e8f
 name: María Gutiérrez
-title: Investigative Journalist
-description: "Wrote 'Mayor Hernandez's Legacy: A City Choking on its Own Greed,' an investigative piece for El Informador exposing environmental degradation and corporate influence under Mayor Hernandez."
+title: Investigative Journalist, El Informador
+description: >
+  Leftist investigative journalist at El Informador. Wrote "Mayor Hernandez's
+  Legacy: A City Choking on its Own Greed," exposing environmental degradation
+  and corporate influence. In 2077 (~32) she is fierce, pierced, violet-haired,
+  and still treating the byline as a weapon for the barrio and the movement.
 metadata:
   type: human
   role: npc
   faction: media
-  personality: muckraking_journalist
+  personality: fierce_leftist_muckraker
+  age: "~32"
+  gender: Female
+  ethnicity: Latina
+  occupation: Investigative Journalist (El Informador)
+  physical_description: >
+    Lean wiry Latina woman ~32. Electric violet/magenta dyed hair with darker
+    roots, asymmetrical cut. Dark brown fierce eyes, brow scar, septum and
+    multiple ear piercings. Thrifted/patched practical layers, press badge,
+    sport earbud, notebook always close.
+  background: >
+    Working-class south Las Flores. Scholarship journalist who bridged
+    newsroom and street left. Breakout Hernandez exposé; ongoing coverage of
+    extraction, permits, and LW Group soft power.
+  mannerisms: >
+    Tests people fast. Dry cutting humor. Speaks in receipts and righteous
+    impatience. Softens only for sources and comrades.
+  motivations: >
+    Name the machine. Protect sources. Move stories that organizing can use.
+  fears: >
+    Becoming access press. Getting a source disappeared. Burning out into cynicism.
+  goals: >
+    Keep El Informador dangerous. Connect lithium / corporate stories to
+    barrio survival. Force the powerful onto the record.
+  challenges: >
+    Hostile city hall, thin budgets, editor pressure to soften, personal risk.
+  quote: Neutrality is a luxury for people the river doesn't poison.
+  status: Active (2077)
+lore_path: maria_gutierrez.md
 asset_paths:
   portrait: maria_gutierrez__default.png
-
-lore_path: maria_gutierrez.md
 portrait_urls:
   - url: s3://las-flores/portraits/maria_gutierrez/maria_gutierrez__default.png
     label: dev

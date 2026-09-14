@@ -10,32 +10,36 @@ aspect_ratio: 3:4
 
 # Prompt: María Gutiérrez
 
+## Timeline
+
+Game year **2077**. María is **~32**. Present-day look is fierce leftist journalist — **colored hair, piercings, sharp attitude** — not a clean corporate reporter.
+
 ## Prompt (Draft)
 
-Latina woman in her thirties to forties, angular face, prominent jawline, curved nose, deep-set eyes, arched brows, thin lips, wavy dark hair, lean wiry build, clear skin, small scar on right brow, practical field-reporter attire, press badge, notebook, small sport earbud, El Informador newsroom or industrial site backdrop, premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Latina woman about 32, lean wiry build, angular face, prominent jaw, curved nose, deep-set fierce dark brown eyes, arched asymmetric brows, small scar on right brow, thin sharp lips. Electric violet-magenta dyed hair with dark roots, asymmetrical lob / undercut. Septum piercing, eyebrow piercing, multiple helix piercings. Press badge, thrifted patched jacket over black layers, notebook, sport earbud. El Informador / street / industrial protest backdrop. Premium contemporary graphic novel realism, editorial line art, grounded anatomy, natural asymmetry, muted palette with one vivid hair color accent, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman in her thirties to forties. Angular face with a prominent jawline, a curved nose, and deep-set eyes that miss nothing. Arched brows — the left set a fraction higher than the right, a subtle asymmetry. Thin lips pressed into a sharp, observant line. Wavy dark hair pushed back from a lean, wiry face, clear skin. A small scar crosses the right brow, the mark of fieldwork. Practical field-reporter attire with a press badge and a notebook within reach. Small sport non-in-ear earbud clipped to her earlobe. Subtle lines around the eyes of a journalist who has chased stories for years. The backdrop is a newsroom or an industrial site, an investigative, work-lit setting. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a fierce Latina woman about 32 years old (María Gutiérrez). Lean wiry frame, angular face, prominent jawline, curved nose, deep-set dark brown eyes that miss nothing and challenge the viewer. Left brow a fraction higher; small scar across the right brow. Thin lips set in a sharp, defiant line. Hair dyed electric violet-magenta with visible darker roots, cut in a sharp asymmetrical lob with undercut sides — vivid color is essential. Multiple piercings: septum ring, eyebrow stud, stacked helix/cartilage rings; optional small lip stud. Clear warm medium-brown skin. Practical leftist field-reporter look: thrifted leather or patched denim jacket over black tee, worn press badge for El Informador, battered notebook, small sport non-in-ear earbud. Backdrop: cramped progressive newsroom edge or weathered south-district street / industrial fence under tropical light. Clean confident linework, painterly soft shading, muted natural palette except the vivid hair, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no East Asian features, no Northern European features
+--no blonde bombshell, no soft glam, no corporate blazer polish, no anime, no cartoon, no text, no watermarks, no East Asian features, no Northern European features, no plain undyed black hair as the only look, no missing piercings
 
 ## Variations
 
-- [ ] In the newsroom, notebook open, angled under a desk lamp
-- [ ] At an industrial site, press badge out, documenting a story
-- [ ] At her desk mid-writing, pen paused, hair pushed back
+- [ ] Outside a rally, press badge swinging, hair vivid against smoke or banners
+- [ ] Newsroom side desk, notebook open, piercings catching desk lamp
+- [ ] Industrial fence line at dusk, documenting a permit fight
 
-## Expression Variants
+## Expression Variants (2077, age ~32)
 
-- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same field-reporter attire with press badge and notebook, earbud, backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+- **`maria_gutierrez__default.png`**: Fierce resting defiance, looking at camera, 3/4 take. Vivid violet-magenta hair, full piercing set, press badge, patched jacket. Same art style and backdrop language.
 
-- **`__calculating.png`**: Use the base portrait as reference. Piecing together a story, looking at the camera with a sharp, focused gaze, 3/4 take. Eyes narrowed and intent, lips flat in thought, brows drawn. Keep the same art style as reference, same attire and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`maria_gutierrez__calculating.png`**: Piecing a story together — eyes narrowed, lips flat, brows drawn. Same hair, piercings, attire.
 
-- **`__angry.png`**: Use the base portrait as reference. A cold, righteous anger, looking at the camera, 3/4 take. Eyes hard and blazing, lips pressed into a tight line, brows lowered, jaw set. Keep the same art style as reference, same field attire and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`maria_gutierrez__angry.png`**: Cold righteous anger — eyes hard, jaw set, brows lowered. Same identity markers.
 
-- **`__determined.png`**: Use the base portrait as reference. A resolute, unflinching resolve, looking directly at the camera, 3/4 take. Eyes steady and unyielding, jaw squared, lips fixed in a determined line. Keep the same art style as reference, same attire and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`maria_gutierrez__determined.png`**: Unflinching resolve — steady unyielding eyes, squared jaw. Same identity markers.
 
-- **`__sad.png`**: Use the base portrait as reference. A weary, burdened moment, looking at the camera, 3/4 take. Eyes softened and dimmed, lips slack with quiet grief, brows weighted. Keep the same art style as reference, same clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`maria_gutierrez__sad.png`**: Weary burdened moment after a bad source day — eyes softened, still pierced and dyed; grief without softening her politics.

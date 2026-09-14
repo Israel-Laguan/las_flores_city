@@ -20,7 +20,7 @@ The Great Lithium Leak was a catastrophic environmental disaster caused by the f
 Months before the catastrophe, internal reports at both the LW Group and Minera Estrella highlighted concerns regarding the structural integrity of containers used in the lithium extraction process. Visual inspections noted visible wear and suggested the possibility of small, underground leaks that were less easily detectable.
 
 ### Qiu Bo's Proposal
-**Qiu Bo**, head of Technology and Innovation at the LW Group, proposed the adoption of a new, high-tech containment system designed to mitigate these risks. However, **Zhang Liang**, the long-serving CFO of the LW Group, imposed financial barriers that significantly delayed the project's approval and implementation.
+**Qiu Bo**, head of Technology and Innovation at the LW Group, proposed the adoption of a new, high-tech containment system designed to mitigate these risks. However, **Zhang Liang**, a major LW Group investor with quiet leverage over capital and procurement politics, imposed financial barriers that significantly delayed the project's approval and implementation.
 
 ### Li Wei's Independent Audit (2049)
 Li Wei, demonstrating characteristic prudence, initiated a discreet, independent audit to assess the rumored risks. The audit findings presented a sobering reality: several critical vulnerabilities were identified within both the extraction processes and the containment protocols. Li Wei orchestrated a series of closed-door meetings with his top lieutenants, oscillating between finding immediate remedial measures and strategizing how to handle potential public relations fallout.
@@ -86,7 +86,7 @@ In a subsequent secret meeting, strategies to deflect public opinion were discus
 - The recent storm provided a plausible cover, suggesting the electrical failure could have been triggered by adverse weather.
 - Technicians were bribed to produce a technical report confirming the electrical failure story.
 - **Elena Torres** took charge of media relations, orchestrating a campaign to control the narrative.
-- **Zhang Liang** managed covert aspects: arranging bribes, handling witness removal, and ensuring favorable or muted media coverage.
+- **Zhang Liang** facilitated quieter cover-up logistics: steering money, advising which problems could be bought, and ensuring favorable or muted media coverage — investor shadow work more than public operations.
 
 ### Covert Operations
 The LW Group's underground operations included:
@@ -110,7 +110,7 @@ The LW Group's underground operations included:
 | **Aug 18** | Emergency meeting at LW Group; Li Wei briefed; Elena Torres confirms long-term contamination |
 | **Aug 19** | Secret meeting decides cover-up strategy; electrical failure narrative approved |
 | **Sept 5** | Elena Torres initiates media campaign to downplay impacts |
-| **Sept 12** | Zhang Liang executes covert operations to eliminate witnesses |
+| **Sept 12** | Zhang Liang facilitates covert pressure on witnesses (capital, counsel, introductions) |
 | **Sept 17** | La Prensa journalist Lina Kim begins investigation |
 | **Sept 20** | Governor Ricardo Rivas, Mayor Vega, and Minera Estrella officials issue public statements minimizing severity |
 | **Sept 22** | National government and City Council declare state of emergency |

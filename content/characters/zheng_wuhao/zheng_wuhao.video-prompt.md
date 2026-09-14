@@ -6,6 +6,9 @@ source: content/characters/zheng_wuhao/zheng_wuhao.prompt.md
 target: content/characters/zheng_wuhao/assets/
 ---
 
+Game year **2077**: Zheng is **~77** and long retired. All loops must match the elderly portrait assets (white/steel-gray hair, late-70s face), not the disaster-era early-50s likeness.
+
+
 # Video Prompts: Zheng Wuhao
 
 Generate seamless looping portrait videos from each expression variant PNG. Use the corresponding `zheng_wuhao__<expression>.png` as the input image for each prompt. The man on the reference image is the character described in the source prompt file.

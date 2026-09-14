@@ -10,30 +10,36 @@ aspect_ratio: 3:4
 
 # Prompt: Zheng Wuhao
 
+## Timeline
+
+Game year **2077**. Zheng is **~77**, long retired. All current portrait prompts must depict an elderly Chinese man in his late 70s — not his early-50s disaster-era self.
+
 ## Prompt (Draft)
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a stocky in his early 50s Chinese Photorealistic portrait of Zheng Wuhao. Her frame is stocky, sturdy, and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, tired guarded. Her expression is weathered, as she holds a steady, weathered composure. Her black short hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless practical work clothing. The backdrop. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality,...
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of an elderly Chinese man about 77 years old, Zheng Wuhao. His frame was once stocky; age has softened the shoulders and thinned the chest, still sturdy and un-sculpted. Deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown tired guarded eyes, heavy lids, liver spots, deep nasolabial folds, soft jowls. Thin white and steel-gray short hair kept practical. A small sport non-in-ear earbud clipped firmly to his earlobe. He wears minimalist practical retirement clothing — muted work-shirt silhouette without a uniform. Weathered urban Latin American industrial-fringe backdrop under tropical light. Clean confident linework, painterly soft shading, muted natural palette, grounded human anatomy with natural asymmetry, 8k.
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a stocky Chinese man in his early 50s. His frame is stocky and sturdy, un-sculpted and natural. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes and dark brown, tired and guarded eyes. His expression is weathered, as he holds a steady, weathered composure. His black short hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to his earlobe. He wears minimalist, pocketless practical work clothing. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of an elderly Chinese man in his late 70s (~77). His frame was once stocky and is now softer through the shoulders, un-sculpted and natural. Deeply unique, un-idealized facial anatomy with realistic eye sizes and dark brown, tired and guarded eyes under heavy lids. Deep wrinkles, soft jowls, liver spots on temples and hands, thin white and steel-gray short hair in simple un-styled shapes. Expression weathered and steady. A small sport non-in-ear earbud clipped firmly to his earlobe. He wears minimalist, pocketless practical retirement clothing in muted workwear tones, thermos or folded newspaper optional prop. Backdrop: weathered urban Latin American industrial-fringe building under intense vertical tropical sunlight, soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
---no neon, no androids, no clean backgrounds, no modern clothing
+
+--no young face, no early 50s, no black hair without gray, no neon, no androids, no clean backgrounds, no glamorous styling, no anime, no cartoon, no text, no watermarks
 
 ## Variations
 
-- [ ] Zheng Wuhao reflecting on recent events, The first responder to the Great Lithium Leak who downplayed the se...
-- [ ] Zheng Wuhao in a tense moment, 
-- [ ] Zheng Wuhao caught in a pivotal scene, The first responder to the Great Lithium Leak who downplayed the se...
+- [ ] Zheng Wuhao reflecting on recent events — elderly retiree, guarded memory of the leak
+- [ ] Zheng Wuhao in a tense moment — brittle composure when asked about rainfall testimony
+- [ ] Zheng Wuhao caught in a pivotal scene — partial confession, exhausted honesty
 
-## Expression Variants
+## Expression Variants (2077, age ~77)
 
-- **`zheng_wuhao__default.png`**: Use the base portrait as reference. Weathered steady resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry.
+- **`zheng_wuhao__default.png`**: Use identity reference if available, aged to late 70s. Weathered steady resting expression, looking at the camera, 3/4 take. Thin white/steel-gray hair, sport earbud, practical retirement clothing, industrial-fringe backdrop. Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`zheng_wuhao__focused.png`**: Use the base portrait as reference. Absorbed in a task, looking at the camera, 3/4 take. Eyes intent and sharp beneath the weariness, brows knit, lips set in concentration. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`zheng_wuhao__focused.png`**: Same elderly identity. Absorbed in a task or document, looking at the camera, 3/4 take. Eyes intent beneath weariness, brows knit, lips set. Same earbud, clothing, backdrop, art style.
 
-- **`zheng_wuhao__contemplative.png`**: Use the base portrait as reference. A guarded, reflective pause, looking at the camera, 3/4 take. Eyes softening warily into the middle distance, lips relaxed, head tilted. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`zheng_wuhao__contemplative.png`**: Same elderly identity. Guarded reflective pause, looking at the camera, 3/4 take. Eyes softening warily into middle distance, lips relaxed, head slightly tilted. Same earbud, clothing, backdrop, art style.
 
-- **`zheng_wuhao__happy.png`**: Use the base portrait as reference. A tired but genuine smile, looking at the camera, 3/4 take. Eyes warming a fraction, lips curving up, the guarded composure easing. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`zheng_wuhao__happy.png`**: Same elderly identity. Tired but genuine smile, looking at the camera, 3/4 take. Eyes warming a fraction, lips curving up, guarded composure easing. Same earbud, clothing, backdrop, art style.
 
-- **`zheng_wuhao__surprised.png`**: Use the base portrait as reference. A sharp, controlled startle, looking at the camera, 3/4 take. Eyes widened, brows lifted, lips parting. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
-
+- **`zheng_wuhao__surprised.png`**: Same elderly identity. Sharp controlled startle, looking at the camera, 3/4 take. Eyes widened, brows lifted, lips parting. Same earbud, clothing, backdrop, art style.

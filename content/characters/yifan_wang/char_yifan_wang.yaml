@@ -1,12 +1,41 @@
 id: c1000016-e29b-41d4-a716-446655440016
 name: Yifan Wang
 title: President, UDV Chinese Students Association
-description: Born in Beijing in 2055, Yifan came to Las Flores at age 20 to study International Relations at Universidad del Valle. Ambitious and outspoken, he leads the UDV Chinese Students Association and advocates for Chinese cultural identity on campus. He aspires to a career in Chinese foreign service.
+description: >
+  Beijing-born (2055) International Relations student at Universidad del Valle.
+  Age 22 in 2077. Charismatic president of the UDV Chinese Students Association;
+  ambitious nationalist aiming for Chinese foreign service. Operates in the
+  Dragon Phoenix / Chinese-community orbit on campus.
 metadata:
   type: human
   role: npc
   faction: dragon_phoenix
   personality: ambitious_nationalist
+  age: "22"
+  gender: Male
+  ethnicity: Chinese
+  occupation: UDV Student (International Relations) / CSA President
+  physical_description: >
+    Lean Chinese man ~22. Black neat modern haircut, dark brown sharp ambitious
+    eyes, fair youthful skin, confident posture, sport earbud, trendy-professional
+    campus clothes, laptop always close.
+  background: >
+    Born Beijing 2055; moved to Las Flores 2075. Won CSA presidency in first year;
+    expanding cultural and networking programming; National Day showcase planned.
+  mannerisms: >
+    Charismatic hosting mode; sharp in debate; long-game campus politics; smile
+    that becomes a rebuttal.
+  motivations: >
+    Elevate Chinese cultural standing; build a foreign-service résumé; win rooms.
+  fears: >
+    Being sidelined as “just a student”; racist backlash; seeing Chinese community
+    painted solely as the leak.
+  goals: >
+    Successful National Day; CSA growth; internships; eventual diplomatic career.
+  challenges: >
+    Campus critics, lithium politics complexity, balancing pride with uncomfortable truths.
+  quote: Soft power is not soft when you refuse to be invisible.
+  status: Active (2077)
 lore_path: yifan_wang.md
 asset_paths:
   portrait: yifan_wang__default.png

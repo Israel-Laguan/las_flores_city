@@ -3,37 +3,33 @@ name: Yifan Wang
 type: portrait
 size: 1024x1024
 source: content/characters/yifan_wang/yifan_wang.md
-target: `portrait_urls[].url` in `content/characters/char_yifan_wang.yaml`
+target: `portrait_urls[].url` in `content/characters/yifan_wang/char_yifan_wang.yaml`
 consumer: portrait
 aspect_ratio: 3:4
 ---
 
 # Prompt: Yifan Wang
 
+## Timeline
+
+Game year **2077**. Yifan is **22** (born 2055). Early-20s Chinese IR student / CSA president — ambitious, polished-campus energy. Male.
+
 ## Prompt (Draft)
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a lean in his early 20s chinese Photorealistic portrait of Yifan Wang. Her frame is lean, sturdy, and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, sharp ambitious. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her black hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless practical work clothing. T. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...
+
+Lean Chinese man about 22, sharp ambitious dark brown eyes, neat modern black haircut, fair youthful skin, confident posture, sport earbud, trendy professional campus attire, laptop optional, UDV campus or tropical urban backdrop. Premium contemporary graphic novel realism, editorial line art, grounded anatomy, muted palette, 8k. No text.
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a lean Chinese man in his early 20s. His frame is lean and sturdy, un-sculpted and natural. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes and dark brown, sharp and ambitious eyes. His expression is calm and determined, as he meets the viewer with steady, composed bearing. His black hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to his earlobe. He wears minimalist, pocketless practical work clothing. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a lean Chinese man about 22 years old (Yifan Wang). Lean un-sculpted frame. Distinctive un-idealized facial anatomy; dark brown sharp ambitious eyes; calm determined bearing that can turn charismatic. Black hair in a neat modern campus cut. Small sport non-in-ear earbud. Trendy-but-professional student clothes (clean layers, not labor workwear). Backdrop: Universidad del Valle campus edge or weathered Latin American urban building under tropical sunlight. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded anatomy with natural asymmetry, 8k. No readable text.
 
 ## Negative Prompt
---no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+--no elderly, no middle-aged, no she/her femme defaults, no neon overload, no anime, no cartoon, no text, no watermarks, no Latino features, no European features
 
-- [ ] Yifan Wang surveying the scene, Yifan quickly made his presence felt on campus. Within his first ye...
-- [ ] Yifan Wang in a alert moment, 
-- [ ] Yifan Wang caught in a pivotal scene, Yifan quickly made his presence felt on campus. Within his first ye...
+## Expression Variants (2077, age 22)
 
-## Expression Variants
-
-- **`yifan_wang__default.png`**: Use the base portrait as reference. Calm determined resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry.
-
-- **`yifan_wang__focused.png`**: Use the base portrait as reference. Absorbed concentration over his studies, looking at the camera, 3/4 take. Eyes intent, brows knit, lips pressed in quiet focus. Books and notes edge the frame. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
-
-- **`yifan_wang__determined.png`**: Use the base portrait as reference. Steady resolve, looking directly at the camera, 3/4 take. Eyes fixed and sharp, defined jaw set, mouth firm. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
-
-- **`yifan_wang__happy.png`**: Use the base portrait as reference. A warm, genuine smile, looking at the camera, 3/4 take. Eyes brightening, cheeks lifting, the composed bearing warming. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
-
-- **`yifan_wang__contemplative.png`**: Use the base portrait as reference. A thoughtful pause, looking at the camera, 3/4 take. Eyes softening into the middle distance, lips relaxed, head tilted. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
-
+- **`yifan_wang__default.png`**: Calm determined resting expression, looking at camera, 3/4.
+- **`yifan_wang__focused.png`**: Absorbed study/focus — eyes intent, brows knit, lips pressed.
+- **`yifan_wang__determined.png`**: Steady resolve — eyes fixed, jaw set, mouth firm.
+- **`yifan_wang__happy.png`**: Warm genuine charismatic smile.
+- **`yifan_wang__contemplative.png`**: Thoughtful pause — eyes softening to middle distance.
