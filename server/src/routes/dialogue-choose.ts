@@ -15,6 +15,7 @@ import { deleteCache } from '@las-flores/infra';
 import { handleAlignmentSideEffects, handleBreakthroughSideEffects, handleJoinMystery } from './dialogue-side-effects.js';
 import { handleLegacyChoiceIndex } from './dialogue-legacy.js';
 import { mapDialogueWriteError } from './dialogue-errors.js';
+import { findReachableChoice } from './dialogue-choice-validation.js';
 
 /**
  * Handle POST /dialogue/:id/choose for chunk-based dialogue.
@@ -105,9 +106,11 @@ export async function handleChoose(req: any, res: any): Promise<any> {
 
     const currentNodeId = cursor?.current_node_id;
     const currentNode = currentNodeId ? effectiveNodes[currentNodeId] : null;
-    const matchedChoice = currentNode && Array.isArray(currentNode.choices)
-      ? currentNode.choices.find((c: any) => c.id === choice_id || c.next_node_id === choice_id)
-      : null;
+    // R12 / D2: choice-reachability validation BEFORE any effect processing.
+    // This separable check is the direct precedent for SC-M3's new-backend
+    // equivalent (roadmap.md SC-M3) — keep it extracted via
+    // findReachableChoice rather than inlined (dialogue-choice-validation.ts).
+    const matchedChoice = findReachableChoice(currentNode, choice_id);
     if (!matchedChoice) {
       return res.status(400).json({
         success: false,
