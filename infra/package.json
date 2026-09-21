@@ -18,10 +18,10 @@
   },
   "devDependencies": {
     "@types/node": "~20.19.43",
-    "@types/pg": "~8.21.0",
-    "@typescript-eslint/eslint-plugin": "~8.67.0",
-    "@typescript-eslint/parser": "~8.67.0",
-    "eslint": "~10.8.0",
+    "@types/pg": "~8.23.1",
+    "@typescript-eslint/eslint-plugin": "~8.70.0",
+    "@typescript-eslint/parser": "~8.70.0",
+    "eslint": "~10.10.0",
     "typescript": "~5.9.3"
   }
 }

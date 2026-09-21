@@ -13,13 +13,13 @@
     "test": "npx --no-install jest --detectOpenHandles"
   },
   "dependencies": {
-    "zod": "~4.4.3"
+    "zod": "~4.6.5"
   },
   "devDependencies": {
     "@types/jest": "~30.0.0",
     "@types/node": "~20.19.43",
-    "fast-check": "~4.9.0",
-    "jest": "~30.4.2",
+    "fast-check": "~4.10.1",
+    "jest": "~30.5.1",
     "ts-jest": "~29.4.11",
     "typescript": "~5.9.3"
   }
