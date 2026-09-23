@@ -14,8 +14,8 @@ asserting it.
 
 ## What was run
 
-A local throwaway (`server/scripts/spike_sc_s6_serving_baseline.ts`, **not in this
-checkout**). Treat the numbers below as a **legacy preliminary baseline** for
+Script: `server/scripts/spike_sc_s6_serving_baseline.ts` (now committed).
+Treat the numbers below as a **legacy preliminary baseline** for
 `GET /dialogue/active` only — not as the SC-M3/SC-508 scene-resolution + artifact-fetch
 measurement. Against the
 already-running local docker-compose stack (`las-flores-server` on `:3000`,
@@ -51,8 +51,7 @@ bias of subtracting aggregate percentiles (`p50(total) − p50(select)` is not `
 difference)`). The blackbox HTTP overhead (~1-2ms fetch) remains as a stated
 approximation within each `rest_i`, not removed by aggregate math.
 
-Committing the harness (e.g. under `server/scripts/`) is required before anyone re-runs
-this — the "repeat by anyone" step currently depends on a file that is not in the repo.
+**Reproducibility:** The harness is now committed at `server/scripts/spike_sc_s6_serving_baseline.ts`.
 
 ## Raw results
 

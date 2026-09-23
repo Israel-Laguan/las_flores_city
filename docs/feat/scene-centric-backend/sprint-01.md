@@ -85,15 +85,8 @@ An item is done when: acceptance criteria are met; CI is green; and for spikes, 
 write-up exists with a "what it changes" section. Not when the code works locally.
 
 **Sprint is successful if:** SC-101 through SC-106 are done, D1 and D2 are fixed, and at
-minimum SC-S1, SC-S2, and SC-S5 have written answers (mandatory load = 4.5 + 1 + 2 =
-7.5 days, fitting the 7.5-day capacity). The remaining spikes (SC-S3, SC-S4, SC-S6)
-are **not** required for this sprint's success and may slip to sprint 2 per §5 without the
-sprint being a failure; if capacity runs short they are cut in the order SC-S4 → SC-S6 → SC-S3
-before any mandatory item is deferred. **Critical:** SC-M1's exit criteria require every
-sprint-1 spike to have a written answer (`roadmap.md` §1, exit criteria). Spikes that
-slip to sprint 2 MUST be completed in sprint 2 before SC-M1 is closed — they cannot remain
-open into sprint 3. If sprint 2's capacity cannot accommodate the spillover, SC-M1's
-completion is explicitly delayed to sprint 3, noted in that retro.
+minimum SC-S1, SC-S2, and SC-S5 have written answers. **Status: COMPLETED** — SC-101 through SC-106 are done, D1 and D2 are fixed, and all six sprint-1 spikes (SC-S1 through SC-S6) have written answers. The remaining spikes (SC-S8, SC-S9, SC-S10) feed later milestones. **Critical:** SC-M1's exit criteria require every
+sprint-1 spike to have a written answer (`roadmap.md` §1, exit criteria). All mandatory items landed.
 
 ## 5. If capacity runs short — cut in this order
 

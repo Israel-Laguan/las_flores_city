@@ -539,23 +539,19 @@ export class DialogueResolver {
   }
 
   /**
-   * Resolve the next chunk when crossing a chunk boundary.
-   * Looks up the chunk by (tree_id, targetChunkKey), then merges
-   * overlays using the same pattern as resolveChunkForUser.
-   * If treeId and revision are provided, the chunk lookup is scoped
-   * to the player's active tree revision.
+   * Cross a chunk boundary: load the target chunk scoped to (treeId, revision)
+   * then delegate to resolveChunkForUser for merge.
+   *
+   * D1 / R12: treeId + revision are required — unscoped chunk_key lookup is
+   * forbidden (a client must not load another tree's or stale revision's chunk).
    *
    * Requirements: 4.1, 4.2
-   */
-  /**
-   * Cross a chunk boundary: load the target chunk (revision-scoped when
-   * treeId+revision supplied) then delegate to resolveChunkForUser for merge.
    */
   public static async resolveNextChunk(
     userId: string,
     targetChunkKey: string,
-    treeId?: string,
-    revision?: number
+    treeId: string,
+    revision: number
   ): Promise<ResolvedChunk> {
     const chunkRow = await DialogueResolver.loadBaseChunkByKey(
       targetChunkKey, treeId, revision
@@ -572,21 +568,18 @@ export class DialogueResolver {
    * M23/M32: hydrates the heavy `{nodes, leaves}` map from the CDN via
    * the required `content_url` pointer; the old in-DB JSONB payload is gone.
    */
-  private static async loadBaseChunkRow(
-    column: 'id' | 'chunk_key',
-    param: string
-  ): Promise<BaseDialogueChunkRow> {
-    const where = column === 'id' ? 'id' : 'chunk_key';
+  private static async loadBaseChunkRow(chunkId: string): Promise<BaseDialogueChunkRow> {
+    // Lookup by primary key only — never by bare chunk_key (D1 / R12).
     const result = await queryOLTP<BaseDialogueChunkRow>(
       `SELECT id, tree_id, chunk_key, content_url, revision
           FROM dialogue_chunks
-         WHERE ${where} = $1
+         WHERE id = $1
          LIMIT 1`,
-      [param]
+      [chunkId]
     );
 
     if (result.rows.length === 0) {
-      throw new Error(`Dialogue chunk not found for ${column} = ${param}`);
+      throw new Error(`Dialogue chunk not found for id = ${chunkId}`);
     }
 
     const row = result.rows[0];
@@ -595,7 +588,7 @@ export class DialogueResolver {
       leaves: {},
     });
     if (!cdn) {
-      throw new Error(`Dialogue chunk ${column} = ${param} failed to load nodes/leaves from content_url ${row.content_url}`);
+      throw new Error(`Dialogue chunk id = ${chunkId} failed to load nodes/leaves from content_url ${row.content_url}`);
     }
     return {
       ...row,
@@ -611,7 +604,7 @@ export class DialogueResolver {
    * required `content_url` pointer; the old in-DB JSONB payload is gone.
    */
   private static async loadBaseChunk(chunkId: string): Promise<BaseDialogueChunkRow> {
-    return DialogueResolver.loadBaseChunkRow('id', chunkId);
+    return DialogueResolver.loadBaseChunkRow(chunkId);
   }
 
   /**
@@ -626,40 +619,31 @@ export class DialogueResolver {
   }
 
   /**
-   * Load a base chunk from dialogue_chunks by its chunk_key.
-   * Used by resolveNextChunk when crossing boundaries.
-   * Scoped lookup only when BOTH treeId and revision are supplied;
-   * otherwise unscoped (used when no active dialogue pins a revision).
+   * Load a base chunk from dialogue_chunks by its chunk_key, scoped to
+   * (tree_id, revision). D1 / R12: never look up by bare chunk_key.
    */
   private static async loadBaseChunkByKey(
     chunkKey: string,
-    treeId?: string,
-    revision?: number
+    treeId: string,
+    revision: number
   ): Promise<BaseDialogueChunkRow> {
-    // Scope only when BOTH treeId and revision are supplied together.
-    // Reject partial scope (treeId w/o rev, or rev w/o treeId) to avoid
-    // accidentally selecting a chunk_key from wrong tree/revision.
-    // Revision 0 with no treeId is the explicit unscoped sentinel (no active dialogue).
-    if ((treeId != null && revision == null) || (treeId == null && revision != null && revision !== 0)) {
-      throw new Error(`Partial scope for loadBaseChunkByKey (treeId=${treeId}, revision=${revision}) is not allowed`);
+    if (!treeId || revision == null || Number.isNaN(revision)) {
+      throw new Error(
+        `Revision-scoped chunk lookup requires treeId and revision (got treeId=${treeId}, revision=${revision})`
+      );
     }
-    const hasScope = treeId != null && revision != null;
-    const where = hasScope
-      ? `chunk_key = $1 AND tree_id = $2 AND revision = $3`
-      : `chunk_key = $1`;
-    const params: (string | number)[] = hasScope
-      ? [chunkKey, treeId, revision]
-      : [chunkKey];
     const result = await queryOLTP<BaseDialogueChunkRow>(
       `SELECT id, tree_id, chunk_key, content_url, revision
           FROM dialogue_chunks
-         WHERE ${where}
-         ${!hasScope ? 'ORDER BY revision DESC ' : ''}LIMIT 1`,
-      params
+         WHERE chunk_key = $1 AND tree_id = $2 AND revision = $3
+         LIMIT 1`,
+      [chunkKey, treeId, revision]
     );
 
     if (result.rows.length === 0) {
-      throw new Error(`Dialogue chunk not found for chunk_key = ${chunkKey}`);
+      throw new Error(
+        `Dialogue chunk not found for chunk_key = ${chunkKey} (tree_id=${treeId}, revision=${revision})`
+      );
     }
 
     const row = result.rows[0];
