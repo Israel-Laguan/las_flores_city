@@ -113,7 +113,7 @@ Commands:
 
 ```bash
 DATABASE_URL="postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores" \
-  node server/scripts/spikes/sc-s1-project-entity-edges.mjs   # (re)build the 1x table
+  node server/scripts/spike_sc_s1_project_entity_edges.mjs   # (re)build the 1x table
 
 DATABASE_URL=... node server/scripts/spikes/sc-s2-run.mjs      # measure at 1x
 
