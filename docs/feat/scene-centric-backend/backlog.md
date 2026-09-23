@@ -20,10 +20,10 @@
 |---|---|---|---|
 | SC-101 | Create `api/{contracts,planning,runtime}` tree with per-module tsconfig projects | S | **Done** |
 | SC-102 | Lint rule forbidding planning↔runtime imports, proven by a fixture violation in CI | S | **Done** |
-| SC-103 | Create `planning` / `runtime` schemas and two DB roles with grants per `architecture.md` §3 | M | **Ready** |
-| SC-104 | Extend the existing migration runner to the new schemas, reusing migration-log idempotency | M | **Ready** |
+| SC-103 | Create `planning` / `runtime` schemas and two DB roles with grants per `architecture.md` §3 | M | **Done** |
+| SC-104 | Extend the existing migration runner to the new schemas, reusing migration-log idempotency | M | **Done** |
 | SC-105 | CI job: typecheck, lint incl. boundary rule, unit tests across three modules | S | **Done** |
-| SC-106 | Verify the runtime role cannot read or write `planning` — negative test | S | **Ready** |
+| SC-106 | Verify the runtime role cannot read or write `planning` — negative test | S | **Done** |
 
 ## SC-E2 — Flags & conditions · F1, F2 · SC-M1
 
