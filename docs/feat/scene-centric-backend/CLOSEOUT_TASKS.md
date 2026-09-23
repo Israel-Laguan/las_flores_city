@@ -4,12 +4,12 @@
 
 **Current branch:** `feat/sc-106-negative` (4 new commits over `main`: SC-106 test, D1 fix, D2 fix, CI README tweak).
 
-**Status:** A3 (doc updates) COMPLETED. A2 COMPLETED. A4 COMPLETED. B1-B6 COMPLETED. Remaining: A1 (deferred).
+**Status:** A1 COMPLETED. A2 COMPLETED. A3 COMPLETED. A4 COMPLETED. B1-B6 COMPLETED. ALL SC-M1 CLOSEOUT TASKS COMPLETE.
 
 ### Progress Summary
 | Part | Task | Status |
 |------|------|--------|
-| A | A1. Commit spike harnesses | ⏳ Not started (deferred - low priority) |
+| A | A1. Commit spike harnesses | ✅ DONE (this session) |
 | A | A2. Implement api/contracts primitives | ✅ DONE (this session) |
 | A | A3. Update stale docs | ✅ DONE (this session) |
 | A | A4. Preserve SC-102 boundary proof | ✅ DONE (this session) |

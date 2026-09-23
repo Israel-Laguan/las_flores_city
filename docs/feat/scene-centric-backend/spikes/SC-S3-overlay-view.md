@@ -16,19 +16,17 @@ and specifically whether `jsonb` merge alone is sufficient for `MODIFY`, per ope
 
 ## What was run
 
-Script: `scripts/spikes/sc-s3-overlay.mjs`, built on `spike_sc_s1.entity_edges` (must be
-rebuilt first — SC-S1's script drops/recreates it every run). **Not committed** — see the
-reproducibility rule in this folder's README. **Known gap:** full inline SQL reproduction
-is needed before this spike's measurements can be re-validated against changed content;
-committing the harness to `server/scripts/spike_sc_s3_overlay.mjs` or inlining the complete
-delta-merge and reachability-query logic below is a follow-up before SC-702 relies on these
-numbers.
+Script: `server/scripts/spikes/sc-s3-overlay.mjs`, built on `spike_sc_s1.entity_edges` (must be
+rebuilt first — SC-S1's script drops/recreates it every run). **Now committed** — see
+`server/scripts/spikes/sc-s3-overlay.mjs`. The script handles ADD and MODIFY deltas,
+builds the overlay per plan-graph-in-postgres.md §3.3, and runs SC-S2's reachability query
+against canon alone vs. overlay.
 
 ```bash
 DATABASE_URL="postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores" \
-  node scripts/spikes/sc-s1-project-entity-edges.mjs   # rebuild canon edge table
+  node server/scripts/spikes/sc-s1-project-entity-edges.mjs   # rebuild canon edge table
 
-DATABASE_URL=... node scripts/spikes/sc-s3-overlay.mjs  # this spike
+DATABASE_URL=... node server/scripts/spikes/sc-s3-overlay.mjs  # this spike
 ```
 
 ### Setup

@@ -29,27 +29,26 @@ pairs were hand-picked from those `aliases:` fields, spanning the difficulty ran
 drop, substring/truncation, translation, slang synonym, and acronym.
 
 ```
-scripts/spikes/sc-s4-build-corpus.mjs   — builds spike_trgm.corpus (196 character names
+server/scripts/spikes/sc-s4-build-corpus.mjs   — builds spike_trgm.corpus (196 character names
                                            from `characters` + 75 canonical location names
                                            from content YAML = 271 rows total; locations
                                            aren't in the DB yet, only in content) and
                                            spike_trgm.labeled_pairs (the 12 pairs below),
                                            in a scratch schema.
-scripts/spikes/sc-s4-analysis.sql       — per-pair top-1 match, threshold sweep
+server/scripts/spikes/sc-s4-analysis.sql       — per-pair top-1 match, threshold sweep
                                            (precision/recall), ILIKE baseline, EXPLAIN ANALYZE.
 ```
 
-**Not committed** — both files were local throwaways; see the reproducibility rule in this
-folder's README.
+**Now committed** — both files are at `server/scripts/spikes/`.
 
 Commands:
 
 ```bash
 DATABASE_URL="postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores" \
-  node scripts/spikes/sc-s4-build-corpus.mjs
+  node server/scripts/spikes/sc-s4-build-corpus.mjs
 
 docker exec -i las-flores-postgres-oltp psql -U las_flores -d las_flores \
-  -f - < scripts/spikes/sc-s4-analysis.sql
+  -f - < server/scripts/spikes/sc-s4-analysis.sql
 
 # cleanup (scratch schema only — no production table was ever touched)
 docker exec las-flores-postgres-oltp psql -U las_flores -d las_flores \
