@@ -9,13 +9,17 @@
     "build": "tsc",
     "lint": "eslint src/",
     "typecheck": "tsc --noEmit",
-    "test": "node --eval \"process.exit(0)\""
+    "test": "jest"
   },
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@types/jest": "^29.5.11",
     "@types/node": "~20.19.43",
     "@typescript-eslint/eslint-plugin": "~8.67.0",
     "@typescript-eslint/parser": "~8.67.0",
     "eslint": "~10.8.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
     "typescript": "~5.9.3"
   }
 }
