@@ -24,7 +24,7 @@ against canon alone vs. overlay.
 
 ```bash
 DATABASE_URL="postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores" \
-  node server/scripts/spikes/sc-s1-project-entity-edges.mjs   # rebuild canon edge table
+  node server/scripts/spike_sc_s1_project_entity_edges.mjs   # rebuild canon edge table
 
 DATABASE_URL=... node server/scripts/spikes/sc-s3-overlay.mjs  # this spike
 ```

@@ -4,7 +4,7 @@
 
 **Current branch:** `feat/sc-106-negative` (4 new commits over `main`: SC-106 test, D1 fix, D2 fix, CI README tweak).
 
-**Status:** A1 COMPLETED. A2 COMPLETED. A3 COMPLETED. A4 COMPLETED. B1-B6 COMPLETED. ALL SC-M1 CLOSEOUT TASKS COMPLETE.
+**Status:** A1-A4 COMPLETED. B1-B6 COMPLETED. C COMPLETED. ALL TASKS FROM CLOSEOUT_TASKS.md COMPLETE.
 
 ### Progress Summary
 | Part | Task | Status |
@@ -14,7 +14,7 @@
 | A | A3. Update stale docs | ✅ DONE (this session) |
 | A | A4. Preserve SC-102 boundary proof | ✅ DONE (this session) |
 | B | B1-B6. Sprint 2 (flags & conditions) | ✅ DONE (this session) |
-| C | Doc updates after B1-B6 | ⏳ Blocked on B (ready to start) |
+| C | Doc updates after B1-B6 | ✅ DONE (this session) |
 
 ---
 
