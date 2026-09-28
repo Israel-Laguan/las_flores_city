@@ -70,12 +70,12 @@ flowchart TD
 
 | Folder | Item | Size/box | Depends on |
 |---|---|---|---|
-| [SC-101-module-tree](SC-101-module-tree/) | Create the module tree | S | — |
-| [SC-102-boundary-lint](SC-102-boundary-lint/) | Boundary lint rule | S | SC-101 |
-| [SC-103-schemas-and-roles](SC-103-schemas-and-roles/) | Schemas and roles | M | SC-101 |
+| [SC-101-module-tree](SC-101-module-tree/) | Create the module tree | S | — | ✅ Done |
+| [SC-102-boundary-lint](SC-102-boundary-lint/) | Boundary lint rule | S | SC-101 | ✅ Done |
+| [SC-103-schemas-and-roles](SC-103-schemas-and-roles/) | Schemas and roles | M | SC-101 | ✅ Done |
 | [SC-104-migration-runner](SC-104-migration-runner/) | Migration runner registration | S (reclassified from M) | SC-103 | ✅ Done |
 | [SC-105-ci-job](SC-105-ci-job/) | CI job | S | SC-101, SC-102 | ✅ Done |
-| [SC-106-negative-permission-test](SC-106-negative-permission-test/) | Negative permission test | S | SC-103, SC-104 |
+| [SC-106-negative-permission-test](SC-106-negative-permission-test/) | Negative permission test | S | SC-103, SC-104 | ✅ Done |
 | [SC-S1-entity-edges-projection](SC-S1-entity-edges-projection/) | Project `entity_edges` | 1 day | — |
 | [SC-S2-reachability-cost](SC-S2-reachability-cost/) | Recursive-CTE reachability cost | 0.5 day | SC-S1 |
 | [SC-S3-overlay-view](SC-S3-overlay-view/) | Overlay view ADD+MODIFY | 1 day | SC-S1 |

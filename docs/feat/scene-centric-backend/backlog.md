@@ -20,29 +20,29 @@
 |---|---|---|---|
 | SC-101 | Create `api/{contracts,planning,runtime}` tree with per-module tsconfig projects | S | **Done** |
 | SC-102 | Lint rule forbidding planning↔runtime imports, proven by a fixture violation in CI | S | **Done** |
-| SC-103 | Create `planning` / `runtime` schemas and two DB roles with grants per `architecture.md` §3 | M | **Ready** |
-| SC-104 | Extend the existing migration runner to the new schemas, reusing migration-log idempotency | M | **Ready** |
+| SC-103 | Create `planning` / `runtime` schemas and two DB roles with grants per `architecture.md` §3 | M | **Done** |
+| SC-104 | Extend the existing migration runner to the new schemas, reusing migration-log idempotency | M | **Done** |
 | SC-105 | CI job: typecheck, lint incl. boundary rule, unit tests across three modules | S | **Done** |
-| SC-106 | Verify the runtime role cannot read or write `planning` — negative test | S | **Ready** |
+| SC-106 | Verify the runtime role cannot read or write `planning` — negative test | S | **Done** |
 
 ## SC-E2 — Flags & conditions · F1, F2 · SC-M1
 
 | ID | Story | Size | State |
 |---|---|---|---|
-| SC-201 | Flag definition shape in `contracts/flags` — slug, meaning, latching vs. tracking | S | **Ready** |
-| SC-202 | Flag registry storage + repository in `planning/canon` | M | **Ready** |
-| SC-203 | Condition grammar type in `contracts/condition` — discrete flag tests only, no continuous values | M | **Ready** |
-| SC-204 | Condition evaluator, single implementation, consumed by both modules | M | Blocked: SC-203 |
-| SC-205 | Track which flags are set and read, per entity, as the input to tier-3 | M | Blocked: SC-202 |
-| SC-206 | Threshold-crossing sets a flag as a persisted event (fixture-backed mechanism) — real-stat wiring is follow-up blocked on S3 / SC-811 | M | **Ready** (fixture scope); real-stat integration **Blocked: S3** |
+| SC-201 | Flag definition shape in `contracts/flags` — slug, meaning, latching vs. tracking | S | **Done** |
+| SC-202 | Flag registry storage + repository in `planning/canon` | M | **Done** |
+| SC-203 | Condition grammar type in `contracts/condition` — discrete flag tests only, no continuous values | M | **Done** |
+| SC-204 | Condition evaluator, single implementation, consumed by both modules | M | **Done** |
+| SC-205 | Track which flags are set and read, per entity, as the input to tier-3 | M | **Done** |
+| SC-206 | Threshold-crossing sets a flag as a persisted event (fixture-backed mechanism) — real-stat wiring is follow-up blocked on S3 / SC-811 | M | **Done** (fixture scope); real-stat integration **Blocked: S3** |
 
 ## SC-E3 — Scene model & composition · F3, F7 · SC-M2
 
 | ID | Story | Size | State |
 |---|---|---|---|
-| SC-301 | Scene entity: location, time, weather, participants, items, dialogue refs | M | Blocked: SC-204 |
-| SC-302 | Role slots as a scene attribute — slot id, cast, position | M | Blocked: SC-301 |
-| SC-303 | Base + overlay composition with priority ordering | M | Blocked: SC-301 |
+| SC-301 | Scene entity: location, time, weather, participants, items, dialogue refs | M | **In Progress** |
+| SC-302 | Role slots as a scene attribute — slot id, cast, position | M | **In Progress** |
+| SC-303 | Base + overlay composition with priority ordering | M | **In Progress** |
 | SC-304 | Exclusive vs. additive property resolution; equal-priority conflict fails compile | M | Blocked: A3 |
 | SC-305 | Weather: compile resolves `scene.weather` over `district.weather` and persists the resolved value on the artifact; runtime only reads that artifact field before `buildBackgroundHints` (A6 — `spikes/SC-S5-weather-source.md`) | S | Blocked: SC-301, SC-309, F4 |
 | SC-306 | Personality dialogue pools, shared many-to-many across characters | M | Blocked: SC-301 |

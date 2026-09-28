@@ -618,8 +618,11 @@ export async function getSnapshotContentUrl(
 ): Promise<string | null> {
   const chunkKey = buildSnapshotChunkKey({ treeId, setHash, nsfw, alignment });
 
+  // Snapshots are written at revision 0 (see upsertSnapshotChunk). Scope the
+  // lookup so a same-key non-snapshot / other-rev row cannot win (D1 / R12).
   const result = await queryContent<{ content_url: string | null }>(
-    `SELECT content_url FROM dialogue_chunks WHERE tree_id = $1 AND chunk_key = $2`,
+    `SELECT content_url FROM dialogue_chunks
+      WHERE tree_id = $1 AND chunk_key = $2 AND revision = 0`,
     [treeId, chunkKey]
   );
 

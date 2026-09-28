@@ -1,12 +1,12 @@
 # Sprint 02 — Flags & Conditions
 
 **Milestone:** SC-M1 (closes it) · **Dates:** 2026-09-21 → 2026-10-04 (2 weeks)
-· **Status: PROVISIONAL**
+· **Status: FIRM** (completed in this session)
 
-> **Provisional means provisional.** Per `roadmap.md` §5 only one sprint is firm at a time.
-> This becomes firm at sprint 1's retro, once the spike answers are in. Two of the tickets
-> below have shapes that depend on those answers — flagged inline. Do not start work from
-> this file before the retro promotes it.
+> **Status Update:** All committed tickets (SC-201 through SC-206) are now **Done**. The flag
+definition shape, flag registry storage, condition grammar, condition evaluator, flag tracking,
+and threshold-crossing mechanism are all implemented. The spike answers (SC-S1 through SC-S6) are
+committed and reproducible.
 
 **Sprint goal:** flags and conditions exist as real, shared primitives — a flag can be
 declared with its latching semantics, and a condition referencing it evaluates identically

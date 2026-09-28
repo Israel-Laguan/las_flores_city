@@ -5,7 +5,7 @@ around the **scene** as the unit of composition rather than the character. Built
 `api/` tree alongside the existing `server/`, `scripts/`, and `content/`, which keep
 working until each old component's kill condition is met.
 
-**Status:** planning complete, nothing built. Sprint 1 is firm; everything past sprint 2 is
+**Status:** SC-M1 complete; SC-M2+ not started. Sprint 1 is firm; everything past sprint 2 is
 provisional and revised at retro.
 
 ---
