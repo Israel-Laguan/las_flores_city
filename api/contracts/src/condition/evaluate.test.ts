@@ -8,10 +8,8 @@ import {
   evaluateWithFlagObject,
   flagSetFromObject,
   flagObjectFromSet,
-  TRUE,
-  FALSE,
 } from './evaluate.js';
-import { flag, not, and, or } from './expression.js';
+import { flag, not, and, or, TRUE, FALSE } from './expression.js';
 import type { ConditionExpr } from './expression.js';
 
 describe('condition evaluator', () => {

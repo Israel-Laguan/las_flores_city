@@ -40,20 +40,14 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS planning._check_flag_slug ON planning.flag_definitions;
-CREATE TRIGGER planning._check_flag_slug
+DROP TRIGGER IF EXISTS _check_flag_slug ON planning.flag_definitions;
+CREATE TRIGGER _check_flag_slug
   BEFORE INSERT OR UPDATE ON planning.flag_definitions
   FOR EACH ROW
   EXECUTE FUNCTION planning._validate_flag_slug();
 
--- Updated_at auto-update trigger
-DROP TRIGGER IF EXISTS planning._update_flag_definitions_updated_at ON planning.flag_definitions;
-CREATE TRIGGER planning._update_flag_definitions_updated_at
-  BEFORE UPDATE ON planning.flag_definitions
-  FOR EACH ROW
-  EXECUTE FUNCTION planning._set_updated_at();
-
--- Create the helper function for updated_at if it doesn't exist
+-- Helper function for updated_at. MUST be created before the trigger that
+-- references it — CREATE TRIGGER fails outright if the function is missing.
 CREATE OR REPLACE FUNCTION planning._set_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -61,6 +55,13 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
+-- Updated_at auto-update trigger
+DROP TRIGGER IF EXISTS _update_flag_definitions_updated_at ON planning.flag_definitions;
+CREATE TRIGGER _update_flag_definitions_updated_at
+  BEFORE UPDATE ON planning.flag_definitions
+  FOR EACH ROW
+  EXECUTE FUNCTION planning._set_updated_at();
 
 -- ============================================================
 -- Access Control
@@ -110,13 +111,18 @@ CREATE TABLE IF NOT EXISTS runtime.flag_state (
   PRIMARY KEY (flag_slug, context_type, context_id)
 );
 
--- Grant access to flag_state
-GRANT ALL PRIVILEGES ON TABLE runtime.flag_state TO runtime;
+-- Runtime is READ-ONLY on flag_state: planning writes, runtime reads.
+-- A bare GRANT ALL here would hand runtime INSERT/UPDATE/DELETE/TRUNCATE and defeat
+-- planning's threshold and latching rules, so revoke first and grant only SELECT.
+REVOKE ALL ON TABLE runtime.flag_state FROM runtime;
 GRANT SELECT ON TABLE runtime.flag_state TO runtime;
 
 -- Planning also needs write access to flag_state
--- (planning sets flag states based on threshold crossings and other events)
-GRANT INSERT, UPDATE ON TABLE runtime.flag_state TO planning;
+-- (planning sets flag states based on threshold crossings and other events).
+-- Postgres requires SELECT on the columns an UPDATE reads in WHERE/SET and on the
+-- columns used by INSERT ... ON CONFLICT DO UPDATE, so SELECT is required too.
+GRANT USAGE ON SCHEMA runtime TO planning;
+GRANT SELECT, INSERT, UPDATE ON TABLE runtime.flag_state TO planning;
 
 -- Revoke from public
 REVOKE ALL ON TABLE runtime.flag_state FROM PUBLIC;

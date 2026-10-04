@@ -68,19 +68,19 @@ flowchart TD
 
 ## Index
 
-| Folder | Item | Size/box | Depends on |
-|---|---|---|---|
+| Folder | Item | Size/box | Depends on | Status |
+|---|---|---|---|---|
 | [SC-101-module-tree](SC-101-module-tree/) | Create the module tree | S | — | ✅ Done |
 | [SC-102-boundary-lint](SC-102-boundary-lint/) | Boundary lint rule | S | SC-101 | ✅ Done |
 | [SC-103-schemas-and-roles](SC-103-schemas-and-roles/) | Schemas and roles | M | SC-101 | ✅ Done |
 | [SC-104-migration-runner](SC-104-migration-runner/) | Migration runner registration | S (reclassified from M) | SC-103 | ✅ Done |
 | [SC-105-ci-job](SC-105-ci-job/) | CI job | S | SC-101, SC-102 | ✅ Done |
 | [SC-106-negative-permission-test](SC-106-negative-permission-test/) | Negative permission test | S | SC-103, SC-104 | ✅ Done |
-| [SC-S1-entity-edges-projection](SC-S1-entity-edges-projection/) | Project `entity_edges` | 1 day | — |
-| [SC-S2-reachability-cost](SC-S2-reachability-cost/) | Recursive-CTE reachability cost | 0.5 day | SC-S1 |
-| [SC-S3-overlay-view](SC-S3-overlay-view/) | Overlay view ADD+MODIFY | 1 day | SC-S1 |
-| [SC-S4-pg-trgm-alias-detection](SC-S4-pg-trgm-alias-detection/) | `pg_trgm` alias detection | 0.5 day | — |
-| [SC-S5-weather-source](SC-S5-weather-source/) | Weather source decision | 0.5 day | — |
-| [SC-S6-serving-baseline](SC-S6-serving-baseline/) | Serving baseline | 1 day | — |
-| [D1-revision-scoped-chunk-lookup](D1-revision-scoped-chunk-lookup/) | Revision-scoped chunk lookup | M | — |
-| [D2-choice-reachability-validation](D2-choice-reachability-validation/) | Choice-reachability validation | M | — |
+| [SC-S1-entity-edges-projection](SC-S1-entity-edges-projection/) | Project `entity_edges` | 1 day | — | ✅ Done |
+| [SC-S2-reachability-cost](SC-S2-reachability-cost/) | Recursive-CTE reachability cost | 0.5 day | SC-S1 | ✅ Done |
+| [SC-S3-overlay-view](SC-S3-overlay-view/) | Overlay view ADD+MODIFY | 1 day | SC-S1 | ✅ Done |
+| [SC-S4-pg-trgm-alias-detection](SC-S4-pg-trgm-alias-detection/) | `pg_trgm` alias detection | 0.5 day | — | ✅ Done |
+| [SC-S5-weather-source](SC-S5-weather-source/) | Weather source decision | 0.5 day | — | ✅ Done |
+| [SC-S6-serving-baseline](SC-S6-serving-baseline/) | Serving baseline | 1 day | — | ✅ Done |
+| [D1-revision-scoped-chunk-lookup](D1-revision-scoped-chunk-lookup/) | Revision-scoped chunk lookup | M | — | ✅ Done |
+| [D2-choice-reachability-validation](D2-choice-reachability-validation/) | Choice-reachability validation | M | — | ✅ Done |

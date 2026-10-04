@@ -6,6 +6,13 @@
 
 **Status:** A1-A4 COMPLETED. B1-B6 COMPLETED. C COMPLETED. ALL TASKS FROM CLOSEOUT_TASKS.md COMPLETE.
 
+> **How to read this file.** This is a point-in-time gap analysis written *before* the work
+> landed. The banner above is authoritative: **every task below is DONE**. The prose under
+> each task ("Not done. No code exists for flags anywhere.") describes the gap as it stood
+> when this document was written and is retained as history — it is not a statement about
+> the current state of the branch. Milestone status lives in
+> [README.md](README.md); per-story states live in [backlog.md](backlog.md).
+
 ### Progress Summary
 | Part | Task | Status |
 |------|------|--------|
@@ -22,7 +29,9 @@
 
 ### A1. Commit spike harnesses (SC-S7 follow-up)
 
-**Status:** Not done. Spike write-ups (S1–S6) exist in `spikes/`, but the scripts that reproduce their numbers are on separate `spike/sc-s*` branches, not merged. `spikes/README.md` records this as a known gap.
+**Status:** DONE — the harnesses are committed under `server/scripts/`.
+
+> *Historical (at time of writing):* Spike write-ups (S1–S6) exist in `spikes/`, but the scripts that reproduce their numbers were on separate `spike/sc-s*` branches, not merged.
 
 **Files to create:**
 
@@ -52,7 +61,9 @@ For each spike:
 
 ### A2. Implement api/contracts primitives (SC-102 residual DoD)
 
-**Status:** Not done. The api/ tree has workspace scaffolding but only stub `index.ts` files. No condition grammar, flag definitions, artifact schemas, or revision interface exist.
+**Status:** DONE — all five primitives are implemented under `api/*/src/`.
+
+> *Historical (at time of writing):* the api/ tree had workspace scaffolding but only stub `index.ts` files — no condition grammar, flag definitions, artifact schemas, or revision interface.
 
 **Files to create:**
 
@@ -123,7 +134,7 @@ Verify changes read correctly and do not alter the technical content of any othe
 
 ### A4. Preserve SC-102 boundary proof artifact
 
-**Status:** Not done. The SC-102 README claims 8 violation forms were demonstrated but they were "never committed to source." No auditable artifact (saved CI log, test output) exists in the repo.
+**Status:** DONE — closed (the gap description below is the historical assessment at time of writing). The SC-102 README claims 8 violation forms were demonstrated but they were "never committed to source." No auditable artifact (saved CI log, test output) exists in the repo.
 
 **Files to create:**
 
@@ -159,7 +170,7 @@ Verify: this test runs as part of `npm run test:unit --workspace=server` (no DB 
 
 ### B1. SC-201 · Flag definition shape (`contracts/flags`)
 
-**Status:** Not done. No code exists for flags anywhere.
+**Status:** DONE — closed (the gap description below is the historical assessment at time of writing). No code exists for flags anywhere.
 
 **Acceptance criteria (from sprint-02.md):**
 - Type + schema define: `slug`, `meaning`, `semantics: 'latching' | 'tracking'`
@@ -171,7 +182,7 @@ Verify: this test runs as part of `npm run test:unit --workspace=server` (no DB 
 
 ### B2. SC-202 · Flag registry storage + repository (`planning/canon`)
 
-**Status:** Not done. No `planning/flag_definitions` table or repository exists.
+**Status:** DONE — closed (the gap description below is the historical assessment at time of writing). No `planning/flag_definitions` table or repository exists.
 
 **Acceptance criteria:**
 - Migration creates registry table in `planning` schema (new migration file 096+)
@@ -181,7 +192,7 @@ Verify: this test runs as part of `npm run test:unit --workspace=server` (no DB 
 
 ### B3. SC-203 · Condition grammar type (`contracts/condition`)
 
-**Status:** Not done. No condition grammar exists.
+**Status:** DONE — closed (the gap description below is the historical assessment at time of writing). No condition grammar exists.
 
 **Note:** Depends on A2. If A2 was done, verify the grammar matches the SC-203 spec exactly:
 - Flag test, negation, `and`, `or`, literal always-true/always-false
@@ -191,7 +202,7 @@ Verify: this test runs as part of `npm run test:unit --workspace=server` (no DB 
 
 ### B4. SC-204 · Condition evaluator (`contracts/condition`)
 
-**Status:** Not done.
+**Status:** DONE — closed (the gap description below is the historical assessment at time of writing).
 
 **Acceptance criteria:**
 - One implementation consumed by both `planning/` and `runtime/`
@@ -202,7 +213,7 @@ Verify: this test runs as part of `npm run test:unit --workspace=server` (no DB 
 
 ### B5. SC-205 · Flag set/read tracking (`planning`)
 
-**Status:** Not done. Depends on SC-202 and SC-203.
+**Status:** DONE — closed (the gap description below is the historical assessment at time of writing). Depends on SC-202 and SC-203.
 
 **Acceptance criteria:**
 - Given an entity payload with conditions/effects, extract flags set vs. flags read
@@ -211,7 +222,7 @@ Verify: this test runs as part of `npm run test:unit --workspace=server` (no DB 
 
 ### B6. SC-206 · Threshold crossing sets a flag as event (fixture-backed)
 
-**Status:** Not done. Depends on SC-202.
+**Status:** DONE — closed (the gap description below is the historical assessment at time of writing). Depends on SC-202.
 
 **Acceptance criteria:**
 - Crossing recorded as event that sets the flag (not derived at read time)

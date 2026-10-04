@@ -1,5 +1,5 @@
 /**
- * SC-S6: Dialogue serving baseline
+ * SC-S6: Dialogue serving baseline (HARNESS NOT YET IMPLEMENTED)
  * Measures p50/p95 for GET /dialogue/active and resolveChunkSpeakers in isolation.
  * 
  * This script seeds one synthetic dialogue tree/chunk (cleaned up in a finally block)
@@ -19,10 +19,21 @@
  *   tsx server/scripts/spike_sc_s6_serving_baseline.ts
  * 
  * Note: This is a TypeScript file that can be run with tsx or node (after compilation).
+ *
+ * ⚠️ NOT REPRODUCIBLE YET. `main()` below performs no seeding, no measurement and no
+ * paired differencing — it exits non-zero with instructions instead. The results recorded
+ * in `docs/feat/scene-centric-backend/spikes/SC-S6-serving-baseline.md` came from an
+ * earlier uncommitted harness and cannot be re-derived until this file implements:
+ *   1. seeding a synthetic tree/chunk (via ContentPublishService — post-M32 the
+ *      node/leaf maps live behind `content_url`, not in DB columns),
+ *   2. a player cursor pointing at it plus a valid bearer token for the HTTP leg,
+ *   3. the three timed measurements above, recorded by iteration index,
+ *   4. per-iteration paired differencing (presigning_i, rest_i),
+ *   5. reporting and cleanup.
+ * Nothing in this file should be read as a reproduction of those numbers.
  */
 
-import { process } from 'node:process';
-import { hrtime } from 'node:hrtime';
+import process, { hrtime } from 'node:process';
 
 // Synthetic dialogue tree/chunk for testing
 const SYNTHETIC_TREE_ID = 'synthetic-s6-test-tree';
@@ -117,27 +128,28 @@ async function runTimedIterations<T>(
  * Main test function
  */
 async function main(): Promise<void> {
-  console.log('=== SC-S6 Serving Baseline ===\n');
-
-  // Note: In a real implementation, this would:
-  // 1. Set up the synthetic dialogue tree/chunk in the database
-  // 2. Run the measurements
-  // 3. Clean up the synthetic data
-  
-  // For now, this is a placeholder that demonstrates the structure.
-  // The actual implementation would need database access.
-
-  console.log('Note: This script requires a running server with the following endpoints:');
-  console.log('  - GET /dialogue/active');
-  console.log('  - Access to resolveChunkSpeakers function');
-  console.log('\nActual implementation would:');
-  console.log('1. Seed synthetic dialogue tree/chunk with real character references');
-  console.log('2. Measure GET /dialogue/active (full endpoint)');
-  console.log('3. Measure resolveChunkSpeakers() in isolation');
-  console.log('4. Measure bulk characters SELECT alone');
-  console.log('5. Compute per-iteration differences for presigning and rest costs');
-  console.log('6. Report p50/p95/percentages');
-  console.log('\nPlaceholder implementation complete.');
+  console.error(
+    'SC-S6 harness is NOT implemented. This script currently performs no\n' +
+      'seeding, measurement or differencing, so it cannot reproduce the baseline\n' +
+      'recorded in docs/feat/scene-centric-backend/spikes/SC-S6-serving-baseline.md.\n\n' +
+      'To implement it, this script must:\n' +
+      '  1. Seed a synthetic dialogue tree/chunk (ContentPublishService.publishDialogueTree —\n' +
+      '     post-M32 the node/leaf maps live behind content_url, not in DB columns) whose 3\n' +
+      `     nodes reference the characters ${TEST_CHARACTER_IDS.join(', ')}.\n` +
+      '  2. Point a player cursor at it and mint a bearer token for the HTTP leg.\n' +
+      `  3. Measure ${WARMUP_ITERATIONS} warmup + ${TIMED_ITERATIONS} timed iterations of:\n` +
+      '       - GET /dialogue/active (full endpoint, blackbox HTTP)\n' +
+      '       - resolveChunkSpeakers() called directly\n' +
+      '       - the bulk characters SELECT alone\n' +
+      '  4. Compute the paired per-iteration differences:\n' +
+      '       presigning_i = resolveChunkSpeakers_i - bulkSelect_i\n' +
+      '       rest_i        = endpoint_i - resolveChunkSpeakers_i\n' +
+      '     then report p50/p95 from those difference distributions.\n' +
+      '  5. Clean up the synthetic data in a finally block.\n',
+  );
+  throw new Error(
+    'SC-S6 harness not implemented — see the instructions above and the file header.',
+  );
 }
 
 // Run and handle errors

@@ -19,14 +19,18 @@ spike measures reachability against the edges that actually exist and actually c
 ## What was run
 
 Query (`server/scripts/spikes/sc-s2-reachability.sql`), invoked via
-`server/scripts/spikes/sc-s2-run.mjs` (both now committed). **Note:** The SQL body inlined below has
-been updated post-measurement to be type-aware (node_type/node_slug, from_type joins);
-the EXPLAIN ANALYZE blocks below were recorded from an earlier node-level shape
-(from_slug only, NO type joins). This mismatch was discovered post-SC-S3 review when the
-choice-level limitation became apparent. **To reproduce the numbers below, use the node-level
-SQL archived here** (earlier revision, not re-runnable from this text), or **re-run with the
-type-aware SQL at `server/scripts/spikes/sc-s2-reachability.sql` and record the new numbers**
-before relying on the latency baseline.
+`server/scripts/spikes/sc-s2-run.mjs` (both now committed).
+
+**The committed `.sql` is the node-level shape, and it is the shape the EXPLAIN ANALYZE
+blocks below were recorded from** (`s.from_slug AS from_node`, anti-join on `from_slug`
+only, no `from_type` joins) — identical to the `reachabilitySql` function in
+`server/scripts/spikes/sc-s3-overlay.mjs`. Re-running the committed file therefore
+reproduces the numbers below. The **type-aware variant (node_type/node_slug, `from_type`
+joins) exists only in this document**, inlined below; it is *not* committed and is *not*
+what was measured. Re-running the committed query will not produce type-aware
+measurements — if you want those, execute the inlined body directly and record new
+numbers before relying on them. The mismatch was discovered post-SC-S3 review when the
+choice-level limitation became apparent.
 
 ```sql
 WITH RECURSIVE flag_edges AS (

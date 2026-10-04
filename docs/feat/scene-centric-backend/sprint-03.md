@@ -83,12 +83,26 @@ verified. SC-301 through SC-303 have internal dependencies:
 
 ## 4. Definition of Done
 
-For this sprint, DoD is the SC-M2 exit criteria:
-- Two hand-authored scenes at one location — a base and a flag-gated overlay — compile to
-  artifacts and resolve to different results as the flag flips.
-- Equal-priority conflict on an exclusive property fails the compile.
-- The revision pointer flips atomically and rolls back by flipping it again.
-- A personality pool shared by two characters resolves correctly for both.
+**In scope for this sprint (SC-301, SC-302, SC-303):**
+- The scene entity is a first-class authored object with location, time, weather,
+  participants, items, and dialogue references, weather resolving scene-over-district.
+- Participants are assigned to role slots (`slot_id`, `cast`, `position`), slot ids unique
+  within a scene, a null cast meaning unassigned.
+- Base + overlay composition applies the documented merge/replace rules with priority
+  ordering, and is resolved at compile time rather than at runtime.
+
+**Out of scope for this sprint — required for the SC-M2 exit criteria but owned by other
+sprints.** SC-M2 cannot close until these land; they are *not* sprint-03 commitments:
+
+| Exit criterion | Owning story | Sprint |
+|---|---|---|
+| A base and a flag-gated overlay compile to artifacts that resolve differently as the flag flips | SC-401, SC-402 | SC-E4 (compile & publish) |
+| Equal-priority conflict on an exclusive property fails the compile | SC-304 | follow-on to sprint 03 |
+| The revision pointer flips atomically and rolls back by re-flipping | SC-404 | SC-E4 (compile & publish) |
+| A personality pool shared by two characters resolves correctly for both | SC-306 | follow-on to sprint 03 |
+
+(`backlog.md` lists SC-304 and SC-306 as `Blocked: SC-301` — they unblock once this sprint's
+scene entity lands.)
 
 ---
 

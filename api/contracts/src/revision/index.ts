@@ -1,18 +1,21 @@
 // api/contracts/src/revision/index.ts
 // Re-exports for revision module.
 
-export type { RevisionId, ISODateString as RevisionISODateString } from './revision-pointer.js';
-export {
-  RevisionPointer,
-  RevisionPointerRead,
-  RevisionPointerCreate,
-  RevisionPointerCreated,
+export type {
   AtomicFlip,
   AtomicFlipResult,
+  ISODateString as RevisionISODateString,
+  RevisionId,
+  RevisionPointer,
+  RevisionPointerCreate,
+  RevisionPointerCreated,
+  RevisionPointerRead,
   RevisionPointerReader,
-  RevisionPointerWriter,
   RevisionPointerRepository,
+  RevisionPointerWriter,
+} from './revision-pointer.js';
+export {
+  createRevisionPointer,
   isRevisionPointer,
   isRevisionPointerRead,
-  createRevisionPointer,
 } from './revision-pointer.js';

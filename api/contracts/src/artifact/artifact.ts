@@ -162,36 +162,70 @@ export function createArtifactId(contentHash: ContentHash): ArtifactId {
 }
 
 /**
+ * The complete set of valid ArtifactType values.
+ * Exported so guards and validation share one source of truth.
+ */
+export const ARTIFACT_TYPES: ReadonlySet<string> = new Set<ArtifactType>([
+  'scene',
+  'dialogue',
+  'mission',
+  'character',
+  'overlay',
+]);
+
+/**
  * Type guard for Artifact.
+ *
+ * Checks every field the Artifact interface declares, including the ones whose
+ * absence previously slipped through: artifact_type must be a known
+ * ArtifactType, manifest_version must be exactly 1, and dependencies must be
+ * an array of strings (a missing/!Array.dependencies would make downstream
+ * `.map()` throw).
  */
 export function isArtifact(value: unknown): value is Artifact {
   if (typeof value !== 'object' || value === null) {
     return false;
   }
   const obj = value as Record<string, unknown>;
+  return obj.manifest_version === 1 && isArtifactBody(obj);
+}
+
+/**
+ * Shared field checks for an artifact payload, excluding manifest_version.
+ * ArtifactManifest.artifact is an Omit<Artifact, 'manifest_version'>, so the
+ * manifest guard cannot delegate to isArtifact directly.
+ */
+function isArtifactBody(obj: Record<string, unknown>): boolean {
   return (
     typeof obj.artifact_id === 'string' &&
     typeof obj.artifact_type === 'string' &&
+    ARTIFACT_TYPES.has(obj.artifact_type) &&
     typeof obj.content_hash === 'string' &&
-    typeof obj.manifest_version === 'number' &&
     typeof obj.name === 'string' &&
     typeof obj.created_at === 'string' &&
-    typeof obj.size_bytes === 'number'
+    typeof obj.size_bytes === 'number' &&
+    Array.isArray(obj.dependencies) &&
+    obj.dependencies.every((dep): boolean => typeof dep === 'string')
   );
 }
 
 /**
  * Type guard for ArtifactManifest.
+ *
+ * manifest_version must be exactly 1 and artifact must itself be a well-formed
+ * artifact body — accepting any non-null object here let malformed artifacts
+ * through into code that trusts the manifest.
  */
 export function isArtifactManifest(value: unknown): value is ArtifactManifest {
   if (typeof value !== 'object' || value === null) {
     return false;
   }
   const obj = value as Record<string, unknown>;
-  return (
-    typeof obj.manifest_version === 'number' &&
-    typeof obj.artifact === 'object' &&
-    obj.artifact !== null &&
-    typeof obj.content_url === 'string'
-  );
+  if (obj.manifest_version !== 1 || typeof obj.content_url !== 'string') {
+    return false;
+  }
+  if (typeof obj.artifact !== 'object' || obj.artifact === null) {
+    return false;
+  }
+  return isArtifactBody(obj.artifact as Record<string, unknown>);
 }

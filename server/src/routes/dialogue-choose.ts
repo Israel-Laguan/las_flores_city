@@ -314,6 +314,18 @@ async function handleChunkBoundaryChoice(
   res: any,
   effectiveSourceNodes?: Record<string, any>
 ) {
+  // Guard before validation: a chunk with no tree ID can never match the
+  // player's active tree, so return dialogue_tree_mismatch without paying for
+  // (and having side effects from) IronGateValidator.validateChoice first.
+  const treeId = currentChunk.tree_id as string | undefined;
+  if (!treeId) {
+    return res.status(409).json({
+      success: false,
+      error: 'dialogue_tree_mismatch',
+      timestamp: new Date().toISOString(),
+    });
+  }
+
   const validationResult = await IronGateValidator.validateChoice(userId, currentChunkId, choiceId, leaf);
 
   if (!validationResult.success) {
@@ -326,14 +338,6 @@ async function handleChunkBoundaryChoice(
   // Early validation already enforced tree/rev/current_chunk match. Prefer the
   // player's pinned revision including 0 (pinned===0 is a real pin, not "unset").
   // Fall back to the validated chunk revision only when no pin row exists.
-  const treeId = currentChunk.tree_id as string | undefined;
-  if (!treeId) {
-    return res.status(409).json({
-      success: false,
-      error: 'dialogue_tree_mismatch',
-      timestamp: new Date().toISOString(),
-    });
-  }
   const treeRevision =
     typeof cursor?.pinned_tree_revision === 'number'
       ? cursor.pinned_tree_revision

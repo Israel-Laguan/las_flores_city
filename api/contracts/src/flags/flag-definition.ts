@@ -87,15 +87,6 @@ export function validateFlagSlug(slug: string): void {
       'slug must start with a letter or underscore and contain only letters, digits, and underscores',
     );
   }
-
-  // Reserved prefixes/suffixes that would conflict with internal naming
-  const reservedPrefixes = ['_', '__'];
-  if (reservedPrefixes.some((p) => slug.startsWith(p))) {
-    throw new InvalidFlagSlugError(
-      slug,
-      'slug must not start with reserved prefixes (_, __)',
-    );
-  }
 }
 
 /**

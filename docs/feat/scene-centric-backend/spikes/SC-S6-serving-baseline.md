@@ -51,7 +51,12 @@ bias of subtracting aggregate percentiles (`p50(total) − p50(select)` is not `
 difference)`). The blackbox HTTP overhead (~1-2ms fetch) remains as a stated
 approximation within each `rest_i`, not removed by aggregate math.
 
-**Reproducibility:** The harness is now committed at `server/scripts/spike_sc_s6_serving_baseline.ts`.
+**Reproducibility:** **Not reproducible from the committed script.** The harness skeleton is
+committed at `server/scripts/spike_sc_s6_serving_baseline.ts`, but its `main()` performs no
+seeding, no measurements, and no paired differencing — it prints a placeholder notice and
+exits. The raw results below were captured from an earlier, uncommitted harness and cannot
+be re-derived until the seeding/measurement/reporting/cleanup steps are implemented in that
+file. Until then, treat the numbers here as a historical record, not a reproducible baseline.
 
 ## Raw results
 

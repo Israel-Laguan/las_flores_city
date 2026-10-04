@@ -7,11 +7,9 @@
  * 
  * Tests all 8 violation forms + 8 allowlisted forms.
  */
-import { describe, test, expect, beforeEach, afterEach } from '@jest/globals';
-import { ESLint } from 'eslint';
-import fs from 'fs';
+import { describe, test, expect } from '@jest/globals';
+import { ESLint, type Linter } from 'eslint';
 import path from 'path';
-import os from 'os';
 
 // ============================================================
 // Constants
@@ -40,28 +38,28 @@ const VIOLATION_FIXTURES: Record<string, FixtureFile> = {
   // planning -> runtime (relative import)
   'planning_to_runtime_relative': {
     name: 'planning_to_runtime_relative.ts',
-    content: `import { something } from '../runtime/src/index.js';
+    content: `import { something } from '../runtime/src/index';
 `,
   },
 
   // runtime -> planning (relative import)
   'runtime_to_planning_relative': {
     name: 'runtime_to_planning_relative.ts',
-    content: `import { something } from '../planning/src/index.js';
+    content: `import { something } from '../planning/src/index';
 `,
   },
 
   // contracts -> planning (relative import)
   'contracts_to_planning_relative': {
     name: 'contracts_to_planning_relative.ts',
-    content: `import { something } from '../planning/src/index.js';
+    content: `import { something } from '../planning/src/index';
 `,
   },
 
   // contracts -> runtime (relative import)
   'contracts_to_runtime_relative': {
     name: 'contracts_to_runtime_relative.ts',
-    content: `import { something } from '../runtime/src/index.js';
+    content: `import { something } from '../runtime/src/index';
 `,
   },
 
@@ -99,14 +97,14 @@ const ALLOWLISTED_FIXTURES: Record<string, FixtureFile> = {
   // planning -> contracts (relative import)
   'planning_to_contracts_relative': {
     name: 'planning_to_contracts_relative.ts',
-    content: `import { FlagDefinition } from '../contracts/src/flags/flag-definition.js';
+    content: `import { FlagDefinition } from '../contracts/src/flags/flag-definition';
 `,
   },
 
   // runtime -> contracts (relative import)
   'runtime_to_contracts_relative': {
     name: 'runtime_to_contracts_relative.ts',
-    content: `import { ConditionExpr, evaluate } from '../contracts/src/index.js';
+    content: `import { ConditionExpr, evaluate } from '../contracts/src/index';
 `,
   },
 
@@ -127,14 +125,14 @@ const ALLOWLISTED_FIXTURES: Record<string, FixtureFile> = {
   // planning -> contracts subpath (relative import)
   'planning_to_contracts_subpath_relative': {
     name: 'planning_to_contracts_subpath_relative.ts',
-    content: `import { ConditionExpr } from '../contracts/src/condition/expression.js';
+    content: `import { ConditionExpr } from '../contracts/src/condition/expression';
 `,
   },
 
   // runtime -> contracts subpath (relative import)
   'runtime_to_contracts_subpath_relative': {
     name: 'runtime_to_contracts_subpath_relative.ts',
-    content: `import { flag, and } from '../contracts/src/condition/expression.js';
+    content: `import { flag, and } from '../contracts/src/condition/expression';
 `,
   },
 
@@ -157,44 +155,49 @@ const ALLOWLISTED_FIXTURES: Record<string, FixtureFile> = {
 // ESLint Setup
 // ============================================================
 
+// ESLint 10 is flat-config only: useEslintrc / rulePaths / string-array plugins
+// were removed, and spreading a zone's exported config array into the legacy
+// baseConfig produced numeric object keys rather than passing the array.
+//
+// The zone config is require()d and handed over as `overrideConfig` (with
+// overrideConfigFile: true so ESLint stops looking for a config file) instead of
+// via `overrideConfigFile: <path>` — the latter makes ESLint dynamically
+// import() the file, which needs --experimental-vm-modules and fails under
+// ts-jest. The zone file already spreads the shared base config and the
+// boundary helper, so nothing else needs composing.
 async function getESLintForZone(zone: string): Promise<ESLint> {
-  const eslint = new ESLint({
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const zoneConfig = require(path.join(API_DIR, zone, 'eslint.config.cjs')) as Linter.Config[];
+  return new ESLint({
     cwd: API_DIR,
-    useEslintrc: false,
-    baseConfig: {
-      // Use the base config from the repo
-      extends: path.resolve(REPO_ROOT, 'eslint.config.base.cjs'),
-      ...require(path.resolve(API_DIR, zone, 'eslint.config.cjs')),
-    },
-    rulePaths: [path.resolve(API_DIR, 'eslint.boundary.cjs')],
-    plugins: ['import-x'],
+    overrideConfigFile: true,
+    overrideConfig: zoneConfig,
   });
-
-  return eslint;
 }
 
 // ============================================================
 // Helper Functions
 // ============================================================
 
-function createTempDir(): string {
-  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'eslint-boundary-'));
-  return tmpDir;
-}
-
-function writeFixture(tmpDir: string, fixture: FixtureFile, subDir: string = ''): string {
-  const fullPath = path.join(tmpDir, subDir, fixture.name);
-  fs.mkdirSync(path.dirname(fullPath), { recursive: true });
-  fs.writeFileSync(fullPath, fixture.content);
-  return fullPath;
-}
-
-function cleanupTempDir(tmpDir: string): void {
-  try {
-    fs.rmSync(tmpDir, { recursive: true, force: true });
-  } catch {
-    // Ignore cleanup errors
-  }
+/**
+ * Lint fixture text as if it lived at the ROOT of api/<zone>.
+ *
+ * The file path matters: import-x/no-restricted-paths resolves relative
+ * specifiers against the linted file's location, and the boundary zones are
+ * declared repo-root-relative. Fixtures under /tmp resolved nothing, so the rule
+ * never matched. The fixtures also rely on the sibling-zone layout
+ * (`../runtime/...` from `api/planning/...`), which only holds at the zone root —
+ * hence not `api/<zone>/src/`.
+ */
+async function lintFixture(
+  eslint: ESLint,
+  zone: string,
+  content: string,
+  fileName: string,
+): Promise<ESLint.LintResult[]> {
+  return eslint.lintText(content, {
+    filePath: path.join(API_DIR, zone, fileName),
+  });
 }
 
 /**
@@ -216,16 +219,6 @@ function hasRuleError(messages: Array<{ ruleId: string }>, ruleId: string): bool
 // ============================================================
 
 describe('SC-102 Boundary Enforcement', () => {
-  let tmpDir: string;
-
-  beforeEach(() => {
-    tmpDir = createTempDir();
-  });
-
-  afterEach(() => {
-    cleanupTempDir(tmpDir);
-  });
-
   // ============================================================
   // Violation Tests
   // ============================================================
@@ -245,10 +238,9 @@ describe('SC-102 Boundary Enforcement', () => {
     for (const { name, zone } of violationCases) {
       test(`${name}: ${zone} -> forbidden module`, async () => {
         const fixture = VIOLATION_FIXTURES[name];
-        const fullPath = writeFixture(tmpDir, fixture, zone);
 
         const eslint = await getESLintForZone(zone);
-        const results = await eslint.lintFiles([fullPath]);
+        const results = await lintFixture(eslint, zone, fixture.content, fixture.name);
 
         // Should have at least one lint error
         expect(results[0].errorCount).toBeGreaterThan(0);
@@ -257,8 +249,6 @@ describe('SC-102 Boundary Enforcement', () => {
         const hasBoundaryError = hasBoundaryRuleError(results[0].messages);
         expect(hasBoundaryError).toBe(true);
 
-        // Clean up
-        await eslint.destroy();
       });
     }
   });
@@ -282,10 +272,9 @@ describe('SC-102 Boundary Enforcement', () => {
     for (const { name, zone } of allowlistedCases) {
       test(`${name}: ${zone} -> contracts is allowed`, async () => {
         const fixture = ALLOWLISTED_FIXTURES[name];
-        const fullPath = writeFixture(tmpDir, fixture, zone);
 
         const eslint = await getESLintForZone(zone);
-        const results = await eslint.lintFiles([fullPath]);
+        const results = await lintFixture(eslint, zone, fixture.content, fixture.name);
 
         // Should have no boundary rule errors
         const hasBoundaryError = hasBoundaryRuleError(results[0].messages);
@@ -299,8 +288,6 @@ describe('SC-102 Boundary Enforcement', () => {
         );
         expect(boundaryMessages).toHaveLength(0);
 
-        // Clean up
-        await eslint.destroy();
       });
     }
   });
@@ -311,71 +298,55 @@ describe('SC-102 Boundary Enforcement', () => {
 
   describe('direct import.x/no-restricted-paths tests', () => {
     test('planning -> runtime relative path is blocked', async () => {
-      const content = `import { runtimeReady } from '../runtime/src/index.js';`;
-      const fullPath = path.join(tmpDir, 'planning', 'test.ts');
-      fs.mkdirSync(path.dirname(fullPath), { recursive: true });
-      fs.writeFileSync(fullPath, content);
+      const content = `import { runtimeReady } from '../runtime/src/index';`;
 
       const eslint = await getESLintForZone('planning');
-      const results = await eslint.lintFiles([fullPath]);
+      const results = await lintFixture(eslint, 'planning', content, 'test.ts');
 
       const boundaryMessages = results[0].messages.filter((msg) =>
         msg.ruleId === 'import-x/no-restricted-paths',
       );
       expect(boundaryMessages.length).toBeGreaterThan(0);
 
-      await eslint.destroy();
     });
 
     test('runtime -> planning relative path is blocked', async () => {
-      const content = `import { planningReady } from '../planning/src/index.js';`;
-      const fullPath = path.join(tmpDir, 'runtime', 'test.ts');
-      fs.mkdirSync(path.dirname(fullPath), { recursive: true });
-      fs.writeFileSync(fullPath, content);
+      const content = `import { planningReady } from '../planning/src/index';`;
 
       const eslint = await getESLintForZone('runtime');
-      const results = await eslint.lintFiles([fullPath]);
+      const results = await lintFixture(eslint, 'runtime', content, 'test.ts');
 
       const boundaryMessages = results[0].messages.filter((msg) =>
         msg.ruleId === 'import-x/no-restricted-paths',
       );
       expect(boundaryMessages.length).toBeGreaterThan(0);
 
-      await eslint.destroy();
     });
 
     test('contracts -> planning relative path is blocked', async () => {
-      const content = `import { planningReady } from '../planning/src/index.js';`;
-      const fullPath = path.join(tmpDir, 'contracts', 'test.ts');
-      fs.mkdirSync(path.dirname(fullPath), { recursive: true });
-      fs.writeFileSync(fullPath, content);
+      const content = `import { planningReady } from '../planning/src/index';`;
 
       const eslint = await getESLintForZone('contracts');
-      const results = await eslint.lintFiles([fullPath]);
+      const results = await lintFixture(eslint, 'contracts', content, 'test.ts');
 
       const boundaryMessages = results[0].messages.filter((msg) =>
         msg.ruleId === 'import-x/no-restricted-paths',
       );
       expect(boundaryMessages.length).toBeGreaterThan(0);
 
-      await eslint.destroy();
     });
 
     test('contracts -> runtime relative path is blocked', async () => {
-      const content = `import { runtimeReady } from '../runtime/src/index.js';`;
-      const fullPath = path.join(tmpDir, 'contracts', 'test.ts');
-      fs.mkdirSync(path.dirname(fullPath), { recursive: true });
-      fs.writeFileSync(fullPath, content);
+      const content = `import { runtimeReady } from '../runtime/src/index';`;
 
       const eslint = await getESLintForZone('contracts');
-      const results = await eslint.lintFiles([fullPath]);
+      const results = await lintFixture(eslint, 'contracts', content, 'test.ts');
 
       const boundaryMessages = results[0].messages.filter((msg) =>
         msg.ruleId === 'import-x/no-restricted-paths',
       );
       expect(boundaryMessages.length).toBeGreaterThan(0);
 
-      await eslint.destroy();
     });
   });
 
@@ -386,70 +357,54 @@ describe('SC-102 Boundary Enforcement', () => {
   describe('no-restricted-imports tests', () => {
     test('planning -> @las-flores/api-runtime is blocked', async () => {
       const content = `import { runtimeReady } from '@las-flores/api-runtime';`;
-      const fullPath = path.join(tmpDir, 'planning', 'test.ts');
-      fs.mkdirSync(path.dirname(fullPath), { recursive: true });
-      fs.writeFileSync(fullPath, content);
 
       const eslint = await getESLintForZone('planning');
-      const results = await eslint.lintFiles([fullPath]);
+      const results = await lintFixture(eslint, 'planning', content, 'test.ts');
 
       const boundaryMessages = results[0].messages.filter((msg) =>
         msg.ruleId === 'no-restricted-imports',
       );
       expect(boundaryMessages.length).toBeGreaterThan(0);
 
-      await eslint.destroy();
     });
 
     test('runtime -> @las-flores/api-planning is blocked', async () => {
       const content = `import { planningReady } from '@las-flores/api-planning';`;
-      const fullPath = path.join(tmpDir, 'runtime', 'test.ts');
-      fs.mkdirSync(path.dirname(fullPath), { recursive: true });
-      fs.writeFileSync(fullPath, content);
 
       const eslint = await getESLintForZone('runtime');
-      const results = await eslint.lintFiles([fullPath]);
+      const results = await lintFixture(eslint, 'runtime', content, 'test.ts');
 
       const boundaryMessages = results[0].messages.filter((msg) =>
         msg.ruleId === 'no-restricted-imports',
       );
       expect(boundaryMessages.length).toBeGreaterThan(0);
 
-      await eslint.destroy();
     });
 
     test('contracts -> @las-flores/api-planning is blocked', async () => {
       const content = `import { planningReady } from '@las-flores/api-planning';`;
-      const fullPath = path.join(tmpDir, 'contracts', 'test.ts');
-      fs.mkdirSync(path.dirname(fullPath), { recursive: true });
-      fs.writeFileSync(fullPath, content);
 
       const eslint = await getESLintForZone('contracts');
-      const results = await eslint.lintFiles([fullPath]);
+      const results = await lintFixture(eslint, 'contracts', content, 'test.ts');
 
       const boundaryMessages = results[0].messages.filter((msg) =>
         msg.ruleId === 'no-restricted-imports',
       );
       expect(boundaryMessages.length).toBeGreaterThan(0);
 
-      await eslint.destroy();
     });
 
     test('contracts -> @las-flores/api-runtime is blocked', async () => {
       const content = `import { runtimeReady } from '@las-flores/api-runtime';`;
-      const fullPath = path.join(tmpDir, 'contracts', 'test.ts');
-      fs.mkdirSync(path.dirname(fullPath), { recursive: true });
-      fs.writeFileSync(fullPath, content);
 
       const eslint = await getESLintForZone('contracts');
-      const results = await eslint.lintFiles([fullPath]);
+      const results = await lintFixture(eslint, 'contracts', content, 'test.ts');
 
       const boundaryMessages = results[0].messages.filter((msg) =>
         msg.ruleId === 'no-restricted-imports',
       );
       expect(boundaryMessages.length).toBeGreaterThan(0);
 
-      await eslint.destroy();
     });
   });
 
@@ -460,36 +415,28 @@ describe('SC-102 Boundary Enforcement', () => {
   describe('allowlisted package imports pass', () => {
     test('planning -> @las-flores/api-contracts is allowed', async () => {
       const content = `import { FlagDefinition } from '@las-flores/api-contracts';`;
-      const fullPath = path.join(tmpDir, 'planning', 'test.ts');
-      fs.mkdirSync(path.dirname(fullPath), { recursive: true });
-      fs.writeFileSync(fullPath, content);
 
       const eslint = await getESLintForZone('planning');
-      const results = await eslint.lintFiles([fullPath]);
+      const results = await lintFixture(eslint, 'planning', content, 'test.ts');
 
       const boundaryMessages = results[0].messages.filter((msg) =>
         msg.ruleId === 'no-restricted-imports',
       );
       expect(boundaryMessages).toHaveLength(0);
 
-      await eslint.destroy();
     });
 
     test('runtime -> @las-flores/api-contracts is allowed', async () => {
       const content = `import { ConditionExpr } from '@las-flores/api-contracts';`;
-      const fullPath = path.join(tmpDir, 'runtime', 'test.ts');
-      fs.mkdirSync(path.dirname(fullPath), { recursive: true });
-      fs.writeFileSync(fullPath, content);
 
       const eslint = await getESLintForZone('runtime');
-      const results = await eslint.lintFiles([fullPath]);
+      const results = await lintFixture(eslint, 'runtime', content, 'test.ts');
 
       const boundaryMessages = results[0].messages.filter((msg) =>
         msg.ruleId === 'no-restricted-imports',
       );
       expect(boundaryMessages).toHaveLength(0);
 
-      await eslint.destroy();
     });
   });
 });

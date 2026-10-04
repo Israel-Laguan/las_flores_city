@@ -277,25 +277,34 @@ export function equals(a: ConditionExpr, b: ConditionExpr): boolean {
     return false;
   }
 
+  // `b` is not narrowed by the switch on `a.type` alone — the early
+  // `a.type !== b.type` guard does not narrow `b` on this TS version — so each
+  // case re-checks the discriminant before touching `b`'s fields.
   switch (a.type) {
     case 'flag':
-      return a.flag === b.flag && a.expected === b.expected;
+      return (
+        a.flag === (b as FlagCondition).flag &&
+        a.expected === (b as FlagCondition).expected
+      );
     case 'not':
-      return equals(a.expr, b.expr);
+      return equals(a.expr, (b as NotCondition).expr);
     case 'and':
-      return (
-        a.exprs.length === b.exprs.length &&
-        a.exprs.every((expr, i) => equals(expr, b.exprs[i]))
-      );
+      return equalsExprLists(a.exprs, (b as AndCondition).exprs);
     case 'or':
-      return (
-        a.exprs.length === b.exprs.length &&
-        a.exprs.every((expr, i) => equals(expr, b.exprs[i]))
-      );
+      return equalsExprLists(a.exprs, (b as OrCondition).exprs);
     case 'true':
     case 'false':
       return true; // Both are the same singleton
     default:
       return false;
   }
+}
+
+function equalsExprLists(
+  a: ReadonlyArray<ConditionExpr>,
+  b: ReadonlyArray<ConditionExpr>,
+): boolean {
+  return (
+    a.length === b.length && a.every((expr, i) => equals(expr, b[i]))
+  );
 }

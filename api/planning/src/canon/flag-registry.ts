@@ -7,6 +7,7 @@ import type {
   FlagDefinition,
   FlagSemantics,
 } from '@las-flores/api-contracts';
+import { validateFlagSlug } from '@las-flores/api-contracts';
 
 /**
  * Input for creating a new flag definition.
@@ -172,6 +173,11 @@ export class InMemoryFlagRegistry implements FlagRegistry {
   private retired = new Set<string>();
 
   async create(input: CreateFlagInput): Promise<FlagDefinitionWithMetadata> {
+    // The registry contract says create validates the slug format; without this
+    // the in-memory implementation accepted slugs production must reject, so
+    // tests could pass on a definition the DB trigger would refuse.
+    validateFlagSlug(input.slug);
+
     const now = new Date().toISOString();
     const flag: FlagDefinitionWithMetadata = {
       slug: input.slug,
@@ -193,17 +199,23 @@ export class InMemoryFlagRegistry implements FlagRegistry {
     return this.flags.get(slug);
   }
 
+  /**
+   * All flags, retired included (retire never deletes — the row is kept for audit).
+   */
   async list(): Promise<FlagDefinitionWithMetadata[]> {
     return Array.from(this.flags.values()).sort(
       (a, b) => a.createdAt.localeCompare(b.createdAt),
     );
   }
 
+  /**
+   * Active (non-retired) flags with the given semantics.
+   */
   async listBySemantics(
     semantics: FlagSemantics,
   ): Promise<FlagDefinitionWithMetadata[]> {
     return Array.from(this.flags.values())
-      .filter((f) => f.semantics === semantics)
+      .filter((f) => f.semantics === semantics && !this.retired.has(f.slug))
       .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
   }
 
@@ -211,16 +223,37 @@ export class InMemoryFlagRegistry implements FlagRegistry {
     if (!this.flags.has(slug)) {
       return { success: false, error: `Flag '${slug}' not found` };
     }
+    if (this.retired.has(slug)) {
+      return { success: false, retiredSlug: slug, error: `Flag '${slug}' is already retired` };
+    }
     this.retired.add(slug);
     return { success: true, retiredSlug: slug };
   }
 
+  /**
+   * True only for flags that exist AND are not retired — a retired flag is no
+   * longer referenceable by new content, so `exists` must not vouch for it.
+   */
   async exists(slug: string): Promise<boolean> {
-    return this.flags.has(slug);
+    return this.flags.has(slug) && !this.retired.has(slug);
   }
 
+  /**
+   * Active slugs only. validateFlagReferences feeds off this list, so a
+   * retired flag must disappear from it or new content would keep validating
+   * against a retired canon entry.
+   */
   async getAllSlugs(): Promise<string[]> {
-    return Array.from(this.flags.keys()).sort();
+    return Array.from(this.flags.keys())
+      .filter((slug) => !this.retired.has(slug))
+      .sort();
+  }
+
+  /**
+   * Slugs that have been retired (audit trail).
+   */
+  async listRetiredSlugs(): Promise<string[]> {
+    return Array.from(this.retired).sort();
   }
 
   /**

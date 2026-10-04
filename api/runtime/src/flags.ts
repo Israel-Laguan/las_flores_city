@@ -8,13 +8,21 @@ import type { FlagState } from '@las-flores/api-contracts';
 /**
  * Runtime view of flag state for a specific player.
  * This is a read-only snapshot of the flags set for a player.
+ *
+ * Flag values live in their own `flags` field rather than being intersected
+ * with the metadata: `FlagState` is `Record<string, boolean>`, so an
+ * intersection typed `playerId` as `boolean & string` (i.e. `never`) and a
+ * perfectly valid slug named `playerId` or `updatedAt` would collide with the
+ * metadata.
  */
-export type RuntimeFlagState = FlagState & {
+export interface RuntimeFlagState {
   /** The player ID this state belongs to */
   playerId: string;
   /** When this state was last updated */
   updatedAt: string;
-};
+  /** Flag slug -> current boolean state */
+  flags: FlagState;
+}
 
 /**
  * Result of getting flag state for a player.
@@ -68,7 +76,7 @@ export class InMemoryFlagStateRepository implements FlagStateRepository {
     if (!playerState) {
       return false;
     }
-    return playerState[flagSlug] ?? false;
+    return playerState.flags[flagSlug] ?? false;
   }
 
   async getTrueFlags(playerId: string): Promise<Set<string>> {
@@ -77,8 +85,8 @@ export class InMemoryFlagStateRepository implements FlagStateRepository {
       return new Set();
     }
     const trueFlags = new Set<string>();
-    for (const [flagSlug, isSet] of Object.entries(playerState)) {
-      if (isSet && flagSlug !== 'playerId' && flagSlug !== 'updatedAt') {
+    for (const [flagSlug, isSet] of Object.entries(playerState.flags)) {
+      if (isSet) {
         trueFlags.add(flagSlug);
       }
     }
@@ -132,11 +140,16 @@ export class DatabaseFlagStateRepository implements FlagStateRepository {
 
 /**
  * Convenience function to get flag state for a player.
- * Uses the in-memory implementation for testing.
+ *
+ * `repository` is deliberately required: defaulting it to a fresh empty
+ * InMemoryFlagStateRepository made a forgotten argument silently answer
+ * "every flag is cleared" with no error, so conditions would evaluate against
+ * an empty state instead of failing loudly. Use createFlagStateRepository() to
+ * build one.
  */
 export async function getPlayerFlagState(
   playerId: string,
-  repository: FlagStateRepository = new InMemoryFlagStateRepository(),
+  repository: FlagStateRepository,
 ): Promise<PlayerFlagStateResult | undefined> {
   const flagState = await repository.getPlayerState(playerId);
   if (!flagState) {
@@ -154,7 +167,7 @@ export async function getPlayerFlagState(
 export async function isPlayerFlagSet(
   playerId: string,
   flagSlug: string,
-  repository: FlagStateRepository = new InMemoryFlagStateRepository(),
+  repository: FlagStateRepository,
 ): Promise<boolean> {
   return repository.getFlagValue(playerId, flagSlug);
 }

@@ -32,16 +32,40 @@ const DATABASE_URL =
 const client = new pg.Client({ connectionString: DATABASE_URL });
 await client.connect();
 
-for (let gen = 2; gen <= 10; gen++) {
-  await client.query(
-    `
-    INSERT INTO spike_sc_s1.entity_edges (from_type, from_slug, edge_kind, to_type, to_slug, attrs)
-    SELECT from_type, from_slug || '::gen' || $1::text, edge_kind, to_type, to_slug || '::gen' || $1::text, attrs
-    FROM spike_sc_s1.entity_edges
-    WHERE from_slug NOT LIKE '%::gen%'
-  `,
-    [gen],
+// This script is NOT idempotent by design (each generation must be inserted from
+// the *original* rows only), so guard against a second run: re-running would
+// append another 9 generations on top of the existing ones and the subsequent
+// sc-s2-run.mjs measurement would silently label a different volume "10x".
+const { rows: existingGenRows } = await client.query(
+  `SELECT count(*)::int AS n FROM spike_sc_s1.entity_edges WHERE from_slug LIKE '%::gen%'`,
+);
+if (existingGenRows[0].n > 0) {
+  await client.end();
+  console.error(
+    `spike_sc_s1.entity_edges already contains ${existingGenRows[0].n} ::gen rows. ` +
+      'Rebuild the table with spike_sc_s1_project_entity_edges.mjs before re-duplicating.',
   );
+  process.exit(1);
+}
+
+await client.query("BEGIN");
+try {
+  for (let gen = 2; gen <= 10; gen++) {
+    await client.query(
+      `
+      INSERT INTO spike_sc_s1.entity_edges (from_type, from_slug, edge_kind, to_type, to_slug, attrs)
+      SELECT from_type, from_slug || '::gen' || $1::text, edge_kind, to_type, to_slug || '::gen' || $1::text, attrs
+      FROM spike_sc_s1.entity_edges
+      WHERE from_slug NOT LIKE '%::gen%'
+    `,
+      [gen],
+    );
+  }
+  await client.query("COMMIT");
+} catch (err) {
+  await client.query("ROLLBACK");
+  await client.end();
+  throw err;
 }
 
 const { rows: countRows } = await client.query(

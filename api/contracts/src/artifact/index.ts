@@ -2,17 +2,18 @@
 // Re-exports for artifact module.
 
 export type {
+  Artifact,
   ArtifactId,
-  ManifestVersion,
+  ArtifactManifest,
+  ArtifactValidation,
   ContentHash,
   ArtifactType,
   ISODateString,
+  ManifestVersion,
 } from './artifact.js';
 export {
-  Artifact,
-  ArtifactManifest,
-  ArtifactValidation,
   CONTENT_HASH_PATTERN,
+  ARTIFACT_TYPES,
   validateContentHash,
   createArtifactId,
   isArtifact,

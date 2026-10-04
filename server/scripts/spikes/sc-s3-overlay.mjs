@@ -5,7 +5,7 @@
 // §3.3, and runs SC-S2's reachability query against canon alone vs. overlay.
 //
 // Requires spike_sc_s1.entity_edges to already exist (run
-// server/scripts/spikes/sc-s1-project-entity-edges.mjs first).
+// server/scripts/spike_sc_s1_project_entity_edges.mjs first).
 //
 // Usage: DATABASE_URL=... node server/scripts/spikes/sc-s3-overlay.mjs
 

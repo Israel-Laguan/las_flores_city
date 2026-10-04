@@ -4,9 +4,8 @@
 // but may NOT import either of them.
 
 // Flags
-export type { FlagSemantics, FlagState } from './flags/flag-definition.js';
+export type { FlagDefinition, FlagSemantics, FlagState } from './flags/flag-definition.js';
 export {
-  FlagDefinition,
   FLAG_SLUG_PATTERN,
   MAX_SLUG_LENGTH,
   InvalidFlagSlugError,
@@ -46,16 +45,17 @@ export {
 
 // Artifact
 export type {
+  Artifact,
   ArtifactId,
-  ManifestVersion,
+  ArtifactManifest,
+  ArtifactValidation,
   ContentHash,
   ArtifactType,
   ISODateString,
+  ManifestVersion,
 } from './artifact/artifact.js';
 export {
-  Artifact,
-  ArtifactManifest,
-  ArtifactValidation,
+  ARTIFACT_TYPES,
   CONTENT_HASH_PATTERN,
   validateContentHash,
   createArtifactId,
@@ -65,22 +65,22 @@ export {
 
 // Revision
 export type {
-  RevisionId,
-  RevisionISODateString,
-} from './revision/revision-pointer.js';
-export {
-  RevisionPointer,
-  RevisionPointerRead,
-  RevisionPointerCreate,
-  RevisionPointerCreated,
   AtomicFlip,
   AtomicFlipResult,
+  RevisionId,
+  RevisionPointer,
+  RevisionPointerCreate,
+  RevisionPointerCreated,
+  RevisionPointerRead,
   RevisionPointerReader,
-  RevisionPointerWriter,
   RevisionPointerRepository,
+  RevisionPointerWriter,
+} from './revision/revision-pointer.js';
+export type { ISODateString as RevisionISODateString } from './revision/revision-pointer.js';
+export {
+  createRevisionPointer,
   isRevisionPointer,
   isRevisionPointerRead,
-  createRevisionPointer,
 } from './revision/revision-pointer.js';
 
 // Legacy placeholder (for backwards compatibility)

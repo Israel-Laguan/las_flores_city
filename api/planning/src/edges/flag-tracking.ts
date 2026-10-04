@@ -56,8 +56,25 @@ export interface FlagSetEffect {
 export interface FlagUsage {
   /** Flags that are set/cleared by this entity or its children */
   sets: Set<string>;
-  /** Flags that are read/checked by conditions in this entity or its children */
-  reads: Set<string>;
+  /**
+   * The value written per slug (true = sets_flag, false = clears_flag).
+   *
+   * `sets` alone cannot express the difference: a `flag_set` with value false
+   * and a `flag_clear` entry are both "touched" flags, and projecting both as
+   * `sets_flag` reported a clear as a set. The written value has to survive the
+   * walk for FlagEdge.attrs.value and edge_kind to be correct.
+   */
+  writes: Map<string, boolean>;
+  /**
+   * Flags that are read/checked by conditions in this entity or its children,
+   * mapped to the choice_id of the choice that reads them (undefined when the
+   * read is not choice-scoped).
+   *
+   * Per SC-S1's finding, requires_flag edges MUST retain choice_id. A plain
+   * Set<string> collapsed child choice reads into the parent and stamped them
+   * all with the parent's choice_id, so a Map is required to keep them apart.
+   */
+  reads: Map<string, string | undefined>;
 }
 
 /**
@@ -92,18 +109,33 @@ export interface FlagEdge {
  */
 export function extractFlagUsage(payload: EntityPayload): FlagUsage {
   const sets = new Set<string>();
-  const reads = new Set<string>();
+  const writes = new Map<string, boolean>();
+  const reads = new Map<string, string | undefined>();
 
-  extractFlagUsageFromPayload(payload, sets, reads);
+  extractFlagUsageFromPayload(payload, sets, writes, reads);
 
-  return { sets, reads };
+  return { sets, writes, reads };
 }
+
+/**
+ * Entity types whose own reads are attributed to their own id as choice_id.
+ * A child choice that requires a flag owns that requires_flag edge; merging it
+ * into the parent under the parent's choice_id loses the reference SC-S1 needs.
+ */
+const CHOICE_ENTITY_TYPES = new Set(['choice']);
 
 function extractFlagUsageFromPayload(
   payload: EntityPayload,
   sets: Set<string>,
-  reads: Set<string>,
+  writes: Map<string, boolean>,
+  reads: Map<string, string | undefined>,
+  choiceId?: string,
 ): void {
+  // A choice child carries its own choice_id for its condition reads.
+  const effectiveChoiceId = CHOICE_ENTITY_TYPES.has(payload.type)
+    ? payload.id
+    : choiceId;
+
   // Extract from conditions
   if (payload.conditions) {
     const conditions = Array.isArray(payload.conditions)
@@ -113,7 +145,11 @@ function extractFlagUsageFromPayload(
       if (isConditionExpr(condition)) {
         const slugs = extractFlagSlugs(condition);
         for (const slug of slugs) {
-          reads.add(slug);
+          // First writer wins: the most specific (innermost) choice that reads
+          // a flag is the one that owns the requires_flag edge.
+          if (!reads.has(slug)) {
+            reads.set(slug, effectiveChoiceId);
+          }
         }
       }
     }
@@ -121,27 +157,33 @@ function extractFlagUsageFromPayload(
 
   // Extract from effects
   if (payload.effects) {
-    extractFromEffects(payload.effects, sets);
+    extractFromEffects(payload.effects, sets, writes);
   }
 
   // Recursively extract from children
   if (payload.children) {
     for (const child of payload.children) {
-      extractFlagUsageFromPayload(child, sets, reads);
+      extractFlagUsageFromPayload(child, sets, writes, reads, effectiveChoiceId);
     }
   }
 }
 
-function extractFromEffects(effects: EntityEffects, sets: Set<string>): void {
+function extractFromEffects(
+  effects: EntityEffects,
+  sets: Set<string>,
+  writes: Map<string, boolean>,
+): void {
   if (effects.flag_set) {
     for (const { flag, value } of effects.flag_set) {
       sets.add(flag);
+      writes.set(flag, value);
     }
   }
 
   if (effects.flag_clear) {
     for (const flag of effects.flag_clear) {
       sets.add(flag);
+      writes.set(flag, false);
     }
   }
 }
@@ -167,7 +209,7 @@ export function extractFlagReadsFromCondition(
  */
 export function extractFlagSetsFromEffects(effects: EntityEffects): Set<string> {
   const sets = new Set<string>();
-  extractFromEffects(effects, sets);
+  extractFromEffects(effects, sets, new Map());
   return sets;
 }
 
@@ -186,28 +228,34 @@ export function flagUsageToEdges(
 ): FlagEdge[] {
   const edges: FlagEdge[] = [];
 
-  // Create requires_flag edges for read flags
-  for (const flag of usage.reads) {
+  // Create requires_flag edges for read flags. Each read keeps its own choice_id
+  // when the walk attributed one (a child choice); otherwise fall back to the
+  // choice_id supplied by the caller.
+  for (const [flag, readChoiceId] of usage.reads) {
+    const attrsChoiceId = readChoiceId ?? choiceId;
     edges.push({
       from_type: entity.type,
       from_slug: entity.slug,
       edge_kind: 'requires_flag',
       to_type: 'flag',
       to_slug: flag,
-      attrs: choiceId ? { choice_id: choiceId } : {},
+      attrs: attrsChoiceId ? { choice_id: attrsChoiceId } : {},
     });
   }
 
-  // Create sets_flag edges for set flags
-  // We don't know the value from just the slug, so we use a default
+  // Create sets_flag / clears_flag edges for written flags, carrying the value
+  // that was actually written. Iterate `sets` (the full set of touched slugs) so
+  // a hand-built usage with an incomplete writes map still emits an edge;
+  // `true` is the fallback when no written value is known.
   for (const flag of usage.sets) {
+    const value = usage.writes.get(flag) ?? true;
     edges.push({
       from_type: entity.type,
       from_slug: entity.slug,
-      edge_kind: 'sets_flag',
+      edge_kind: value ? 'sets_flag' : 'clears_flag',
       to_type: 'flag',
       to_slug: flag,
-      attrs: {},
+      attrs: { value },
     });
   }
 
@@ -238,7 +286,7 @@ export function validateFlagReferences(
   const usage = extractFlagUsage(payload);
   const missing: string[] = [];
 
-  for (const flag of usage.reads) {
+  for (const flag of usage.reads.keys()) {
     if (!knownSlugs.has(flag)) {
       missing.push(flag);
     }

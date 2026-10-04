@@ -5,8 +5,9 @@ around the **scene** as the unit of composition rather than the character. Built
 `api/` tree alongside the existing `server/`, `scripts/`, and `content/`, which keep
 working until each old component's kill condition is met.
 
-**Status:** SC-M1 complete; SC-M2+ not started. Sprint 1 is firm; everything past sprint 2 is
-provisional and revised at retro.
+**Status:** SC-M1 complete; SC-M2 in progress — flags & conditions (SC-201–SC-206) are Done and
+SC-301–SC-303 (scene entity, role slots, base+overlay composition) are In Progress. Everything
+past SC-M2 is provisional and revised at retro. Per-story states: [backlog.md](backlog.md).
 
 ---
 

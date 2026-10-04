@@ -3,11 +3,20 @@
 // SC-204: Wire consumer of condition evaluator from contracts.
 
 // Re-export from contracts (runtime can import contracts)
-export {
+export type {
   FlagDefinition,
   FlagSemantics,
   FlagState,
   ConditionExpr,
+  Artifact,
+  ArtifactManifest,
+  ArtifactId,
+  RevisionPointer,
+  RevisionPointerRead,
+  RevisionPointerReader,
+} from '@las-flores/api-contracts';
+
+export {
   flag,
   not,
   and,
@@ -23,21 +32,11 @@ export {
   evaluateWithFlagObject,
   flagSetFromObject,
   flagObjectFromSet,
-  Artifact,
-  ArtifactManifest,
-  ArtifactId,
-  RevisionPointer,
-  RevisionPointerRead,
-  RevisionPointerReader,
 } from '@las-flores/api-contracts';
 
 // Runtime-specific flag state management
+export type { RuntimeFlagState } from './flags.js';
 export {
-  /**
-   * Runtime view of flag state for a specific context (e.g., player).
-   * This is read-only from runtime's perspective (written by planning).
-   */
-  type RuntimeFlagState,
   /**
    * Get flag state for a player.
    * In practice, this would query runtime.flag_state table.
