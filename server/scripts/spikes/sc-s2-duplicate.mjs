@@ -36,20 +36,33 @@ await client.connect();
 // the *original* rows only), so guard against a second run: re-running would
 // append another 9 generations on top of the existing ones and the subsequent
 // sc-s2-run.mjs measurement would silently label a different volume "10x".
-const { rows: existingGenRows } = await client.query(
-  `SELECT count(*)::int AS n FROM spike_sc_s1.entity_edges WHERE from_slug LIKE '%::gen%'`,
-);
-if (existingGenRows[0].n > 0) {
-  await client.end();
-  console.error(
-    `spike_sc_s1.entity_edges already contains ${existingGenRows[0].n} ::gen rows. ` +
-      'Rebuild the table with spike_sc_s1_project_entity_edges.mjs before re-duplicating.',
-  );
-  process.exit(1);
-}
-
+//
+// The guard and the inserts must be one atomic unit. Checking first and inserting
+// after (two autocommit statements) let two concurrent runs both observe zero ::gen
+// rows, both pass, and each append nine generations — leaving a 19x table that
+// still looks like a success. A single transaction holding an ACCESS EXCLUSIVE
+// lock on the table serialises the runs: the second blocks on LOCK until the first
+// commits, then its guard sees the committed ::gen rows and aborts.
 await client.query("BEGIN");
+let existingGenRows;
 try {
+  await client.query(
+    "LOCK TABLE spike_sc_s1.entity_edges IN ACCESS EXCLUSIVE MODE",
+  );
+  const result = await client.query(
+    `SELECT count(*)::int AS n FROM spike_sc_s1.entity_edges WHERE from_slug LIKE '%::gen%'`,
+  );
+  existingGenRows = result.rows;
+  if (existingGenRows[0].n > 0) {
+    await client.query("ROLLBACK");
+    await client.end();
+    console.error(
+      `spike_sc_s1.entity_edges already contains ${existingGenRows[0].n} ::gen rows. ` +
+        'Rebuild the table with spike_sc_s1_project_entity_edges.mjs before re-duplicating.',
+    );
+    process.exit(1);
+  }
+
   for (let gen = 2; gen <= 10; gen++) {
     await client.query(
       `

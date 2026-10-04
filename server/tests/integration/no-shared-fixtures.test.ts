@@ -34,11 +34,15 @@ const UUID_PATTERN =
  * Literals that are deliberately shared, each with the reason it cannot be
  * re-pointed at a synthetic value. Keep this list short — every entry is debt.
  *
- * Keyed by lowercase UUID. Entries added during the PR #135 review-fix pass are
- * marked `[pre-existing]`; they are latent interference (they only bite when a
- * sibling worker is mid-test) and were left in place so the branch did not
- * destabilise the suites it touches. Fix each by giving one side its own
- * prefix block.
+ * Keyed by lowercase UUID. Entries marked `[pre-existing]` are latent
+ * interference; fix each by giving one side its own prefix block.
+ *
+ * Every entry that shared a *user row which a sibling suite DELETEs in afterAll*
+ * has been resolved — that combination is the one that actually produced
+ * cross-worker flakes (a worker's cleanup deleting the row another worker was
+ * still inserting against, e.g. `user_relationships_user_id_fkey`). Those suites
+ * now hold private UUIDs and the entries are gone. What remains is shared *real
+ * content* ids and generic synthetic ids that no suite deletes.
  */
 const ALLOWLIST: Record<string, string> = {
   // The seeded admin (`.env` ADMIN_USER_ID). Content/graph suites reference the
@@ -71,16 +75,8 @@ const ALLOWLIST: Record<string, string> = {
     '[pre-existing] generic synthetic id (AssetPublishService, migration, move)',
   '00000000-0000-4000-8000-000000000001':
     '[pre-existing] generic synthetic id (dialogueNodeVisual, storyBuilderMigration.audit)',
-  '00000000-0000-0000-0000-000000000020':
-    '[pre-existing] shared user row (database-constraints, sleep)',
-  '00000000-0000-0000-0000-000000000077':
-    '[pre-existing] shared user row, deleted by both gigs and shop in afterAll',
-  '00000000-0000-0000-0000-000000000099':
-    '[pre-existing] shared user row, deleted by 4 suites in afterAll',
   '11111111-1111-1111-1111-111111111111':
     '[pre-existing] generic synthetic id',
-  '11111111-2222-3333-4444-555555555555':
-    '[pre-existing] shared user row (story-builder-plans, story-builder-stage-migrate)',
   '11111111-1111-4111-8111-111111111111':
     '[pre-existing] generic synthetic id (6 suites)',
   '22222222-2222-2222-2222-222222222222':
@@ -93,8 +89,6 @@ const ALLOWLIST: Record<string, string> = {
     '[pre-existing] generic synthetic id (outline-chunking, paypal-webhook)',
   '55555555-6666-4777-8888-999999990001':
     '[pre-existing] shared entity fixture (api-contract, mvw)',
-  'e4800000-0000-4000-8000-000000048002':
-    '[pre-existing] shared user row, deleted by both suites in afterAll',
   'a0000000-e000-4000-8000-000000000000':
     '[pre-existing] generic synthetic id',
   'a0000000-e000-4000-8000-000000000001':
@@ -119,17 +113,39 @@ const ALLOWLIST: Record<string, string> = {
     '[pre-existing] generic synthetic id',
 };
 
+/**
+ * Every `.ts` file under `tests/integration`, recursively.
+ *
+ * Jest runs suites from subdirectories (the `integration-data` project matches
+ * at any depth), so a non-recursive top-level scan would let a nested suite
+ * share a fixture UUID without this guard ever seeing it.
+ */
+function collectTestFiles(dir: string): string[] {
+  const files: string[] = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...collectTestFiles(full));
+    } else if (entry.isFile() && entry.name.endsWith('.ts')) {
+      files.push(full);
+    }
+  }
+  return files;
+}
+
 function collectSharedLiterals(): Array<{ uuid: string; files: string[] }> {
   const byUuid = new Map<string, Set<string>>();
 
-  for (const file of fs.readdirSync(INTEGRATION_DIR)) {
-    if (!file.endsWith('.ts')) continue;
-    const source = fs.readFileSync(path.join(INTEGRATION_DIR, file), 'utf-8');
+  for (const file of collectTestFiles(INTEGRATION_DIR)) {
+    const source = fs.readFileSync(file, 'utf-8');
+    // Report repo-relative-ish paths rather than absolute ones, so failures stay
+    // readable and stable across machines.
+    const label = path.relative(INTEGRATION_DIR, file);
     for (const match of source.match(UUID_PATTERN) ?? []) {
       const uuid = match.toLowerCase();
       const bucket = byUuid.get(uuid);
-      if (bucket) bucket.add(file);
-      else byUuid.set(uuid, new Set([file]));
+      if (bucket) bucket.add(label);
+      else byUuid.set(uuid, new Set([label]));
     }
   }
 

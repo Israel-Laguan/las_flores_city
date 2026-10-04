@@ -6,7 +6,9 @@ import express from 'express';
 const TEST_PLAN_ID = 'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d';
 // Private to this file — the generic all-zero UUID is reused by other suites.
 const TEST_USER_ID = '1a2b3c4d-9e8f-4a7b-8c6d-5e4f3a2b1c0d';
-const MOCK_ITEM_ID = '11111111-2222-3333-4444-555555555555';
+// Private to this file (collision-avoidance): story-builder-plans.test.ts
+// shared 11111111-...-555555555555 as its mock item id.
+const MOCK_ITEM_ID = '11111111-2222-3333-4444-555555555556';
 
 const MOCK_PLAN = {
   id: TEST_PLAN_ID,
@@ -97,7 +99,7 @@ jest.mock('../../src/routes/admin-story-builder-staging.js', () => {
     status: 'proposed',
     items: [
       {
-        id: '11111111-2222-3333-4444-555555555555',
+        id: '11111111-2222-3333-4444-555555555556',
         type: 'character',
         action: 'create',
         name: 'Diego',

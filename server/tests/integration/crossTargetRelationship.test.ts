@@ -14,7 +14,11 @@ import { applyRelationshipEffect } from '../../src/routes/dialogue-helpers.js';
 // Dedicated synthetic user; cleaned up in afterAll.
 // ============================================================
 
-const TEST_USER_ID = 'e4800000-0000-4000-8000-000000048002'; // private to this file
+// Private to this file (collision-avoidance): arcBatchGates.test.ts owns
+// e4800000-...-48002. Sharing it let either suite's afterAll DELETE FROM users
+// remove the row the other was still inserting user_relationships for, which
+// failed with `user_relationships_user_id_fkey` under parallel data-phase workers.
+const TEST_USER_ID = 'd4800000-0000-4000-8000-000000048003'; // private to this file
 const WEN_CHARACTER_ID = 'd1fc0275-af55-4fe0-8fc2-a36c42c264ae'; // real content UUID (Wen Zhao)
 const LAYLA_CHARACTER_ID = 'd9927cf6-cc6c-42d3-b39c-023e6252b453'; // real content UUID (Layla)
 

@@ -26,10 +26,3 @@ export function findReachableChoice(currentNode: any, choiceId: string): any | n
   );
   return found ?? null;
 }
-
-/**
- * Boolean wrapper — is `choiceId` reachable from `currentNode`?
- */
-export function isChoiceReachable(currentNode: any, choiceId: string): boolean {
-  return findReachableChoice(currentNode, choiceId) !== null;
-}

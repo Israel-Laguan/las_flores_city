@@ -11,8 +11,12 @@ import pg from 'pg';
 
 const { Client } = pg;
 
-const FIXTURE_TABLE = 'planning._sc106_probe';
-const FIXTURE_REGCLASS = 'planning._sc106_probe';
+// Per-run fixture name. A fixed name made concurrent runs overwrite each other's
+// `id = 1` row during setup, and each run's afterAll then DROPs a table the other
+// was still using (or one that predated the test). Suffixing with pid + start
+// time makes every run's fixture private to it.
+const FIXTURE_TABLE = `planning._sc106_probe_${process.pid}_${Date.now()}`;
+const FIXTURE_REGCLASS = FIXTURE_TABLE;
 
 const DEFAULT_PLANNING_URL =
   'postgresql://planning:dev_planning@localhost:5434/las_flores';

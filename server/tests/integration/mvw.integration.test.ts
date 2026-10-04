@@ -30,7 +30,8 @@ const AWAKENING_ID   = 'c9a646d3-9c61-4cd8-bc11-657ab255b1bf';
 const AWAKENING_START_NODE = 'd8b5a3e1-e123-4567-89ab-cdef01234567';
 
 // Test user — unique UUID to avoid collisions with other suites
-const TEST_USER_ID = '00000000-0000-0000-0000-000000000099';
+// Private to this file (collision-avoidance) — see asset-cascade.test.ts.
+const TEST_USER_ID = 'a3000000-0000-4000-8000-000000000098';
 
 async function applyMigration(filename: string): Promise<void> {
   const sql = fs.readFileSync(

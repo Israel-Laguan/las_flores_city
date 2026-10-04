@@ -10,9 +10,10 @@ convention that `scripts/` remains file-to-file tools only, avoiding DB state de
 across spike runs), or (b) fully self-contained inline commands and inputs that reproduce the
 measurement. A spike whose harness exists only on one machine is not finished — its
 numbers cannot be re-validated against changed content later. Known gap: the SC-S1
-through SC-S4 harnesses and `server/scripts/spike_sc_s6_serving_baseline.ts` were not
-committed with their write-ups; committing (or inlining) them is a recorded follow-up
-before any downstream ticket treats those measurements as re-runnable.
+through SC-S4 harnesses are now committed under `server/scripts/`, so the only remaining
+gap is SC-S6: its committed `server/scripts/spike_sc_s6_serving_baseline.ts` is a
+non-runnable stub whose numbers remain a historical record until its seeding/measurement
+steps are implemented (see `SC-S6-serving-baseline.md`).
 
 **A spike that answers "no" is a success.** It gets written up here and the affected story
 is re-planned at retro — not quietly re-attempted next sprint.

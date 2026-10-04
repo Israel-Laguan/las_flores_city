@@ -68,7 +68,7 @@ export class InMemoryFlagStateRepository implements FlagStateRepository {
   private state: Map<string, RuntimeFlagState> = new Map();
 
   async getPlayerState(playerId: string): Promise<RuntimeFlagState | undefined> {
-    return this.state.get(playerId);
+    return copyFlagState(this.state.get(playerId));
   }
 
   async getFlagValue(playerId: string, flagSlug: string): Promise<boolean> {
@@ -76,7 +76,13 @@ export class InMemoryFlagStateRepository implements FlagStateRepository {
     if (!playerState) {
       return false;
     }
-    return playerState.flags[flagSlug] ?? false;
+    // `playerState.flags[flagSlug]` would resolve `constructor` / `toString` /
+    // `__proto__` through Object.prototype and hand back a truthy function typed
+    // as `boolean`, so a cleared flag reads as set. `validateFlagSlug` admits all
+    // three spellings, so only an own-key check distinguishes them.
+    return Object.hasOwn(playerState.flags, flagSlug)
+      ? playerState.flags[flagSlug]
+      : false;
   }
 
   async getTrueFlags(playerId: string): Promise<Set<string>> {
@@ -84,20 +90,14 @@ export class InMemoryFlagStateRepository implements FlagStateRepository {
     if (!playerState) {
       return new Set();
     }
-    const trueFlags = new Set<string>();
-    for (const [flagSlug, isSet] of Object.entries(playerState.flags)) {
-      if (isSet) {
-        trueFlags.add(flagSlug);
-      }
-    }
-    return trueFlags;
+    return trueFlagSet(playerState.flags);
   }
 
   /**
    * Set state for testing (not part of the public interface).
    */
   setPlayerState(playerId: string, flagState: Omit<RuntimeFlagState, 'playerId'>): void {
-    this.state.set(playerId, { ...flagState, playerId });
+    this.state.set(playerId, { ...flagState, playerId, flags: { ...flagState.flags } });
   }
 
   /**
@@ -106,6 +106,35 @@ export class InMemoryFlagStateRepository implements FlagStateRepository {
   clear(): void {
     this.state.clear();
   }
+}
+
+/**
+ * Defensive copy of a flag snapshot.
+ *
+ * The interface is documented as a read-only snapshot, but handing back the
+ * stored object let a caller mutate `state.flags` and silently change every later
+ * read of that player. Copy the `flags` record too, for the same reason.
+ */
+function copyFlagState(state: RuntimeFlagState | undefined): RuntimeFlagState | undefined {
+  if (!state) {
+    return undefined;
+  }
+  return { ...state, flags: { ...state.flags } };
+}
+
+/**
+ * True flag slugs for a `FlagState` record. Derived from the record itself so
+ * callers get one consistent snapshot rather than a second repository read that
+ * could observe a different version of the state.
+ */
+function trueFlagSet(flags: FlagState): Set<string> {
+  const trueFlags = new Set<string>();
+  for (const [flagSlug, isSet] of Object.entries(flags)) {
+    if (isSet) {
+      trueFlags.add(flagSlug);
+    }
+  }
+  return trueFlags;
 }
 
 /**
@@ -146,6 +175,10 @@ export class DatabaseFlagStateRepository implements FlagStateRepository {
  * "every flag is cleared" with no error, so conditions would evaluate against
  * an empty state instead of failing loudly. Use createFlagStateRepository() to
  * build one.
+ *
+ * `trueFlags` is derived from the snapshot `getPlayerState` returned rather than
+ * from a second `getTrueFlags` call: two reads can straddle an update and return a
+ * flag set that never existed at any single instant.
  */
 export async function getPlayerFlagState(
   playerId: string,
@@ -157,7 +190,7 @@ export async function getPlayerFlagState(
   }
   return {
     flagState,
-    trueFlags: await repository.getTrueFlags(playerId),
+    trueFlags: trueFlagSet(flagState.flags),
   };
 }
 

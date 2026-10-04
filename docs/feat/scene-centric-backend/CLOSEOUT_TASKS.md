@@ -4,19 +4,20 @@
 
 **Current branch:** `feat/sc-106-negative` (4 new commits over `main`: SC-106 test, D1 fix, D2 fix, CI README tweak).
 
-**Status:** A1-A4 COMPLETED. B1-B6 COMPLETED. C COMPLETED. ALL TASKS FROM CLOSEOUT_TASKS.md COMPLETE.
+**Status:** A1 INCOMPLETE (see below). A2-A4 COMPLETED. B1-B6 COMPLETED. C COMPLETED.
 
 > **How to read this file.** This is a point-in-time gap analysis written *before* the work
-> landed. The banner above is authoritative: **every task below is DONE**. The prose under
-> each task ("Not done. No code exists for flags anywhere.") describes the gap as it stood
-> when this document was written and is retained as history — it is not a statement about
-> the current state of the branch. Milestone status lives in
+> landed. The banner above is authoritative: every task below is DONE **except A1**, which is
+> incomplete because the SC-S6 harness is committed but is still a non-runnable stub. The
+> prose under each task ("Not done. No code exists for flags anywhere.") describes the gap as
+> it stood when this document was written and is retained as history — it is not a statement
+> about the current state of the branch. Milestone status lives in
 > [README.md](README.md); per-story states live in [backlog.md](backlog.md).
 
 ### Progress Summary
 | Part | Task | Status |
 |------|------|--------|
-| A | A1. Commit spike harnesses | ✅ DONE (this session) |
+| A | A1. Commit spike harnesses | ⚠️ INCOMPLETE (SC-S6 harness is a stub) |
 | A | A2. Implement api/contracts primitives | ✅ DONE (this session) |
 | A | A3. Update stale docs | ✅ DONE (this session) |
 | A | A4. Preserve SC-102 boundary proof | ✅ DONE (this session) |
@@ -29,7 +30,9 @@
 
 ### A1. Commit spike harnesses (SC-S7 follow-up)
 
-**Status:** DONE — the harnesses are committed under `server/scripts/`.
+**Status:** INCOMPLETE — SC-S1 through SC-S5 harnesses are committed under `server/scripts/`;
+the SC-S6 harness is still a non-runnable stub (exits non-zero, measures nothing), so the
+reproducible p50/p95 measurement A1 promised is not done.
 
 > *Historical (at time of writing):* Spike write-ups (S1–S6) exist in `spikes/`, but the scripts that reproduce their numbers were on separate `spike/sc-s*` branches, not merged.
 
@@ -43,7 +46,7 @@
 
 4. `server/scripts/spike_sc_s4_alias_detection.mjs` + `server/scripts/spike_sc_s4_analysis.sql` — port from `spike/sc-s4-pg-trgm-alias-detection` branch. 12 hand-labelled pairs from content, threshold sweep, ILIKE baseline.
 
-5. `server/scripts/spike_sc_s6_serving_baseline.ts` — port from the commit message reference. Measures p50/p95 for `GET /dialogue/active` and `resolveChunkSpeakers` in isolation, 3 warmup + 30 timed iterations, per-iteration paired differencing.
+5. `server/scripts/spike_sc_s6_serving_baseline.ts` — port from the commit message reference. **Committed as a stub only** — `main()` throws and the process exits 1; the seeding, measurement, paired differencing, and cleanup steps are not implemented. Should measure p50/p95 for `GET /dialogue/active` and `resolveChunkSpeakers` in isolation, 3 warmup + 30 timed iterations, per-iteration paired differencing.
 
 **Prompt:**
 
@@ -182,13 +185,23 @@ Verify: this test runs as part of `npm run test:unit --workspace=server` (no DB 
 
 ### B2. SC-202 · Flag registry storage + repository (`planning/canon`)
 
-**Status:** DONE — closed (the gap description below is the historical assessment at time of writing). No `planning/flag_definitions` table or repository exists.
+**Status:** DONE for the contract, schema, unique constraint, and the SC-106 negative
+assertion. **Open:** the DB-backed implementation is not wired. `api/planning` is a
+pure-TypeScript module with no database access — an ESLint-enforced boundary
+(`server/tests/unit/api-boundary-enforcement.test.ts`) forbids it importing DB modules — so the
+adapter is intentionally left to be provided in `server/src/` via dependency injection.
+`createFlagRegistry()` therefore cannot serve as a default: it returns a
+`DatabaseFlagRegistry` whose methods still throw, so callers must supply an explicit
+implementation (e.g. the in-memory registry in tests) rather than inherit a silently broken
+stub. (The gap description below is the historical assessment at time of writing.)
 
 **Acceptance criteria:**
-- Migration creates registry table in `planning` schema (new migration file 096+)
-- Repository supports create, read, list, retire (never delete)
-- Unique constraint on slug (DB-level, not app-level)
-- `runtime` role cannot read this table (asserted by SC-106's negative test, extended)
+- ✅ Migration creates registry table in `planning` schema (`096_flag_registry.sql`)
+- ✅ Unique constraint on slug (DB-level, not app-level)
+- ✅ `runtime` role cannot read this table (asserted by SC-106's negative test, extended)
+- ⬜ Repository supports create, read, list, retire (never delete) — the `FlagRegistry`
+  contract and its in-memory implementation exist, but the DB-backed adapter is still to be
+  supplied in `server/src/` (see above)
 
 ### B3. SC-203 · Condition grammar type (`contracts/condition`)
 
@@ -263,7 +276,7 @@ Verify: npm run test:unit --workspace=server (no regressions)
 Once Sprint 2 is complete:
 
 1. `docs/feat/scene-centric-backend/backlog.md` — update SC-E2 table: SC-201–206 from "Ready"/"Blocked" to "Done". Update SC-E3 table to mark SC-301/302/303 as "In Progress" (now unblocked by SC-204).
-2. `docs/feat/scene-centric-backend/sprint-02.md` — mark Status PROVISIONAL → FIRM, fold in any spike answers.
+2. `docs/feat/scene-centric-backend/sprint-02.md` — ~~mark Status PROVISIONAL → FIRM~~ **done: status is now COMPLETED** (all committed tickets SC-201..SC-206 shipped); spike answers folded in, with SC-S6 called out as a committed stub rather than a reproducible harness.
 3. `docs/feat/scene-centric-backend/sprint-03.md` — create for SC-M2 (scene model + compile), promoted from roadmap.md.
 4. Confirm the SC-M1 exit criteria are all met:
    - ✅ Flag can be declared (pending B1–B2), condition evaluates in both modules (pending B3–B4)

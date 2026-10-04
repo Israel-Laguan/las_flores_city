@@ -132,13 +132,25 @@ beforeAll(async () => {
   );
   await compileDialogueTree(TEST_TREE_ID);
 
+  // Select the CURRENT compiled revision's chunk_start only. compileDialogueTree
+  // writes chunks append-only and bumps dialogue_trees.revision, so prior
+  // revisions are retained on disk. An unordered `WHERE tree_id = $1` scan can
+  // therefore hand back a chunk from an older revision, and /dialogue/start
+  // (which resolves against the current revision) would then disagree with
+  // startChunkId, failing the reachability assertions before they run. Only an
+  // interrupted run leaves such rows behind, which is exactly when a stale pick
+  // is most likely.
   const chunks = await queryOLTP<{ id: string; chunk_key: string }>(
-    `SELECT id, chunk_key FROM dialogue_chunks WHERE tree_id = $1`,
+    `SELECT c.id, c.chunk_key
+       FROM dialogue_chunks c
+       JOIN dialogue_trees t ON t.id = c.tree_id
+      WHERE c.tree_id = $1
+        AND c.revision = t.revision
+        AND c.chunk_key = 'chunk_start'`,
     [TEST_TREE_ID],
   );
-  for (const row of chunks.rows) {
-    if (row.chunk_key === 'chunk_start') startChunkId = row.id;
-  }
+  expect(chunks.rows).toHaveLength(1);
+  startChunkId = chunks.rows[0].id;
 
   await new Promise<void>((resolve) => { server = app.listen(0, () => resolve()); });
   port = (server.address() as { port: number }).port;

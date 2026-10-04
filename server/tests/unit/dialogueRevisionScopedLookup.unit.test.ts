@@ -83,22 +83,26 @@ describe('D1 revision-scoped chunk lookup', () => {
   });
 
   it('rejects a client load scoped to a different tree (scoped miss)', async () => {
-    // Simulate: row exists only under TREE_B; lookup for TREE_A returns nothing.
+    // The row exists only under TREE_B at revision 1. The mock returns it for
+    // ANY scope that is not exactly (SHARED_KEY, TREE_A, 1), so this assertion
+    // only holds if the resolver actually filtered on tree_id AND revision.
+    // Handing back an empty result regardless would make the test pass even if
+    // the query were unscoped, which is the regression this suite exists for.
     (queryOLTP as jest.Mock).mockImplementation(async (_sql: string, params?: unknown[]) => {
-      if (Array.isArray(params) && params[1] === TREE_B && params[2] === 1) {
-        return {
-          rows: [
-            {
-              id: 'chunk-b',
-              tree_id: TREE_B,
-              chunk_key: SHARED_KEY,
-              content_url: 's3://bucket/b.json',
-              revision: 1,
-            },
-          ],
-        };
+      if (Array.isArray(params) && params[0] === SHARED_KEY && params[1] === TREE_A && params[2] === 1) {
+        return { rows: [] };
       }
-      return { rows: [] };
+      return {
+        rows: [
+          {
+            id: 'chunk-b',
+            tree_id: TREE_B,
+            chunk_key: SHARED_KEY,
+            content_url: 's3://bucket/b.json',
+            revision: 1,
+          },
+        ],
+      };
     });
 
     await expect(
@@ -106,24 +110,36 @@ describe('D1 revision-scoped chunk lookup', () => {
     ).rejects.toThrow(
       `Dialogue chunk not found for chunk_key = ${SHARED_KEY} (tree_id=${TREE_A}, revision=1)`,
     );
+
+    // The mock cannot evaluate the resolver's WHERE clause, so assert the part it
+    // *can* prove: that the tree and revision were passed as real bind
+    // parameters. A lookup that dropped them (undefined tree, or a hard-coded
+    // revision) would query a different scope than TREE_A/1 and is caught here.
+    const [sql, params] = (queryOLTP as jest.Mock).mock.calls[0];
+    expect(sql).toMatch(/chunk_key = \$1 AND tree_id = \$2 AND revision = \$3/);
+    expect(params).toEqual([SHARED_KEY, TREE_A, 1]);
   });
 
   it('rejects a stale revision even when tree_id and chunk_key match', async () => {
+    // A chunk for TREE_A exists — at revision 5, not the requested revision 2.
+    // The mock only withholds it for the exact (SHARED_KEY, TREE_A, 2) scope, so
+    // a lookup that ignored revision (e.g. "take the newest chunk") would resolve
+    // successfully and fail this test.
     (queryOLTP as jest.Mock).mockImplementation(async (_sql: string, params?: unknown[]) => {
-      if (Array.isArray(params) && params[1] === TREE_A && params[2] === 5) {
-        return {
-          rows: [
-            {
-              id: 'chunk-a-r5',
-              tree_id: TREE_A,
-              chunk_key: SHARED_KEY,
-              content_url: 's3://bucket/a5.json',
-              revision: 5,
-            },
-          ],
-        };
+      if (Array.isArray(params) && params[0] === SHARED_KEY && params[1] === TREE_A && params[2] === 2) {
+        return { rows: [] };
       }
-      return { rows: [] };
+      return {
+        rows: [
+          {
+            id: 'chunk-a-r5',
+            tree_id: TREE_A,
+            chunk_key: SHARED_KEY,
+            content_url: 's3://bucket/a5.json',
+            revision: 5,
+          },
+        ],
+      };
     });
 
     await expect(

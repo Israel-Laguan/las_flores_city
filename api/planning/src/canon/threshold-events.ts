@@ -71,8 +71,13 @@ export class ThresholdMonitor {
   }
 
   /**
-   * Check if a stat crosses a threshold.
-   * Returns the threshold result if crossed, undefined otherwise.
+   * Check if a stat crosses any of its thresholds.
+   *
+   * Returns the result if at least one threshold was crossed, undefined
+   * otherwise. One stat change can cross several thresholds at once (a jump from
+   * 0 to 50 over thresholds at 10, 20 and 30), so every matching threshold
+   * contributes its flag — returning on the first match silently dropped the
+   * rest.
    */
   checkThresholdCrossing(
     statName: string,
@@ -84,20 +89,33 @@ export class ThresholdMonitor {
       return undefined;
     }
 
+    const flagSet: Record<string, boolean> = {};
+    const crossed: string[] = [];
+
     for (const threshold of thresholds) {
       const wasAbove = this.checkDirection(oldValue, threshold.direction, threshold.value);
       const isAbove = this.checkDirection(newValue, threshold.direction, threshold.value);
 
       // Crossing detected: was not above, now is above
       if (!wasAbove && isAbove) {
-        return {
-          flag_set: { [this.thresholdToFlagName(threshold)]: true },
-          description: `Threshold crossed: ${statName} ${threshold.direction} ${threshold.value}`,
-        };
+        const flagName = this.thresholdToFlagName(threshold);
+        flagSet[flagName] = true;
+        crossed.push(flagName);
       }
     }
 
-    return undefined;
+    if (crossed.length === 0) {
+      return undefined;
+    }
+
+    return {
+      flag_set: flagSet,
+      description:
+        crossed.length === 1
+          ? `Threshold crossed: ${statName} crossed ${crossed[0]}`
+          : `Thresholds crossed: ${statName} crossed ${crossed.length} thresholds ` +
+            `(${crossed.join(', ')})`,
+    };
   }
 
   private checkDirection(
@@ -119,10 +137,22 @@ export class ThresholdMonitor {
 
   /**
    * Generate a flag name from a threshold.
-   * In practice, this would be configured in the flag definition.
+   *
+   * The result must satisfy FLAG_SLUG_PATTERN (letters/digits/underscore, not
+   * starting with a digit) so `createFlagDefinition` can actually declare it.
+   * Interpolating the stat name and the raw value verbatim did not: a stat named
+   * "player trust" or a negative threshold (`value -5`) produced
+   * `threshold_player trust_above_0` / `threshold_x_below_-5`, neither of which
+   * the registry would accept — so the flag could be set here but never declared.
+   *
+   * Non-alphanumeric runs collapse to `_`, a leading digit is prefixed with `_`,
+   * and a `-` value uses `neg` (since `-` is not a legal slug character).
    */
   private thresholdToFlagName(threshold: Threshold): string {
-    return `threshold_${threshold.statName}_${threshold.direction}_${threshold.value}`;
+    const value = threshold.value < 0 ? `neg${Math.abs(threshold.value)}` : `${threshold.value}`;
+    const raw = `threshold_${threshold.statName}_${threshold.direction}_${value}`;
+    const slug = raw.replace(/[^A-Za-z0-9_]+/g, '_');
+    return /^[0-9]/.test(slug) ? `_${slug}` : slug;
   }
 }
 
@@ -157,20 +187,27 @@ export function applyThresholdCrossing(
     };
   }
 
-  // If we just crossed below the threshold
+  // We just crossed in the opposite direction — the stat moved back out of the
+  // condition the threshold describes. Wording stays direction-neutral: for
+  // `direction: 'below'` this branch runs when the stat rises *above* the
+  // threshold, so "fell below" would report the opposite transition.
   if (wasAbove && !isAbove) {
     // For tracking semantics, clear the flag
     if (flagDef.semantics === 'tracking') {
       return {
         flag_set: { [flagDef.slug]: false },
-        description: `Threshold uncrossed: ${statName} fell below ${threshold.direction} ${threshold.value}, clearing tracking flag ${flagDef.slug}`,
+        description:
+          `Threshold uncrossed: ${statName} no longer satisfies ` +
+          `${threshold.direction} ${threshold.value}, clearing tracking flag ${flagDef.slug}`,
       };
     }
     // For latching semantics, do not clear the flag
     // The flag persists until explicitly cleared by a planning operation
     return {
       flag_set: {},
-      description: `Threshold uncrossed: ${statName} fell below ${threshold.direction} ${threshold.value}, but latching flag ${flagDef.slug} persists`,
+      description:
+        `Threshold uncrossed: ${statName} no longer satisfies ` +
+        `${threshold.direction} ${threshold.value}, but latching flag ${flagDef.slug} persists`,
     };
   }
 

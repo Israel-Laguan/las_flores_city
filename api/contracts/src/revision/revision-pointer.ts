@@ -33,6 +33,22 @@ export interface RevisionPointer {
   revisionId: RevisionId;
 
   /**
+   * The type of entity this revision versions (e.g. 'scene', 'dialogue', 'mission').
+   *
+   * Required rather than optional: RevisionPointerReader scopes every read by
+   * (entityType, entitySlug), so a pointer without that identity cannot be found
+   * again, cannot be deactivated on flip, and cannot enforce the one-active-
+   * revision-per-entity invariant.
+   */
+  entityType: string;
+
+  /**
+   * The slug of the entity this revision versions (e.g. 'great_lithium_leak').
+   * Required for the same reason as `entityType`.
+   */
+  entitySlug: string;
+
+  /**
    * Whether this revision is currently active/visible to runtime.
    * Only one revision per entity can be active at a time.
    */
@@ -77,6 +93,20 @@ export interface RevisionPointerRead {
  * Used by planning module when compiling/publishing new content.
  */
 export interface RevisionPointerCreate {
+  /**
+   * The type of entity this revision versions. Required so a created pointer can
+   * be associated with the entity it versions — without it the writer cannot
+   * scope reads by (entityType, entitySlug) or enforce one active revision per
+   * entity, even though the reader interface requires both.
+   */
+  entityType: string;
+
+  /**
+   * The slug of the entity this revision versions. Required for the same reason
+   * as `entityType`.
+   */
+  entitySlug: string;
+
   artifactId: ArtifactId;
   description?: string;
   metadata?: Record<string, unknown>;
@@ -227,17 +257,27 @@ export interface RevisionPointerRepository
 
 /**
  * Type guard for RevisionPointer.
+ *
+ * Validates the optional `description` / `metadata` fields when present: without
+ * those checks the predicate would narrow a non-string description or a
+ * non-plain-object metadata (an array, `null`, a number) to the declared
+ * `RevisionPointer` shape.
  */
 export function isRevisionPointer(value: unknown): value is RevisionPointer {
-  if (typeof value !== 'object' || value === null) {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
     return false;
   }
   const obj = value as Record<string, unknown>;
   return (
     typeof obj.revisionId === 'string' &&
+    typeof obj.entityType === 'string' &&
+    typeof obj.entitySlug === 'string' &&
     typeof obj.active === 'boolean' &&
     typeof obj.createdAt === 'string' &&
-    typeof obj.artifactId === 'string'
+    typeof obj.artifactId === 'string' &&
+    (obj.description === undefined || typeof obj.description === 'string') &&
+    (obj.metadata === undefined ||
+      (typeof obj.metadata === 'object' && obj.metadata !== null && !Array.isArray(obj.metadata)))
   );
 }
 
@@ -270,6 +310,8 @@ export function createRevisionPointer(
 ): RevisionPointer {
   return {
     revisionId: input.revisionId,
+    entityType: input.entityType,
+    entitySlug: input.entitySlug,
     active: input.active,
     createdAt: input.createdAt,
     artifactId: input.artifactId,

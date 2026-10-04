@@ -19,13 +19,13 @@ asserting it.
 
 ## What was run
 
-Script: `server/scripts/spike_sc_s6_serving_baseline.ts` (now committed).
-Treat the numbers below as a **legacy preliminary baseline** for
+Script: an earlier **uncommitted** harness (not the committed skeleton
+`server/scripts/spike_sc_s6_serving_baseline.ts`, which measures nothing — see
+"Reproducibility" below). Treat the numbers below as a **legacy preliminary baseline** for
 `GET /dialogue/active` only — not as the SC-M3/SC-508 scene-resolution + artifact-fetch
-measurement. Against the
-already-running local docker-compose stack (`las-flores-server` on `:3000`,
-`las-flores-postgres-oltp` on `:5434`, `las-flores-minio` on `:9000`) — no code changes,
-no synthetic infra, just the existing dev stack anyone gets from `docker compose up -d`.
+measurement. Against the already-running local docker-compose stack (`las-flores-server` on
+`:3000`, `las-flores-postgres-oltp` on `:5434`, `las-flores-minio` on `:9000`) — no code
+changes, no synthetic infra, just the existing dev stack anyone gets from `docker compose up -d`.
 
 The script seeds one synthetic dialogue tree/chunk (cleaned up in a `finally` block)
 whose 3 nodes reference 3 **real** characters from the existing seeded dataset: one with

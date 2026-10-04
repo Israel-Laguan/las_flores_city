@@ -85,7 +85,16 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA planning GRANT ALL ON TABLES TO planning;
 -- NOT the flag *definitions* (which are planning canon).
 REVOKE ALL ON TABLE planning.flag_definitions FROM runtime;
 
--- Also revoke from public and the main las_flores role
+-- Also revoke from public and the main las_flores role.
+-- Ownership note: the tables are created by the migration connection, so their
+-- owner is las_flores, NOT planning. Do not read the COMMENT below as a claim
+-- about the owner. `ALTER TABLE ... OWNER TO planning` was tried and reverted:
+-- moving runtime.flag_state off las_floses breaks the flag_definitions FK's
+-- referential-integrity check for the migration role (deleting a retired flag
+-- definition then fails with "permission denied for table flag_state").
+-- Real ownership transfer belongs with the out-of-band prod provisioning 095
+-- already flags as open; until then these comments describe the intended
+-- boundary, not the current ACL owner.
 REVOKE ALL ON TABLE planning.flag_definitions FROM PUBLIC;
 REVOKE ALL ON TABLE planning.flag_definitions FROM las_flores;
 
@@ -119,6 +128,16 @@ CREATE TABLE IF NOT EXISTS runtime.flag_state (
   PRIMARY KEY (flag_slug, context_type, context_id)
 );
 
+-- flag_state has no UPDATE trigger of its own, so `updated_at`'s DEFAULT only
+-- fires on INSERT: planning's later updates to is_set would leave updated_at
+-- stale and stop meaning "when this state last changed". Reuse the helper
+-- created for flag_definitions above.
+DROP TRIGGER IF EXISTS _update_flag_state_updated_at ON runtime.flag_state;
+CREATE TRIGGER _update_flag_state_updated_at
+  BEFORE UPDATE ON runtime.flag_state
+  FOR EACH ROW
+  EXECUTE FUNCTION planning._set_updated_at();
+
 -- Runtime is READ-ONLY on flag_state: planning writes, runtime reads.
 -- A bare GRANT ALL here would hand runtime INSERT/UPDATE/DELETE/TRUNCATE and defeat
 -- planning's threshold and latching rules, so revoke first and grant only SELECT.
@@ -132,7 +151,9 @@ GRANT SELECT ON TABLE runtime.flag_state TO runtime;
 GRANT USAGE ON SCHEMA runtime TO planning;
 GRANT SELECT, INSERT, UPDATE ON TABLE runtime.flag_state TO planning;
 
--- Revoke from public
+-- Revoke from public. In dev the las_flores revoke is a no-op regardless, since
+-- the docker image makes las_flores a SUPERUSER (POSTGRES_USER) and superusers
+-- bypass privilege checks entirely.
 REVOKE ALL ON TABLE runtime.flag_state FROM PUBLIC;
 REVOKE ALL ON TABLE runtime.flag_state FROM las_flores;
 
@@ -140,20 +161,25 @@ REVOKE ALL ON TABLE runtime.flag_state FROM las_flores;
 -- Indexes
 -- ============================================================
 
--- For fast lookup of flag definitions by slug
-CREATE INDEX IF NOT EXISTS flag_definitions_slug_idx ON planning.flag_definitions (slug);
+-- `flag_definitions.slug` is the PRIMARY KEY, which already provides a unique
+-- btree index on exactly that column. A second index on slug is pure overhead
+-- (extra storage plus write amplification on every INSERT/UPDATE), so it is not
+-- created here.
+--
+-- Only genuinely additional access paths get an index:
 
--- For fast lookup of flag definitions by semantics
+-- Lookup flag definitions by semantics
 CREATE INDEX IF NOT EXISTS flag_definitions_semantics_idx ON planning.flag_definitions (semantics);
 
--- For fast lookup of flag state by flag_slug
-CREATE INDEX IF NOT EXISTS flag_state_flag_idx ON runtime.flag_state (flag_slug);
-
--- For fast lookup of flag state by context
+-- Lookup flag state by context
 CREATE INDEX IF NOT EXISTS flag_state_context_idx ON runtime.flag_state (context_type, context_id);
 
--- For fast lookup of flag state by flag_slug + context
-CREATE INDEX IF NOT EXISTS flag_state_flag_context_idx ON runtime.flag_state (flag_slug, context_type, context_id);
+-- Deliberately NOT created, because the PRIMARY KEY (flag_slug, context_type,
+-- context_id) already covers them:
+--   * flag_state_flag_context_idx (flag_slug, context_type, context_id)
+--     — byte-identical to the PRIMARY KEY index
+--   * flag_state_flag_idx (flag_slug)
+--     — its redundant leading-column prefix, served by the same PK index
 
 -- ============================================================
 -- Comments
@@ -161,9 +187,9 @@ CREATE INDEX IF NOT EXISTS flag_state_flag_context_idx ON runtime.flag_state (fl
 
 COMMENT ON SCHEMA planning IS 'SC-103/SC-202: planning canon schema. Contains flag_definitions and other planning-only tables.';
 
-COMMENT ON TABLE planning.flag_definitions IS 'SC-202: Registry of flag definitions. Each flag declares a named boolean state with semantics (latching/tracking). Owned by planning role. Runtime CANNOT read this table.';
+COMMENT ON TABLE planning.flag_definitions IS 'SC-202: Registry of flag definitions. Each flag declares a named boolean state with semantics (latching/tracking). Intended owner: the planning role (see the ownership note above — the migration connection currently owns it). Runtime CANNOT read this table.';
 
-COMMENT ON TABLE runtime.flag_state IS 'SC-202: Runtime-accessible flag state. Stores the current boolean value of each flag per context. Planning writes, runtime reads.';
+COMMENT ON TABLE runtime.flag_state IS 'SC-202: Runtime-accessible flag state. Stores the current boolean value of each flag per context. Intended owner: the runtime role (see the ownership note above); planning writes, runtime reads.';
 
 COMMENT ON COLUMN planning.flag_definitions.slug IS 'Stable identifier for the flag. Must be a valid SQL identifier.';
 COMMENT ON COLUMN planning.flag_definitions.meaning IS 'Human-readable description of what this flag means when set.';
@@ -183,5 +209,7 @@ COMMENT ON COLUMN runtime.flag_state.is_set IS 'Current boolean state of the fla
 -- - SC-106 negative test must be extended to verify runtime cannot
 --   SELECT from planning.flag_definitions
 -- - Semantics validation is at DB level (CHECK constraint)
--- - Slug validation is via trigger (identifier format)
+-- - Slug validation is via trigger (identifier format + length bounds)
+-- - Table ownership is NOT transferred here; see the ownership note in the
+--   Access Control section for why (FK RI breakage) and where it is deferred.
 -- ============================================================

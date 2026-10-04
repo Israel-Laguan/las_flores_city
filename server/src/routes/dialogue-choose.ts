@@ -336,12 +336,15 @@ async function handleChunkBoundaryChoice(
   const targetChunkKey = leaf.target_chunk as string;
 
   // Early validation already enforced tree/rev/current_chunk match. Prefer the
-  // player's pinned revision including 0 (pinned===0 is a real pin, not "unset").
-  // Fall back to the validated chunk revision only when no pin row exists.
-  const treeRevision =
-    typeof cursor?.pinned_tree_revision === 'number'
-      ? cursor.pinned_tree_revision
-      : (currentChunk.revision ?? 0);
+  // player's nonzero pinned revision; a 0 pin is the legacy/unset sentinel (see
+  // migration 093's DEFAULT 0 and initDialogueChunkState's
+  // "0 means don't change the pin" CASE), not a real pin, so those sessions fall
+  // back to the validated chunk's revision. Sending revision 0 instead would make
+  // the boundary load stale pre-compile content — or 404 outright — after
+  // validateChoice has already committed guarded effects.
+  const treeRevision = (cursor?.pinned_tree_revision != null && cursor.pinned_tree_revision !== 0)
+    ? cursor.pinned_tree_revision
+    : currentChunk.revision ?? 0;
 
   let resolvedNextChunk;
   try {

@@ -47,31 +47,67 @@ export interface FlagSetEffect {
 }
 
 /**
+ * A single reader of a flag: the entity that reads it plus, when the read is
+ * choice-scoped, the id of the choice that owns it.
+ */
+export interface FlagRead {
+  /** The flag slug read */
+  flag: string;
+  /**
+   * The choice_id of the choice that reads it, or undefined when the read is not
+   * choice-scoped.
+   */
+  choiceId?: string;
+}
+
+/**
+ * A single write to a flag, attributed to the entity whose effects performed it.
+ *
+ * Attribution is required, not cosmetic: a scene that sets a flag while a nested
+ * choice later clears it has two *different* edges (sets_flag on the scene,
+ * clears_flag on the choice). Collapsing to one per-slug last-writer-wins value
+ * would emit a lone clears_flag stamped with the scene's from_slug, losing both
+ * the scene's sets_flag and the child's own edge.
+ */
+export interface FlagWrite {
+  /** The flag slug written */
+  flag: string;
+  /** The value written (true = sets_flag, false = clears_flag) */
+  value: boolean;
+  /** The id of the entity whose effects performed the write */
+  entityId: string;
+  /** The type of that entity (e.g. 'scene', 'dialogue', 'choice') */
+  entityType: string;
+}
+
+/**
  * Result of extracting flag usage from an entity payload.
  * Contains two sets: flags that are SET (written) and flags that are READ.
  */
 export interface FlagUsage {
-  /** Flags that are set/cleared by this entity or its children */
-  sets: Set<string>;
   /**
-   * The value written per slug (true = sets_flag, false = clears_flag).
+   * Every flag slug written by this entity or its children.
    *
-   * `sets` alone cannot express the difference: a `flag_set` with value false
-   * and a `flag_clear` entry are both "touched" flags, and projecting both as
-   * `sets_flag` reported a clear as a set. The written value has to survive the
-   * walk for FlagEdge.attrs.value and edge_kind to be correct.
+   * The *values* and their attribution live in `writes` — `sets` cannot express
+   * them (a `flag_set` with value false and a `flag_clear` entry are both
+   * "touched" flags, and projecting both as `sets_flag` reported a clear as a
+   * set).
    */
-  writes: Map<string, boolean>;
+  sets: Set<string>;
+  /** Every write, one entry per writing entity, in walk order. */
+  writes: FlagWrite[];
   /**
-   * Flags that are read/checked by conditions in this entity or its children,
-   * mapped to the choice_id of the choice that reads them (undefined when the
-   * read is not choice-scoped).
+   * Every read, one entry per reader, in walk order.
    *
    * Per SC-S1's finding, requires_flag edges MUST retain choice_id. A plain
-   * Set<string> collapsed child choice reads into the parent and stamped them
-   * all with the parent's choice_id, so a Map is required to keep them apart.
+   * Set<string> collapsed child choice reads into the parent, and even a
+   * Map<string, choiceId> keyed by slug conflated two choices reading the same
+   * flag — parents are walked before children, so the parent's entry won and the
+   * child choice_id was dropped, emitting a single requires_flag edge for that
+   * slug. That is precisely the gated-vs-ungated conflation SC-701 / SC-S1 calls
+   * out, so readers are kept as a list rather than collapsed per slug.
    */
-  reads: Map<string, string | undefined>;
+  reads: FlagRead[];
 }
 
 /**
@@ -106,8 +142,8 @@ export interface FlagEdge {
  */
 export function extractFlagUsage(payload: EntityPayload): FlagUsage {
   const sets = new Set<string>();
-  const writes = new Map<string, boolean>();
-  const reads = new Map<string, string | undefined>();
+  const writes: FlagWrite[] = [];
+  const reads: FlagRead[] = [];
 
   extractFlagUsageFromPayload(payload, sets, writes, reads);
 
@@ -124,8 +160,8 @@ const CHOICE_ENTITY_TYPES = new Set(['choice']);
 function extractFlagUsageFromPayload(
   payload: EntityPayload,
   sets: Set<string>,
-  writes: Map<string, boolean>,
-  reads: Map<string, string | undefined>,
+  writes: FlagWrite[],
+  reads: FlagRead[],
   choiceId?: string,
 ): void {
   // A choice child carries its own choice_id for its condition reads.
@@ -142,19 +178,18 @@ function extractFlagUsageFromPayload(
       if (isConditionExpr(condition)) {
         const slugs = extractFlagSlugs(condition);
         for (const slug of slugs) {
-          // First writer wins: the most specific (innermost) choice that reads
-          // a flag is the one that owns the requires_flag edge.
-          if (!reads.has(slug)) {
-            reads.set(slug, effectiveChoiceId);
-          }
+          // One entry per reader: a parent and a child choice reading the same
+          // slug are two distinct requires_flag edges, so neither may displace
+          // the other.
+          reads.push({ flag: slug, choiceId: effectiveChoiceId });
         }
       }
     }
   }
 
-  // Extract from effects
+  // Extract from effects, attributed to *this* entity.
   if (payload.effects) {
-    extractFromEffects(payload.effects, sets, writes);
+    extractFromEffects(payload.effects, sets, writes, payload.id, payload.type);
   }
 
   // Recursively extract from children
@@ -168,19 +203,21 @@ function extractFlagUsageFromPayload(
 function extractFromEffects(
   effects: EntityEffects,
   sets: Set<string>,
-  writes: Map<string, boolean>,
+  writes: FlagWrite[],
+  entityId: string,
+  entityType: string,
 ): void {
   if (effects.flag_set) {
     for (const { flag, value } of effects.flag_set) {
       sets.add(flag);
-      writes.set(flag, value);
+      writes.push({ flag, value, entityId, entityType });
     }
   }
 
   if (effects.flag_clear) {
     for (const flag of effects.flag_clear) {
       sets.add(flag);
-      writes.set(flag, false);
+      writes.push({ flag, value: false, entityId, entityType });
     }
   }
 }
@@ -206,14 +243,20 @@ export function extractFlagReadsFromCondition(
  */
 export function extractFlagSetsFromEffects(effects: EntityEffects): Set<string> {
   const sets = new Set<string>();
-  extractFromEffects(effects, sets, new Map());
+  extractFromEffects(effects, sets, [], '', '');
   return sets;
 }
 
 /**
  * Converts flag usage to edges for entity_edges projection.
  * Per SC-S1's finding, requires_flag edges MUST retain choice_id in attrs.
- * 
+ *
+ * One edge is emitted per *reader* for reads and per *writing entity* for writes.
+ * Collapsing either to one edge per slug loses information the projection cannot
+ * recover: a second choice gated on the same flag would vanish into the first
+ * reader's edge, and a scene whose nested choice clears the flag it set would
+ * lose its own sets_flag edge.
+ *
  * @param usage - The flag usage to convert
  * @param entity - The source entity information
  * @param choiceId - Optional choice_id to include in attrs (for choice-level edges)
@@ -225,10 +268,10 @@ export function flagUsageToEdges(
 ): FlagEdge[] {
   const edges: FlagEdge[] = [];
 
-  // Create requires_flag edges for read flags. Each read keeps its own choice_id
-  // when the walk attributed one (a child choice); otherwise fall back to the
-  // choice_id supplied by the caller.
-  for (const [flag, readChoiceId] of usage.reads) {
+  // requires_flag edges: one per read entry, each keeping its own choice_id when
+  // the walk attributed one (a child choice); otherwise fall back to the choice_id
+  // supplied by the caller.
+  for (const { flag, choiceId: readChoiceId } of usage.reads) {
     const attrsChoiceId = readChoiceId ?? choiceId;
     edges.push({
       from_type: entity.type,
@@ -240,19 +283,37 @@ export function flagUsageToEdges(
     });
   }
 
-  // Create sets_flag / clears_flag edges for written flags, carrying the value
-  // that was actually written. Iterate `sets` (the full set of touched slugs) so
-  // a hand-built usage with an incomplete writes map still emits an edge;
-  // `true` is the fallback when no written value is known.
+  // sets_flag / clears_flag edges: one per write, carrying the value that was
+  // actually written and stamped with the entity whose effects performed it.
+  // `sets` is the union of all written slugs, so a hand-built usage with an empty
+  // `writes` list still emits an edge for every touched slug — `true` is the
+  // fallback when no write detail is known.
+  const writtenSlugs = new Set(usage.writes.map((w) => w.flag));
   for (const flag of usage.sets) {
-    const value = usage.writes.get(flag) ?? true;
+    if (!writtenSlugs.has(flag)) {
+      edges.push({
+        from_type: entity.type,
+        from_slug: entity.slug,
+        edge_kind: 'sets_flag',
+        to_type: 'flag',
+        to_slug: flag,
+        attrs: { value: true },
+      });
+    }
+  }
+  for (const write of usage.writes) {
+    // A write by the root entity the caller named keeps that entity's identity;
+    // a descendant's write is attributed to the descendant, which is what makes
+    // "scene sets X, nested choice clears X" two edges instead of one.
+    const isRootEntity =
+      !entity.slug || write.entityId === entity.slug || write.entityId === '';
     edges.push({
-      from_type: entity.type,
-      from_slug: entity.slug,
-      edge_kind: value ? 'sets_flag' : 'clears_flag',
+      from_type: isRootEntity ? entity.type : write.entityType,
+      from_slug: isRootEntity ? entity.slug : write.entityId,
+      edge_kind: write.value ? 'sets_flag' : 'clears_flag',
       to_type: 'flag',
-      to_slug: flag,
-      attrs: { value },
+      to_slug: write.flag,
+      attrs: { value: write.value },
     });
   }
 
@@ -281,22 +342,26 @@ export function validateFlagReferences(
 ): { valid: boolean; missing: string[] } {
   const knownSlugs = new Set(knownFlagSlugs);
   const usage = extractFlagUsage(payload);
-  const missing: string[] = [];
+  const missing = new Set<string>();
 
-  for (const flag of usage.reads.keys()) {
+  for (const { flag } of usage.reads) {
     if (!knownSlugs.has(flag)) {
-      missing.push(flag);
+      missing.add(flag);
     }
   }
 
   for (const flag of usage.sets) {
     if (!knownSlugs.has(flag)) {
-      missing.push(flag);
+      missing.add(flag);
     }
   }
 
+  // A flag that is both read and written appeared in both loops above. Report it
+  // once: duplicate entries read as two distinct defects to any consumer that
+  // renders the list.
+  const missingSlugs = [...missing].sort();
   return {
-    valid: missing.length === 0,
-    missing,
+    valid: missingSlugs.length === 0,
+    missing: missingSlugs,
   };
 }

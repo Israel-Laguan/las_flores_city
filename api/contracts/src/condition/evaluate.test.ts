@@ -194,6 +194,17 @@ describe('condition evaluator', () => {
       expect(evaluateWithFlagObject(expr, flagState)).toBe(true);
     });
 
+    test('treats a present-but-false flag as cleared', () => {
+      // `unlocked_door` is present in the fixture with value false. This is the
+      // guard against a regression that treats every present key as true: the
+      // missing-flag tests below cannot catch that, because a missing key and a
+      // false key both have to read as "not set" for `expected: true`.
+      const flagState = { has_key: true, unlocked_door: false };
+      expect(evaluateWithFlagObject(flag('has_key', true), flagState)).toBe(true);
+      expect(evaluateWithFlagObject(flag('unlocked_door', true), flagState)).toBe(false);
+      expect(evaluateWithFlagObject(flag('unlocked_door', false), flagState)).toBe(true);
+    });
+
     test('treats missing flags as false', () => {
       const flagState = { has_key: true };
       const expr = flag('missing_flag', true);

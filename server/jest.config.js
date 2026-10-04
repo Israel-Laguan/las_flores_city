@@ -68,6 +68,16 @@ const base = {
  */
 const SCHEMA_SUITES = [
   'adeyemi_arc.test.ts',
+  // Suites that CREATE TABLE in beforeAll under withSchemaLock. They are DDL
+  // mutators just like the applyMigration suites below, so they belong in this
+  // serial phase: `critique_annotations` and `conflict_reports` are read by
+  // sibling data-phase suites (graph-intake selects from critique_annotations,
+  // plans-intake deletes from it), and on a fresh DB a reader can hit 42P01
+  // while a parallel worker is still mid-create.
+  'ai-critique.test.ts',
+  'chat-apply-delta.integration.test.ts',
+  'graph-critique.integration.test.ts',
+  'conflict-detector.test.ts',
   'aftermath.worker.test.ts',
   'api-contract.test.ts',
   'archive-simulation.test.ts',
@@ -89,6 +99,10 @@ const SCHEMA_SUITES = [
   'story-builder-migration-audit.test.ts',
   'story-builder-plan-pipeline.test.ts',
   'vault.test.ts',
+  // SC-106 negative-permission suite: creates and DROPs a probe table in the
+  // planning schema through its own raw `pg` clients logged in as the planning
+  // role, so it cannot take the oltpPool-backed withSchemaLock advisory lock.
+  'runtime-planning-permissions.test.ts',
   // Read-only schema assertions — must observe a settled schema, never a gap.
   'database-constraints.test.ts',
   'migration.schema.test.ts',

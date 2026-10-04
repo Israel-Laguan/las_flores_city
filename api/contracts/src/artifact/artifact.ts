@@ -141,7 +141,11 @@ export interface ArtifactValidation {
  * Validates that a string looks like a valid content hash.
  * Accepts both hex-encoded and base64url-encoded SHA-256 hashes.
  */
-export const CONTENT_HASH_PATTERN = /^[a-fA-F0-9]{64}$|^[A-Za-z0-9-_]{43,44}$/;
+// 32 bytes base64url-encoded is exactly 43 unpadded characters (the 44th, when
+// present, is a single `=` pad). The previous `{43,44}` range therefore admitted
+// 44 unpadded url-safe characters — a string that cannot decode to a SHA-256
+// digest — while rejecting the padded form Node's Buffer actually emits.
+export const CONTENT_HASH_PATTERN = /^[a-fA-F0-9]{64}$|^[A-Za-z0-9_-]{43}=?$/;
 
 /**
  * Validates a content hash string.
@@ -205,7 +209,30 @@ function isArtifactBody(obj: Record<string, unknown>): boolean {
     typeof obj.created_at === 'string' &&
     typeof obj.size_bytes === 'number' &&
     Array.isArray(obj.dependencies) &&
-    obj.dependencies.every((dep): boolean => typeof dep === 'string')
+    obj.dependencies.every((dep): boolean => typeof dep === 'string') &&
+    // `description?: string` — a present-but-non-string value would be narrowed
+    // to `string` by the predicate and then blow up a `.trim()`/`startsWith`
+    // caller at runtime.
+    (obj.description === undefined || typeof obj.description === 'string')
+  );
+}
+
+/**
+ * Validates the optional `integrity` block. `{}` (or any object missing the
+ * algorithm/hash pair) must not be narrowed to the declared shape: a caller that
+ * trusts the predicate would read `integrity.hash` as a hash and verify nothing.
+ */
+function isIntegrityBlock(value: unknown): boolean {
+  if (value === undefined) {
+    return true;
+  }
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return false;
+  }
+  const obj = value as Record<string, unknown>;
+  return (
+    (obj.algorithm === 'sha256' || obj.algorithm === 'sha512') &&
+    typeof obj.hash === 'string'
   );
 }
 
@@ -214,7 +241,8 @@ function isArtifactBody(obj: Record<string, unknown>): boolean {
  *
  * manifest_version must be exactly 1 and artifact must itself be a well-formed
  * artifact body — accepting any non-null object here let malformed artifacts
- * through into code that trusts the manifest.
+ * through into code that trusts the manifest. The optional `integrity` block is
+ * validated too, so `{}` cannot be narrowed to `{algorithm, hash}`.
  */
 export function isArtifactManifest(value: unknown): value is ArtifactManifest {
   if (typeof value !== 'object' || value === null) {
@@ -222,6 +250,9 @@ export function isArtifactManifest(value: unknown): value is ArtifactManifest {
   }
   const obj = value as Record<string, unknown>;
   if (obj.manifest_version !== 1 || typeof obj.content_url !== 'string') {
+    return false;
+  }
+  if (!isIntegrityBlock(obj.integrity)) {
     return false;
   }
   if (typeof obj.artifact !== 'object' || obj.artifact === null) {

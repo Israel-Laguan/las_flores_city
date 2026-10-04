@@ -5,6 +5,10 @@
 // NO continuous-value comparison is representable (absent from type).
 // Expressions serialize to/from JSON stably for content hashing.
 
+// Single source of truth for the flag-slug contract: FlagDefinition enforces it,
+// so a condition referencing a slug the registry could never declare is malformed.
+import { validateFlagSlug } from '../flags/flag-definition.js';
+
 /**
  * Base type for all condition expressions.
  * Discriminated union with a `type` field.
@@ -75,6 +79,13 @@ export interface FalseCondition {
 
 /**
  * Type guard for ConditionExpr.
+ *
+ * A `flag` condition's slug is validated with the shared `validateFlagSlug`
+ * contract (same one `FlagDefinition`/`createFlagDefinition` enforce) rather than
+ * a bare `typeof === 'string'`. Otherwise a malformed reference such as
+ * `{ flag: 'has key', expected: false }` passes the guard, can never be declared
+ * in the flag registry, and evaluates as *true* whenever unset — a content typo
+ * that silently reads as satisfied.
  */
 export function isConditionExpr(value: unknown): value is ConditionExpr {
   if (typeof value !== 'object' || value === null) {
@@ -89,6 +100,7 @@ export function isConditionExpr(value: unknown): value is ConditionExpr {
     case 'flag':
       return (
         typeof obj.flag === 'string' &&
+        isValidFlagSlug(obj.flag) &&
         typeof obj.expected === 'boolean'
       );
     case 'not':
@@ -107,9 +119,25 @@ export function isConditionExpr(value: unknown): value is ConditionExpr {
 }
 
 /**
+ * Non-throwing form of `validateFlagSlug`, for use inside type guards.
+ */
+function isValidFlagSlug(slug: string): boolean {
+  try {
+    validateFlagSlug(slug);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Creates a flag condition.
+ *
+ * Validates the slug with the shared contract so `flag()` cannot build a
+ * reference that `FlagDefinition` would refuse to declare.
  */
 export function flag(flag: string, expected: boolean): FlagCondition {
+  validateFlagSlug(flag);
   return { type: 'flag', flag, expected };
 }
 
@@ -227,6 +255,13 @@ export function fromJSON(value: unknown): ConditionExpr {
     case 'flag': {
       if (typeof obj.flag !== 'string') {
         throw new Error("Invalid flag condition: 'flag' must be a string");
+      }
+      // Same slug contract as `flag()` / `isConditionExpr` — deserialising a typo
+      // from content JSON must not produce a reference the registry could not hold.
+      try {
+        validateFlagSlug(obj.flag);
+      } catch (err) {
+        throw new Error(`Invalid flag condition: 'flag' is not a valid flag slug (${String(err)})`);
       }
       if (typeof obj.expected !== 'boolean') {
         throw new Error("Invalid flag condition: 'expected' must be a boolean");

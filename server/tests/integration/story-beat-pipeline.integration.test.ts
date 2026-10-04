@@ -81,10 +81,15 @@ describe('Story Beat Pipeline Integration', () => {
   });
 
   afterAll(async () => {
-    // Clean up ONLY this suite's own `test-` prefixed rows. Canonical beats are
-    // real content and are deliberately left in place.
+    // Clean up ONLY this suite's own beat, by exact slug. `slug LIKE 'test-%'`
+    // matched every test-prefixed beat in the shared database, so this suite
+    // could delete rows owned by a sibling suite (or other seeded data) that
+    // happened to share the prefix. Canonical beats are real content and are
+    // deliberately left in place either way.
     await withSchemaLock(async (client) => {
-      await client.query('DELETE FROM story_beats WHERE slug LIKE $1', ['test-%']);
+      await client.query('DELETE FROM story_beats WHERE slug = $1', [
+        'test-synthetic-pipeline-beat',
+      ]);
       await client.query(
         `DELETE FROM migration_log WHERE file_path LIKE $1`,
         ['%test_story_beats_synthetic%'],

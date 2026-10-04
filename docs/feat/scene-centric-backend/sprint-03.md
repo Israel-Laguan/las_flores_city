@@ -4,13 +4,15 @@
 · **Status:** READY (unblocked by SC-204 landing)
 
 **Sprint goal:** The scene entity exists as a first-class authored object with base + overlay
-composition, and the compile step produces content-addressed artifacts with atomic revision
-pointers. This is the foundation for SC-M3 (runtime resolver).
+composition, providing the stable input the compile step needs. This is the foundation for
+SC-M3 (runtime resolver). Artifacts, revision pointers, and the compile step itself are owned
+by SC-E4 (see §4).
 
 **Why this next.** Scene model sits at rung 2 of the critical path (`features.md` §3):
-`F10 → F1 → F2 → F3 → F4 → F5`. The condition grammar (F2, Sprint 02) is now complete,
-so the scene entity can be built against a stable interface. Scene model and composition
-are prerequisites for compile (F4) which is in turn a prerequisite for runtime resolution (F5).
+`F10 → F1 → F2 → F3 → F7 → F4 → F5`, with F6 (player state) also a prerequisite of F5. The
+condition grammar (F2, Sprint 02) is now complete, so the scene entity can be built against a
+stable interface. Scene model and composition are prerequisites for compile (F4, which also
+depends on F7) which is in turn a prerequisite for runtime resolution (F5).
 
 **Capacity.** ~6 days planned across 10 calendar days, matching the Sprint 02 cadence.
 
@@ -21,12 +23,12 @@ are prerequisites for compile (F4) which is in turn a prerequisite for runtime r
 ### SC-301 · Scene entity · M · `planning`
 
 Define the scene as the primary unit of interactive content. A scene has location, time,
-weather, participants, items, and dialogue references.
+weather, role slots, items, and dialogue references.
 
 **Acceptance**
 - Schema defines: `id`, `slug`, `title`, `description`, `location` (district + scene reference),
   `time` (time-of-day tag), `weather` (override or inherit from district),
-  `participants` (role slots with character references),
+  `role_slots` (role slots with character references),
   `items` (inventory/props visible in the scene),
   `dialogue_refs` (dialogue trees/chunks available in this scene).
 - Weather resolution: if scene.weather is set, it overrides district.weather (A6 decision).
@@ -52,20 +54,34 @@ change participant casts, or modify properties.
 **Acceptance**
 - Overlay defines `base_scene_slug` to identify the scene it modifies.
 - Composition rules:
-  - **Additive properties** (dialogue_refs, participants): base + overlay values are merged.
-  - **Exclusive properties** (weather, time): overlay value replaces base value.
-  - **Conflicting assignments** (same role slot with different cast): resolved by priority
-    order; equal priority fails compile (SC-304).
+  - **Additive properties** (dialogue_refs, role_slots): base + overlay values are merged.
+  - **Exclusive properties** (weather, time): not merged — the overlay value replaces the base
+    value. Because there is only one surviving value, two overlays assigning the same exclusive
+    property is a conflict, not a merge.
+  - **Conflicting assignments** (same role slot with a different cast, or two overlays
+    assigning the same exclusive property): resolved by priority order. The equal-priority
+    case is **out of scope for SC-303** and deferred to SC-304, which owns failing the compile
+    (see the "Equal-priority conflict on an exclusive property fails the compile" row in §4's
+    exit-criteria table).
 - Overlay is applied at compile time, not at runtime — the compiled artifact is the resolved
   result.
+
+### SC-309 · `districts.weather` column + seed defaults · S · `planning`
+
+The district-level weather default that SC-301's scene-over-district resolution inherits from.
+Small scope, and a commitment rather than stretch because SC-301's acceptance criteria cannot be
+met without the weather source it reads.
+
+**Acceptance**
+- Migration adds a `weather` column to `districts`, seeded with a default per district.
+- Content/admin tooling reads and writes the new column.
 
 ---
 
 ## 2. Stretch — only if the committed set lands early
 
-| ID | Story | Why stretch |
-|---|---|---|
-| SC-309 | `districts.weather` column + seed defaults + admin/content tooling | Needed by SC-305, small scope |
+No stretch tickets remain: SC-309 was promoted from stretch to a committed ticket (SC-301
+depends on it), which leaves this section empty.
 
 Do not pull SC-E4 (compile & publish) stories forward. The compile step depends on the scene
 entity being stable and tested.
@@ -78,14 +94,17 @@ All tickets in this sprint depend on SC-204 (condition evaluator) being complete
 verified. SC-301 through SC-303 have internal dependencies:
 - SC-302 depends on SC-301 (role slots are a scene attribute)
 - SC-303 depends on SC-301 and SC-302 (composition operates on scenes with role slots)
+- SC-301 depends on SC-309 for the district weather source it inherits from when
+  `scene.weather` is unset
 
 ---
 
 ## 4. Definition of Done
 
-**In scope for this sprint (SC-301, SC-302, SC-303):**
+**In scope for this sprint (SC-301, SC-302, SC-303, SC-309):**
 - The scene entity is a first-class authored object with location, time, weather,
-  participants, items, and dialogue references, weather resolving scene-over-district.
+  role slots, items, and dialogue references, weather resolving scene-over-district, with
+  the district default supplied by SC-309's `districts.weather` column.
 - Participants are assigned to role slots (`slot_id`, `cast`, `position`), slot ids unique
   within a scene, a null cast meaning unassigned.
 - Base + overlay composition applies the documented merge/replace rules with priority
@@ -108,8 +127,10 @@ scene entity lands.)
 
 ## 5. Open questions (to be resolved during sprint)
 
-None identified at sprint planning. SC-S1 through SC-S6 spike answers are now committed
-and reproducible, providing the necessary datastore assumptions.
+None identified at sprint planning. SC-S1 through SC-S5 spike answers are now committed and
+reproducible, providing the necessary datastore assumptions. SC-S6 is the exception: its
+committed harness is a stub, so its numbers remain a historical record — see
+`spikes/SC-S6-serving-baseline.md`.
 
 ---
 
@@ -123,6 +144,9 @@ SC-S6) inform the shape of these tickets. Specifically:
 - SC-S3 proves array-aware merge is needed for MODIFY deltas
 - SC-S4 provides the pg_trgm alias detection baseline
 - SC-S5 resolves weather source (scene overrides district)
-- SC-S6 provides serving baseline numbers
+- SC-S6 provides serving baseline numbers (historical only — the committed harness is a stub,
+  see `spikes/SC-S6-serving-baseline.md`)
 
-All of these answers are now committed and reproducible, unblocking SC-M2.
+All of these answers are now committed, and SC-S1 through SC-S5 are reproducible from their
+committed harnesses, unblocking SC-M2. SC-S6's numbers are uncommitted historical results and
+must not be treated as a re-runnable baseline.

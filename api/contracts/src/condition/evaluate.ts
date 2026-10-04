@@ -138,7 +138,16 @@ export function flagSetFromObject(
 export function flagObjectFromSet(flags: FlagSet): Record<string, boolean> {
   const result: Record<string, boolean> = {};
   for (const slug of flags) {
-    result[slug] = true;
+    // `result[slug] = true` would invoke the inherited `__proto__` setter for the
+    // slug `__proto__` (which FLAG_SLUG_PATTERN admits) instead of creating an own
+    // property, silently dropping that true flag. Define it as an own data
+    // property so every slug round-trips.
+    Object.defineProperty(result, slug, {
+      value: true,
+      enumerable: true,
+      writable: true,
+      configurable: true,
+    });
   }
   return result;
 }

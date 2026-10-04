@@ -22,7 +22,7 @@ Read these to know what is being built, in what order.
 | [architecture.md](architecture.md) | The buildable shape: module layout, the enforced planning↔runtime boundary, schema and role ownership, the artifact/revision-pointer seam, technology decisions, and the concrete setup steps |
 | [backlog.md](backlog.md) | Product backlog — 9 epics, ~60 stories with blockers and sizes, 6 spikes, 2 defects |
 | [sprint-01.md](sprint-01.md) | **FIRM.** Foundation and spikes: module tree, boundary lint rule, schemas and roles, the two live defect fixes, six spikes |
-| [sprint-02.md](sprint-02.md) | **PROVISIONAL.** Flags and conditions — the head of the critical path. Becomes firm at sprint 1's retro |
+| [sprint-02.md](sprint-02.md) | **COMPLETED.** Flags and conditions — the head of the critical path. SC-201–SC-206 are Done |
 | [spikes/](spikes/) | Spike write-ups, with the template and index |
 
 ## Reference and technical documents

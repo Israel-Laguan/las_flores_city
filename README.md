@@ -125,8 +125,12 @@ finished, run:
 podman rm -f \
   las-flores-postgres-oltp las-flores-postgres-olap \
   las-flores-redis las-flores-minio las-flores-neo4j \
-  las-flores-server las-flores-intake-worker las-flores-admin
+  las-flores-server las-flores-intake-worker las-flores-admin || true
 ```
+
+The trailing `|| true` (the same guard `start-stack.sh` applies) silently skips
+containers that are not running, so the command exits 0 even when only a subset
+was started.
 
 This removes containers but preserves the named database and object-store
 volumes. Commands using `podman run --rm` are foreground one-shot operations and

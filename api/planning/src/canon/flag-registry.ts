@@ -92,18 +92,22 @@ export interface FlagRegistry {
 }
 
 /**
- * Implementation of FlagRegistry using a database connection.
- * This is a placeholder implementation that would be wired to the actual
- * OLTP database connection in the server.
- * 
- * For the api/planning module (which is pure TypeScript with no DB access),
- * this is an interface-only definition. The actual implementation would
- * live in server/src/ or be provided via dependency injection.
+ * Implementation of FlagRegistry against `planning.flag_definitions`.
+ *
+ * This class exists only to document that the DB-backed half of the contract
+ * belongs in `server/src/` — `api/planning` is a pure-TypeScript module with no
+ * database access, and an ESLint-enforced boundary test
+ * (`server/tests/unit/api-boundary-enforcement.test.ts`) forbids it from
+ * importing DB modules. `server/src/` must therefore provide the real
+ * implementation via dependency injection.
+ *
+ * Because of that, every method here throws by design. See
+ * `createFlagRegistry()` — which requires the caller to state which
+ * implementation it wants — rather than defaulting to this unusable one.
  */
 export class DatabaseFlagRegistry implements FlagRegistry {
-  // In a real implementation, this would hold a database connection
-  // For api/planning (no runtime dependencies), we only define the interface
-  // and would delegate to server-side code for actual DB access
+  // Intentionally unimplemented: see the class docblock. A real implementation
+  // holds a pg client and delegates to planning.flag_definitions.
 
   async create(_input: CreateFlagInput): Promise<FlagDefinitionWithMetadata> {
     // Placeholder - actual implementation would insert into planning.flag_definitions
@@ -165,6 +169,21 @@ export class DatabaseFlagRegistry implements FlagRegistry {
 }
 
 /**
+ * Defensive copy of a stored flag definition.
+ *
+ * The registry owns the object held in its map. Returning it by reference let a
+ * caller edit a `create()` or `get()` result and silently mutate stored registry
+ * state — every later read then saw the edited definition. Copies are required
+ * for this in-memory implementation to behave like a real repository, where a
+ * fetched row is likewise the caller's own object.
+ */
+function copyFlag(
+  flag: FlagDefinitionWithMetadata,
+): FlagDefinitionWithMetadata {
+  return { ...flag };
+}
+
+/**
  * In-memory implementation for testing purposes.
  * Useful for unit tests that don't require a real database.
  */
@@ -192,20 +211,21 @@ export class InMemoryFlagRegistry implements FlagRegistry {
     }
 
     this.flags.set(input.slug, flag);
-    return flag;
+    return copyFlag(flag);
   }
 
   async get(slug: string): Promise<FlagDefinitionWithMetadata | undefined> {
-    return this.flags.get(slug);
+    const flag = this.flags.get(slug);
+    return flag ? copyFlag(flag) : undefined;
   }
 
   /**
    * All flags, retired included (retire never deletes — the row is kept for audit).
    */
   async list(): Promise<FlagDefinitionWithMetadata[]> {
-    return Array.from(this.flags.values()).sort(
-      (a, b) => a.createdAt.localeCompare(b.createdAt),
-    );
+    return Array.from(this.flags.values())
+      .map(copyFlag)
+      .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
   }
 
   /**
@@ -216,6 +236,7 @@ export class InMemoryFlagRegistry implements FlagRegistry {
   ): Promise<FlagDefinitionWithMetadata[]> {
     return Array.from(this.flags.values())
       .filter((f) => f.semantics === semantics && !this.retired.has(f.slug))
+      .map(copyFlag)
       .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
   }
 
@@ -267,12 +288,18 @@ export class InMemoryFlagRegistry implements FlagRegistry {
 
 /**
  * Factory function to create a flag registry.
- * In production, this would create a DatabaseFlagRegistry.
- * In tests, this can create an InMemoryFlagRegistry.
+ *
+ * `inMemory` is a *required* parameter, deliberately with no default. The
+ * previous `inMemory = false` default handed back a `DatabaseFlagRegistry` whose
+ * every method throws, so `createFlagRegistry()` produced an object that could
+ * not create or read a single flag and only failed once it was used. Making the
+ * caller state which implementation it wants surfaces the missing
+ * `server/src/` adapter at the call site rather than as a runtime throw.
+ *
+ * Pass a `FlagRegistry` directly for the DB-backed implementation, which
+ * `api/planning` cannot host.
  */
-export function createFlagRegistry(
-  inMemory = false,
-): FlagRegistry {
+export function createFlagRegistry(inMemory: boolean): FlagRegistry {
   if (inMemory) {
     return new InMemoryFlagRegistry();
   }

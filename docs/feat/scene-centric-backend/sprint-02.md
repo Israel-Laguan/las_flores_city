@@ -1,7 +1,7 @@
 # Sprint 02 — Flags & Conditions
 
 **Milestone:** SC-M1 (closes it) · **Dates:** 2026-09-21 → 2026-10-04 (2 weeks)
-· **Status: FIRM** (completed in this session)
+· **Status: COMPLETED** (completed in this session)
 
 > **Status Update:** All committed tickets (SC-201 through SC-206) are now **Done**. The flag
 definition shape, flag registry storage, condition grammar, condition evaluator, flag tracking,

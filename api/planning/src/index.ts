@@ -64,6 +64,8 @@ export type {
   FlagSetEffect,
   FlagUsage,
   FlagEdge,
+  FlagRead,
+  FlagWrite,
 } from './edges/flag-tracking.js';
 export {
   extractFlagUsage,

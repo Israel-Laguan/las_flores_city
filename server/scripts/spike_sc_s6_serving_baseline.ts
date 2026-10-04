@@ -1,25 +1,25 @@
 /**
  * SC-S6: Dialogue serving baseline (HARNESS NOT YET IMPLEMENTED)
  * Measures p50/p95 for GET /dialogue/active and resolveChunkSpeakers in isolation.
- * 
+ *
  * Intended harness (NOT implemented — see the ⚠️ block at the end of this header).
  * It would seed one synthetic dialogue tree/chunk (cleaned up in a finally block)
  * whose 3 nodes reference 3 real characters from the existing seeded dataset:
  * - one with 42 portrait_urls entries (all real s3:// keys)
  * - two with 1 entry each
- * 
+ *
  * Runs 3 warmup + 30 timed iterations for each measurement:
  * 1. Full endpoint, blackbox HTTP — GET /dialogue/active against the live server
  * 2. resolveChunkSpeakers() in isolation — same process, called directly
  * 3. The bulk characters SELECT, alone — the exact query resolveChunkSpeakers issues
- * 
+ *
  * Presigning-only cost and "rest of /dialogue/active" cost are derived per iteration
  * from paired timings.
- * 
+ *
  * Usage: tsx server/scripts/spike_sc_s6_serving_baseline.ts
  *   — this EXITS NON-ZERO BY DESIGN. It prints what a real harness must do and
  *   throws; it is not a runnable benchmark and no server needs to be running.
- * 
+ *
  * Note: This is a TypeScript file that can be run with tsx or node (after compilation).
  *
  * ⚠️ NOT REPRODUCIBLE YET. `main()` below performs no seeding, no measurement and no
@@ -90,7 +90,7 @@ function formatResults(
 ): { label: string; min: number; p50: number; p95: number; max: number; n: number; sampleInfo: string } {
   const sorted = [...timings].sort((a, b) => a - b);
   const percentiles = computePercentiles(sorted, [50, 95]);
-  
+
   return {
     label,
     min: sorted[0],
@@ -118,7 +118,7 @@ async function runTimedIterations<T>(
     const result = await operation(i);
     const end = hrtime.bigint();
     const ms = Number(end - start) / 1_000_000;
-    
+
     results.push(result);
     if (i >= WARMUP_ITERATIONS) {
       timings.push(ms);

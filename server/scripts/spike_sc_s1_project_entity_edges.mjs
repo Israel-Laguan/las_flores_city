@@ -8,10 +8,16 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { load as loadYaml } from "js-yaml";
 import pg from "pg";
 
-const ROOT = path.resolve(import.meta.dirname, "..", "..");
+// `import.meta.dirname` only exists from Node 20.11.0, but this repo declares
+// `engines.node >= 20.0.0` (.nvmrc: 20), so on Node 20.0-20.10 it is `undefined`
+// and path.resolve throws ERR_INVALID_ARG_TYPE at startup. Derive it from the
+// module URL instead — the pattern the sibling spike sc-s2-run.mjs already uses.
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.resolve(__dirname, "..", "..");
 const CONTENT = path.join(ROOT, "content");
 
 const DATABASE_URL =
