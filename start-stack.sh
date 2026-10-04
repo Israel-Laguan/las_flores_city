@@ -300,8 +300,4 @@ echo "   • Server:        http://localhost:3000"
 echo "   • Admin UI:      http://localhost:3002 (try it!)"
 echo "   • Health:        podman exec las-flores-intake-worker wget -qO- http://localhost:3001/health"
 echo "   • Health:        podman exec las-flores-server wget -qO- http://localhost:3000/health"
-
-# Keep main process alive to maintain container lifecycle
-while true; do
-  sleep 10
-done
+echo "   • Stop:          podman rm -f las-flores-postgres-oltp las-flores-postgres-olap las-flores-redis las-flores-minio las-flores-neo4j las-flores-server las-flores-intake-worker las-flores-admin"

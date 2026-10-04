@@ -112,6 +112,22 @@ podman run -d --name las-flores-server \
   las-flores-server
 ```
 
+The `start-stack.sh` launcher builds the images and uses `podman run -d` for
+every long-lived service, then exits after its health and migration checks. The
+containers continue running independently until explicitly stopped. When
+finished, run:
+
+```bash
+podman rm -f \
+  las-flores-postgres-oltp las-flores-postgres-olap \
+  las-flores-redis las-flores-minio las-flores-neo4j \
+  las-flores-server las-flores-intake-worker las-flores-admin
+```
+
+This removes containers but preserves the named database and object-store
+volumes. Commands using `podman run --rm` are foreground one-shot operations and
+clean themselves up when they exit.
+
 ### Verify Setup
 
 ```bash
