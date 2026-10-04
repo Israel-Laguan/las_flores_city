@@ -41,7 +41,7 @@ jobs:
         run: npm run build --workspace=infra
 
       - name: Build api-contracts
-        run: npm run build --workspace=api-contracts
+        run: npm run build --workspace=api/contracts
 
       - name: Typecheck all workspaces
         run: npm run typecheck --workspaces

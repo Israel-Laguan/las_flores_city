@@ -24,8 +24,9 @@ describe('Database Constraints', () => {
     await pool.query(
       'INSERT INTO users (id, email, username, display_name) VALUES ($1, $2, $3, $4)',
       // Private to this file (collision-avoidance): sleep.test.ts shared
-      // 00000000-...-020 and both suites DELETE FROM users in afterAll, so the
-      // rows could vanish while a sibling worker was still using them.
+      // 00000000-...-020; this file deletes its fixtures at the end of each
+      // test body while sleep.test.ts deletes its own in afterAll, so a sibling
+      // worker's afterAll could otherwise delete this row mid-test.
       ['e3000000-0000-4000-8000-000000000020', uniqueEmail, 'testuser1', 'Test User 1']
     );
 

@@ -265,6 +265,12 @@ export function flagUsageToEdges(
   usage: FlagUsage,
   entity: { type: string; slug: string },
   choiceId?: string,
+  /**
+   * The *id* of the entity the walk started from (`payload.id` in
+   * `extractFlagUsage`). `usage.writes[].entityId` lives in that id domain, so
+   * it must be compared against this, never against `entity.slug`.
+   */
+  rootId?: string,
 ): FlagEdge[] {
   const edges: FlagEdge[] = [];
 
@@ -306,7 +312,9 @@ export function flagUsageToEdges(
     // a descendant's write is attributed to the descendant, which is what makes
     // "scene sets X, nested choice clears X" two edges instead of one.
     const isRootEntity =
-      !entity.slug || write.entityId === entity.slug || write.entityId === '';
+      !entity.slug ||
+      write.entityId === '' ||
+      (rootId !== undefined ? write.entityId === rootId : false);
     edges.push({
       from_type: isRootEntity ? entity.type : write.entityType,
       from_slug: isRootEntity ? entity.slug : write.entityId,
@@ -329,7 +337,12 @@ export function createFlagEdges(
   choiceId?: string,
 ): FlagEdge[] {
   const usage = extractFlagUsage(payload);
-  return flagUsageToEdges(usage, { type: payload.type, slug: payload.id }, choiceId);
+  return flagUsageToEdges(
+    usage,
+    { type: payload.type, slug: payload.id },
+    choiceId,
+    payload.id,
+  );
 }
 
 /**
