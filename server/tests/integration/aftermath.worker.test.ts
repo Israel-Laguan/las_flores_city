@@ -74,7 +74,11 @@ describe('Aftermath Worker', () => {
     );
     await queryOLTP(
       `INSERT INTO districts (id, name, slug, description, x, y) VALUES
-       ('d1000000-0000-0000-0000-000000000001', 'Downtown', 'downtown', 'Heart of the city.', 0, 0)
+       -- d9600000-* block is private to this suite (mvw.integration.test.ts uses
+       -- d9500000-*, move.test.ts uses d9000000-*). Previously all three shared
+       -- d1000000-* with different names/slugs and conflicting upsert clauses.
+       -- Guarded by no-shared-fixtures.test.ts.
+       ('d9600000-0000-4000-8000-000000000001', 'Downtown', 'downtown', 'Heart of the city.', 0, 0)
        ON CONFLICT (name) DO NOTHING`
     );
 

@@ -69,8 +69,18 @@ describe('story-builder-migration — partial failure audit', () => {
     });
     await applyMigration('064_patch_versioning.sql');
     await applyMigration('066_claims.sql');
-    await applyMigration('067_admin_events_audit.sql');
-    await applyMigration('068_admin_events_audit_validate.sql');
+    // NOTE: do NOT re-apply 067_admin_events_audit.sql / 068_..._validate.sql here.
+    // Neither StoryBuilderMigration nor RevisionService writes to `admin_events`
+    // (grep: zero references), so this suite does not need them. Worse, 067 is an
+    // *out-of-order re-widening*: it unconditionally DROP+ADDs the M24-only
+    // event_type set NOT VALID, narrowing the live constraint that later
+    // migrations (071 critique, 087 plan_lifecycle, 090 plan_intake) had widened.
+    // 068 then VALIDATEs that narrowed set and aborts with
+    //   check constraint "admin_events_event_type_check" ... is violated by some row
+    // whenever the DB holds a `plan_intake` (or `critique`/`plan_lifecycle`) row —
+    // leaving the live constraint permanently NOT VALID and narrowed for every
+    // later test. Schema migrations are order-dependent: apply each at most once,
+    // in version order.
     await clearState();
 
     // Plan row (required FK for plan_id) in a migrated-eligible status.

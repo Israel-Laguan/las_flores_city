@@ -2,7 +2,8 @@
  * SC-S6: Dialogue serving baseline (HARNESS NOT YET IMPLEMENTED)
  * Measures p50/p95 for GET /dialogue/active and resolveChunkSpeakers in isolation.
  * 
- * This script seeds one synthetic dialogue tree/chunk (cleaned up in a finally block)
+ * Intended harness (NOT implemented — see the ⚠️ block at the end of this header).
+ * It would seed one synthetic dialogue tree/chunk (cleaned up in a finally block)
  * whose 3 nodes reference 3 real characters from the existing seeded dataset:
  * - one with 42 portrait_urls entries (all real s3:// keys)
  * - two with 1 entry each
@@ -15,8 +16,9 @@
  * Presigning-only cost and "rest of /dialogue/active" cost are derived per iteration
  * from paired timings.
  * 
- * Usage: npm run dev (or docker compose up -d) then:
- *   tsx server/scripts/spike_sc_s6_serving_baseline.ts
+ * Usage: tsx server/scripts/spike_sc_s6_serving_baseline.ts
+ *   — this EXITS NON-ZERO BY DESIGN. It prints what a real harness must do and
+ *   throws; it is not a runnable benchmark and no server needs to be running.
  * 
  * Note: This is a TypeScript file that can be run with tsx or node (after compilation).
  *
@@ -39,12 +41,18 @@ import process, { hrtime } from 'node:process';
 const SYNTHETIC_TREE_ID = 'synthetic-s6-test-tree';
 const SYNTHETIC_CHUNK_ID = 'synthetic-s6-test-chunk';
 
-// Real character IDs from the seeded dataset (these have portrait_urls)
-// Based on the writeup: one with 42 portrait_urls, two with 1 each
+// UNVERIFIED PLACEHOLDERS — do not trust, and do not seed from them.
+// These are NOT character IDs from the seeded dataset:
+//   a0000000-…0001 = the real `great_lithium_leak` MISSION id
+//   b0000000-…0002 = a vault CLUE id (content/vault/great_lithium_leak_clues.yaml)
+//   c0000000-…0003 = appears nowhere in content/
+// The "one with 42 portrait_urls, two with 1" distribution quoted in the writeup
+// therefore cannot be reproduced from these values. Replace with real character
+// ids before any harness is implemented.
 const TEST_CHARACTER_IDS = [
-  'a0000000-e29b-41d4-a716-446655440001', // Example: has 42 portrait_urls
-  'b0000000-e29b-41d4-a716-446655440002', // Example: has 1 portrait_url
-  'c0000000-e29b-41d4-a716-446655440003', // Example: has 1 portrait_url
+  'a0000000-e29b-41d4-a716-446655440001',
+  'b0000000-e29b-41d4-a716-446655440002',
+  'c0000000-e29b-41d4-a716-446655440003',
 ];
 
 // Configuration

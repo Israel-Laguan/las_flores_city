@@ -3,6 +3,11 @@
 **Box:** 1 day · **Actual:** ~2 hours · **Date:** 2026-09-08
 **Feeds:** SC-508, R13, SC-M3
 
+> ⚠️ **NOT REPRODUCIBLE.** The harness that produced the numbers in this document is not
+> committed. `server/scripts/spike_sc_s6_serving_baseline.ts` exits non-zero by design and
+> measures nothing. The numbers below are a historical record only — see "Reproducibility"
+> under "What was run".
+
 ## Question
 
 `lessons-from-current-code.md` §2.9 identifies `resolveChunkSpeakers` (uncached bulk

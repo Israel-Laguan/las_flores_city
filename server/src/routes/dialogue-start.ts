@@ -67,17 +67,7 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
     let startChunkId: string | undefined;
     let startChunkKey: string | undefined;
     let treeRevision = 0;
-    // Revalidate the user resolution context (story_beat, alignment, mysteries)
-    // captured before the pre-resolve*ForUser call. If it differs, a concurrent
-    // player-state mutation (choice, mystery join, alignment) changed the
-    // inputs to overlay merge while we waited for the FOR UPDATE. The
-    // pre-resolved root/effects would be stale for the state at claim time.
-    // Throw retryable so caller restarts with fresh pre-resolve; never apply
-    // mismatched overlay view. Uses cheap queries only (no resolver, respects
-    // no-nested-pool contract inside tx).
-    const preContext = await captureUserResolutionContext(userId);
     await withOLTPTransaction(async (client) => {
-    
       const treeRevResult = await client.query<{ revision: number }>(
         'SELECT revision FROM dialogue_trees WHERE id = $1',
         [dialogue.id]

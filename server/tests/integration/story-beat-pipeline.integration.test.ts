@@ -12,6 +12,7 @@
 import { describe, test, expect, beforeAll, afterAll, jest } from '@jest/globals';
 import pg from 'pg';
 import path from 'path';
+import os from 'os';
 import fs from 'fs/promises';
 
 // Mock Redis cache operations to avoid Redis dependency in integration tests.
@@ -59,35 +60,35 @@ describe('Story Beat Pipeline Integration', () => {
       connectionTimeoutMillis: 5000,
     });
 
-    // Run the SQL migration first so the table exists before we clean it. The
-    // DDL + reconcile are serialized against other suites' schema mutation
-    // (and migrateContent) via the shared schema lock.
+    // Run the SQL migration first so the table exists. The DDL is serialized
+    // against other suites' schema mutation (and migrateContent) via the shared
+    // schema lock.
+    //
+    // IMPORTANT: this suite must NOT delete the canonical story_beats slugs.
+    // story_beats is a shared registry that other suites validate
+    // dialogue/scene beat cross-references against, and the previous version of
+    // this file deleted the canonical rows in beforeAll and restored them in
+    // afterAll — leaving the registry EMPTY for the whole lifetime of the suite
+    // (the advisory lock is released between the two hooks, so it protected
+    // nothing). Any sibling worker reading the registry in that window saw zero
+    // beats. The canonical rows are now only ever *upserted* with their own
+    // content (idempotent), never deleted.
     await withSchemaLock(async (client) => {
       const migrationPath = path.resolve(process.cwd(), 'src/database/migrations/044_story_beats.sql');
       const migrationSql = await fs.readFile(migrationPath, 'utf-8');
       await client.query(migrationSql);
-
-      // Delete ONLY the canonical slugs defined by story_beats.yaml, never the
-      // whole table. story_beats is a shared registry that other suites (e.g.
-      // content-pipeline.test.ts) validate dialogue/scene beat cross-references
-      // against. A `DELETE FROM story_beats` would leave that registry
-      // irrecoverably empty for every other worker if this suite dies before
-      // afterAll runs (hard test failure, killed worker, or a throwing
-      // restore). Scoping the delete to the yaml's own slugs keeps the blast
-      // radius to exactly the rows this suite re-creates itself.
-      const canonicalSlugs = (await readCanonicalBeats()).map(beat => beat.slug);
-      await client.query('DELETE FROM story_beats WHERE slug = ANY($1::text[])', [canonicalSlugs]);
     });
   });
 
   afterAll(async () => {
-    // Restore the canonical story_beats registry. These are real content slugs,
-    // so we must NOT delete them — doing so leaves the shared registry empty
-    // and breaks content-pipeline.test.ts, which validates dialogue/scene
-    // story_beat cross-references against it. Re-populate instead. Runs under
-    // the schema lock so the restore is atomic vs. concurrent readers.
-    await withSchemaLock(async () => {
-      await processContentFile(path.join(CONTENT_DIR, 'story_beats.yaml'));
+    // Clean up ONLY this suite's own `test-` prefixed rows. Canonical beats are
+    // real content and are deliberately left in place.
+    await withSchemaLock(async (client) => {
+      await client.query('DELETE FROM story_beats WHERE slug LIKE $1', ['test-%']);
+      await client.query(
+        `DELETE FROM migration_log WHERE file_path LIKE $1`,
+        ['%test_story_beats_synthetic%'],
+      );
     });
     await pool.end();
   });
@@ -259,6 +260,61 @@ describe('Story Beat Pipeline Integration', () => {
     // Verify data is still correct
     const beatResult = await pool.query('SELECT label FROM story_beats WHERE slug = $1', ['prologue']);
     expect(beatResult.rows[0].label).toBe('Prologue');
+  });
+
+  // Suite-owned synthetic beat. Uses a `test-` prefixed slug written to a temp
+  // directory, so this suite can exercise the insert path end-to-end without
+  // ever deleting or restoring the canonical registry (see beforeAll).
+  test('processContentFile inserts a suite-owned synthetic beat without touching canonical rows', async () => {
+    const canonicalBefore = await pool.query(
+      'SELECT slug, "order", label, description FROM story_beats WHERE slug <> $1 ORDER BY slug',
+      ['test-synthetic-pipeline-beat'],
+    );
+    expect(canonicalBefore.rows.length).toBeGreaterThan(0);
+
+    // getContentTypeFromPath() keys off a `/story_beats/` path segment, so the
+    // temp file must live under one.
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), 'lf-story-beat-'));
+    const dir = path.join(root, 'story_beats');
+    await fs.mkdir(dir);
+    const filePath = path.join(dir, 'story_beat_test_synthetic.yaml');
+    await fs.writeFile(
+      filePath,
+      [
+        'id: test-synthetic-pipeline-beat',
+        'name: "Test Synthetic Beat"',
+        'description: "Synthetic beat owned by story-beat-pipeline.integration.test.ts."',
+        'metadata:',
+        '  type: story_beat',
+        '  order: 900001',
+        '',
+      ].join('\n'),
+      'utf-8',
+    );
+
+    try {
+      const result = await processContentFile(filePath);
+      expect(result.contentType).toBe('story_beat');
+      expect(result.contentId).toBe('test-synthetic-pipeline-beat');
+
+      const row = await pool.query(
+        'SELECT slug, "order", label, description FROM story_beats WHERE slug = $1',
+        ['test-synthetic-pipeline-beat'],
+      );
+      expect(row.rows).toHaveLength(1);
+      expect(row.rows[0].order).toBe(900001);
+      expect(row.rows[0].label).toBe('Test Synthetic Beat');
+
+      // The canonical registry is untouched by the synthetic insert.
+      const canonicalAfter = await pool.query(
+        'SELECT slug, "order", label, description FROM story_beats WHERE slug <> $1 ORDER BY slug',
+        ['test-synthetic-pipeline-beat'],
+      );
+      expect(canonicalAfter.rows).toEqual(canonicalBefore.rows);
+    } finally {
+      await pool.query('DELETE FROM story_beats WHERE slug = $1', ['test-synthetic-pipeline-beat']);
+      await fs.rm(root, { recursive: true, force: true });
+    }
   });
 
   // Individual beat file ingestion: process a single /story_beats/<slug>/...yaml

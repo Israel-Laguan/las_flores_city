@@ -79,11 +79,17 @@ async function seedTestData(): Promise<void> {
   );
   await pool.query(
     `INSERT INTO districts (id, name, slug, description, x, y) VALUES
-     -- Synthetic UUIDs reserved for this test — cleaned up in afterAll, no collision with other tests.
-     ('d1000000-0000-0000-0000-000000000001', 'test-district-alpha', 'test-district-alpha', 'Test district alpha.', 0, 0),
-     ('d1000000-0000-0000-0000-000000000002', 'test-district-beta', 'test-district-beta', 'Test district beta.', 1, 0),
-     ('d1000000-0000-0000-0000-000000000003', 'test-district-gamma', 'test-district-gamma', 'Test district gamma.', 0, 1),
-     ('d1000000-0000-0000-0000-000000000004', 'test-district-delta', 'test-district-delta', 'Test district delta.', 1, 2)
+     -- Synthetic UUIDs in the d9000000-* block, private to this file. Distinct from
+     -- the d1000000-* block used by aftermath.worker / mvw: those suites upsert
+     -- the same logical districts with DIFFERENT names/slugs under
+     -- ON CONFLICT (name) DO NOTHING while this file uses ON CONFLICT (id)
+     -- DO UPDATE and deletes all four rows in afterAll, so sharing the ids made
+     -- each suite silently rename or delete the other's rows. Guarded by
+     -- no-shared-fixtures.test.ts.
+     ('d9000000-0000-4000-8000-000000000001', 'test-district-alpha', 'test-district-alpha', 'Test district alpha.', 0, 0),
+     ('d9000000-0000-4000-8000-000000000002', 'test-district-beta', 'test-district-beta', 'Test district beta.', 1, 0),
+     ('d9000000-0000-4000-8000-000000000003', 'test-district-gamma', 'test-district-gamma', 'Test district gamma.', 0, 1),
+     ('d9000000-0000-4000-8000-000000000004', 'test-district-delta', 'test-district-delta', 'Test district delta.', 1, 2)
      ON CONFLICT (id) DO UPDATE SET
        name = EXCLUDED.name,
        slug = EXCLUDED.slug,
@@ -205,7 +211,7 @@ afterAll(async () => {
 
   await pool.query(
     'DELETE FROM districts WHERE id = ANY($1::uuid[])',
-    [['d1000000-0000-0000-0000-000000000001', 'd1000000-0000-0000-0000-000000000002', 'd1000000-0000-0000-0000-000000000003', 'd1000000-0000-0000-0000-000000000004']]
+    [['d9000000-0000-4000-8000-000000000001', 'd9000000-0000-4000-8000-000000000002', 'd9000000-0000-4000-8000-000000000003', 'd9000000-0000-4000-8000-000000000004']]
   );
   await pool.end();
   await closeRedis();
