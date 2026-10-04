@@ -3,10 +3,7 @@
 // Uses SC-203's static flag-slug list (not a second parser)
 // Shape consumable by later entity_edges projection
 
-import type {
-  ConditionExpr,
-  FlagCondition,
-} from '@las-flores/api-contracts';
+import type { ConditionExpr } from '@las-flores/api-contracts';
 import { extractFlagSlugs, isConditionExpr } from '@las-flores/api-contracts';
 
 /**

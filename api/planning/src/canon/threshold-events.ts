@@ -3,7 +3,7 @@
 // NOT a real stat pipeline. Fixture-backed mechanism only.
 // latching: flag stays set after crossing; tracking: flag clears when stat falls below.
 
-import type { FlagDefinition, FlagSemantics } from '@las-flores/api-contracts';
+import type { FlagDefinition } from '@las-flores/api-contracts';
 
 /**
  * A simple stat value for testing threshold crossing.

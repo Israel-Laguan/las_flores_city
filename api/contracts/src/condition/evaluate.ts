@@ -3,14 +3,11 @@
 // Pure function, no DB/I/O. evaluate(expr: ConditionExpr, flags: Set<string>): boolean
 // Total: every expression the type permits evaluates without throwing.
 
-import {
+import type {
   ConditionExpr,
   FlagCondition,
-  NotCondition,
   AndCondition,
   OrCondition,
-  TrueCondition,
-  FalseCondition,
 } from './expression.js';
 
 /**
