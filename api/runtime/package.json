@@ -11,6 +11,9 @@
     "typecheck": "tsc --noEmit",
     "test": "node --eval \"process.exit(0)\""
   },
+  "dependencies": {
+    "@las-flores/api-contracts": "0.1.0"
+  },
   "devDependencies": {
     "@types/node": "~20.19.43",
     "@typescript-eslint/eslint-plugin": "~8.67.0",
