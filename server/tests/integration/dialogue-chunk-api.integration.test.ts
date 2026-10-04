@@ -848,7 +848,14 @@ describe('Dialogue Chunk API Integration Tests (Task 10.1)', () => {
   //               15.4 (fixture cleanup verification)
   // ──────────────────────────────────────────────────────────
   describe('GET /dialogue/chunk/:chunkId', () => {
-    beforeEach(resetDialogueState);
+    // D1 / R12: prefetch is revision-scoped, so the player must hold an active
+    // dialogue pin (active_dialogue_id + pinned_tree_revision, both set by
+    // /dialogue/start) before any chunk can be resolved. Without the pin the
+    // endpoint answers 404 by design — there is no unscoped chunk_key fallback.
+    beforeEach(async () => {
+      await resetDialogueState();
+      await startDialogue();
+    });
 
     // Requirement 8.2 / Req 15.1: FREE-only chunk returns HTTP 200
     // with full { id, chunk_key, nodes, leaves } envelope.
