@@ -50,7 +50,17 @@ async function main() {
     const doc = yaml.load(fs.readFileSync(file, 'utf8'));
     if (doc?.name) names.add(doc.name);
   }
-  for (const [, canon] of LABELED_PAIRS) names.add(canon);
+  // Assert the labeled canonicals already exist in the source corpus rather than
+  // injecting them: adding them here would let the analysis report a successful
+  // match for a name the corpus never contained, i.e. a fabricated measurement.
+  for (const [query, canon] of LABELED_PAIRS) {
+    if (!names.has(canon)) {
+      throw new Error(
+        `Labeled canonical '${canon}' (query '${query}') is not present in the corpus sources ` +
+          `(characters + location YAML names); fix the label or the content, do not inject the name.`,
+      );
+    }
+  }
 
   await client.query('CREATE EXTENSION IF NOT EXISTS pg_trgm');
   await client.query('DROP SCHEMA IF EXISTS spike_trgm CASCADE');

@@ -58,7 +58,7 @@ podman run -d \
     -v "$MINIO_DATA_DIR:/data" \
     -e MINIO_ROOT_USER="$MINIO_ROOT_USER" \
     -e MINIO_ROOT_PASSWORD="$MINIO_ROOT_PASSWORD" \
-    docker.io/minio/minio:latest \
+    docker.io/pgsty/silo:RELEASE.2026-09-16T00-00-00Z@sha256:635197cb9f36d01bee221d34d1c7d7960f6a95c48b0b6c01d99cd13bdae51a46 \
     server /data --console-address ":9001"
 
 echo "✅ MinIO container started: $CONTAINER_NAME"

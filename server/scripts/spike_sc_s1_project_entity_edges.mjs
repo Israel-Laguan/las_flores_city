@@ -49,7 +49,7 @@ const dialogueFiles = findFiles(path.join(CONTENT, "dialogues"), (n) =>
   n.endsWith(".yaml"),
 );
 const sceneFiles = findFiles(path.join(CONTENT, "scenes"), (n) =>
-  n.startsWith("scene_") && n.endsWith(".yaml"),
+  n.endsWith(".yaml"),
 );
 const missionFiles = findFiles(path.join(CONTENT, "missions"), (n) =>
   n.startsWith("mission_") && n.endsWith(".yaml"),

@@ -71,7 +71,7 @@ This automates network/volume creation, service start (including the `intake-wor
      --network las-flores-net -p 9000:9000 -p 9001:9001 \
      -v minio-data:/data \
      -e MINIO_ROOT_USER=minioadmin -e MINIO_ROOT_PASSWORD=minioadmin \
-     docker.io/minio/minio:latest server /data --console-address ":9001"
+     docker.io/pgsty/silo:RELEASE.2026-09-16T00-00-00Z@sha256:635197cb9f36d01bee221d34d1c7d7960f6a95c48b0b6c01d99cd13bdae51a46 server /data --console-address ":9001"
 
    # Neo4j graph authoring canvas (M27). Internal-only; NEO4J_ENABLED defaults to
    # false so boot never aborts when it is down. The default compose

@@ -131,10 +131,14 @@ podman run -d --name las-flores-redis \
   -v redis-data:/data \
   docker.io/library/redis:7-alpine
 
+# Object storage. Was `minio/minio`: upstream archived the community edition
+# and removed the public Docker Hub repo, so pulls now fail with
+# `insufficient_scope`. PGSTY's Silo is a maintained MinIO-compatible fork —
+# same S3 API, MINIO_* env vars, and it bundles `mc` (used by the healthcheck).
 podman run -d --name las-flores-minio \
   --network las-flores-net -p 9000:9000 -p 9001:9001 \
   -v minio-data:/data \
-  docker.io/minio/minio:latest server /data --console-address ":9001"
+  docker.io/pgsty/silo:RELEASE.2026-09-16T00-00-00Z@sha256:635197cb9f36d01bee221d34d1c7d7960f6a95c48b0b6c01d99cd13bdae51a46 server /data --console-address ":9001"
 ```
 
 # Neo4j graph authoring canvas (M27). Internal-only; NEO4J_ENABLED defaults to

@@ -71,7 +71,7 @@ SELECT
   lp.query,
   lp.expected_canonical,
   COALESCE(string_agg(im.matched_name, ', '), '(no match)') AS ilike_matches,
-  bool_or(im.matched_name = lp.expected_canonical) AS found_expected
+  COALESCE(bool_or(im.matched_name = lp.expected_canonical), false) AS found_expected
 FROM spike_trgm.labeled_pairs lp
 LEFT JOIN ilike_matches im ON im.pair_id = lp.id
 GROUP BY lp.id, lp.query, lp.expected_canonical

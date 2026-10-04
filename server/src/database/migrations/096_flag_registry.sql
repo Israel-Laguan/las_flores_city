@@ -33,6 +33,14 @@ CREATE TABLE IF NOT EXISTS planning.flag_definitions (
 CREATE OR REPLACE FUNCTION planning._validate_flag_slug()
 RETURNS TRIGGER AS $$
 BEGIN
+  -- Mirrors validateFlagSlug() in api/contracts/src/flags/flag-definition.ts:
+  -- non-empty, at most MAX_SLUG_LENGTH (256) chars, then the identifier charset.
+  -- The old two-regex form accepted '' (neither regex matches an empty string)
+  -- and any arbitrarily long identifier, diverging from the shared contract.
+  IF NEW.slug = '' OR length(NEW.slug) > 256 THEN
+    RAISE EXCEPTION 'flag slug must be non-empty and at most 256 characters: %', NEW.slug;
+  END IF;
+
   IF NEW.slug ~ '^[0-9]' OR NEW.slug ~ '[^a-zA-Z0-9_]' THEN
     RAISE EXCEPTION 'flag slug must start with a letter or underscore and contain only letters, digits, and underscores: %', NEW.slug;
   END IF;

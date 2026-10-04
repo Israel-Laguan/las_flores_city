@@ -109,9 +109,21 @@ export function isFlagDefinition(value: unknown): value is FlagDefinition {
     return false;
   }
   const obj = value as Record<string, unknown>;
-  return (
-    typeof obj.slug === 'string' &&
-    typeof obj.meaning === 'string' &&
-    (obj.semantics === 'latching' || obj.semantics === 'tracking')
-  );
+  if (
+    typeof obj.slug !== 'string' ||
+    typeof obj.meaning !== 'string' ||
+    (obj.semantics !== 'latching' && obj.semantics !== 'tracking')
+  ) {
+    return false;
+  }
+  // Reuse the single slug contract instead of duplicating a weaker subset of it:
+  // a bare `typeof slug === 'string'` admitted '', 257+ chars, and other shapes
+  // that validateFlagSlug rejects, so this guard could vouch for a definition
+  // createFlagDefinition would never produce.
+  try {
+    validateFlagSlug(obj.slug);
+  } catch {
+    return false;
+  }
+  return true;
 }
