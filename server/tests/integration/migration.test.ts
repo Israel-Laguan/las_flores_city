@@ -12,6 +12,20 @@ async function characterCount() {
   return Number(result.rows[0].count);
 }
 
+// Count of THIS suite's own character only. The whole-table count is global state
+// this suite does not own: `characters` is the content canon table, so any other
+// suite (or an unawaited content migration from a sibling worker) that inserts or
+// deletes a character between this suite's beforeAll and its assertions made
+// `initialCharacterCount + 1` / `initialCharacterCount` fail intermittently.
+// Assert the invariant the tests are actually about — the fixture row exists
+// exactly once — instead.
+async function testCharacterRows() {
+  const result = await pool.query('SELECT COUNT(*) AS count FROM characters WHERE id = $1', [
+    TEST_CHAR_ID,
+  ]);
+  return Number(result.rows[0].count);
+}
+
 describe('Migration Idempotency', () => {
   beforeAll(async () => {
     pool = new Pool({
@@ -51,7 +65,7 @@ describe('Migration Idempotency', () => {
       [testChar.id, testChar.name, testChar.title, testChar.description]
     );
 
-    expect(await characterCount()).toBe(initialCharacterCount + 1);
+    expect(await testCharacterRows()).toBe(1);
 
     const result = await pool.query('SELECT name FROM characters WHERE id = $1', [testChar.id]);
     expect(result.rows[0].name).toBe(testChar.name);
@@ -65,7 +79,7 @@ describe('Migration Idempotency', () => {
       description: 'Updated description for idempotency testing',
     };
 
-    const countBefore = await characterCount();
+    const countBefore = await testCharacterRows();
 
     await pool.query(
       `INSERT INTO characters (id, name, title, description)
@@ -78,7 +92,7 @@ describe('Migration Idempotency', () => {
       [testChar.id, testChar.name, testChar.title, testChar.description]
     );
 
-    expect(await characterCount()).toBe(countBefore);
+    expect(await testCharacterRows()).toBe(countBefore);
 
     const updated = await pool.query('SELECT name FROM characters WHERE id = $1', [testChar.id]);
     expect(updated.rows[0].name).toBe('Test Character Updated');
@@ -100,7 +114,7 @@ describe('Migration Idempotency', () => {
 
   test('Cleanup removes test character', async () => {
     await pool.query('DELETE FROM characters WHERE id = $1', [TEST_CHAR_ID]);
-    expect(await characterCount()).toBe(initialCharacterCount);
+    expect(await testCharacterRows()).toBe(0);
   });
 });
 

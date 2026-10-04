@@ -15,6 +15,7 @@ import { deleteCache } from '@las-flores/infra';
 import { handleAlignmentSideEffects, handleBreakthroughSideEffects, handleJoinMystery } from './dialogue-side-effects.js';
 import { handleLegacyChoiceIndex } from './dialogue-legacy.js';
 import { mapDialogueWriteError } from './dialogue-errors.js';
+import { findReachableChoice } from './dialogue-choice-validation.js';
 
 /**
  * Handle POST /dialogue/:id/choose for chunk-based dialogue.
@@ -105,9 +106,11 @@ export async function handleChoose(req: any, res: any): Promise<any> {
 
     const currentNodeId = cursor?.current_node_id;
     const currentNode = currentNodeId ? effectiveNodes[currentNodeId] : null;
-    const matchedChoice = currentNode && Array.isArray(currentNode.choices)
-      ? currentNode.choices.find((c: any) => c.id === choice_id || c.next_node_id === choice_id)
-      : null;
+    // R12 / D2: choice-reachability validation BEFORE any effect processing.
+    // This separable check is the direct precedent for SC-M3's new-backend
+    // equivalent (roadmap.md SC-M3) — keep it extracted via
+    // findReachableChoice rather than inlined (dialogue-choice-validation.ts).
+    const matchedChoice = findReachableChoice(currentNode, choice_id);
     if (!matchedChoice) {
       return res.status(400).json({
         success: false,
@@ -311,6 +314,18 @@ async function handleChunkBoundaryChoice(
   res: any,
   effectiveSourceNodes?: Record<string, any>
 ) {
+  // Guard before validation: a chunk with no tree ID can never match the
+  // player's active tree, so return dialogue_tree_mismatch without paying for
+  // (and having side effects from) IronGateValidator.validateChoice first.
+  const treeId = currentChunk.tree_id as string | undefined;
+  if (!treeId) {
+    return res.status(409).json({
+      success: false,
+      error: 'dialogue_tree_mismatch',
+      timestamp: new Date().toISOString(),
+    });
+  }
+
   const validationResult = await IronGateValidator.validateChoice(userId, currentChunkId, choiceId, leaf);
 
   if (!validationResult.success) {
@@ -320,9 +335,13 @@ async function handleChunkBoundaryChoice(
   const tbDeducted = validationResult.tbDeducted ?? 0;
   const targetChunkKey = leaf.target_chunk as string;
 
-  // The early validation in handleChoose already enforced tree/rev/current_chunk
-  // match against cursor. Resolve boundaries using the player's pinned revision
-  // (falling back to the validated chunk's rev only for legacy unpinned cursors).
+  // Early validation already enforced tree/rev/current_chunk match. Prefer the
+  // player's nonzero pinned revision; a 0 pin is the legacy/unset sentinel (see
+  // migration 093's DEFAULT 0 and initDialogueChunkState's
+  // "0 means don't change the pin" CASE), not a real pin, so those sessions fall
+  // back to the validated chunk's revision. Sending revision 0 instead would make
+  // the boundary load stale pre-compile content — or 404 outright — after
+  // validateChoice has already committed guarded effects.
   const treeRevision = (cursor?.pinned_tree_revision != null && cursor.pinned_tree_revision !== 0)
     ? cursor.pinned_tree_revision
     : currentChunk.revision ?? 0;
@@ -330,7 +349,7 @@ async function handleChunkBoundaryChoice(
   let resolvedNextChunk;
   try {
     resolvedNextChunk = await DialogueResolver.resolveNextChunk(
-      userId, targetChunkKey, currentChunk.tree_id || undefined, treeRevision
+      userId, targetChunkKey, treeId, treeRevision
     );
   } catch (err: any) {
     if (err.message && err.message.includes('not found')) {

@@ -23,7 +23,11 @@ describe('Database Constraints', () => {
 
     await pool.query(
       'INSERT INTO users (id, email, username, display_name) VALUES ($1, $2, $3, $4)',
-      ['00000000-0000-0000-0000-000000000020', uniqueEmail, 'testuser1', 'Test User 1']
+      // Private to this file (collision-avoidance): sleep.test.ts shared
+      // 00000000-...-020; this file deletes its fixtures at the end of each
+      // test body while sleep.test.ts deletes its own in afterAll, so a sibling
+      // worker's afterAll could otherwise delete this row mid-test.
+      ['e3000000-0000-4000-8000-000000000020', uniqueEmail, 'testuser1', 'Test User 1']
     );
 
     await expect(
@@ -34,7 +38,7 @@ describe('Database Constraints', () => {
     ).rejects.toThrow();
 
     await pool.query('DELETE FROM users WHERE id IN ($1, $2)', [
-      '00000000-0000-0000-0000-000000000020',
+      'e3000000-0000-4000-8000-000000000020',
       '00000000-0000-0000-0000-000000000021',
     ]);
   });

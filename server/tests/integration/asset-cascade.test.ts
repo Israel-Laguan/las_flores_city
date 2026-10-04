@@ -15,7 +15,10 @@ import { locationRouter } from '../../src/routes/location.js';
 
 // Collision-avoidance: these UUIDs use reserved high-value prefixes that
 // cannot collide with gen_random_uuid() values in production data.
-const TEST_USER_ID = '00000000-0000-0000-0000-000000000099';
+// Private to this file (collision-avoidance): mvw.integration.test.ts and
+// olap-write.test.ts shared 00000000-...-099 and all DELETE FROM users in
+// afterAll, so parallel workers could delete each other's user mid-test.
+const TEST_USER_ID = 'a3000000-0000-4000-8000-000000000099';
 const TEST_SCENE_ID = '10000000-0000-0000-0000-000000000001';
 const TEST_CHARACTER_ID = '20000000-0000-0000-0000-000000000001';
 const TEST_DISTRICT_ID = '30000000-0000-0000-0000-000000000001';

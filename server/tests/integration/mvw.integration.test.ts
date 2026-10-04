@@ -30,7 +30,8 @@ const AWAKENING_ID   = 'c9a646d3-9c61-4cd8-bc11-657ab255b1bf';
 const AWAKENING_START_NODE = 'd8b5a3e1-e123-4567-89ab-cdef01234567';
 
 // Test user — unique UUID to avoid collisions with other suites
-const TEST_USER_ID = '00000000-0000-0000-0000-000000000099';
+// Private to this file (collision-avoidance) — see asset-cascade.test.ts.
+const TEST_USER_ID = 'a3000000-0000-4000-8000-000000000098';
 
 async function applyMigration(filename: string): Promise<void> {
   const sql = fs.readFileSync(
@@ -102,10 +103,15 @@ beforeAll(async () => {
   );
   await pool.query(
     `INSERT INTO districts (id, name, slug, description, x, y) VALUES
-     ('d1000000-0000-0000-0000-000000000001', 'Downtown', 'downtown', 'Heart of the city.', 0, 0),
-     ('d1000000-0000-0000-0000-000000000002', 'Old Town', 'old-town', 'Historic district.', 1, 0),
-     ('d1000000-0000-0000-0000-000000000003', 'Commercial', 'commercial', 'Commerce hub.', 0, 1),
-     ('d1000000-0000-0000-0000-000000000004', 'Industrial', 'industrial', 'Factory zone.', 1, 2)
+     -- d9500000-* block is private to this suite (move.test.ts uses d9000000-*,
+     -- aftermath.worker.test.ts uses d9600000-*). All three suites previously
+     -- shared d1000000-* with DIFFERENT names/slugs and conflicting upsert
+     -- clauses, so each silently renamed or deleted the others' rows.
+     -- Guarded by no-shared-fixtures.test.ts.
+     ('d9500000-0000-4000-8000-000000000001', 'Downtown', 'downtown', 'Heart of the city.', 0, 0),
+     ('d9500000-0000-4000-8000-000000000002', 'Old Town', 'old-town', 'Historic district.', 1, 0),
+     ('d9500000-0000-4000-8000-000000000003', 'Commercial', 'commercial', 'Commerce hub.', 0, 1),
+     ('d9500000-0000-4000-8000-000000000004', 'Industrial', 'industrial', 'Factory zone.', 1, 2)
      ON CONFLICT (name) DO NOTHING`
   );
 

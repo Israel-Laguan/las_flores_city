@@ -18,15 +18,19 @@ spike measures reachability against the edges that actually exist and actually c
 
 ## What was run
 
-Query (`scripts/spikes/sc-s2-reachability.sql`), invoked via
-`scripts/spikes/sc-s2-run.mjs` (both were local throwaways, **not committed** — see the
-reproducibility rule in this folder's README). **Note:** The SQL body inlined below has
-been updated post-measurement to be type-aware (node_type/node_slug, from_type joins);
-the EXPLAIN ANALYZE blocks below were recorded from an earlier node-level shape
-(from_slug only, NO type joins). This mismatch was discovered post-SC-S3 review when the
-choice-level limitation became apparent. **To reproduce the numbers below, use the node-level
-SQL archived here** (earlier revision, not re-runnable from this text), or **re-run with the
-type-aware SQL below and record the new numbers** before relying on the latency baseline.
+Query (`server/scripts/spikes/sc-s2-reachability.sql`), invoked via
+`server/scripts/spikes/sc-s2-run.mjs` (both now committed).
+
+**The committed `.sql` is the node-level shape, and it is the shape the EXPLAIN ANALYZE
+blocks below were recorded from** (`s.from_slug AS from_node`, anti-join on `from_slug`
+only, no `from_type` joins) — identical to the `reachabilitySql` function in
+`server/scripts/spikes/sc-s3-overlay.mjs`. Re-running the committed file therefore
+reproduces the numbers below. The **type-aware variant (node_type/node_slug, `from_type`
+joins) exists only in this document**, inlined below; it is *not* committed and is *not*
+what was measured. Re-running the committed query will not produce type-aware
+measurements — if you want those, execute the inlined body directly and record new
+numbers before relying on them. The mismatch was discovered post-SC-S3 review when the
+choice-level limitation became apparent.
 
 ```sql
 WITH RECURSIVE flag_edges AS (
@@ -113,13 +117,13 @@ Commands:
 
 ```bash
 DATABASE_URL="postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores" \
-  node scripts/spikes/sc-s1-project-entity-edges.mjs   # (re)build the 1x table
+  node server/scripts/spike_sc_s1_project_entity_edges.mjs   # (re)build the 1x table
 
-DATABASE_URL=... node scripts/spikes/sc-s2-run.mjs      # measure at 1x
+DATABASE_URL=... node server/scripts/spikes/sc-s2-run.mjs      # measure at 1x
 
-DATABASE_URL=... node scripts/spikes/sc-s2-duplicate.mjs # grow to 10x, in place
+DATABASE_URL=... node server/scripts/spikes/sc-s2-duplicate.mjs # grow to 10x, in place
 
-DATABASE_URL=... node scripts/spikes/sc-s2-run.mjs      # measure at 10x
+DATABASE_URL=... node server/scripts/spikes/sc-s2-run.mjs      # measure at 10x
 ```
 
 **Wall-clock method:** `sc-s2-run.mjs` runs the query 6 times over one open connection (1
@@ -188,7 +192,7 @@ Execution Time: 0.822 ms
 
 ### 10× volume (10,180 rows)
 
-**How 10x was simulated — and why not naively.** `scripts/spikes/sc-s2-duplicate.mjs`
+**How 10x was simulated — and why not naively.** `server/scripts/spikes/sc-s2-duplicate.mjs`
 does *not* re-insert byte-identical rows 9 more times. A naive
 `INSERT INTO ... SELECT * FROM entity_edges` would leave every `from_slug`/`to_slug`
 pair unchanged across copies, which would do one of two misleading things: either

@@ -181,7 +181,7 @@ setup() {
     podman run -d --name las-flores-minio \
         --network las-flores-net -p 9000:9000 -p 9001:9001 \
         -v minio-data:/data \
-        docker.io/minio/minio:latest server /data --console-address ":9001" 2>/dev/null || log_warn "Container already exists"
+        docker.io/pgsty/silo:RELEASE.2026-09-16T00-00-00Z@sha256:635197cb9f36d01bee221d34d1c7d7960f6a95c48b0b6c01d99cd13bdae51a46 server /data --console-address ":9001" 2>/dev/null || log_warn "Container already exists"
 
     log_info "Starting Neo4j (graph authoring canvas, M27)..."
     podman run -d --name las-flores-neo4j \

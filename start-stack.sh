@@ -112,7 +112,7 @@ podman run -d \
   -v minio-data:/data \
   -e MINIO_ROOT_USER=minioadmin \
   -e MINIO_ROOT_PASSWORD=minioadmin \
-  docker.io/minio/minio:latest \
+  docker.io/pgsty/silo:RELEASE.2026-09-16T00-00-00Z@sha256:635197cb9f36d01bee221d34d1c7d7960f6a95c48b0b6c01d99cd13bdae51a46 \
   server /data --console-address ":9001"
 
 # Neo4j graph authoring canvas (M27). Internal-only; NEO4J_ENABLED defaults to
@@ -300,8 +300,4 @@ echo "   • Server:        http://localhost:3000"
 echo "   • Admin UI:      http://localhost:3002 (try it!)"
 echo "   • Health:        podman exec las-flores-intake-worker wget -qO- http://localhost:3001/health"
 echo "   • Health:        podman exec las-flores-server wget -qO- http://localhost:3000/health"
-
-# Keep main process alive to maintain container lifecycle
-while true; do
-  sleep 10
-done
+echo "   • Stop:          podman rm -f las-flores-postgres-oltp las-flores-postgres-olap las-flores-redis las-flores-minio las-flores-neo4j las-flores-server las-flores-intake-worker las-flores-admin"

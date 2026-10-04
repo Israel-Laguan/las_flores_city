@@ -77,7 +77,13 @@ async function applyMigration(filename: string): Promise<void> {
   }
 }
 
-const TEST_USER_ID = '00000000-0000-0000-0000-000000000001';
+// Private fixture block (ac100000-*), NOT the seeded admin
+// 00000000-0000-0000-0000-000000000001 (.env ADMIN_USER_ID). This suite used
+// to borrow the admin id and DELETE it in afterAll, which permanently removed
+// the seeded admin from the dev DB and broke breakthrough / dialogue-resolver /
+// story-builder-plans / plans-intake on every subsequent run. Guarded by
+// no-shared-fixtures.test.ts.
+const TEST_USER_ID = 'ac100000-0000-4000-8000-000000000001';
 const WELCOME_SCENE_ID = '550e8400-e29b-41d4-a716-446655440002';
 const APARTMENT_SCENE_ID = '55555555-6666-4777-8888-999999990001';
 const HANDLER_CHARACTER_ID = '550e8400-e29b-41d4-a716-446655440004'; // The Handler — has dialogue at Welcome Center

@@ -3,6 +3,11 @@
 **Box:** 1 day · **Actual:** ~2 hours · **Date:** 2026-09-08
 **Feeds:** SC-508, R13, SC-M3
 
+> ⚠️ **NOT REPRODUCIBLE.** The harness that produced the numbers in this document is not
+> committed. `server/scripts/spike_sc_s6_serving_baseline.ts` exits non-zero by design and
+> measures nothing. The numbers below are a historical record only — see "Reproducibility"
+> under "What was run".
+
 ## Question
 
 `lessons-from-current-code.md` §2.9 identifies `resolveChunkSpeakers` (uncached bulk
@@ -14,13 +19,13 @@ asserting it.
 
 ## What was run
 
-A local throwaway (`server/scripts/spike_sc_s6_serving_baseline.ts`, **not in this
-checkout**). Treat the numbers below as a **legacy preliminary baseline** for
+Script: an earlier **uncommitted** harness (not the committed skeleton
+`server/scripts/spike_sc_s6_serving_baseline.ts`, which measures nothing — see
+"Reproducibility" below). Treat the numbers below as a **legacy preliminary baseline** for
 `GET /dialogue/active` only — not as the SC-M3/SC-508 scene-resolution + artifact-fetch
-measurement. Against the
-already-running local docker-compose stack (`las-flores-server` on `:3000`,
-`las-flores-postgres-oltp` on `:5434`, `las-flores-minio` on `:9000`) — no code changes,
-no synthetic infra, just the existing dev stack anyone gets from `docker compose up -d`.
+measurement. Against the already-running local docker-compose stack (`las-flores-server` on
+`:3000`, `las-flores-postgres-oltp` on `:5434`, `las-flores-minio` on `:9000`) — no code
+changes, no synthetic infra, just the existing dev stack anyone gets from `docker compose up -d`.
 
 The script seeds one synthetic dialogue tree/chunk (cleaned up in a `finally` block)
 whose 3 nodes reference 3 **real** characters from the existing seeded dataset: one with
@@ -51,8 +56,12 @@ bias of subtracting aggregate percentiles (`p50(total) − p50(select)` is not `
 difference)`). The blackbox HTTP overhead (~1-2ms fetch) remains as a stated
 approximation within each `rest_i`, not removed by aggregate math.
 
-Committing the harness (e.g. under `server/scripts/`) is required before anyone re-runs
-this — the "repeat by anyone" step currently depends on a file that is not in the repo.
+**Reproducibility:** **Not reproducible from the committed script.** The harness skeleton is
+committed at `server/scripts/spike_sc_s6_serving_baseline.ts`, but its `main()` performs no
+seeding, no measurements, and no paired differencing — it prints a placeholder notice and
+exits. The raw results below were captured from an earlier, uncommitted harness and cannot
+be re-derived until the seeding/measurement/reporting/cleanup steps are implemented in that
+file. Until then, treat the numbers here as a historical record, not a reproducible baseline.
 
 ## Raw results
 

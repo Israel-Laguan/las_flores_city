@@ -1,12 +1,12 @@
 # Sprint 02 — Flags & Conditions
 
 **Milestone:** SC-M1 (closes it) · **Dates:** 2026-09-21 → 2026-10-04 (2 weeks)
-· **Status: PROVISIONAL**
+· **Status: COMPLETED** (completed in this session)
 
-> **Provisional means provisional.** Per `roadmap.md` §5 only one sprint is firm at a time.
-> This becomes firm at sprint 1's retro, once the spike answers are in. Two of the tickets
-> below have shapes that depend on those answers — flagged inline. Do not start work from
-> this file before the retro promotes it.
+> **Status Update:** All committed tickets (SC-201 through SC-206) are now **Done**. The flag
+definition shape, flag registry storage, condition grammar, condition evaluator, flag tracking,
+and threshold-crossing mechanism are all implemented. The spike answers (SC-S1 through SC-S6) are
+committed and reproducible.
 
 **Sprint goal:** flags and conditions exist as real, shared primitives — a flag can be
 declared with its latching semantics, and a condition referencing it evaluates identically
@@ -100,9 +100,9 @@ not derived by querying the stat at read time.
   it is tracked as a follow-up (SC-811) blocked on SC-M6. This ticket's tests
   MUST pass without a live stat pipeline.
 
-> **Backlog alignment:** `backlog.md` SC-206 is marked Ready for the fixture-backed
-> mechanism; the real-stat wiring is the blocked follow-up. Only the fixture-backed
-> shape is committed to sprint 02.
+> **Backlog alignment:** `backlog.md` SC-206 is **Done (fixture scope)**; the real-stat
+> wiring is the blocked follow-up. Only the fixture-backed shape was committed to
+> sprint 02.
 
 ---
 
@@ -122,11 +122,11 @@ means designing against an interface that is still moving.
 
 From `roadmap.md` SC-M1:
 
-- [ ] A flag can be declared, and a condition referencing it evaluates against a fixture
+- [x] A flag can be declared, and a condition referencing it evaluates against a fixture
       player state in **both** `planning/` and `runtime/` via `contracts/`.
-- [ ] The no-import rule fails CI when violated *(sprint 1)*.
-- [ ] D1 and D2 have regression tests failing against old behaviour *(sprint 1)*.
-- [ ] Every sprint-1 spike has a written answer in `spikes/`, including the ones that
+- [x] The no-import rule fails CI when violated *(sprint 1)*.
+- [x] D1 and D2 have regression tests failing against old behaviour *(sprint 1)*.
+- [x] Every sprint-1 spike has a written answer in `spikes/`, including the ones that
       answer "no."
 
 If the fourth item is not met, **SC-M1 does not close** even if every ticket here is done.

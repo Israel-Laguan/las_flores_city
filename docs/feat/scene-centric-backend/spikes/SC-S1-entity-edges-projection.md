@@ -16,10 +16,10 @@ re-plan around that, not quietly retry with a different shape.
 
 ```
 DATABASE_URL="postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores" \
-  node scripts/spikes/sc-s1-project-entity-edges.mjs
+  node server/scripts/spike_sc_s1_project_entity_edges.mjs
 ```
 
-The script (`scripts/spikes/sc-s1-project-entity-edges.mjs`, throwaway, re-runnable) walks
+The script (`server/scripts/spike_sc_s1_project_entity_edges.mjs`, committed) walks
 `content/characters` (194 files), `content/dialogues` (59 files), `content/scenes` (18
 files), `content/missions` (1 file, 1 mission record) and the 13 `content/districts`
 folders, projects `entity_edges` rows in memory, then loads them into a scratch schema
@@ -28,11 +28,7 @@ in the existing dev Postgres container (`las-flores-postgres-oltp`, host port 54
 
 No fixture or synthetic data was used — every row traces to a real file under `content/`.
 
-**Reproducibility caveat:** the script was a local throwaway and was **not committed** with
-this write-up — the numbers above are not re-runnable from the repo as-is. Before any
-downstream ticket (SC-701, SC-S2, SC-S3) builds on these counts, the harness must either
-be committed (e.g. `server/scripts/spike_sc_s1_project_entity_edges.ts`, since `scripts/`
-is reserved for file-to-file tools that never touch the DB) or re-run and re-recorded.
+**Reproducibility:** The script is now committed at `server/scripts/spike_sc_s1_project_entity_edges.mjs` and is fully re-runnable. The numbers above can be validated by running the script against the current content directory.
 
 ## Raw results
 

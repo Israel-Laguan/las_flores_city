@@ -32,7 +32,10 @@ const { Pool } = pg;
 //  - BORDER_ITEM_ID: synthetic UUID for a credits-priced avatar_border
 //  - GOLD_ITEM_ID: synthetic UUID for a gold_credits-priced item
 //  - LUXURY_ITEM_ID: synthetic UUID for a high-priced (overdraft) item
-const TEST_USER_ID = '00000000-0000-0000-0000-000000000077';
+// Private to this file (collision-avoidance): gigs.test.ts owns
+// 00000000-...-077. Both suites DELETE FROM users in afterAll, so sharing the
+// row let one worker's cleanup delete the user the other was mid-test on.
+const TEST_USER_ID = 'd3000000-0000-4000-8000-000000000077';
 const THEME_ITEM_ID = 'b1b2c3d4-e29b-41d4-a716-446655440001';
 const BORDER_ITEM_ID = 'b1b2c3d4-e29b-41d4-a716-446655440002';
 const GOLD_ITEM_ID = 'b1b2c3d4-e29b-41d4-a716-446655440003';

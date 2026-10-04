@@ -90,10 +90,14 @@ podman run -d --name las-flores-redis \
   -v redis-data:/data \
   docker.io/library/redis:7-alpine
 
+# Object storage. Was `minio/minio`: upstream archived the community edition
+# and removed the public Docker Hub repo, so pulls now fail with
+# `insufficient_scope`. PGSTY's Silo is a maintained MinIO-compatible fork —
+# same S3 API, MINIO_* env vars, and it bundles `mc` (used by the healthcheck).
 podman run -d --name las-flores-minio \
   --network las-flores-net -p 9000:9000 -p 9001:9001 \
   -v minio-data:/data \
-  docker.io/minio/minio:latest server /data --console-address ":9001"
+  docker.io/pgsty/silo:RELEASE.2026-09-16T00-00-00Z@sha256:635197cb9f36d01bee221d34d1c7d7960f6a95c48b0b6c01d99cd13bdae51a46 server /data --console-address ":9001"
 
 # Start server (uses container IPs for intra-network connectivity)
 podman run -d --name las-flores-server \
@@ -111,6 +115,26 @@ podman run -d --name las-flores-server \
   -e JWT_SECRET=your-jwt-secret-change-in-production \
   las-flores-server
 ```
+
+The `start-stack.sh` launcher builds the images and uses `podman run -d` for
+every long-lived service, then exits after its health and migration checks. The
+containers continue running independently until explicitly stopped. When
+finished, run:
+
+```bash
+podman rm -f \
+  las-flores-postgres-oltp las-flores-postgres-olap \
+  las-flores-redis las-flores-minio las-flores-neo4j \
+  las-flores-server las-flores-intake-worker las-flores-admin || true
+```
+
+The trailing `|| true` (the same guard `start-stack.sh` applies) silently skips
+containers that are not running, so the command exits 0 even when only a subset
+was started.
+
+This removes containers but preserves the named database and object-store
+volumes. Commands using `podman run --rm` are foreground one-shot operations and
+clean themselves up when they exit.
 
 ### Verify Setup
 

@@ -848,7 +848,14 @@ describe('Dialogue Chunk API Integration Tests (Task 10.1)', () => {
   //               15.4 (fixture cleanup verification)
   // ──────────────────────────────────────────────────────────
   describe('GET /dialogue/chunk/:chunkId', () => {
-    beforeEach(resetDialogueState);
+    // D1 / R12: prefetch is revision-scoped, so the player must hold an active
+    // dialogue pin (active_dialogue_id + pinned_tree_revision, both set by
+    // /dialogue/start) before any chunk can be resolved. Without the pin the
+    // endpoint answers 404 by design — there is no unscoped chunk_key fallback.
+    beforeEach(async () => {
+      await resetDialogueState();
+      await startDialogue();
+    });
 
     // Requirement 8.2 / Req 15.1: FREE-only chunk returns HTTP 200
     // with full { id, chunk_key, nodes, leaves } envelope.
@@ -916,6 +923,27 @@ describe('Dialogue Chunk API Integration Tests (Task 10.1)', () => {
       );
       const body = await res.json() as any;
 
+      expect(res.status).toBe(404);
+      expect(body.success).toBe(false);
+    });
+
+    // D1 / R12: prefetch is revision-scoped, so a player with NO active dialogue
+    // pin gets 404 — there is deliberately no unscoped chunk_key fallback. The
+    // `beforeEach` now starts a dialogue for every request in this block, so
+    // without this case the no-pin branch is never exercised: the only other 404
+    // uses an unknown chunk key and would pass even if the pin check were gone.
+    test('returns HTTP 404 for a real chunk key when the player has no dialogue pin', async () => {
+      // Clear the pin: same reset the beforeEach runs, minus the restart.
+      await resetDialogueState();
+
+      const res = await fetch(
+        `http://localhost:${port}/dialogue/chunk/free_target`,
+        { headers: authHeaders() },
+      );
+      const body = await res.json() as any;
+
+      // 'free_target' resolves fine while pinned (see the 200 case above), so a
+      // 404 here can only come from the missing pin.
       expect(res.status).toBe(404);
       expect(body.success).toBe(false);
     });
