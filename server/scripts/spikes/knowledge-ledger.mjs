@@ -55,8 +55,8 @@ console.log('NOTE: flags live in the PLAYER state bag (player_dialogue_states/fl
 
 // ---------- 2. fixture ----------
 const fx = JSON.parse(fs.readFileSync(path.join(here, 'knowledge-ledger-fixture.json'), 'utf8'));
-const key = ([c, f]) => `${c}|${f}`;
-const gold = new Set(fx.excerpts.flatMap((e) => e.expected.map(key)));
+const key = ([e, c, f]) => `${e}|${c}|${f}`; // excerpt id included: a hit on a negative excerpt must not match another excerpt's label
+const gold = new Set(fx.excerpts.flatMap((e) => e.expected.map(([c, f]) => key([e.id, c, f]))));
 const score = (pred, label) => {
   const p = new Set(pred); let tp = 0; for (const k of p) if (gold.has(k)) tp++;
   const prec = p.size ? tp / p.size : 1; const rec = gold.size ? tp / gold.size : 1;
@@ -64,26 +64,27 @@ const score = (pred, label) => {
 };
 console.log(`\n== fixture: ${fx.excerpts.length} excerpts (${fx.excerpts.filter((e) => e.kind === 'real').length} real, ${fx.excerpts.filter((e) => e.kind === 'synthetic').length} synthetic), ${gold.size} gold (character,fact) pairs, ${Object.keys(fx.facts).length} registered facts ==`);
 
-// 2a explicit registry: author writes fact_refs on the exposing node; audience defaults to scene cast.
-// Pair-level result is by construction == gold; the measurable cost is authoring annotations.
+// 2a explicit registry: author writes fact_refs on the exposing node, naming the RECIPIENTS explicitly
+// (not the whole scene cast: the speaker and anyone who already knew the fact do not acquire it).
+// The measurable cost is authoring annotations; recipients are authored, so coverage is not computed here.
 const exposing = fx.excerpts.filter((e) => e.expected.length);
 const refs = exposing.length; // one fact_refs[] annotation per exposing node/scene/vault item
-console.log(`explicit registry: ${refs} authored fact_refs annotations cover all ${gold.size} pairs (exposing excerpts: ${exposing.length}/${fx.excerpts.length}); thought-only/negative excerpts need 0 annotations`);
+console.log(`explicit registry: ${refs} authored fact_refs annotations (with explicit recipients) are needed for ${gold.size} pairs (exposing excerpts: ${exposing.length}/${fx.excerpts.length}); thought-only/negative excerpts need 0 annotations`);
 const absent = fx.excerpts.filter((e) => e.expected.length && !e.present.includes('player') && !e.expected.some(([c]) => c === 'player'));
-console.log(`  player-absent exposures handled by default audience=scene cast: ${absent.map((e) => e.id).join(', ')}`);
+console.log(`  player-absent exposures (recipients must be authored explicitly): ${absent.map((e) => e.id).join(', ')}`);
 
 // 2b deterministic keyword baseline (lower-bound stand-in for naive "inferred"): every present
 // character learns every registered fact whose alias occurs in text OR thought.
 const base = [];
 for (const e of fx.excerpts) {
   const hay = `${e.text} ${e.thought ?? ''}`.toLowerCase();
-  for (const [fid, f] of Object.entries(fx.facts)) if (f.aliases.some((a) => hay.includes(a))) for (const c of e.present) base.push(key([c, fid]));
+  for (const [fid, f] of Object.entries(fx.facts)) if (f.aliases.some((a) => hay.includes(a))) for (const c of e.present) base.push(key([e.id, c, fid]));
 }
 score(base, 'keyword baseline (text+thought, aliases hand-tuned on this fixture -> optimistic)');
 const base2 = [];
 for (const e of fx.excerpts) {
   const hay = e.text.toLowerCase();
-  for (const [fid, f] of Object.entries(fx.facts)) if (f.aliases.some((a) => hay.includes(a))) for (const c of e.present) base2.push(key([c, fid]));
+  for (const [fid, f] of Object.entries(fx.facts)) if (f.aliases.some((a) => hay.includes(a))) for (const c of e.present) base2.push(key([e.id, c, fid]));
 }
 score(base2, 'keyword baseline (spoken text only)');
 const falseOnNeg = fx.excerpts.filter((e) => !e.expected.length).map((e) => {
@@ -105,7 +106,7 @@ if (process.argv.includes('--llm')) {
     const r = await callCheapModel(sys, JSON.stringify({ present: e.present, text: e.text, thought: e.thought, registry: Object.fromEntries(Object.entries(fx.facts).map(([k, v]) => [k, v.aliases.join(', ')])) }));
     if (!r.ok) { console.log(`cheap-model run aborted: ${r.reason}`); process.exit(0); }
     tokens += r.usage?.total_tokens ?? 0;
-    try { const j = JSON.parse(r.text.replace(/^```json\s*|```$/g, '').trim()); for (const l of j.learned ?? []) pred.push(key([l.character, l.fact_id])); } catch { malformed++; }
+    try { const j = JSON.parse(r.text.replace(/^```json\s*|```$/g, '').trim()); for (const l of j.learned ?? []) pred.push(key([e.id, l.character, l.fact_id])); } catch { malformed++; }
   }
   score(pred, `cheap model ${MODEL}`);
   console.log(`malformed responses: ${malformed}/${fx.excerpts.length}; total tokens: ${tokens}`);

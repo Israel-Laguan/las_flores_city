@@ -8,6 +8,11 @@ export const MODEL = process.env.LLM_MODEL || 'poolside/laguna-m.1';
 /** Returns {ok:true, text, usage} or {ok:false, reason}. Never throws. */
 export async function callCheapModel(system, user) {
   try {
+    const u = new URL(BASE);
+    const loopback = ['localhost', '127.0.0.1', '[::1]'].includes(u.hostname);
+    if (KEY && u.protocol === 'http:' && !loopback) {
+      return { ok: false, reason: `refusing to send LITELLM_API_KEY over cleartext HTTP to ${u.hostname}; use https` };
+    }
     const res = await fetch(`${BASE}/chat/completions`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', ...(KEY ? { authorization: `Bearer ${KEY}` } : {}) },
@@ -16,7 +21,9 @@ export async function callCheapModel(system, user) {
     });
     if (!res.ok) return { ok: false, reason: `HTTP ${res.status} from ${BASE} (api key ${KEY ? 'set' : 'NOT set'})` };
     const j = await res.json();
-    return { ok: true, text: j.choices?.[0]?.message?.content ?? '', usage: j.usage };
+    const text = j.choices?.[0]?.message?.content;
+    if (typeof text !== 'string' || !text.trim()) return { ok: false, reason: `empty chat content from ${BASE}` };
+    return { ok: true, text, usage: j.usage };
   } catch (e) {
     return { ok: false, reason: `${e.name}: ${e.message} (${BASE})` };
   }

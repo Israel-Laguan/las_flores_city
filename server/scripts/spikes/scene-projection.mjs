@@ -37,8 +37,9 @@ const NEW_REQUIRED = ['slug', 'location', 'time', 'weather', 'participants', 'ro
 const rows = []; const empty = []; const unprefixed = [];
 const topKeys = {}; const metaKeys = {};
 for (const d of dirs) {
-  const f = fs.readdirSync(path.join(ROOT, d)).find((x) => x.endsWith('.yaml'));
-  if (!f) { empty.push(d); continue; }
+  const files = fs.readdirSync(path.join(ROOT, d)).filter((x) => x.endsWith('.yaml'));
+  if (!files.length) { empty.push(d); continue; }
+  for (const f of files) {
   if (!f.startsWith('scene_')) unprefixed.push(`${d}/${f}`);
   const y = yaml.load(fs.readFileSync(path.join(ROOT, d, f), 'utf8'));
   for (const k of Object.keys(y)) topKeys[k] = (topKeys[k] || 0) + 1;
@@ -63,6 +64,7 @@ for (const d of dirs) {
     bgVariants: (y.background_urls || []).map((b) => b.variant || 'default').join('+') || '-',
     draft,
   });
+  }
 }
 
 console.log(`# SC-S12 projection: ${dirs.length} folders, ${rows.length} with a YAML`);

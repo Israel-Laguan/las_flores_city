@@ -146,7 +146,7 @@ function scan(p) {
   const visit = (v, key) => {
     if (Array.isArray(v)) v.forEach((x) => visit(x, key));
     else if (v && typeof v === 'object') for (const [k, x] of Object.entries(v)) {
-      if ((k === 'required_flags' || k === 'flag_set' || k === 'forbidden_flags') && x && typeof x === 'object' && !Array.isArray(x)) Object.keys(x).forEach((f) => s.add(f));
+      if ((k === 'required_flags' || k === 'flag_set' || k === 'forbidden_flags' || k === 'hidden_if') && x && typeof x === 'object' && !Array.isArray(x)) Object.keys(x).forEach((f) => s.add(f));
       else visit(x, k);
     }
   };

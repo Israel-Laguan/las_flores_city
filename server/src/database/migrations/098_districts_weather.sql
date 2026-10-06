@@ -8,8 +8,22 @@
 -- list and the contract is asserted by tests/integration/districts-weather.test.ts.
 -- Transactional and idempotent. Verified no prior weather column (SC-S5).
 
-ALTER TABLE districts
-  ADD COLUMN IF NOT EXISTS weather text NOT NULL DEFAULT 'clear';
+-- Seed defaults only on the run that introduces the column, so a re-run never
+-- overwrites an authored value (including an authored 'clear').
+DO $$
+DECLARE
+  column_added boolean := NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = current_schema() AND table_name = 'districts' AND column_name = 'weather'
+  );
+BEGIN
+  ALTER TABLE districts ADD COLUMN IF NOT EXISTS weather text NOT NULL DEFAULT 'clear';
+  IF column_added THEN
+    UPDATE districts SET weather = 'overcast' WHERE slug = 'city';
+    UPDATE districts SET weather = 'fog'      WHERE slug = 'old-town';
+    UPDATE districts SET weather = 'smog'     WHERE slug = 'industrial';
+  END IF;
+END $$;
 
 ALTER TABLE districts DROP CONSTRAINT IF EXISTS districts_weather_check;
 ALTER TABLE districts
@@ -18,9 +32,3 @@ ALTER TABLE districts
 
 COMMENT ON COLUMN districts.weather IS 'SC-309: default weather tag (WeatherTag vocabulary). Scenes may override; compile snapshots it.';
 
--- Seed defaults for rows created by 034/035 (those files stay untouched).
--- Only rows still at the column default are touched, so a re-run never
--- clobbers a value an author has since changed.
-UPDATE districts SET weather = 'overcast' WHERE slug = 'city'       AND weather = 'clear';
-UPDATE districts SET weather = 'fog'      WHERE slug = 'old-town'   AND weather = 'clear';
-UPDATE districts SET weather = 'smog'     WHERE slug = 'industrial' AND weather = 'clear';

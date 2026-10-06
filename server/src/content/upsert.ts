@@ -135,8 +135,8 @@ async function processDistrictData(data: any): Promise<string> {
   // Districts are created by migrations; this only updates authorable fields.
   // A missing `weather:` leaves the existing value (column default 'clear').
   const result = await queryOLTP(
-    `UPDATE districts SET weather = COALESCE($2, weather) WHERE slug = $1`,
-    [parsed.slug, weather]
+    `UPDATE districts SET weather = COALESCE($2, weather), name = COALESCE($3, name) WHERE slug = $1`,
+    [parsed.slug, weather, parsed.name ?? null]
   );
   if (result.rowCount === 0) {
     throw new Error(`District "${parsed.slug}" not found. Districts are created by migrations, not content.`);

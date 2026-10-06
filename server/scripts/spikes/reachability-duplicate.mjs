@@ -58,7 +58,7 @@ try {
     await client.end();
     console.error(
       `spike_sc_s1.entity_edges already contains ${existingGenRows[0].n} ::gen rows. ` +
-        'Rebuild the table with spikes/entity-edges-projection.mjs before re-duplicating.',
+        'Rebuild the table with server/scripts/spikes/entity-edges-projection.mjs before re-duplicating.',
     );
     process.exit(1);
   }

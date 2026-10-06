@@ -26,7 +26,9 @@ function visit(o, f) {
     visit(v, f);
   }
 }
-for (const f of yamls) { try { visit(yaml.load(fs.readFileSync(f, 'utf8')), f); } catch { /* skip */ } }
+const unreadable = [];
+for (const f of yamls) { try { visit(yaml.load(fs.readFileSync(f, 'utf8')), f); } catch (e) { unreadable.push(`${path.relative(root, f)}: ${e.message.split('\n')[0]}`); } }
+if (unreadable.length) console.log(`WARNING: scan INCOMPLETE — ${unreadable.length} YAML file(s) unreadable, totals below undercount:\n  ${unreadable.join('\n  ')}`);
 
 console.log('== SC-S9 (1) content usage of item keys ==');
 for (const k of KEYS) console.log(`  ${k.padEnd(20)} ${String((keyUse[k] ?? []).length).padStart(3)} occurrences ${[...new Set(keyUse[k] ?? [])].join(',')}`);
@@ -64,6 +66,7 @@ function run(name, events) {
       if (!s) out.push(`ERROR never-acquired: ${op} ${item} by ${who}`);
       else if (s !== 'acquired') out.push(`ERROR ${s}: ${op} ${item} by ${who}`);
       else if (op === 'consume') led.set(k, 'consumed');
+      else if (op === 'give') led.set(k, 'given'); // giver no longer holds it
     } else if (op === 'lose') { if (s === 'acquired') led.set(k, 'lost'); else out.push(`ERROR cannot lose ${s ?? 'unheld'} ${item}`); }
   }
   console.log(`  ${name}: ${out.length ? out.join('; ') : 'clean'} | final=${JSON.stringify([...led])}`);
@@ -77,16 +80,20 @@ run('S-E double grant (idempotent claim)', [['acquire', 'player', 'usb_drive'], 
 
 // ---------- (3) array-aware MODIFY (SC-S3 / SC-702 pitfall) ----------
 console.log('\n== SC-S9 (3) overlay MODIFY on a scene `items` array (Postgres) ==');
+let c; let connected = false;
 try {
   const pg = req('pg');
-  const c = new pg.Client({ connectionString: process.env.DATABASE_URL || 'postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores', connectionTimeoutMillis: 3000 });
+  c = new pg.Client({ connectionString: process.env.DATABASE_URL || 'postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores', connectionTimeoutMillis: 3000 });
   await c.connect();
+  connected = true;
   const naive = (await c.query(`SELECT '{"items":[{"id":"lamp"},{"id":"desk"}]}'::jsonb || '{"items":[{"id":"safe"}]}'::jsonb AS r`)).rows[0].r;
-  const aware = (await c.query(`SELECT jsonb_build_object('items', (SELECT jsonb_agg(DISTINCT e) FROM jsonb_array_elements('[{"id":"lamp"},{"id":"desk"}]'::jsonb || '[{"id":"safe"}]'::jsonb) e)) AS r`)).rows[0].r;
+  const aware = (await c.query(`SELECT jsonb_build_object('items', (SELECT jsonb_agg(e ORDER BY ord) FROM jsonb_array_elements('[{"id":"lamp"},{"id":"desk"}]'::jsonb || '[{"id":"safe"}]'::jsonb) WITH ORDINALITY t(e, ord))) AS r`)).rows[0].r;
+  const removed = (await c.query(`SELECT jsonb_build_object('items', coalesce((SELECT jsonb_agg(e ORDER BY ord) FROM jsonb_array_elements('[{"id":"lamp"},{"id":"desk"}]'::jsonb) WITH ORDINALITY t(e, ord) WHERE e->>'id' <> 'desk'), '[]'::jsonb)) AS r`)).rows[0].r;
   console.log('  base items [lamp,desk] + overlay ADD [safe]');
   console.log('  naive  jsonb ||      ->', JSON.stringify(naive), '(base props silently lost)');
   console.log('  array-aware concat   ->', JSON.stringify(aware));
+  console.log('  array-aware REMOVE desk ->', JSON.stringify(removed), '(naive || cannot express removal)');
   const counts = await c.query(`SELECT (SELECT count(*) FROM vault_items) AS vault_items, (SELECT count(*) FROM player_vault) AS player_vault, (SELECT count(*) FROM player_inventory) AS player_inventory`);
   console.log('  live row counts:', JSON.stringify(counts.rows[0]));
-  await c.end();
-} catch (e) { console.log(`  skipped — Postgres unreachable (${e.message})`); }
+} catch (e) { console.log(connected ? `  skipped — query failed (${e.message})` : `  skipped — Postgres unreachable (${e.message})`); }
+finally { if (connected) await c.end(); }
