@@ -1,0 +1,265 @@
+{
+ "_doc": "SC-S10 hand-labelled fixture. tb_sum = summed time_block_cost of the beat (1 TB = 30 in-game minutes, client/src/utils/time.ts). claimed.type in {duration,vague,time_of_day,future,none}; minutes is the human-labelled elapsed minutes ONLY for type=duration (approximate for t01,t14). mismatch_vs_tb = claim contradicts TB by more than 2x. real = prose verbatim from content/ (collected by scanning choices that carry time_block_cost and time words); synthetic = authored edge cases. NOTE: real excerpts rarely contain a numeric duration claim (1 of 11).",
+ "excerpts": [
+  {
+   "id": "t01",
+   "kind": "real",
+   "source": "content/dialogues/**/dialogue_beat_sofia_corruption_network.yaml choice=choice_civic_heroism (from node node_sofia_discovery)",
+   "tb_sum": 6,
+   "prose": "We need to expose this. Leak it to the press, defend the community. || Over the next few days, you and Sofia work to verify the documents and get them to a trusted journalist. Meanwhile, Minera Estrella thugs start showing up at the Community Center South, trying to intimidate residents into silence.",
+   "claimed": {
+    "type": "duration",
+    "minutes": 4320
+   },
+   "mismatch_vs_tb": true,
+   "note": "\"Over the next few days\" ~3 days = 4320 min (approximate); TB 6 = 180 min. REAL authored mismatch."
+  },
+  {
+   "id": "t02",
+   "kind": "real",
+   "source": "content/dialogues/**/dialogue_beat_sofia_intro.yaml choice=choice_ignore (from node node_sofia_harassment_scene)",
+   "tb_sum": 1,
+   "prose": "Ignore it - not your problem || You walk past, keeping your eyes forward. Behind you, you hear raised voices, then a muffled thud. By the time you turn around, Sofia is on the ground, the gang members walking away laughing.",
+   "claimed": {
+    "type": "none",
+    "minutes": null
+   },
+   "mismatch_vs_tb": false,
+   "note": "\"By the time you turn around\" is not an elapsed-duration claim."
+  },
+  {
+   "id": "t03",
+   "kind": "real",
+   "source": "content/dialogues/**/dialogue_criticism_from_peers.yaml choice=promise_results (from node maria_skepticism)",
+   "tb_sum": 1,
+   "prose": "The data pipeline is nearly complete. You'll have your ROI within the quarter. || The predictive models are showing patterns we've never seen before. Give me 30 days. If the metrics don't show improvement, I'll restructure.",
+   "claimed": {
+    "type": "future",
+    "minutes": null
+   },
+   "mismatch_vs_tb": false,
+   "note": "\"Give me 30 days\" is a future promise, not elapsed time."
+  },
+  {
+   "id": "t04",
+   "kind": "real",
+   "source": "content/dialogues/**/dialogue_adeyemi_act3_phone_call.yaml choice=deflect_call (from node adeyemi_phone_call_opening)",
+   "tb_sum": 1,
+   "prose": "This isn't a good time. Call me tomorrow. || I see. Well... perhaps tomorrow is better then. But Alex, be careful tonight. There are things moving in this city that you don't understand.",
+   "claimed": {
+    "type": "future",
+    "minutes": null
+   },
+   "mismatch_vs_tb": false,
+   "note": "\"tomorrow\"/\"tonight\" future reference."
+  },
+  {
+   "id": "t05",
+   "kind": "real",
+   "source": "content/dialogues/**/handler_welcome.yaml choice=how_long (from node handler_intro)",
+   "tb_sum": 1,
+   "prose": "How long? || Until the study concludes. Could be weeks. Could be months. depends on your progress. You have 48 Time Blocks per day. Spend them to move, talk, explore. Sleep to refresh.",
+   "claimed": {
+    "type": "future",
+    "minutes": null
+   },
+   "mismatch_vs_tb": false,
+   "note": "\"weeks/months\" is the study length, not scene elapsed time."
+  },
+  {
+   "id": "t06",
+   "kind": "real",
+   "source": "content/dialogues/**/dialogue_wen_act2.yaml choice=dare_yes (from node wen_act2_start)",
+   "tb_sum": 2,
+   "prose": "Tonight. Let's go. || Third floor. Maintenance door. You go first, I'll follow — if anyone sees us it's your fault. That's the rule. ...Are you scared? You look scared.",
+   "claimed": {
+    "type": "time_of_day",
+    "minutes": null
+   },
+   "mismatch_vs_tb": false,
+   "note": "\"Tonight\" is a time-of-day tag, not a duration."
+  },
+  {
+   "id": "t07",
+   "kind": "real",
+   "source": "content/dialogues/**/dialogue_vq_layover.yaml choice=layover_markets (from node vq_layover_start)",
+   "tb_sum": 1,
+   "prose": "'Convince me. Best market in this whole circuit.' || Okay — dawn market behind the old rail station, before the tour buses. An old woman sells mangoes there and pretends not to speak English so I have to use my terrible Spanish. I bought three last month just so she'd scold me again.",
+   "claimed": {
+    "type": "none",
+    "minutes": null
+   },
+   "mismatch_vs_tb": false,
+   "note": "\"dawn market ... last month\" is backstory, not elapsed time."
+  },
+  {
+   "id": "t08",
+   "kind": "real",
+   "source": "content/dialogues/**/dialogue_vq_intro.yaml choice=intro_flirt (from node vq_intro_start)",
+   "tb_sum": 1,
+   "prose": "'Can I buy you a drink, or do you already have a queue?' || A queue. That's cute. No queue. But let's get something straight — I decide when someone buys me a drink. Tonight I'll allow it. Bourbon. Neat. Sit if you can keep up.",
+   "claimed": {
+    "type": "time_of_day",
+    "minutes": null
+   },
+   "mismatch_vs_tb": false,
+   "note": "\"Tonight I'll allow it\" time-of-day reference."
+  },
+  {
+   "id": "t09",
+   "kind": "real",
+   "source": "content/dialogues/**/dialogue_valentina_reyes.yaml choice=observe_val (from node val_intro)",
+   "tb_sum": 1,
+   "prose": "Observe her for a moment || Val—she glances at a name tag on her backpack—appears to be reviewing lecture notes, mouthing words silently as she reads. She catches your gaze briefly and looks away quickly, a faint flush creeping across her sun-kissed cheeks.",
+   "claimed": {
+    "type": "vague",
+    "minutes": null
+   },
+   "mismatch_vs_tb": false,
+   "note": "\"for a moment\" vague; cannot be compared numerically."
+  },
+  {
+   "id": "t10",
+   "kind": "real",
+   "source": "content/dialogues/**/dialogue_superhero_talk_between_classes.yaml choice=observe_first (from node start)",
+   "tb_sum": 1,
+   "prose": "Listen for a moment first || Elena gestures passionately. 'Javier, you can't tell me that people don't still fight for what's right. Look at the community centers, the mutual aid networks—' Javier cuts her off with a smirk. 'Those are Band-Aids on bullet wounds, Elena. Real change? That costs money. And in this city, money buys compliance, not heroism.'",
+   "claimed": {
+    "type": "vague",
+    "minutes": null
+   },
+   "mismatch_vs_tb": false,
+   "note": "\"for a moment\" vague."
+  },
+  {
+   "id": "t11",
+   "kind": "real",
+   "source": "content/dialogues/**/dialogue_adeyemi_act2_diego_arrest.yaml choice=act2_help_after (from node adeyemi_act2_start)",
+   "tb_sum": 1,
+   "prose": "[Walk away, but resolve to help Reyes find a lawyer later] || You decide not to make a scene now, but you start making calls to find legal representation for Reyes.",
+   "claimed": {
+    "type": "none",
+    "minutes": null
+   },
+   "mismatch_vs_tb": false,
+   "note": "\"later\" qualifies a future intention, no elapsed claim."
+  },
+  {
+   "id": "t12",
+   "kind": "synthetic",
+   "source": null,
+   "tb_sum": 2,
+   "prose": "Three hours later, the rain had stopped and the plaza was empty.",
+   "claimed": {
+    "type": "duration",
+    "minutes": 180
+   },
+   "mismatch_vs_tb": true,
+   "note": "180 min claimed vs 60 min TB."
+  },
+  {
+   "id": "t13",
+   "kind": "synthetic",
+   "source": null,
+   "tb_sum": 1,
+   "prose": "Twenty minutes later, the barista finally slid the cup across the counter.",
+   "claimed": {
+    "type": "duration",
+    "minutes": 20
+   },
+   "mismatch_vs_tb": false,
+   "note": "20 vs 30 min: consistent."
+  },
+  {
+   "id": "t14",
+   "kind": "synthetic",
+   "source": null,
+   "tb_sum": 4,
+   "prose": "The next morning, the street outside was loud with delivery drones.",
+   "claimed": {
+    "type": "duration",
+    "minutes": 720
+   },
+   "mismatch_vs_tb": true,
+   "note": "Approximate 12h overnight jump vs 120 min TB."
+  },
+  {
+   "id": "t15",
+   "kind": "synthetic",
+   "source": null,
+   "tb_sum": 1,
+   "prose": "A few minutes later she looked up from the tablet.",
+   "claimed": {
+    "type": "vague",
+    "minutes": null
+   },
+   "mismatch_vs_tb": false,
+   "note": "Vague but small: no contradiction."
+  },
+  {
+   "id": "t16",
+   "kind": "synthetic",
+   "source": null,
+   "tb_sum": 1,
+   "prose": "Sunset painted the pier orange as the ferry horn sounded.",
+   "claimed": {
+    "type": "time_of_day",
+    "minutes": null
+   },
+   "mismatch_vs_tb": false,
+   "note": "Time-of-day tag, not duration."
+  },
+  {
+   "id": "t17",
+   "kind": "synthetic",
+   "source": null,
+   "tb_sum": 1,
+   "prose": "Hours passed in silence before either of them spoke again.",
+   "claimed": {
+    "type": "vague",
+    "minutes": null
+   },
+   "mismatch_vs_tb": true,
+   "note": "Vague \"hours\" (>=120 min) vs 30 min TB: mismatch in principle but not numeric."
+  },
+  {
+   "id": "t18",
+   "kind": "synthetic",
+   "source": null,
+   "tb_sum": 2,
+   "prose": "They talked for an hour, mostly about the ferry strike.",
+   "claimed": {
+    "type": "duration",
+    "minutes": 60
+   },
+   "mismatch_vs_tb": false,
+   "note": "60 vs 60: consistent."
+  },
+  {
+   "id": "t19",
+   "kind": "synthetic",
+   "source": null,
+   "tb_sum": 1,
+   "prose": "Two days passed before the call came.",
+   "claimed": {
+    "type": "duration",
+    "minutes": 2880
+   },
+   "mismatch_vs_tb": true,
+   "note": "2880 min vs 30 min TB."
+  },
+  {
+   "id": "t20",
+   "kind": "synthetic",
+   "source": null,
+   "tb_sum": 1,
+   "prose": "He slides the drive across the table and says nothing.",
+   "claimed": {
+    "type": "none",
+    "minutes": null
+   },
+   "mismatch_vs_tb": false,
+   "note": "No time claim at all."
+  }
+ ]
+}

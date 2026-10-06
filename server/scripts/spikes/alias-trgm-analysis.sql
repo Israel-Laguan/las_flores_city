@@ -1,6 +1,6 @@
 -- SC-S4 spike: pg_trgm vs ILIKE precision/recall over spike_trgm.corpus /
--- spike_trgm.labeled_pairs (built by sc-s4-build-corpus.mjs). Run via:
---   psql -U las_flores -d las_flores -f server/scripts/spikes/sc-s4-analysis.sql
+-- spike_trgm.labeled_pairs (built by alias-trgm-build-corpus.mjs). Run via:
+--   psql -U las_flores -d las_flores -f server/scripts/spikes/alias-trgm-analysis.sql
 
 -- Per-pair top-1 pg_trgm match, for eyeballing
 SELECT

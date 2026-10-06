@@ -4,7 +4,7 @@
 // Scratch schema, dropped/recreated on every run — idempotent.
 //
 // Usage: DATABASE_URL=postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores \
-//        node server/scripts/spike_sc_s1_project_entity_edges.mjs
+//        node server/scripts/spikes/entity-edges-projection.mjs
 
 import fs from "node:fs";
 import path from "node:path";
@@ -15,9 +15,9 @@ import pg from "pg";
 // `import.meta.dirname` only exists from Node 20.11.0, but this repo declares
 // `engines.node >= 20.0.0` (.nvmrc: 20), so on Node 20.0-20.10 it is `undefined`
 // and path.resolve throws ERR_INVALID_ARG_TYPE at startup. Derive it from the
-// module URL instead — the pattern the sibling spike sc-s2-run.mjs already uses.
+// module URL instead — the pattern the sibling spike reachability-run.mjs already uses.
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const ROOT = path.resolve(__dirname, "..", "..");
+const ROOT = path.resolve(__dirname, "..", "..", "..");
 const CONTENT = path.join(ROOT, "content");
 
 const DATABASE_URL =

@@ -4,7 +4,7 @@
 // content/districts/**/location_*.yaml (locations aren't in the DB yet —
 // they only exist as content YAML, per SC-103's not-yet-built schema).
 //
-// Usage: DATABASE_URL=postgresql://... node server/scripts/spikes/sc-s4-build-corpus.mjs
+// Usage: DATABASE_URL=postgresql://... node server/scripts/spikes/alias-trgm-build-corpus.mjs
 import fs from 'node:fs';
 import path from 'node:path';
 import pg from 'pg';

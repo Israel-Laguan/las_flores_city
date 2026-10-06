@@ -21,24 +21,30 @@
  * Needs postgres-oltp, redis and minio reachable (same env as the server) and the
  * content migrated. No running game-server is required.
  *
- * Usage (from repo root):  npm run spike:sc-s6 --workspace=server
- *   or:                    cd server && npx tsx scripts/spike_sc_s6_serving_baseline.ts
+ * Usage (from repo root):  npm run spike:serving-baseline --workspace=server
+ *   or:                    cd server && npx tsx scripts/spikes/serving-baseline.ts
  * Exits 0 and prints p50/p95 for every measurement; non-zero on any failure.
  */
 
 import process, { hrtime } from 'node:process';
+import { randomUUID } from 'node:crypto';
 import type { AddressInfo } from 'node:net';
 import express from 'express';
 import { queryOLTP, closeConnections, deleteCache, invalidatePattern } from '@las-flores/infra';
-import { dialogueRouter } from '../src/routes/dialogue.js';
-import { resolveChunkSpeakers } from '../src/routes/dialogue-speakers.js';
-import { generateToken } from '../src/middleware/auth.js';
-import { compileDialogueTree } from '../src/content/compiler.js';
-import { publishDialogueTree } from '../src/services/ContentPublishService.js';
+import { dialogueRouter } from '../../src/routes/dialogue.js';
+import { resolveChunkSpeakers } from '../../src/routes/dialogue-speakers.js';
+import { generateToken } from '../../src/middleware/auth.js';
+import { compileDialogueTree } from '../../src/content/compiler.js';
+import { publishDialogueTree } from '../../src/services/ContentPublishService.js';
 
-// Dedicated UUIDs (collision avoidance): prefix 5c560000 is used by no other fixture.
-const SYNTHETIC_USER_ID = '5c560000-0001-4001-8001-000000000001';
-const SYNTHETIC_TREE_ID = '5c560000-0002-4002-8002-000000000002';
+// Per-invocation UUIDs (collision avoidance): overlapping spike runs, and any real or other
+// fixture rows, can never share these, so cleanup() only ever deletes rows this run created.
+const SYNTHETIC_USER_ID = randomUUID();
+const SYNTHETIC_TREE_ID = randomUUID();
+const SYNTHETIC_SUFFIX = SYNTHETIC_USER_ID.slice(0, 8);
+
+// Flipped just before the first write; cleanup() is a no-op until then.
+let seedingStarted = false;
 
 const WARMUP_ITERATIONS = 3;
 const TIMED_ITERATIONS = 30;
@@ -106,11 +112,11 @@ async function seed(speakerIds: string[]): Promise<string> {
     s6_c: { id: 's6_c', type: 'character', speaker_id: c, text: 'SC-S6 node C.', is_end: true },
   };
 
+  seedingStarted = true;
   await queryOLTP(
     `INSERT INTO users (id, email, username, display_name)
-     VALUES ($1, 'sc-s6@test.example', 'sc_s6_baseline', 'SC-S6 Baseline')
-     ON CONFLICT (id) DO UPDATE SET updated_at = NOW()`,
-    [SYNTHETIC_USER_ID],
+     VALUES ($1, $2, $3, 'SC-S6 Baseline')`,
+    [SYNTHETIC_USER_ID, `sc-s6-${SYNTHETIC_SUFFIX}@test.example`, `sc_s6_${SYNTHETIC_SUFFIX}`],
   );
   const treeUrl = await publishDialogueTree(SYNTHETIC_TREE_ID, JSON.stringify({ nodes }));
   await queryOLTP(
@@ -146,8 +152,9 @@ async function seed(speakerIds: string[]): Promise<string> {
   return chunkId;
 }
 
-/** FK-ordered removal; safe to call when seeding only partly happened. */
+/** FK-ordered removal of this invocation's rows; safe when seeding only partly happened. */
 async function cleanup(): Promise<void> {
+  if (!seedingStarted) return;
   await queryOLTP('DELETE FROM player_dialogue_states WHERE user_id = $1', [SYNTHETIC_USER_ID]);
   await queryOLTP('DELETE FROM player_states WHERE user_id = $1', [SYNTHETIC_USER_ID]);
   await queryOLTP('DELETE FROM dialogue_chunks WHERE tree_id = $1', [SYNTHETIC_TREE_ID]);
