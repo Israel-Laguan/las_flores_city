@@ -44,7 +44,6 @@ export type {
 } from './canon/flag-registry.js';
 export {
   InMemoryFlagRegistry,
-  DatabaseFlagRegistry,
   createFlagRegistry,
 } from './canon/flag-registry.js';
 
