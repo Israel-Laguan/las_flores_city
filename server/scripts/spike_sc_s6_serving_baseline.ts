@@ -15,8 +15,8 @@
  *   2. resolveChunkSpeakers()        — in-process, SELECT + presign
  *   3. GET /dialogue/active          — real HTTP against an in-process express app
  *                                      mounting the real dialogueRouter + authMiddleware
- *   presigning_i = resolveChunkSpeakers_i - bulkSelect_i
- *   rest_i       = endpoint_i - resolveChunkSpeakers_i
+ *   presigning_i = resolveChunkSpeakers_i - bulkSelect_i   (estimate: also covers speaker collection)
+ *   rest_i       = endpoint_i - resolveChunkSpeakers_i     (estimate: separate calls, not one request)
  *
  * Needs postgres-oltp, redis and minio reachable (same env as the server) and the
  * content migrated. No running game-server is required.
@@ -78,10 +78,18 @@ async function pickRealCharacters(): Promise<string[]> {
      WHERE jsonb_typeof(portrait_urls::jsonb) = 'array'
      ORDER BY n DESC, id LIMIT 1`,
   );
+  // CASE guards jsonb_array_length: Postgres does not guarantee AND short-circuiting, and the
+  // function raises on non-array JSONB. Excluding the heavy id keeps the three speakers distinct.
   const light = await queryOLTP<{ id: string }>(
     `SELECT id FROM characters
-     WHERE jsonb_typeof(portrait_urls::jsonb) = 'array' AND jsonb_array_length(portrait_urls::jsonb) = 1
+     WHERE id <> $1
+       AND CASE
+         WHEN jsonb_typeof(portrait_urls::jsonb) = 'array'
+           THEN jsonb_array_length(portrait_urls::jsonb) = 1
+         ELSE false
+       END
      ORDER BY id LIMIT 2`,
+    [heavy.rows[0]?.id ?? null],
   );
   if (heavy.rows.length !== 1 || light.rows.length !== 2) {
     throw new Error('SC-S6: seeded dataset lacks characters with portrait_urls — migrate content first.');
@@ -178,7 +186,8 @@ async function measure(speakerIds: string[], url: string, token: string): Promis
     }
   }
 
-  // Paired per-iteration differences — NOT p50(total) - p50(select).
+  // Paired per-iteration differences — NOT p50(total) - p50(select). These are ESTIMATES: each
+  // measurement is a separate call, so the pairing shares only the iteration index, not a request.
   const presigning = resolve.map((r, i) => r - select[i]);
   const rest = endpoint.map((e, i) => e - resolve[i]);
   const share = resolve.map((r, i) => (r / endpoint[i]) * 100);
@@ -191,9 +200,10 @@ async function measure(speakerIds: string[], url: string, token: string): Promis
   const p = stats(presigning);
   const rs = stats(rest);
   const sh = stats(share);
-  console.log(`presigning only (resolveChunkSpeakers_i - bulkSelect_i):     p50=${p.p50.toFixed(2)}ms p95=${p.p95.toFixed(2)}ms`);
-  console.log(`rest of /dialogue/active (endpoint_i - resolveChunkSpeakers_i): p50=${rs.p50.toFixed(2)}ms p95=${rs.p95.toFixed(2)}ms`);
-  console.log(`resolveChunkSpeakers share of endpoint:                      p50=${sh.p50.toFixed(1)}% p95=${sh.p95.toFixed(1)}%`);
+  console.log('Estimates from separate calls (not stage timings within one request):');
+  console.log(`est. non-SELECT resolver cost, incl. presigning (resolve_i - select_i): p50=${p.p50.toFixed(2)}ms p95=${p.p95.toFixed(2)}ms`);
+  console.log(`est. endpoint cost outside resolver (endpoint_i - resolve_i):          p50=${rs.p50.toFixed(2)}ms p95=${rs.p95.toFixed(2)}ms`);
+  console.log(`est. resolver share of endpoint (resolve_i / endpoint_i):              p50=${sh.p50.toFixed(1)}% p95=${sh.p95.toFixed(1)}%`);
 }
 
 async function main(): Promise<void> {
