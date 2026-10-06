@@ -85,7 +85,8 @@
     "093_add_pinned_tree_revision.sql",
     "096_flag_registry.sql",
     "097_flag_registry_retire.sql",
-    "098_districts_weather.sql"
+    "098_districts_weather.sql",
+    "099_migration_log_district.sql"
   ],
   "nontransactional": {
     "075_job_runs_run_token_backfill.sql": "las_flores",
