@@ -126,6 +126,7 @@ export {
   YAMLMissionFileSchema,
   YAMLSceneSchema,
   YAMLLocationSchema,
+  YAMLDistrictSchema,
 } from './schemas/yaml-content.js';
 export type {
   AssetEntry,

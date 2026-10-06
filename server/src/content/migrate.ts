@@ -22,6 +22,7 @@ const CONTENT_TYPE_TABLE: Record<ContentType, string> = {
   overlay: 'dialogue_overlays',
   scene: 'scenes',
   location: 'scenes',
+  district: 'districts',
   gig: 'gigs',
   mission: 'mysteries',
   story: 'story_beats',
@@ -68,10 +69,11 @@ async function isTargetContentPresent(contentType: ContentType, ids: string[]): 
   }
 
   // story_beat and story (beats-based) use slug as PK (not UUID) — check by slug count
-  if (contentType === 'story_beat' || contentType === 'story') {
+  // district rows (migrations 034/035) are likewise keyed by slug
+  if (contentType === 'story_beat' || contentType === 'story' || contentType === 'district') {
     const slugs = ids; // for story_beat/story, ids array holds slugs (comma-joined, split by caller)
     const result = await queryOLTP<{ count: number }>(
-      `SELECT COUNT(*)::int AS count FROM story_beats WHERE slug = ANY($1::text[])`,
+      `SELECT COUNT(*)::int AS count FROM ${CONTENT_TYPE_TABLE[contentType]} WHERE slug = ANY($1::text[])`,
       [slugs]
     );
     return result.rows[0].count === slugs.length;

@@ -44,6 +44,9 @@ interface TypeConfig {
    *  If set, the resolver also searches these nested arrays for matching IDs,
    *  in addition to the root-level `id` check. */
   idArrays?: string[];
+  /** Root-level key that identifies the entity. Defaults to `id`. Districts have no
+   *  UUID in YAML (rows come from migrations), so they are keyed by `slug`. */
+  idKey?: string;
 }
 
 const TYPE_CONFIG: Record<string, TypeConfig> = {
@@ -63,6 +66,8 @@ const TYPE_CONFIG: Record<string, TypeConfig> = {
   vault: { roots: ['vault'], idArrays: ['vault_items'] },
   // content/districts/<district>/locations/<slug>/location_<slug>.yaml (nested)
   location: { roots: ['districts'], pathTest: (rel) => rel.includes('/locations/') },
+  // content/districts/<slug>/district_<slug>.yaml (SC-309c) — keyed by `slug`
+  district: { roots: ['districts'], pathTest: (rel) => !rel.includes('/locations/'), idKey: 'slug' },
 };
 
 // ---------------------------------------------------------------------------
@@ -112,7 +117,7 @@ async function findContentFile(
       const parsed = jsYaml.load(raw);
       if (parsed && typeof parsed === 'object') {
         // Check root-level id first (e.g. character, scene, overlay, dialogue, beats-based story, location)
-        if ((parsed as { id?: unknown }).id === id) {
+        if ((parsed as Record<string, unknown>)[config.idKey ?? 'id'] === id) {
           return { path: relPath, yaml: parsed };
         }
         // Check nested arrays (e.g. missions[], vault_items[])

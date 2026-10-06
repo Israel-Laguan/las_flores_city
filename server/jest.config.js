@@ -87,6 +87,7 @@ const SCHEMA_SUITES = [
   'claims-lifecycle.test.ts',
   'dialogue-resolver.test.ts',
   'dialogue-speakers.test.ts',
+  'districts-weather.test.ts',
   'in-flight-protection.test.ts',
   'job-runs.resume.test.ts',
   'leaderboard.simulation.test.ts',

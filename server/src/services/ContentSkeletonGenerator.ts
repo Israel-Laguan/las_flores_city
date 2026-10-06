@@ -125,6 +125,13 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
     currency: item.fields.currency || 'credits',
   }, YAML_OPTIONS),
 
+  district: (item) => yaml.dump({
+    type: 'district',
+    slug: item.slug.replace(/_/g, '-'),
+    name: item.name,
+    ...(item.fields.weather ? { weather: item.fields.weather } : {}),
+  }, YAML_OPTIONS),
+
   location: (item) => {
     const slug = sanitizeSlug(item.slug);
     const userAssetPaths = (item.fields as any)?.asset_paths;
@@ -203,6 +210,7 @@ export function resolveFilePath(item: ContentPlanItem): string {
     story_beat: 'story_beats',
     shop_item: 'shop',
     location: 'locations',
+    district: 'districts',
     map_tile: 'maps',
     gig: 'gigs',
     vault: 'vault',
@@ -216,6 +224,7 @@ export function resolveFilePath(item: ContentPlanItem): string {
     character: 'char_',
     scene: 'scene_',
     location: 'location_',
+    district: 'district_',
     overlay: 'overlay_',
     mission: 'mission_',
     dialogue: 'dialogue_',
