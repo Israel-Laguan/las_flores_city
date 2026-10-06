@@ -30,6 +30,8 @@ const base = {
     '^(\\.{1,2}/.*)\\.js$': '$1',
     '^@las-flores/shared$': '<rootDir>/../shared/src/index.ts',
     '^@las-flores/infra$': '<rootDir>/../infra/src/index.ts',
+    '^@las-flores/api-contracts$': '<rootDir>/../api/contracts/src/index.ts',
+    '^@las-flores/api-planning$': '<rootDir>/../api/planning/src/index.ts',
   },
   transformIgnorePatterns: ['/node_modules/(?!@las-flores/shared/|@las-flores/infra/)'],
   transform: {

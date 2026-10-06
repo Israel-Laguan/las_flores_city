@@ -36,8 +36,8 @@ export interface RetireResult {
 }
 
 /**
- * Repository for flag definitions.
- * All operations are against the planning.flag_definitions table.
+ * Repository for flag definitions (`planning.flag_definitions`).
+ * Implemented by InMemoryFlagRegistry here and PgFlagRegistry in server/src/planning.
  * Only the planning module has access to this repository.
  */
 export interface FlagRegistry {
@@ -72,9 +72,11 @@ export interface FlagRegistry {
    * In practice, retirement is achieved by: (1) removing from active use,
    * (2) preventing new content from referencing it.
    * 
-   * This implementation uses a retired_at column if it exists, or simply
-   * returns success=true as a placeholder for the soft-delete pattern.
-   * 
+   * Retirement is recorded (`retired_at` in `planning.flag_definitions`) and the
+   * flag stops appearing in `exists`, `getAllSlugs` and `listBySemantics`;
+   * `get` and `list` still return it for the audit trail. Retiring twice, or an
+   * unknown slug, returns `success: false` with an `error`.
+   *
    * Note: The SC-202 spec says "never delete" - so we mark as retired.
    */
   retire(slug: string): Promise<RetireResult>;
@@ -89,83 +91,6 @@ export interface FlagRegistry {
    * Useful for validation and dependency analysis.
    */
   getAllSlugs(): Promise<string[]>;
-}
-
-/**
- * Implementation of FlagRegistry against `planning.flag_definitions`.
- *
- * This class exists only to document that the DB-backed half of the contract
- * belongs in `server/src/` — `api/planning` is a pure-TypeScript module with no
- * database access, and an ESLint-enforced boundary test
- * (`server/tests/unit/api-boundary-enforcement.test.ts`) forbids it from
- * importing DB modules. `server/src/` must therefore provide the real
- * implementation via dependency injection.
- *
- * Because of that, every method here throws by design. See
- * `createFlagRegistry()` — which requires the caller to state which
- * implementation it wants — rather than defaulting to this unusable one.
- */
-export class DatabaseFlagRegistry implements FlagRegistry {
-  // Intentionally unimplemented: see the class docblock. A real implementation
-  // holds a pg client and delegates to planning.flag_definitions.
-
-  async create(_input: CreateFlagInput): Promise<FlagDefinitionWithMetadata> {
-    // Placeholder - actual implementation would insert into planning.flag_definitions
-    throw new Error(
-      'DatabaseFlagRegistry.create: Not implemented in api/planning. ' +
-        'This method requires DB access and should be implemented in server/src/.',
-    );
-  }
-
-  async get(_slug: string): Promise<FlagDefinitionWithMetadata | undefined> {
-    // Placeholder
-    throw new Error(
-      'DatabaseFlagRegistry.get: Not implemented in api/planning. ' +
-        'This method requires DB access and should be implemented in server/src/.',
-    );
-  }
-
-  async list(): Promise<FlagDefinitionWithMetadata[]> {
-    // Placeholder
-    throw new Error(
-      'DatabaseFlagRegistry.list: Not implemented in api/planning. ' +
-        'This method requires DB access and should be implemented in server/src/.',
-    );
-  }
-
-  async listBySemantics(
-    _semantics: FlagSemantics,
-  ): Promise<FlagDefinitionWithMetadata[]> {
-    // Placeholder
-    throw new Error(
-      'DatabaseFlagRegistry.listBySemantics: Not implemented in api/planning. ' +
-        'This method requires DB access and should be implemented in server/src/.',
-    );
-  }
-
-  async retire(_slug: string): Promise<RetireResult> {
-    // Placeholder
-    throw new Error(
-      'DatabaseFlagRegistry.retire: Not implemented in api/planning. ' +
-        'This method requires DB access and should be implemented in server/src/.',
-    );
-  }
-
-  async exists(_slug: string): Promise<boolean> {
-    // Placeholder
-    throw new Error(
-      'DatabaseFlagRegistry.exists: Not implemented in api/planning. ' +
-        'This method requires DB access and should be implemented in server/src/.',
-    );
-  }
-
-  async getAllSlugs(): Promise<string[]> {
-    // Placeholder
-    throw new Error(
-      'DatabaseFlagRegistry.getAllSlugs: Not implemented in api/planning. ' +
-        'This method requires DB access and should be implemented in server/src/.',
-    );
-  }
 }
 
 /**
@@ -289,21 +214,14 @@ export class InMemoryFlagRegistry implements FlagRegistry {
 /**
  * Factory function to create a flag registry.
  *
- * `inMemory` is a *required* parameter, deliberately with no default. The
- * previous `inMemory = false` default handed back a `DatabaseFlagRegistry` whose
- * every method throws, so `createFlagRegistry()` produced an object that could
- * not create or read a single flag and only failed once it was used. Making the
- * caller state which implementation it wants surfaces the missing
- * `server/src/` adapter at the call site rather than as a runtime throw.
- *
- * Pass a `FlagRegistry` directly for the DB-backed implementation, which
- * `api/planning` cannot host.
+ * `api/planning` has no database access, so the DB-backed registry lives in
+ * `server/src/planning/PgFlagRegistry.ts` and is passed in here. The caller must
+ * name the backing explicitly — `'memory'` for tests, or a concrete
+ * `FlagRegistry` — so the factory can never hand back a registry whose methods
+ * throw.
  */
-export function createFlagRegistry(inMemory: boolean): FlagRegistry {
-  if (inMemory) {
-    return new InMemoryFlagRegistry();
-  }
-  return new DatabaseFlagRegistry();
+export function createFlagRegistry(backing: 'memory' | FlagRegistry): FlagRegistry {
+  return backing === 'memory' ? new InMemoryFlagRegistry() : backing;
 }
 
 // Re-export types from contracts

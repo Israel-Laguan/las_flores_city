@@ -3,7 +3,6 @@
 
 export type { CreateFlagInput, FlagDefinitionWithMetadata, FlagRegistry, RetireResult } from './flag-registry.js';
 export {
-  DatabaseFlagRegistry,
   InMemoryFlagRegistry,
   createFlagRegistry,
 } from './flag-registry.js';
