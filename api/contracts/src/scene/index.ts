@@ -48,6 +48,19 @@ export {
   isSceneOverlayOpName,
 } from './overlay-vocab.js';
 export { SCENE_OVERLAY_ISSUE_CODES, validateSceneOverlay } from './overlay-validate.js';
+
+export type {
+  ApplyResult,
+  ComposedScene,
+  ConditionalLayer,
+  OverlayLayer,
+  Provenance,
+  ProvenanceSource,
+  ResolvedScene,
+  SceneComposeIssue,
+  SceneComposeIssueCode,
+} from './compose.js';
+export { SCENE_COMPOSE_ISSUE_CODES, applyOverlayOps, toComposedScene } from './compose.js';
 export type {
   ValidateSceneOverlayOptions,
   SceneOverlayIssueCode,

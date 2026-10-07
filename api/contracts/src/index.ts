@@ -108,6 +108,20 @@ export {
   validateSceneOverlay,
 } from './scene/index.js';
 
+// Scene composition engine (SC-303b, shared by planning compile + runtime)
+export type {
+  ApplyResult,
+  ComposedScene,
+  ConditionalLayer,
+  OverlayLayer,
+  Provenance,
+  ProvenanceSource,
+  ResolvedScene,
+  SceneComposeIssue,
+  SceneComposeIssueCode,
+} from './scene/index.js';
+export { SCENE_COMPOSE_ISSUE_CODES, applyOverlayOps, toComposedScene } from './scene/index.js';
+
 // Validation (shared issue format)
 export type { IssueSeverity, ValidationIssue, ValidationResult } from './validation/index.js';
 export { ISSUE_SEVERITIES, createValidationResult, issuePath } from './validation/index.js';

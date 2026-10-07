@@ -61,6 +61,18 @@ export {
   sceneDefContentHash,
 } from './canon/scene-def-repository.js';
 
+// Scene composition (SC-303b)
+export type {
+  ComposedScene,
+  ConditionalLayer,
+  Provenance,
+  ResolvedScene,
+  SceneOverlay,
+  SceneOverlayOp,
+} from '@las-flores/api-contracts';
+export type { ComposeSceneOptions, ComposeSceneResult } from './scene/compose-scene.js';
+export { composeScene, sortOverlays } from './scene/compose-scene.js';
+
 // Threshold events (SC-206)
 export type { ThresholdResult, StatValue, Threshold } from './canon/threshold-events.js';
 export {
