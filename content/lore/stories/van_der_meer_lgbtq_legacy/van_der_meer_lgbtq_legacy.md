@@ -42,7 +42,7 @@ She expressed fears:
 
 ## Peter Jr. and Amor Verdadero
 
-Despite Rafaela's fears, Peter Jr. emerged as a vocal advocate, co-founding "**Amor Verdadero**," an organization championing queer causes and supporting families with LGBTQ+ members.
+Despite Rafaela's fears, Peter Jr. emerged as a vocal young advocate, lending his young voice to "**Amor Verdadero**," an organization championing queer causes and supporting families with LGBTQ+ members.
 
 ## Las Flores' Queer Movement
 

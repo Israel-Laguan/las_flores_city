@@ -1,7 +1,14 @@
 id: f89c0700-c1b6-4eb2-9233-e044cec2ad18
 name: Javier Torres
 title: Vice-Chair, Humanity First
+birth_year: 2035
 description: A dedicated environmental activist and Vice-Chair of the Humanity First council. He played a crucial role in responding to the Great Lithium Leakage and organizing cleanup campaigns.
+physical_description: "Stocky Latino man in his early 40s with sun-damaged warm-brown skin, short curly dark hair with gray streaks, a round face with strong jaw, hooded dark eyes, thick brows, and a faded scar on his right forearm; wears a Humanity First vest and work boots."
+psychological_description: "Passionate and earnest environmental activist with a determined, energetic bearing."
+background_and_role:
+  - Vice-Chair of the Humanity First council
+  - Responded to the Great Lithium Leakage
+  - Organizes cleanup campaigns
 metadata:
   type: human
   role: npc

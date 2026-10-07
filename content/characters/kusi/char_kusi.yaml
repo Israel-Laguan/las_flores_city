@@ -1,7 +1,14 @@
 id: c3000003-e29b-41d4-a716-446655440003
 name: Kusi
 title: Restaurant Regular, Xue's Partner
+birth_year: 2025
 description: An indigenous man who became a fixture at Xue's restaurant. Their unconventional bond evolved over decades into a genuine partnership sealed by marriage in 2059.
+physical_description: "Short, stocky indigenous man in his early 50s with thick black hair, gentle humble deep brown eyes, a broad nose and a subtle half-smile; wears a simple cotton shirt and worn trousers."
+psychological_description: "Gentle, humble and loyal companion."
+background_and_role:
+  - "Indigenous regular at Xue's restaurant"
+  - "Xue's partner, married in 2059"
+  - Bond grew over decades into a genuine partnership
 metadata:
   type: human
   role: npc

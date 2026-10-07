@@ -22,7 +22,7 @@
 | SC-102 | Lint rule forbidding planning↔runtime imports, proven by a fixture violation in CI | S | **Done** |
 | SC-103 | Create `planning` / `runtime` schemas and two DB roles with grants per `architecture.md` §3 | M | **Done** |
 | SC-104 | Extend the existing migration runner to the new schemas, reusing migration-log idempotency | M | **Done** |
-| SC-105 | CI job: typecheck, lint incl. boundary rule, unit tests across three modules | S | **Done** |
+| SC-105 | CI job: typecheck, lint incl. boundary rule, unit tests across three modules | S | **Done** (BF-302 runner + BF-304 tests landed) |
 | SC-106 | Verify the runtime role cannot read or write `planning` — negative test | S | **Done** |
 
 ## SC-E2 — Flags & conditions · F1, F2 · SC-M1
@@ -30,7 +30,7 @@
 | ID | Story | Size | State |
 |---|---|---|---|
 | SC-201 | Flag definition shape in `contracts/flags` — slug, meaning, latching vs. tracking | S | **Done** |
-| SC-202 | Flag registry storage + repository in `planning/canon` | M | **Done** |
+| SC-202 | Flag registry storage + repository in `planning/canon` | M | **Done** (DB adapter `PgFlagRegistry` + migration 097 via BF-303) |
 | SC-203 | Condition grammar type in `contracts/condition` — discrete flag tests only, no continuous values | M | **Done** |
 | SC-204 | Condition evaluator, single implementation, consumed by both modules | M | **Done** |
 | SC-205 | Track which flags are set and read, per entity, as the input to tier-3 | M | **Done** |
@@ -40,15 +40,33 @@
 
 | ID | Story | Size | State |
 |---|---|---|---|
-| SC-301 | Scene entity: location, time, weather, participants, items, dialogue refs | M | **In Progress** |
-| SC-302 | Role slots as a scene attribute — slot id, cast, position | M | **In Progress** |
-| SC-303 | Base + overlay composition with priority ordering | M | **In Progress** |
-| SC-304 | Exclusive vs. additive property resolution; equal-priority conflict fails compile | M | Blocked: SC-301 |
-| SC-305 | Weather: compile resolves `scene.weather` over `district.weather` and persists the resolved value on the artifact; runtime only reads that artifact field before `buildBackgroundHints` (A6 — `spikes/SC-S5-weather-source.md`) | S | Blocked: SC-301, SC-309, F4 |
+| SC-301 | Scene entity (`SceneDef`): location, time, weather, items, dialogue refs — contract, stable JSON, tier-1 `validateScene` (`participants` deferred, see `sprint-03/group-d-scene-contracts.md`) | M | **Done** (S3 Group D; branch `feat/sprint-03-group-d-scene-contracts`) |
+| SC-302 | Role slots as a scene attribute — slot id, cast, position | M | **Done** (S3 Group D) |
+| SC-303 | Base + overlay composition with priority ordering | M | Ready, not started |
+| SC-304 | Exclusive vs. additive property resolution; equal-priority conflict fails compile | M | Planned (S3) — pulled forward |
+| SC-305 | Weather: compile resolves `scene.weather` over `district.weather` and persists the resolved value on the artifact; runtime only reads that artifact field before `buildBackgroundHints` (A6 — `spikes/SC-S5-weather-source.md`) | S | Blocked: SC-301, F4 (SC-309 done) |
 | SC-306 | Personality dialogue pools, shared many-to-many across characters | M | Blocked: SC-301 |
 | SC-307 | Scene dialogue attached to role slots rather than characters | M | Blocked: SC-302 |
 | SC-308 | Specificity ladder resolution — scene > relationship > personality | M | Blocked: SC-306, SC-307 |
-| SC-309 | `districts.weather` column + seed defaults + admin/content tooling to set it (SC-S5 follow-up gap) | S | Ready |
+| SC-309 | *(split in sprint 3 → SC-309a vocabulary, 309b migration 098, 309c tooling)* `districts.weather` column + seed defaults + admin/content tooling to set it (SC-S5 follow-up gap) | S | Done (merged: vocab in `api/contracts/src/weather/`, migration 098, `district` content type + admin editor) |
+
+## Sprint-3 additions (see `sprint-03/`)
+
+| ID | Story | Size | State |
+|---|---|---|---|
+| BF-301 | Status truth + spike-path reconciliation | S | **Done** |
+| BF-302 | Real jest runner for `api/planning`+`api/runtime`, wired into CI | M | **Done** |
+| BF-303 | Flag registry persistence: migration 097 (`retired_at`) + `PgFlagRegistry` (completes SC-202) | M | **Done** |
+| BF-304 | Tests for SC-205/206/runtime flags + SC-204 property test | M | **Done** |
+| BF-305 | SC-S6 harness made real | M | **Done** |
+| SC-310 | Scene/overlay `availability` condition + flag-usage extraction | M | **Done** for scenes (S3 Group D); overlay `availability` lands with E1 |
+| SC-311 | `planning.scene_defs`/`scene_overlays` (migration **101** — 099/100 were taken) + `SceneDefRepository` + in-memory impl + shared contract helper | M | **Done** (S3 Group D; PG adapter is SC-314) |
+| SC-312 | Flag-gated composition (`selectActiveOverlays`) | M | Planned (S3) |
+| SC-313 | Composition property + golden tests | M | Planned (S3) |
+| SC-314 | `PgSceneDefRepository` (oltpPool, single upsert, passes contract suite; batch → SC-406) | S | Planned (S3, trimmed) |
+| SC-315 | One-way importer `content/scenes` → `planning.scene_defs` | M | **Deferred** — moves to the `db` package work (docs/issues/DB-PACKAGE-and-api-migration.md) |
+| SC-316 | Authored overlay fixtures + authoring guide | M | Planned (S3) |
+| SC-317–320 | Integration/permission tests, boundary+parity gates, exit demo, docs+retro | S–M | Planned (S3) |
 
 ## SC-E4 — Compile & publish · F4 · SC-M2
 
@@ -186,6 +204,8 @@ in `spikes/` and the affected story is re-planned rather than quietly re-attempt
 | SC-S8 | Knowledge-ledger shape — what is a `fact_id` (secret granularity), how to author `fact_refs` on nodes, can cheap model infer exposure vs. requiring explicit ledger writes? | 0.5 day | SC-1001, S14 |
 | SC-S9 | Inventory-ledger shape — per-character vs. per-location possession, consumption/loss semantics, projection from `gives_item` | 0.5 day | SC-1004, S15 |
 | SC-S10 | Time-vs-prose cheap-model check — given a dialogue prose sample + TB sum, can `LLM_MODEL` extract claimed elapsed time with usable precision/recall? Measure vs. hand-labeled fixture | 0.5 day | SC-1007, S16 |
+| SC-S12 | Existing `content/scenes` + `scenes` table are location backdrops — map them to the new Scene model or rename (name collision) | 0.5–1 day | SC-301, SC-315 | — **done** (mapping b, `SceneDef`; see spikes/SC-S12)
+| SC-S13 | When are flag-gated overlays applied — compile-time variants vs ordered conditional layers? (SC-303 "resolved at compile" vs per-player flags) | 0.5 day | SC-303b, SC-312, SC-402 | — **done** (hybrid: fold constants, flag-gated overlays as layers; see spikes/SC-S13)
 
 ### Spike follow-ups
 

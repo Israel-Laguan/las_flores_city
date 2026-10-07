@@ -1,12 +1,19 @@
 id: e7f8a9b0-c1d2-4e3f-b4a5-b6c7d8e9f0a1
 name: Diego Ruiz
 title: Airport Cleaner and Aspiring Social Climber
+birth_year: 2051
 description: |
   Diego Ruiz is a 26-year-old cleaner at Aeropuerto Internacional de Las Flores. He grew up in a working-class neighborhood and views his job as a stepping stone up the social ladder. Fit and well-groomed, he carefully styles his medium-length dark hair and dresses neatly to project confidence.
 
   An avid reader of dating psychology and self-improvement books, Diego spends free time at bars putting theory into practice. He believes mastering pickup techniques will attract the stunning partner he imagines, though his romantic pursuits often fall short of his ideals. He seeks a beautiful girlfriend to elevate his status and self-worth, while secretly struggling with inadequacy from his job.
 
   Charming yet naive, Diego remains optimistic that he will break free from his circumstances and find a love matching his aspirations.
+physical_description: Fit 26-year-old Latino man with carefully styled medium-length dark hair and expressive warm brown eyes; dresses neatly in a clean button-down shirt over a plain tee.
+psychological_description: Charming yet naive and optimistic; masks insecurity about his job with confidence while chasing a partner who would raise his status.
+background_and_role:
+  - Cleaner at Aeropuerto Internacional de Las Flores
+  - Grew up in a working-class neighborhood
+  - Studies dating psychology and self-improvement books to climb socially
 metadata:
   type: human
   role: npc

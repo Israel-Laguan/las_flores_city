@@ -46,9 +46,9 @@ She proposed a deal: she would help him rescue Isabela if he promised to join fo
 
 Then Evelyn said something that changed everything.
 
-She mentioned Alex's mother — Rosa García. She told Alex that the respiratory problems that had killed Rosa were caused by the lithium-contaminated groundwater, the direct result of Minera Estrella's negligence.
+She mentioned Alex's mother — Maria García. She told Alex that the respiratory problems that had killed Maria were caused by the lithium-contaminated groundwater, the direct result of Minera Estrella's negligence.
 
-Alex was taken aback. They had never connected their mother's death to the water poisoning. There had been no official acknowledgment, no public record linking the coastal town's health crisis to the mining company. Evelyn's words stirred a newfound anger within them — a cold, specific fury that organized the grief they had carried for years.
+Alex was taken aback. They had never connected their mother's death to the water poisoning. There had been no official acknowledgment, no public record linking the river villages' health crisis to the mining company. Evelyn's words stirred a newfound anger within them — a cold, specific fury that organized the grief they had carried for years.
 
 Alex agreed to Evelyn's terms. Together, they began to plan the rescue mission.
 

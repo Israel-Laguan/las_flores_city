@@ -1,7 +1,14 @@
 id: fb203e26-da8c-4180-96a4-9a59ca6886b0
 name: Maria Lopez
 title: Leader, GreenWatch Las Flores
+birth_year: 2035
 description: A renowned biologist and leader of GreenWatch Las Flores. She leverages scientific data and international networks to pressure authorities into adopting sustainable practices.
+physical_description: "Latina biologist in her early 40s with an athletic-compact, field-ready build and sun-freckled olive skin; oval face, almond eyes, wavy dark hair in a practical ponytail, wearing a GreenWatch vest with a small data tablet."
+psychological_description: "Analytical and composed, with a focused calm gaze and an analytical field-scientist bearing."
+background_and_role:
+  - "Renowned biologist"
+  - "Leader of GreenWatch Las Flores"
+  - "Uses scientific data and international networks to pressure authorities toward sustainable practices"
 metadata:
   type: human
   role: npc

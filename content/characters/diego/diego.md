@@ -2,7 +2,7 @@
 
 > Tags: `#figure` `#mining` `#adventure` `#old_las_flores`
 >
-> **Born:** ~2030s (Las Flores)
+> **Born:** ~2049 (Las Flores)
 > **Role:** Mina Escondida guide, reluctant hero
 > **Status:** Active
 

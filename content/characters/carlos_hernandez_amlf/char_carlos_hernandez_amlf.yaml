@@ -1,7 +1,14 @@
 id: a8b9c0d1-e2f3-4a4b-9c6d-7e8f9a0b1c2d
 name: Carlos Hernandez
 title: Union Leader, AMLF
+birth_year: 2022
 description: Former miner who leads the Asociación de Mineros Las Flores (AMLF). Negotiated improved safety standards and better compensation for mining workers. Distinct from the politician Carlos Hernandez.
+physical_description: "Latino man in his 50s with a broad, heavy build, square face, strong jaw, curly dark hair with gray streaks and a faded mining scar across his left cheek; wears a worn union jacket with an AMLF pin and has broken, callused hands."
+psychological_description: "Seasoned and resolute, with the weatherworn bearing of a veteran labor organizer."
+background_and_role:
+  - "Former miner"
+  - "Leader of the Asociación de Mineros Las Flores (AMLF)"
+  - "Negotiated improved safety standards and compensation for miners"
 metadata:
   type: human
   role: npc

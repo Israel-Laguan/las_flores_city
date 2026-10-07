@@ -5,7 +5,7 @@
 > **Born:** 2043 (Old Las Flores)
 > **Role:** Struggling Artist, Contamination Survivor
 > **Parents:** Alejandro Garcia and Maria Garcia (deceased)
-> **Siblings:** Alex Garcia (older brother), Sofia Garcia (younger sister)
+> **Siblings:** Sofia Garcia (younger sister), Alex Garcia (younger brother)
 > **Status:** Active (as of 2077)
 > **Location:** Alejandro's House
 
@@ -18,7 +18,7 @@
 
 ## Overview
 
-Isabella Garcia is the middle child of the Garcia family. As a survivor of early industrial contamination in Old Las Flores, her life has been defined by chronic respiratory illness. Because of her medical costs and physical limitations, she continues to live with her father, Alejandro Garcia. Though she possesses a deep, expressive artistic talent, she struggles to achieve financial stability or recognition. 
+Isabella Garcia is the eldest child of the Garcia family. As a survivor of early industrial contamination in Old Las Flores, her life has been defined by chronic respiratory illness. Because of her medical costs and physical limitations, she continues to live with her father, Alejandro Garcia. Though she possesses a deep, expressive artistic talent, she struggles to achieve financial stability or recognition. 
 
 ## The River Incident
 
@@ -32,12 +32,12 @@ Isabella's life was permanently altered during her childhood when she accidental
 Unable to afford independent living due to her medical condition, Isabella resides with her father in their modest home. 
 - **The Artistic Struggle:** Isabella copes with her trauma and physical limitations through art. To save on the recurring costs of paints and canvases, she primarily uses an old, battered computer and a cracked drawing tablet—a one-time purchase her family managed years ago. Her digital work is visceral, a raw bleeding onto the screen that is heavily influenced by the toxic legacy of her home district. 
 - **Physical Mediums:** Occasionally, Alejandro manages to procure physical art supplies (scrap canvases, charcoal, or discounted paints) as a treat for her, which she cherishes but rations carefully.
-- **Housing Ariana:** Isabella's niece, Ariana (Sofia's daughter), also lives with them while attending medical school. Isabella helps her father look after the household and Ariana. It is one of her few tethers to family responsibility, though it fuels a deep, agonizing martyr complex.
+- **Housing Ariana:** Isabella's niece, Ariana (Sofia's daughter), also lives with them while she attends school. Isabella helps her father look after the household and Ariana. It is one of her few tethers to family responsibility, though it fuels a deep, agonizing martyr complex.
 
 ## The Tragedy of Luck and the Sisterly Rift
 
 The relationship between Isabella and her younger sister Sofia is deeply strained, driven by Isabella's visceral resentment of her own "bad luck" and consuming self-pity:
-- **The Mirror of Sofia:** Isabella feels that a single breath of poisoned river water unfairly derailed her entire existence. She looks at Sofia—who was born deaf and later crippled in a mining accident—and cannot understand how Sofia has thrived. Sofia's ability to turn her own tragedies into community reverence and financial stability is a crushing mirror for Isabella.
+- **The Mirror of Sofia:** Isabella feels that a single breath of poisoned river water unfairly derailed her entire existence. She looks at Sofia—who was born deaf and later crippled in a mining accident—and cannot understand how Sofia has thrived. Sofia's ability to turn her own tragedies into community reverence and financial stability is a crushing mirror for Isabella. As the eldest, she was supposed to be the one who led and protected the family, yet she cannot fend for herself, while her younger sister married at 18 and has been independent ever since.
 - **Raw Resentment:** Sofia's success makes Isabella feel that her own failure isn't just bad luck, but a personal defect. When Sofia is brought into the picture, Isabella's prickly shell often shatters into raw, tragic self-pity. She viscerally resents rotting in her childhood bedroom, raising her sister's child, while Sofia is celebrated as a "saint" in the streets.
 - **Toxic Dynamic:** This agonizing jealousy has caused Isabella to emotionally distance herself. When they do interact, Isabella is often sharp and mean-spirited, her "hedgehog" defense mechanism going into overdrive to mask her overwhelming feelings of inadequacy and grief for the life she lost.
 
@@ -47,7 +47,7 @@ The relationship between Isabella and her younger sister Sofia is deeply straine
 |---|---|
 | [Alejandro Garcia](../../lore/stories/garcia_family/garcia_family.md) | Father |
 | [Maria Garcia](../../lore/stories/garcia_family/garcia_family.md) | Mother (deceased) |
-| [Alex Garcia](../alex_garcia/alex_garcia.md) | Older brother |
+| [Alex Garcia](../alex_garcia/alex_garcia.md) | Younger brother |
 | [Sofia Garcia](../sofia_garcia/sofia_garcia.md) | Younger sister |
 | [Ariana Garcia](../sofia_garcia/sofia_garcia.md#personal-life) | Niece (Sofia's daughter, lives with Isabella) |
 | [Garcia Family Story](../../lore/stories/garcia_family/garcia_family.md) | Family background |

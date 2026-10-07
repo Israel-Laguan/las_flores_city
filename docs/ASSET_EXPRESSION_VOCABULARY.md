@@ -165,6 +165,33 @@ The chain therefore behaves like:
 | day, node `mood: rain`, `__rain` exists | `__rain` (mood soft-hint still works) |
 | node sets `visual.background` explicitly | that exact backdrop, always |
 
+### Weather tags
+
+Weather is a **closed vocabulary** (`WeatherTag`, `api/contracts/src/weather/`)
+and every tag is also a valid `background_urls[].variant` name:
+
+| Tag | Variant file | Meaning |
+|---|---|---|
+| `clear` | `<slug>__default.png` | No special weather (the default; needs no extra file) |
+| `overcast` | `<slug>__overcast.png` | Heavy cloud, flat light |
+| `rain` | `<slug>__rain.png` | Wet surfaces, diffused light |
+| `storm` | `<slug>__storm.png` | Heavy rain, lightning, wind |
+| `fog` | `<slug>__fog.png` | Low visibility, haze |
+| `smog` | `<slug>__smog.png` | Industrial haze, orange-grey sky |
+| `dust` | `<slug>__dust.png` | Desert dust, sand in the air |
+
+**Weather vs time-of-day.** `day` / `sunset` / `night` and the weather tags are
+*different axes* (what the clock says vs. what the sky is doing) that happen to
+share one variant namespace, so a weather tag may never equal a time-of-day tag.
+Both feed the single ordered hint chain, and **weather outranks time-of-day**:
+a rainy night resolves to `__rain` if it exists, else `__night`, else default.
+
+**Source.** A district carries a default (`districts.weather`, `NOT NULL`,
+default `clear`; optional `weather:` in district YAML). A scene may override it;
+`null` on the scene means *inherit from the district*. The value is snapshotted
+when the scene is compiled and is never read live at runtime. Use
+`validateWeatherTag()` from `@las-flores/api-contracts` to validate a tag.
+
 ### Mood vs environment hint
 
 `mood` values partially overlap with environment tags (`rain`, `night`

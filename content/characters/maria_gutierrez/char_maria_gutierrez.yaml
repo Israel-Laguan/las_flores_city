@@ -1,11 +1,18 @@
 id: c4d5e6f7-a8b9-4c0d-9e2f-3a4b5c6d7e8f
 name: María Gutiérrez
 title: Investigative Journalist, El Informador
+birth_year: 2045
 description: >
   Leftist investigative journalist at El Informador. Wrote "Mayor Hernandez's
   Legacy: A City Choking on its Own Greed," exposing environmental degradation
   and corporate influence. In 2077 (~32) she is fierce, pierced, violet-haired,
   and still treating the byline as a weapon for the barrio and the movement.
+physical_description: Lean, wiry Latina woman of about 32 with electric violet-magenta dyed asymmetrical hair, fierce dark brown eyes, a small scar on her right brow, septum and multiple ear piercings, and thrifted patched layers with a press badge.
+psychological_description: Fierce, dryly funny and quick to test people; treats her byline as a weapon and softens only for sources and comrades.
+background_and_role:
+  - Leftist investigative journalist at El Informador
+  - "Wrote the exposé \"Mayor Hernandez's Legacy: A City Choking on its Own Greed\""
+  - From working-class south Las Flores; covers extraction, permits and LW Group influence
 metadata:
   type: human
   role: npc

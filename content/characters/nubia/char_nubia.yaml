@@ -1,14 +1,22 @@
 id: 74e27d09-4ae2-4617-8adc-2cf9ed9d9e4b
 name: Nubia
-title: Activist, Karla's Partner
-description: "Karla's partner and fellow activist, murdered alongside Karla in February 2053. When Evelyn Ruthenberg discovered their apartment in September 2053, she found that the killers had ransacked the place but missed a small box containing crucial evidence: Karla's studies proving lithium contamination affected the Carinata crops, documentation of Minera Estrella's negligence, and the green pouch of Carinata seeds that had surprisingly resisted the contamination — seeds that would later become central to Dr. Wei Zhang's phytoremediation research."
+title: Activist, Karla's Sister
+birth_year: 2031
+description: "Karla's sister and fellow activist, murdered alongside Karla in February 2053. When Evelyn Ruthenberg discovered their apartment in September 2053, she found that the killers had ransacked the place but missed a small box containing crucial evidence: Karla's studies proving lithium contamination affected the Carinata crops, documentation of Minera Estrella's negligence, and the green pouch of Carinata seeds that had surprisingly resisted the contamination — seeds that would later become central to Dr. Wei Zhang's phytoremediation research."
+physical_description: "Slender, strong Latina woman in her early 20s with thick dark brown hair, warm determined dark brown eyes and small gold hoop earrings, in practical clothing."
+psychological_description: "Warm, gentle and determined; practical and self-sacrificing, a caring witness who put her sister's future ahead of her own studies."
+background_and_role:
+  - "Activist and Karla's younger sister"
+  - "Gave up university to work so the family could pay for Karla's degree"
+  - "Murdered alongside Karla in February 2053"
+  - "Their apartment held evidence of Minera Estrella's contamination"
 metadata:
   type: human
   role: npc
   faction: independent
   personality: caring_witness
   gender: Female
-  background: Karla's partner and fellow activist. Shared an apartment in Las Flores where they stored evidence of Minera Estrella's contamination.
+  background: Karla's sister and fellow activist. Went to work instead of university so the family's savings could pay for Karla's degree, then held a steady job and shared an apartment in Las Flores with Karla, covering most of their expenses once the contamination wiped out Karla's plantation and her investigation cost her income. Their apartment held evidence of Minera Estrella's contamination.
   mannerisms: Karla's dying wish was for Nubia to take the money and flee the city.
   status: Deceased (February 2053)
 lore_path: nubia.md

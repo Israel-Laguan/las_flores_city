@@ -1,22 +1,29 @@
 id: 6afe8de5-f009-4252-bfd9-9a842be237f6
 name: Valentina Rojas
-title: Aspiring Student with Mountain Roots
-description: 20-year-old woman from the Andean Mountains of Las Flores, currently attending college in Central Las Flores. Dreams of becoming an environmental scientist or artist to help her community.
+title: Curious Girl from the Mountains
+birth_year: 2066
+description: 11-year-old girl from the Andean Mountains of Las Flores, living with her parents near a small hotel where they work. Dreams of becoming an environmental scientist or an artist to help her community.
+physical_description: "A small, sturdy girl of about 11 with wavy black hair in two ponytails, sparkling dark brown eyes, a straight nose and a bright smile; wears modest but well-kept clothing with colorful patterns and often carries a drawing of the mountains."
+psychological_description: "An energetic, curious and clever dreamer who spends her free time reading and drawing, asks endless questions about the world beyond her village, and wants to make a difference for her family and community."
+background_and_role:
+  - "11-year-old schoolgirl from the Andean Mountains"
+  - "Daughter of hotel workers; lives near the hotel where her parents work"
+  - "Dreams of becoming an environmental scientist or an artist"
 metadata:
   type: human
   role: npc
   faction: independent
   personality: energetic_curious_dreamer
-  age: 20
-  location: Near hotel in Andean Mountains / Central Las Flores
-  occupation: Student
+  age: 11
+  location: Near hotel in Andean Mountains (visits Central Las Flores)
+  occupation: Schoolchild
   interests:
     - Drawing
     - Storytelling
     - Nature exploration
     - Environmental science
   goals:
-    - Complete education and return to village as professional
+    - Do well in school and one day study at the university
     - Improve living conditions for her family
     - Help parents achieve their dream of an easier life
 lore_path: valentina_rojas.md

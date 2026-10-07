@@ -1,7 +1,15 @@
 id: c3000006-e29b-41d4-a716-446655440006
 name: Ricardo Vega
 title: Former Politician, Store Owner
+birth_year: 2019
 description: A charismatic orator who rose through multiple political parties before being exposed as an opportunist. Now runs a small store in the Industrial District, a cautionary tale of political disloyalty.
+physical_description: "Medium-height Latino man in his late 50s with a slight, sturdy build, thick dark brown hair, expressive dark brown eyes and medium brown skin; wears a rumpled suit and gold watch."
+psychological_description: "Charismatic and opportunistic yet idealistic in manner; a skilled orator whose ambition drove repeated party switches."
+background_and_role:
+  - "Former politician from the Industrial District"
+  - "Moved from the PLF to the SEFP to the TPF"
+  - "Exposed as an opportunist"
+  - "Now runs a small store in the Industrial District"
 metadata:
   type: human
   role: npc

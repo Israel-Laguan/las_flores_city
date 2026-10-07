@@ -1,10 +1,17 @@
 id: b57cfc18-7435-44fa-8ee5-f0490e7bceeb
 name: Alonzo Morales
 title: Airport Bodega Handyman
+birth_year: 2047
 description: |
   Alonzo Morales is a 30-year-old Afro-Latino handyman at a neighborhood bodega near the airport. Raised in a vibrant working-class community, he learned that a repaired shutter, stocked shelf, or hot meal can hold a block together as much as any official program. He maintains the shop, helps customers, handles odd repairs, and turns the bodega into a loud, welcoming crossroads for airport workers, neighbors, and travelers.
 
   Sturdy from years of labor, Alonzo wears work boots, jeans, plain t-shirts, and a battered bodega-logo overshirt. He has short, tightly coiled black hair, warm brown skin, and a booming voice that cuts through traffic noise. Off the clock he loves salsa, reggaeton, cooking for friends, and community events. His dream is to own a bodega that doubles as a neighborhood social and cultural hub.
+physical_description: "30-year-old Afro-Latino man with a sturdy, broad build, short tightly coiled black hair, warm brown skin and a broad friendly face; work boots, jeans and a battered bodega-logo overshirt."
+psychological_description: "Sociable and open-hearted, with a booming voice and a gift for connecting people."
+background_and_role:
+  - "Handyman at a neighborhood bodega near the airport"
+  - "Raised in a working-class Afro-Latino community built on mutual aid"
+  - "Dreams of owning a bodega that serves as a neighborhood social and cultural hub"
 metadata:
   type: human
   role: npc

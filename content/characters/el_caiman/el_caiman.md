@@ -10,14 +10,7 @@
 - Eyes: Dark brown, hooded and calculating, never quite smile
 - Build: Stocky and powerful, thick neck, carries weight like authority
 - Skin: Deep olive, weathered and lined from years underground
-- Distinguishing features: Thick gold chain around neck, heavy rings on fingers, distinctive crocodile-tooth pendant, walks with a deliberate slow stride
-
-## Physical Description
-- Hair: Black, slicked back, slightly receding at the temples
-- Eyes: Dark brown, cold and calculating, heavy-lidded
-- Build: Medium height, stocky and powerful, thick neck
-- Skin: Medium brown, weathered and scarred
-- Distinguishing features: Thick mustache, gold chains around neck, tattoos on forearms, missing left pinky finger, gold-capped front tooth
+- Distinguishing features: Thick gold chain around neck, heavy rings on fingers, distinctive crocodile-tooth pendant, walks with a deliberate slow stride, thick mustache, tattoos on forearms, missing left pinky finger, gold-capped front tooth
 
 ## Overview
 

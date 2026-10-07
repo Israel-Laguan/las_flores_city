@@ -1,7 +1,14 @@
 id: c2000004-e29b-41d4-a716-446655440004
 name: Isabella Garcia
 title: Bitter Artist & Contamination Survivor
+birth_year: 2043
 description: The middle Garcia child who fell into the poisoned river as a child, leaving her with chronic respiratory problems. She copes through painting and writing, but has grown increasingly bitter. Resentful that her younger sister Sofia gained more money and respect in the community despite her deafness, Isabella distanced herself and treats her sister rather poorly, feeling her own ailments held her back.
+physical_description: Latina woman in her mid-30s with a soft, rounded build and slight frailty, pale clear skin with a faint pallor and bluish under-eye circles; has wavy dark hair, deep-set eyes, a faint chemical-burn mark on one wrist, and wears paint-stained casual clothes.
+psychological_description: Resilient but increasingly bitter; copes through painting and writing and resents her younger sister Sofia's standing.
+background_and_role:
+  - Eldest child of the Garcia family; fell into the poisoned river as a child
+  - Lives with chronic respiratory problems
+  - Struggling artist and writer
 metadata:
   type: human
   role: npc

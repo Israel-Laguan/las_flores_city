@@ -1,8 +1,15 @@
 id: e44d32a7-f986-4e55-bdc2-67d4f9b877ac
 name: "Viktor Reyes (Alias: Dr. Marcos Vidal)"
 title: Covert Operative / Medical Cover Asset
+birth_year: 2020
 description: |
   A highly trained corporate assassin employed by LW Group. An ex-military field surgeon, he poses as a responding medical professional at 'incident' scenes to ensure targets do not survive, manipulating the scene under the guise of providing emergency care.
+physical_description: "An Eastern European man in his late 50s with a square face, pale gray very still eyes and meticulously short, significantly graying ash-blond military-style hair. He has a solid build, pale skin and a faint surgical scar along his right jawline, and is always impeccably clean-cut with a pristine medical bag."
+psychological_description: "A cold, meticulous professional who does not hate his targets and finishes the job with terrifying efficiency."
+background_and_role:
+  - "Corporate assassin employed by LW Group"
+  - "Ex-military field surgeon dishonorably discharged after black ops"
+  - "Operates in Las Flores as the licensed physician Dr. Marcos Vidal"
 metadata:
   type: human
   role: npc

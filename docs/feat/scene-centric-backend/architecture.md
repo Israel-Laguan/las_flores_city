@@ -188,6 +188,8 @@ issues, collect all of them in one pass, and never throw strings. Composition co
 | `SCENE_SLOT_DUPLICATE` | error | `role_slots[i].slot_id` | repeats an earlier slot's id |
 | `SCENE_SLOT_CAST_INVALID` | error | `role_slots[i].cast` | not `null` or a valid character slug |
 | `SCENE_SLOT_POSITION_INVALID` | error | `role_slots[i].position` | not `left` / `center` / `right` |
+| `SCENE_AVAILABILITY_INVALID` | error | `availability` | not a valid `ConditionExpr` |
+| `SCENE_AVAILABILITY_UNKNOWN_FLAG` | warning | `availability` | reads a flag outside `knownFlags` (only when `knownFlags` is given) |
 
 ## 7. Initial setup — the concrete steps
 

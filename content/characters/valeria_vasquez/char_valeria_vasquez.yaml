@@ -1,7 +1,14 @@
 id: 04d558a2-5cad-430e-899a-f695396e4860
 name: Valeria Vasquez
 title: Model, Society Face & Status Survivalist
+birth_year: 2040
 description: Surgically exaggerated hourglass doll who was already pretty (Isabella's grudge). Social profile still pays; post-divorce leak left her with a kid, condo fight, melancholy, and dating that dares love while fearing the past will return.
+physical_description: "A tall woman in her mid-to-late 30s with a surgically exaggerated hourglass figure, fuller lips, a refined nose, high cheekbones and long light brown to honey-blonde salon-finished hair. Her eyes remain soft and melancholy beneath glam makeup."
+psychological_description: "A status-conscious survivor who keeps up perfect appearances while carrying melancholy and a fear that her past will return."
+background_and_role:
+  - "Model and society face"
+  - "Divorced single mother fighting to keep her status and condo"
+  - "Cousin of Isabella Vasquez"
 metadata:
   type: human
   role: npc

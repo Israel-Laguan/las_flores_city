@@ -2,7 +2,7 @@
 
 > Tags: `#figure` `#dutch_interest` `#mining` `#family_patriarch`
 >
-> **Born:** ~1995 (Netherlands)
+> **Born:** 1992 (Netherlands)
 > **Role:** CEO of Van der Meer Mining, Patriarch of the Van der Meer family
 > **Spouse:** Wang Mei Li (Chinese-Latin American businesswoman)
 > **Children of the marriage:** Xiu Li van der Meer Krol, Dong van der Meer · **Illegitimate son:** Liam van der Meer

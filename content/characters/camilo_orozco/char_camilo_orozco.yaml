@@ -1,7 +1,14 @@
 id: a1b2c3d4-e5f6-7890-abcd-123456789abc
 name: Camilo Orozco
 title: The Dead Friend
+birth_year: 2059
 description: Camilo was Graciela's (Sofia's) closest friend in her hometown. He openly loved superheroes despite ridicule and genuinely believed people could help each other. He was killed in a violent attack, serving as the catalyst for Sofia's vigilante phase and her eventual migration to Las Flores.
+physical_description: "Teenage South American boy of about 18 with messy dark brown hair, warm brown eyes and an open, friendly face with natural asymmetry; wears a faded vintage superhero t-shirt under an open flannel shirt and carries a backpack with comic books."
+psychological_description: "Optimistic dreamer; sincere and trusting, openly loving superheroes and believing people can help each other."
+background_and_role:
+  - "Closest friend of Graciela (Sofia) in her hometown"
+  - "Killed in a violent attack that sparked Sofia's vigilante phase"
+  - "Catalyst for her migration to Las Flores"
 metadata:
   type: human
   role: npc

@@ -1,7 +1,14 @@
 id: c2000011-e29b-41d4-a716-446655440011
 name: Isabella Vargas
 title: Architecture and Urban Studies Student
+birth_year: 2054
 description: An architecture and urban studies student in the same cohort as Alex Garcia, with a specialization in pattern recognition and intelligence analysis. Her grandfather lives alone in Las Flores's eastern district, and an uncle died under circumstances similar to the Las Estrellas victims — a death officially ruled an accident but never satisfactorily explained. That unresolved loss drove her to join Alex's investigation. She built a cross-referenced intelligence operation from public records, tracked the killer across multiple jurisdictions, and led the City Hall archive break-in that uncovered the paper trail connecting the building owners to Minera Estrella's cover-up. Cold-eyed where Alex was warm-hearted, they balanced each other precisely.
+physical_description: "Slender 23-year-old Latin American woman with dark expressive eyes, a straight nose, a defined jaw and dark hair; dressed in a fitted blazer over a casual top, with a calm, composed bearing."
+psychological_description: "Analytical and determined; her unresolved grief over an uncle's unexplained death drives her cold-eyed pursuit of patterns and answers."
+background_and_role:
+  - "Architecture and urban studies student in Alex Garcia's cohort"
+  - Intelligence analyst specializing in pattern recognition
+  - Led the City Hall archive break-in in the Las Estrellas investigation
 metadata:
   type: human
   role: npc

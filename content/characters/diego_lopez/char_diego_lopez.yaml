@@ -1,7 +1,14 @@
 id: a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d
 name: Diego López
 title: Business & Economics Editor, El Informador
+birth_year: 2032
 description: Covers economic development and investment in Las Flores. Began his career covering local business news before joining El Informador.
+physical_description: Latino man in his 40s with a stocky, comfortable build, olive-tan skin, wavy dark hair threaded with gray, thick brows and narrow appraising eyes; wears business-casual editor attire with reading glasses looped on a chain.
+psychological_description: A business journalist; appraising and methodical, focused on economic development and investment in Las Flores.
+background_and_role:
+  - Business & Economics Editor at El Informador
+  - Began his career covering local business news
+  - Covers economic development and investment in Las Flores
 metadata:
   type: human
   role: npc

@@ -1,7 +1,14 @@
 id: c1000008-e29b-41d4-a716-44665544000e
 name: Míngzé Luo
 title: President, Minera Estrella
+birth_year: 2015
 description: President of Minera Estrella during the Great Lithium Leak. Denied corporate responsibility at trial and helped orchestrate the cover-up.
+physical_description: "Medium-height Chinese man in his early 60s, slightly overweight, with cold, evasive dark brown eyes, thin black hair and gold-rimmed glasses, always in tailored suits."
+psychological_description: "Cold and evasive with a practiced corporate smile, he denies responsibility and values measured stillness."
+background_and_role:
+  - "President of Minera Estrella during the Great Lithium Leak"
+  - "Denied corporate responsibility at trial"
+  - "Helped execute the cover-up alongside Qiu Bo and Liu Xiaoping"
 metadata:
   type: human
   role: npc

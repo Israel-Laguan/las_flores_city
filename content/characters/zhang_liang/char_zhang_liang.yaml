@@ -1,10 +1,17 @@
 id: 8292fd66-e69a-4444-ae6c-4ca506381d6a
 name: Zhang Liang
 title: LW Group Investor & Elder Shadow Advisor
+birth_year: 1999
 description: >
   Long-time LW Group investor (~78 in 2077) who used capital leverage to delay
   the 2049 containment upgrade, then quietly facilitated cover-up money and
   counsel. Semi-retired; does light shadow work advising younger LW talent.
+physical_description: "An elderly Chinese man of about 78 with a soft-rounded frame, thin gray-white receding hair, deep-set steady eyes and a small mole on his right cheek. He wears muted tailored jackets and carries a slim tablet."
+psychological_description: "A prudent strategist with cold intelligence and a settled, deliberate manner."
+background_and_role:
+  - "Long-time LW Group investor, semi-retired"
+  - "Used capital leverage to delay the 2049 containment upgrade"
+  - "Quietly facilitated cover-up money and counsel; mentors younger LW talent"
 metadata:
   type: human
   role: npc

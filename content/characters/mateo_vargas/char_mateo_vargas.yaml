@@ -1,7 +1,14 @@
 id: a1b2c3d4-e5f6-7890-abcd-ef1234567897
 name: Mateo Vargas
 title: Corrupt Customs Guard
+birth_year: 2043
 description: Modest background in Las Flores, rose to prominence in customs division at Aeropuerto Internacional de Las Flores. Serves as customs guard who exploits tourists through bribes and confiscations, bends rules for personal gain. Has polished, professional demeanor with well-tailored uniform, neatly combed dark hair, chiseled jawline, sharp features, and piercing eyes.
+physical_description: "Medium-height 34-year-old Latin man with a solid frame, dark expressive eyes, a defined jaw and dark hair, with a polished, professional look in a well-tailored uniform."
+psychological_description: "Charming and suave on the surface but manipulative and vengeful underneath, driven by deep insecurity and a need to assert power over others."
+background_and_role:
+  - "Customs guard at Aeropuerto Internacional de Las Flores"
+  - "Rose from a modest background in Las Flores"
+  - "Exploits tourists through bribes and confiscations"
 metadata:
   type: human
   role: npc

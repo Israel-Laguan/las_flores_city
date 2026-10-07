@@ -1,11 +1,18 @@
 id: c1000016-e29b-41d4-a716-446655440016
 name: Yifan Wang
 title: President, UDV Chinese Students Association
+birth_year: 2055
 description: >
   Beijing-born (2055) International Relations student at Universidad del Valle.
   Age 22 in 2077. Charismatic president of the UDV Chinese Students Association;
   ambitious nationalist aiming for Chinese foreign service. Operates in the
   Dragon Phoenix / Chinese-community orbit on campus.
+physical_description: "A lean, average-height Chinese man of 22 with a neat modern black haircut, sharp dark brown eyes and fair, clear skin. He wears trendy-but-professional layers with a sport earbud, and has a confident posture."
+psychological_description: "A charismatic and ambitious nationalist who can turn a smile into a debate face mid-sentence."
+background_and_role:
+  - "International Relations student at Universidad del Valle"
+  - "President of the UDV Chinese Students Association"
+  - "Aims for the Chinese foreign service; in the Dragon Phoenix orbit"
 metadata:
   type: human
   role: npc

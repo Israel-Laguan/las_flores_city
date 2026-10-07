@@ -1,7 +1,14 @@
 id: c2000001-e29b-41d4-a716-446655440001
 name: Alejandro Garcia
 title: Flower Farmer, Construction Worker
+birth_year: 2008
 description: A hardworking father who lost his wife to lithium contamination. He tends the Garcia family's poisoned flower fields, then takes construction jobs to support his three children.
+physical_description: "Latino man in his early 40s with a stocky build, sun-damaged brown skin, thick curly dark hair graying at the temples and a square face with hooded dark eyes; worn work clothes with sleeves rolled, a sweat-stained cap and callused hands with faint chemical stains."
+psychological_description: "Resilient and hardworking, a provider devoted to his children."
+background_and_role:
+  - "Widowed father of three who lost his wife to lithium contamination"
+  - "Tends the family's poisoned flower fields"
+  - "Takes construction jobs to support his children"
 metadata:
   type: human
   role: npc

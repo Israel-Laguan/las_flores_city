@@ -1,6 +1,7 @@
 id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
 name: Wen Zhao
 title: Business Student, Secret Libertine
+birth_year: 2055
 description: |
   Wen Zhao is a plain-looking young Chinese woman in her early 20s, daughter
   of strict Chinese immigrant parents in the northern district. She and Layla
@@ -14,6 +15,12 @@ description: |
   wants a boyfriend the way someone wants proof of concept — not love, just
   evidence that the plain girl can win.
 
+physical_description: "A plain-looking young Chinese woman in her early 20s with straight black hair pulled into a tight high ponytail, a long narrow angular face and a thin frame. She wears heavy eyeliner and aggressively provocative clothing, and forces a confident posture."
+psychological_description: "A manipulative thrill-seeker whose provocative rebellion is compensatory, driven by a need to prove she can be desired."
+background_and_role:
+  - "University business student"
+  - "Daughter of strict Chinese immigrant parents in the northern district"
+  - "Layla's confidante turned rival"
 metadata:
   type: human
   role: npc

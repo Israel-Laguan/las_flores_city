@@ -1,7 +1,14 @@
 id: c3000005-e29b-41d4-a716-446655440005
 name: Diego
 title: Mina Escondida Guide
+birth_year: 2049
 description: A young local who guided tourists into the abandoned Mina Escondida. After surviving a cave-in, his report of silver in the deep tunnels ignited a new wave of treasure hunters.
+physical_description: Young Latino man in his late 20s, medium height and lean, with short tousled dusty dark brown hair, warm alert brown eyes, sun-browned skin, a thin scar across his left eyebrow and calloused hands; wears rugged outdoor gear and a worn headlamp around his neck.
+psychological_description: A reluctant hero; resourceful and alert, shaped by the cave-in he survived and the notoriety that followed.
+background_and_role:
+  - Local guide for adventure tourists at the abandoned Mina Escondida
+  - Survived a cave-in in the mine's deep tunnels
+  - His report of silver sparked a new wave of treasure hunters
 metadata:
   type: human
   role: npc

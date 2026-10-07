@@ -12,7 +12,7 @@ Nadia Al-Farsi is a highly skilled lawyer and negotiator working for a powerful 
 
 Fluent in Arabic, English, and Spanish, Nadia is known for her sharp intellect, her ability to navigate complex legal and political landscapes, and her outwardly unwavering loyalty to her employers. However, beneath her polished corporate exterior, she is secretly investigating the rumors of illegal activities by some of the mining companies, including human rights violations.
 
-**Age (2077):** ~adult
+**Age (2077):** ~40 (b. ~2037)
 **District:** Las Flores
 **Role:** Corporate Negotiator
 **Descendancy:** Middle Eastern

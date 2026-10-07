@@ -1,10 +1,18 @@
 id: c9d0e1f2-a3b4-4c5d-ae7f-8a9b0c1d2e3f
 name: Anna van der Meer
 title: Van der Meer CEO & Social Advocate
+birth_year: 2041
 description: |
   Anna van der Meer is the only daughter of Jan and Maria van der Meer, born into Old Las Flores privilege but shaped by a fierce sense of social responsibility. Independent, outspoken, and politically astute, she first gained attention through environmental protests against Van der Meer mining operations and socially conscious photography on inequality.
 
-  After Jan's death in 2060, Anna became CEO of Van der Meer Industries and pushed modernization, lower environmental impact, and better worker conditions despite board resistance. She fiercely supported her brother Peter after he came out, co-founded an LGBTQ+ youth nonprofit, cared for Maria as dementia worsened after 2071, and won a Las Flores City Council seat in 2078 as a progressive advocate.
+  After Jan's death in 2060, Anna became CEO of Van der Meer Industries and pushed modernization, lower environmental impact, and better worker conditions despite board resistance. She fiercely supported her brother Peter after he came out, co-founded the LGBTQ+ youth nonprofit Amor Verdadero with Peter, cared for Maria as dementia worsened after 2071, and won a Las Flores City Council seat in 2078 as a progressive advocate.
+physical_description: "Dutch woman of 36 with an athletic, toned build, dark brown hair in a practical but elegant style, deep blue eyes and an oval face with a warm, intelligent expression; typically wears a tailored charcoal suit with a white shirt."
+psychological_description: "Empathetic and pragmatic; independent, outspoken and politically astute, driven by a fierce sense of social responsibility."
+background_and_role:
+  - "Only daughter of Jan and Maria van der Meer"
+  - "CEO of Van der Meer Industries since Jan's death in 2060"
+  - "Social advocate for environmental protection, worker conditions and LGBTQ+ youth"
+  - "Wins a Las Flores City Council seat in 2078"
 metadata:
   type: human
   role: npc

@@ -1,12 +1,19 @@
 id: d3e192f1-15ed-4bb8-988e-10c1d85a0eae
 name: Juan Carlos Pérez
 title: Community Organizer & Activist, Afro-Latino Rights Advocate
+birth_year: 2032
 description: |
   Juan Carlos Pérez is a 45-year-old community organizer and activist born and raised in Old Las Flores. He has always been passionate about empowering his community, and after witnessing the marginalization of Afro-Latinos in politics and society, he became a vocal advocate for their rights.
 
   His work with COFAVIC exposed him to the intersections of racial injustice, environmental degradation, and political corruption. He is a natural leader who inspires others through his charisma and tenacity, driven by a deep empathy for his fellow Afro-Latinos and marginalized communities.
 
   He seeks to bridge the gap between Las Flores' diverse communities, fostering unity around shared goals of environmental restoration and social equity. He supports Yara Rossi's restoration efforts, seeing them as an opportunity to revitalize Old Las Flores and create jobs for its residents.
+physical_description: "Tall, broad-shouldered Afro-Latino man in his mid-40s with a square jaw, intense passionate dark brown eyes and cropped black hair; stands with squared shoulders and an unwavering gaze in a plain t-shirt and jacket."
+psychological_description: "Charismatic and tenacious natural leader driven by deep empathy for Afro-Latinos and marginalized communities."
+background_and_role:
+  - Community organizer and Afro-Latino rights advocate
+  - Born and raised in Old Las Flores
+  - "Works with COFAVIC; supports Yara Rossi's restoration efforts"
 metadata:
   type: human
   role: npc

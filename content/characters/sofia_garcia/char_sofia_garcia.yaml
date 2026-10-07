@@ -1,8 +1,16 @@
 id: c2000005-e29b-41d4-a716-446655440005
 name: Sofia Garcia
 title: Former Miner, Community Figure
+birth_year: 2045
 description: |
-  Sofia Garcia is a former miner and community figure in Old Las Flores. Sister of Alex Garcia, she walks with a cane and lip-reads to communicate. Born deaf, she developed exceptional lip-reading and visual observation skills. After a mining accident in 2063 left her with a crushed leg, she became homeless but remains a symbol of resilience in the community. Her daughter Ariana studies to become a doctor.
+  Sofia Garcia is a former miner and community figure in Old Las Flores. Sister of Alex Garcia, she walks with a cane and lip-reads to communicate. Born deaf, she developed exceptional lip-reading and visual observation skills. After a mining accident in 2063 left her with a crushed leg, she became homeless but remains a symbol of resilience in the community. Her young daughter Ariana, a schoolgirl, dreams of becoming a doctor.
+physical_description: "Thin, gaunt Latina woman with tangled dark brown hair, observant dark brown eyes and weathered light-brown skin; walks with a cane due to a twisted leg and wears worn clothing and a small gold locket."
+psychological_description: "Resilient and observant, relying on lip-reading and visual attention to read people."
+background_and_role:
+  - "Former miner and community figure in Old Las Flores"
+  - "Born deaf; sister of Alex Garcia"
+  - "Crushed leg in a 2063 mining accident"
+  - "Mother of Ariana, a schoolgirl who dreams of becoming a doctor"
 metadata:
   type: human
   role: npc

@@ -1,8 +1,15 @@
 id: 6a8b13c0-7e61-419b-98f5-b772e0c238fa
 name: Ana Villanueva
 title: Independent Shadow Journalist (Former Student)
+birth_year: 2050
 description: |
   A former sociology student drawn into a corporate conspiracy years ago after a deadly car chase. After navigating police betrayals and the fallout of the Evelyn Ruthenberg events, she dropped out of university to become a "shadow journalist." In 2077, she operates entirely off the grid, publishing under pseudonyms and feeding airtight evidence to trusted mentors while remaining invisible to corporate retaliation.
+physical_description: "27-year-old Latina woman, lean and unassuming with clear warm olive skin, straight dark brown hair, sharp watchful almond eyes and an oval face; jeans, an oversized sweater and a messenger bag."
+psychological_description: "Cautious, observant and brave, deliberately inconspicuous to stay invisible to retaliation."
+background_and_role:
+  - "Former sociology and journalism student who dropped out of university"
+  - "Independent shadow journalist publishing under pseudonyms"
+  - "Operates off the grid, feeding airtight evidence to trusted mentors"
 metadata:
   type: human
   role: npc

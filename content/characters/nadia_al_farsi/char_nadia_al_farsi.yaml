@@ -1,7 +1,14 @@
 id: 3ab2f6a9-8d14-41b1-b9cf-2b81d77a8459
 name: Nadia Al-Farsi
 title: Corporate Negotiator
+birth_year: 2037
 description: A high-level negotiator working alongside Yī Sāng to manage crises and control the public narrative during protests.
+physical_description: "Middle Eastern woman in her 30s-40s with an athletic-compact build, clear olive skin, an oval face, wavy dark hair styled back and a measured, appraising gaze, in polished corporate attire."
+psychological_description: "Persuasive and composed, with sharp intellect and outwardly unwavering loyalty to her employers."
+background_and_role:
+  - "Lawyer and negotiator for a Middle Eastern investment group partnered with LW Group"
+  - "Works alongside Yī Sāng managing crises and the public narrative during protests"
+  - "Fluent in Arabic, English and Spanish"
 metadata:
   type: human
   role: npc

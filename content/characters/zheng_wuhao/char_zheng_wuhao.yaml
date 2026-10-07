@@ -1,11 +1,18 @@
 id: c1000005-e29b-41d4-a716-446655440005
 name: Zheng Wuhao
 title: Retired Facility Supervisor, Minera Estrella
+birth_year: 2000
 description: >
   First responder to the Great Lithium Leak who downplayed the severity in
   initial reports, then repeated the rainfall story as a defense witness in
   2055. Long retired by 2077 (~77); a conflicted living witness the player can
   crack with patience and evidence.
+physical_description: "An elderly Chinese man of about 77 with thin white and steel-gray short hair, tired guarded dark brown eyes, deeply weathered fair skin and liver spots. His once-stocky frame has softened with age, and he wears practical, retirement-style workwear with a sport earbud."
+psychological_description: "A conflicted, wary man who downplayed the disaster he witnessed and can be cracked with patience and evidence."
+background_and_role:
+  - "Retired facility supervisor at Minera Estrella"
+  - "First responder to the Great Lithium Leak who downplayed its severity"
+  - "Repeated the rainfall story as a defense witness in 2055"
 metadata:
   type: human
   role: npc

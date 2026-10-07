@@ -311,14 +311,13 @@ cinematic, ultra-detailed, 8k
 ## Lore Connections
 
 ### Connected Files
-- [Alex Garcia](alex.md) — Group leader, visionary
-- [Miguel Jhonson](miguel_jhonson.md) — Logistics expert, practical anchor
-- [Carlos Lacan](carlos_lacan.md) — Technical expert, emotional heart
-- [Ana Kim](ana_kim.md) — Early investigator, conscientious objector
-- [Evelyn Ruthenberg](evelyn_ruthenberg.md) — Whistleblower, shadow network leader
-- [The 2077 Core Group](gdd_friends.md) — Complete group overview
-- [Las Estrellas Investigation](../stories/retirement_complex_murders.md) — The case they worked on
-- [Alex & Evelyn: The 2077 Endgame](../stories/alex_and_evelyn_2077.md) — Climax of the movement
+- [Alex Garcia](../alex_garcia/alex_garcia.md) — Group leader, visionary
+- [Miguel Jhonson](../miguel_jhonson/miguel_jhonson.md) — Logistics expert, practical anchor
+- [Carlos Lacan](../carlos_lacan/carlos_lacan.md) — Technical expert, emotional heart
+- [Ana Kim](../ana_kim/ana_kim.md) — Early investigator, conscientious objector
+- [Evelyn Ruthenberg](../evelyn_ruthenberg/evelyn_ruthenberg.md) — Whistleblower, shadow network leader
+- [Las Estrellas Investigation](../../lore/stories/retirement_complex_murders/retirement_complex_murders.md) — The case they worked on
+- [Alex & Evelyn: The 2077 Endgame](../../lore/stories/alex_and_evelyn_2077/alex_and_evelyn_2077.md) — Climax of the movement
 
 ### Key Events
 - Joining the investigation at café

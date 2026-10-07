@@ -1,15 +1,15 @@
 # Peter van der Meer Jr.
 
-**Title:** LGBTQ+ Advocate & Van der Meer Heir
+**Title:** Young LGBTQ+ Advocate & Van der Meer Heir
 
 **Physical Description:**
 - Distinctive appearance fitting their background
 
 **Description (full):**
 
-Son of Peter van der Meer and Rafaela. Co-founded Amor Verdadero, an organization championing queer causes. A vocal advocate for LGBTQ+ rights in Las Flores.
+Son of Peter van der Meer and Rafaela. A teenage heir and the youngest public face of Amor Verdadero, an organization championing queer causes. A young, outspoken LGBTQ+ advocate in Las Flores who aspires to study law.
 
-**Age (2077):** ~adult
+**Age (2077):** ~14
 **District:** Las Flores
-**Role:** LGBTQ+ Advocate & Van der Meer Heir
+**Role:** Young LGBTQ+ Advocate & Van der Meer Heir
 **Descendancy:** v

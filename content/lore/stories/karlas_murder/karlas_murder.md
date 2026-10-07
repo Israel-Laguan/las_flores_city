@@ -34,7 +34,7 @@ She knows she should just keep walking, like everyone else. But something inside
 
 ## The Dying Whistleblower
 
-In the grimy alley, Evelyn finds a young woman — **Karla**, approximately 24 years old — huddled against the grimy brick wall. Her once-vibrant yellow dress is stained crimson. Her dark hair, styled in neat braids, is matted with blood and sweat, framing a face etched with pain yet somehow still radiating defiance. The metallic scent of blood fills the air, thick and cloying.
+In the grimy alley, Evelyn finds a young woman — **Karla**, approximately 28 years old — huddled against the grimy brick wall. Her once-vibrant yellow dress is stained crimson. Her dark hair, styled in neat braids, is matted with blood and sweat, framing a face etched with pain yet somehow still radiating defiance. The metallic scent of blood fills the air, thick and cloying.
 
 Karla has been shot and severely slashed with a long knife, her right arm severed in several places.
 
@@ -84,8 +84,8 @@ Inside, she finds:
 - A **small wooden box** that the killers didn't notice — unlocked by the key Karla gave her
 
 Inside the box:
-- A copy of **Cecilia Pérez's suppressed study** showing lithium resistance a year before the public disaster
-- **Internal emails** between Minera Estrella executives discussing structural issues before the leak
+- The original **preprint of Cecilia Pérez's Carinata study** (2049) showing lithium resistance three years before the public disaster
+- **Karla's full field notes**, confirming Cecilia's findings on her own plantation
 - A handful of **Carinata seeds** from the green pouch — plants that surprisingly resisted the contamination
 - **Bills and documents** showing they had lived in the apartment for a long time
 

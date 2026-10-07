@@ -5,7 +5,7 @@
 > **Born:** 2045 (Old Las Flores)
 > **Role:** Former miner, community figure
 > **Parents:** Alejandro Garcia and Maria Garcia (deceased)
-> **Siblings:** Alex Garcia (older brother), Isabella Garcia (older sister)
+> **Siblings:** Isabella Garcia (older sister), Alex Garcia (younger brother)
 > **Status:** Active (as of 2077)
 > **Nickname:** "Sofi" (used affectionately by the community)
 
@@ -18,7 +18,7 @@
 
 ## Overview
 
-Sofia Garcia, known affectionately as "Sofi" by the people of Old Las Flores, is the youngest daughter of the Garcia family who worked in the flower fields and later in the mines. Her life story represents the human cost of industrial exploitation and environmental contamination in Las Flores.
+Sofia Garcia, known affectionately as "Sofi" by the people of Old Las Flores, is the middle child of the Garcia family who worked in the flower fields and later in the mines. Her life story represents the human cost of industrial exploitation and environmental contamination in Las Flores.
 
 ## Early Life
 
@@ -57,8 +57,8 @@ Unable to work and with her savings depleted by medical bills, Sofia's life took
 
 Sofia's greatest pride and motivation is her daughter:
 
-- **Ariana Garcia** - Lives with Sofia's sister in the City District
-- **Education:** Studying to become a doctor
+- **Ariana Garcia** - Lives with Sofia's sister Isabella and their father Alejandro at Alejandro's House
+- **Education:** A bright schoolgirl (about 12–13) who dreams of becoming a doctor
 - **Hope:** Sofia's sacrifices are giving Ariana a better future
 
 **Rift with Isabella:**
@@ -78,7 +78,7 @@ Despite her hardships, Sofia has become a symbol of resilience in Old Las Flores
 |---|---|
 | [Alejandro Garcia](../../lore/stories/garcia_family/garcia_family.md) | Father |
 | [Maria Garcia](../../lore/stories/garcia_family/garcia_family.md) | Mother (deceased) |
-| [Alex Garcia](../../lore/stories/garcia_family/garcia_family.md) | Older brother |
+| [Alex Garcia](../alex_garcia/alex_garcia.md) | Younger brother |
 | [Isabella Garcia](../../lore/stories/garcia_family/garcia_family.md) | Older sister |
 | [Ariana Garcia](#personal-life) | Daughter |
 | [Garcia Family Story](../../lore/stories/garcia_family/garcia_family.md) | Family background |

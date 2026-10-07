@@ -1,7 +1,14 @@
 id: c3000002-e29b-41d4-a716-44665544000e
 name: Jianhua
 title: Engineer, CLM
+birth_year: 2033
 description: A Chinese engineer who arrived in Las Flores with the CLM pioneers. He never learned Spanish but became obsessed with indigenous community festivals, drawn by the drums, colors, and scents that reminded him of his rural Chinese youth.
+physical_description: "Chinese engineer in his 40s with a slightly stooped, wiry build, short thinning gray-black hair, warm distant dark brown eyes and calloused hands; wears a simple cotton shirt and a worn canvas jacket."
+psychological_description: "Culturally disconnected yet quietly nostalgic; contemplative and drawn to the drums, colors and scents of festivals that recall his rural Chinese youth."
+background_and_role:
+  - Engineer at CLM
+  - Arrived in Las Flores with the CLM pioneers
+  - Never learned Spanish; follows indigenous community festivals
 metadata:
   type: human
   role: npc

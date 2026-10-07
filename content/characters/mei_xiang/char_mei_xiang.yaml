@@ -1,7 +1,14 @@
 id: c3000014-e29b-41d4-a716-446655440014
 name: Mei Xiang
 title: Financial Negotiator, CLM
+birth_year: 2015
 description: The lead financial negotiator for China Lithium & Metals during the 2024-2025 concession negotiations. Crafted the financial packages and community investments that secured CLM's dominant position in Las Flores.
+physical_description: "Slender Chinese woman in her early 60s with sharp, calculating dark brown eyes and a jet-black bob, dressed in tailored suits."
+psychological_description: "Shrewd and composed, she rarely betrays emotion and negotiates with quiet calculation."
+background_and_role:
+  - "Lead financial negotiator for China Lithium & Metals"
+  - "Led the 2024-2025 concession negotiations"
+  - "Crafted the financial packages and community investments that secured CLM's position in Las Flores"
 metadata:
   type: human
   role: npc

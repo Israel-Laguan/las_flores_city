@@ -1,3 +1,5 @@
+> **Historical.** The live task list is [sprint-03.md](sprint-03.md) (Group A: [sprint-03/group-a-hygiene-bugfixes.md](sprint-03/group-a-hygiene-bugfixes.md)). This file is kept for context only.
+
 # SC-M1 Closeout + SC-M2 Kickoff — Task Instructions
 
 **Purpose:** This file documents every verified gap between the `docs/feat/scene-centric-backend/` plan and the actual code on branch `feat/sc-106-negative`, with concrete steps and prompts to close them. The docs previously said "Status: planning complete, nothing built"; the code has delivered SC-M1 (Sprint 1) but left the api/ modules as stubs, the spike harnesses uncommitted, and all of Sprint 2+ untouched.
@@ -38,7 +40,7 @@ reproducible p50/p95 measurement A1 promised is not done.
 
 **Files to create:**
 
-1. `server/scripts/spike_sc_s1_project_entity_edges.mjs` — port from `spike/sc-s1-entity-edges-projection` branch. Projects `entity_edges(from_type, from_slug, edge_kind, to_type, to_slug, attrs jsonb)` from `content/` (194 characters, 59 dialogues, 18 scenes, 1 mission, 13 districts). Drops/recreates scratch schema `spike_sc_s1` each run. Reports row count, edge_kind distribution, index size (3 indexes: 328 kB total at current volume).
+1. `server/scripts/spikes/entity-edges-projection.mjs` — port from `spike/sc-s1-entity-edges-projection` branch. Projects `entity_edges(from_type, from_slug, edge_kind, to_type, to_slug, attrs jsonb)` from `content/` (194 characters, 59 dialogues, 18 scenes, 1 mission, 13 districts). Drops/recreates scratch schema `spike_sc_s1` each run. Reports row count, edge_kind distribution, index size (3 indexes: 328 kB total at current volume).
 
 2. `server/scripts/spike_sc_s2_run.mjs` + `server/scripts/spike_sc_s2_duplicate.mjs` + the recursive CTE SQL (inline or committed `.sql`) — port from `spike/sc-s2-reachability-cost` branch. Builds on S1's table. Runs reachability query 6x (1 warmup + 5 timed via `process.hrtime.bigint()`). Duplicates rows with `::genN` suffix for 10x test.
 
@@ -46,7 +48,7 @@ reproducible p50/p95 measurement A1 promised is not done.
 
 4. `server/scripts/spike_sc_s4_alias_detection.mjs` + `server/scripts/spike_sc_s4_analysis.sql` — port from `spike/sc-s4-pg-trgm-alias-detection` branch. 12 hand-labelled pairs from content, threshold sweep, ILIKE baseline.
 
-5. `server/scripts/spike_sc_s6_serving_baseline.ts` — port from the commit message reference. **Committed as a stub only** — `main()` throws and the process exits 1; the seeding, measurement, paired differencing, and cleanup steps are not implemented. Should measure p50/p95 for `GET /dialogue/active` and `resolveChunkSpeakers` in isolation, 3 warmup + 30 timed iterations, per-iteration paired differencing.
+5. `server/scripts/spikes/serving-baseline.ts` — port from the commit message reference. **Committed as a stub only** — `main()` throws and the process exits 1; the seeding, measurement, paired differencing, and cleanup steps are not implemented. Should measure p50/p95 for `GET /dialogue/active` and `resolveChunkSpeakers` in isolation, 3 warmup + 30 timed iterations, per-iteration paired differencing.
 
 **Prompt:**
 

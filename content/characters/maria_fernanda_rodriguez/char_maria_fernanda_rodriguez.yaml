@@ -1,7 +1,13 @@
 id: 64ed5f05-16b8-4195-aa04-43c5776bc3d8
 name: María Fernanda Rodriguez
 title: Prominent News Anchor, Investigative Journalist
+birth_year: 2029
 description: One of the most influential voices in Las Flores, María Fernanda is a fearless investigative journalist and news anchor dedicated to uncovering corruption. Known for her tenacity and unwavering commitment to the truth, she uses her platform to amplify marginalized voices and hold the city's power structures accountable.
+physical_description: Poised woman in her late 40s with a sleek dark brown bob, sharp authoritative dark brown eyes and light brown skin; wears structured blazers, signature red lipstick and pearl earrings.
+psychological_description: Tenacious and fearless, with an unwavering commitment to the truth and a drive to amplify marginalized voices.
+background_and_role:
+  - Prominent news anchor and investigative journalist
+  - Exposes corruption and holds the city's power structures accountable
 metadata:
   type: human
   role: npc

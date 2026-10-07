@@ -1,8 +1,15 @@
 id: fdfe4f86-1816-4ea1-af11-21bff98edcd2
 name: Pedro Quispe
 title: University Student, Aspiring Entrepreneur
+birth_year: 2058
 age: 19
 description: Pedro Quispe is a 19-year-old university student caught between his family's expectations and his dreams of becoming a pilot. Having grown up near the airport where his parents manage a café and restaurant, Pedro has spent years helping at their establishment, gaining valuable experience in the food industry. Though he enrolled in Business Administration to eventually take over the family business, he still harbors aspirations of flight and struggles to reconcile his practical path with his childhood dreams.
+physical_description: "19-year-old Latino man with a lean, athletic build, dark curly hair and warm brown eyes, dressed casually in jeans and fitted t-shirts."
+psychological_description: "Introspective and hardworking, caught between family expectations and his dream of becoming a pilot."
+background_and_role:
+  - "University student in Business Administration"
+  - "Grew up near the airport where his parents manage a café and restaurant"
+  - "Works part-time at the family restaurant"
 metadata:
   type: human
   role: npc

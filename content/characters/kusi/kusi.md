@@ -2,7 +2,7 @@
 
 > Tags: `#figure` `#indigenous` `#restaurant`
 >
-> **Born:** ~1970s (Andean region)
+> **Born:** ~2025 (Andean region)
 > **Role:** Restaurant regular, Xue's partner
 > **Status:** Active
 
@@ -11,14 +11,7 @@
 - Eyes: Deep brown, gentle and humble
 - Build: Short and stocky, strong from manual labor
 - Skin: Deep brown, weathered and lined from sun exposure
-- Distinguishing features: Broad nose, strong hands calloused from work, traditional woven belt, quiet reserved smile
-
-## Physical Description
-- Hair: Black with gray streaks, thick and coarse, worn short
-- Eyes: Dark brown, warm and gentle
-- Build: Medium height, sturdy and weathered from years of outdoor work
-- Skin: Deep copper brown, weathered and lined from sun and wind
-- Distinguishing features: Calloused hands, traditional woven belt, quiet gentle smile, carries firewood with practiced ease
+- Distinguishing features: Broad nose, strong hands calloused from work, traditional woven belt, quiet reserved smile, carries firewood with practiced ease
 
 ## Overview
 Kusi (birth name unknown) is an indigenous man from the Andean region, approximately 50 years old during the period of Xue's story. He became a regular at Xue's small restaurant in Old Las Flores, where he found solace in the familiar walls and the stern but fair woman who ran it.

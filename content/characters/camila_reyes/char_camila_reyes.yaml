@@ -1,8 +1,15 @@
 id: 36375e33-3a5d-4290-891e-09f5530267e7
 name: Camila Reyes
 title: Environmental Science Student from Bahía de las Olas
+birth_year: 2058
 description: |
   Camila Reyes is a spirited 19-year-old from Bahía de las Olas, a picturesque coastal village threatened by Van Der Meer Mining. To support their inland lithium operations, the corporation plans to bulldoze her hometown's coastline to build a deep-water export mega-port and a toxic brine-discharge facility. Realizing that Van Der Meer is highly sensitive to negative press and political pressure—especially the fear of public backlash driving support toward Chinese-backed politicians—Camila has come to the cynical city of Las Flores to pursue a degree in Environmental Science. She aims to weaponize empirical data and PR against the corporation. While she radiates a warm-hearted enthusiasm, she suffers from severe imposter syndrome. Furthermore, her idealism has become a single-minded obsession; she views her cause as the absolute center of her universe, frequently treating allies and potential partners as secondary props or support units rather than emotional equals.
+physical_description: "Petite, sun-kissed Latina woman of 19 with long wavy dark hair and a colorful woven headband, bright brown eyes, and a flowy white linen dress over a bikini with leather sandals and a woven bracelet."
+psychological_description: "Spirited and warm-hearted, passionate and single-minded; fiercely defensive of her home, treating people as useful allies for her activism while hiding imposter syndrome."
+background_and_role:
+  - "Environmental Science student from Bahía de las Olas"
+  - "First in her family to attend university"
+  - "Activist fighting Van Der Meer Mining's mega-port plan for her village"
 metadata:
   type: human
   role: npc

@@ -1,12 +1,19 @@
 id: c1000013-e29b-41d4-a716-446655440013
 name: Aisha Al-Sayed
 title: Electrical Engineer, Mineria Estrella
+birth_year: 2039
 description: |
   Aisha Al-Sayed is a Middle Eastern electrical engineer in her late 30s, born and raised in Cairo. She earned her degree from the American University in Cairo before coming to Las Flores a decade ago as a specialized engineer for a multinational corporation.
 
   Rising through the ranks to become a middle manager at Mineria Estrella, she oversees a team of engineers and technicians. Determined, resourceful, and highly competitive, she sets high goals and takes risks. She is fiercely independent yet values collaboration and mentorship. Guarded about her personal life due to past discrimination against Arabs, she feels stagnant in her career as Chinese employees are favored by upper management.
 
   Despite this, she remains committed to learning and building strategic alliances for promotion, actively pursuing executive coaching, leadership workshops, and networking events.
+physical_description: "Middle Eastern woman in her late 30s with a lean, angular frame, deep amber-brown eyes and warm olive skin; dark brown wavy hair in a low bun, wire-rimmed glasses, and a high-visibility safety vest over a blouse."
+psychological_description: "Determined, resourceful and competitive; fiercely independent yet values mentorship, and guarded about her personal life."
+background_and_role:
+  - "Cairo-born electrical engineer educated at the American University in Cairo"
+  - "Middle manager overseeing engineers and technicians at Mineria Estrella"
+  - "Feels stalled in her career and pursues coaching and networking to earn promotion"
 metadata:
   type: human
   role: npc

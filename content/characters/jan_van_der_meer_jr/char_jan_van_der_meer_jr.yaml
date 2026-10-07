@@ -1,7 +1,14 @@
 id: e5f6a7b8-c9d0-4e1f-aa3b-4c5d6e7f8a9b
 name: Jan van der Meer Jr.
 title: Van der Meer Family Member
+birth_year: 2035
 description: Cousin and husband of Peter van der Meer. One of his staunchest allies during his coming out in 2065; his support drove a wedge with other family members.
+physical_description: "Dutch man in his early 40s with an athletic-compact build, neat straight blonde hair with faint gray at the temples, calm wide-set eyes, a strong jaw and a small scar near one ear; dresses in understated soft-collared shirt and light knit."
+psychological_description: "Loyal and steady, with an open, composed demeanor; stood by Peter even at the cost of family friction."
+background_and_role:
+  - Cousin and husband of Peter van der Meer
+  - "Staunch ally during Peter's 2065 coming out"
+  - Van der Meer family member
 metadata:
   type: human
   role: npc

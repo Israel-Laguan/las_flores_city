@@ -1,26 +1,35 @@
 id: 7c9a5d3e-1f8c-4b2d-8e0a-5c7b9a3e4d1f
-name: Juan Carlos Pérez
-title: Human Rights Lawyer, COFAVIC Founder & Director
+name: Juan Rodríguez
+title: Editor-in-Chief & Managing Director, El Informador de Las Flores
+birth_year: 1999
 description: |
-  Juan Carlos Pérez, 45, human rights lawyer and COFAVIC founder. Brother's disappearance during criminal violence inspired his justice work. Provides legal aid, advocacy, and emotional support for victims' families through COFAVIC. Faces resistance but remains committed, using legal expertise to hold perpetrators accountable. International recognition via partnerships with Human Rights Watch and Amnesty International. Empathetic and strategic, key figure in Las Flores' human rights movement. Organizes victim support groups, collaborates with activists to raise awareness. Resilient, dedicated to safer society. Spanish primary language, fluent in English.
+  Juan Rodríguez, 78, is the legendary Editor-in-Chief and Managing Director of El Informador de Las Flores, the last independent newspaper in the city. Born into a family of indigenous activists in the rural outskirts of Las Flores, he studied journalism at the National University of Las Flores, specializing in community reporting, and spent his early career covering social issues and human rights abuses in marginalized communities. For nearly six decades he has exposed corruption, defended the marginalized and refused to let the truth be buried. Cynical about the world but hopeful about people, he mentors the next generation of reporters and wants to turn the paper into a cooperative before he retires.
+physical_description: "Medium-height indigenous man with a solid, un-sculpted build, dark expressive eyes, a straight nose, a defined jaw and dark hair in simple un-styled shapes; calm, determined and composed, in minimalist practical clothing, with a small sport earbud clipped to his earlobe."
+psychological_description: "Principled, stubborn and fiercely protective of his team; weary but unyielding dignity, dry dark humor, cynical about the world yet hopeful about people."
+background_and_role:
+  - Editor-in-Chief and Managing Director of El Informador de Las Flores
+  - Born into a family of indigenous activists in the rural outskirts of Las Flores
+  - Studied journalism at the National University of Las Flores, specializing in community reporting
+  - Early career covering social issues and human rights abuses in marginalized communities
 metadata:
   type: human
   role: npc
-  faction: human_rights
-  personality: compassionate_determined_strategic
-  age: 45
+  faction: media
+  personality: principled_stubborn_protective_dry_humored
+  age: 78
   gender: Male
-  ethnicity: Peruvian
-  occupation: Human Rights Lawyer
-  background: born Las Flores, brother disappeared in conflict, founded COFAVIC
-  education: law degree (human rights)
+  ethnicity: Indigenous
+  occupation: Editor-in-Chief & Managing Director, El Informador de Las Flores
+  background: born into a family of indigenous activists in the rural outskirts of Las Flores; early career covering social issues and human rights abuses in marginalized communities
+  education: journalism, National University of Las Flores (community reporting)
   residence: Las Flores
-  organization: COFAVIC
-  allies: Michael Pérez (brother), Human Rights Watch, Amnesty International
-  mannerisms: speaks passionately about justice, listens actively to victims
-  motivations: hold perpetrators accountable, support victims' rights, promote justice
-  quote: No one should live in fear. Seek justice for victims and families.
-  methods: legal advocacy, community outreach, international partnerships
+  organization: El Informador de Las Flores
+  allies: Cecilia Rodríguez (half-sister), Father Mateo, Lupita "La Chispa", Yara Rossi
+  rivals: Oscar Mendoza (El Diario de Las Flores)
+  mannerisms: measured tones, rough voice, carries a notebook everywhere and insists on handwritten notes for sensitive interviews, quotes poetry and folk songs
+  motivations: ensure independent journalism survives, mentor the next generation of reporters, move the paper to a cooperative ownership model
+  quote: Journalism isn't a profession; it's an act of resistance.
+  methods: investigative reporting, whistleblower hotline, community forums, special editions in indigenous languages, media literacy workshops
 lore_path: juan_rodriguez.md
 asset_paths:
   portrait: juan_rodriguez__default.png

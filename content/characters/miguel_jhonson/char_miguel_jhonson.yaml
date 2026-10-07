@@ -1,7 +1,14 @@
 id: 5d01a93e-2f11-47cc-9e67-ab10d48a946f
 name: Miguel Jhonson
 title: University Student, Logistics Chief of the 2077 Movement
+birth_year: 2053
 description: "Alex's oldest and closest friend in Las Flores. Born and raised in the city's western district, from a large extended family with roots going back generations. Of Anglo-Caribbean descent, the Jhonson family has been in Las Flores for three generations. Miguel is physically imposing — broad shoulders, unhurried movement — but grounding rather than intimidating. He ran the movement's physical logistics: safehouses, supply caches, communication relays, all organized through a network of local residents who trusted him. His deep roots in the western district gave him access to a kind of community loyalty that no external organizer could have manufactured. He was with Alex at the end at the mine entrance, and has never spoken publicly about those final moments. After the broadcast, he joined the transitional council and spent years in the unglamorous work of institutional rebuilding."
+physical_description: "24-year-old Anglo-Caribbean man with broad shoulders, an unhurried physical presence, dark expressive eyes and a defined jaw."
+psychological_description: "Grounding and calm without being distant, protective without being controlling; he does not romanticize the work but does it."
+background_and_role:
+  - "Alex's oldest and closest friend"
+  - "University student and logistics chief of the 2077 Movement"
+  - "Later joined the transitional council"
 metadata:
   type: human
   role: npc

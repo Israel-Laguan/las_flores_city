@@ -41,7 +41,7 @@ In her early 30s, around 2072, Anna married Han Jr., the son of a Dutch cousin w
 
 ## LGBTQ+ Advocacy
 
-Anna's advocacy for LGBTQ+ rights intensified after her brother Peter came out as gay. She fiercely defended him and used her social platforms to raise awareness about the struggles faced by the LGBTQ+ community in Las Flores. She co-founded a nonprofit focused on empowering LGBTQ+ youth in Las Flores and served as its president for more than two decades. Her work helped normalize public support for queer rights within the conservative mining dynasty.
+Anna's advocacy for LGBTQ+ rights intensified after her brother Peter came out as gay. She fiercely defended him and used her social platforms to raise awareness about the struggles faced by the LGBTQ+ community in Las Flores. She co-founded Amor Verdadero with her brother Peter, a nonprofit focused on empowering LGBTQ+ youth in Las Flores, and served as its president for more than two decades. Her work helped normalize public support for queer rights within the conservative mining dynasty.
 
 ---
 

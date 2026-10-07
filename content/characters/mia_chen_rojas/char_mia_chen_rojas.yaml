@@ -1,8 +1,15 @@
 id: 23a68159-f5db-4574-bf22-73cd3f285c72
 name: Mia Chen-Rojas
 title: Social Media Influencer, Fashion Enthusiast
+birth_year: 2058
 age: 19
 description: Mia Chen-Rojas is a 19-year-old mixed Chinese and Latino influencer living in the Andean Mountains, where her parents work at a luxurious resort. She embodies class and ambition, creating a carefully curated online persona that highlights her glamorous lifestyle while keeping her past and family history private. Mia's journey explores themes of identity, authenticity, and the pursuit of success in the world of social media.
+physical_description: "19-year-old mixed Chinese and Latina woman with long dark hair in waves, striking almond-shaped eyes and elegant jewelry, with an effortlessly chic style."
+psychological_description: "Ambitious and polished, she keeps her past and family history private behind a carefully curated persona."
+background_and_role:
+  - "Social media influencer and fashion enthusiast"
+  - "Lives in the Andean Mountains, where her parents work at a luxurious resort"
+  - "Aims to collaborate with luxury brands and launch her own line"
 metadata:
   type: human
   role: npc

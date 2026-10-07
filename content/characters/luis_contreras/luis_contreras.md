@@ -7,14 +7,7 @@
 - Eyes: Dark brown, thoughtful and reserved
 - Build: Medium height, lean and wiry from walking between campus and village
 - Skin: Warm brown, smooth with high cheekbones reflecting mixed heritage
-- Distinguishing features: Traditional beaded bracelet from his mother on left wrist, always carries engineering textbooks, quiet watchful demeanor
-
-**Physical Description:**
-- Hair: Dark brown, thick and wavy, worn slightly long
-- Eyes: Dark brown, thoughtful and searching
-- Build: Medium height, lean and athletic from manual work
-- Skin: Warm brown, a blend of his dual heritage
-- Distinguishing features: Strong jawline, small scar on chin from childhood, always carries engineering textbooks, wears a simple woven bracelet from his mother's community
+- Distinguishing features: Traditional beaded bracelet from his mother on left wrist, always carries engineering textbooks, quiet watchful demeanor, strong jawline, small scar on chin from childhood
 
 **Description (full):**
 

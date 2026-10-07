@@ -9,7 +9,7 @@
 
 Charismatic leader of Union del Trabajador (UT). Campaigns for fair wages, safe working conditions, and worker rights. Backed by the Progressive Alliance.
 
-**Age (2077):** ~adult
+**Age (2077):** ~52 (b. ~2025)
 **District:** Las Flores
 **Role:** Union Leader
 **Descendancy:** l

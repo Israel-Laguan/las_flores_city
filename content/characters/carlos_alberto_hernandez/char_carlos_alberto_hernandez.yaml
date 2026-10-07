@@ -1,7 +1,14 @@
 id: c3000010-e29b-41d4-a716-446655440010
 name: Carlos Alberto Hernandez
 title: Politician, ELU Member
+birth_year: 2015
 description: Son of Carlos Hernandez who married into the Van der Meer family. Within the ELU party, he was drawn into a web of bribes and luxury, compromising both his integrity and his marriage to Elisabeth.
+physical_description: "Latino man in his early 60s of medium height with a slight paunch, thinning dark brown hair combed over, hooded dark brown eyes, silver-framed glasses and a practiced politician's smile; wears a tailored navy suit and a gold signet ring."
+psychological_description: "Compromised and loyal to his party; entrenched in the ELU's patronage network, with a practiced warmth that masks his weakened integrity."
+background_and_role:
+  - "Son of Carlos Hernandez"
+  - "ELU party member drawn into bribes and luxury"
+  - "Married into the Van der Meer family through Elisabeth in 2038"
 metadata:
   type: human
   role: npc

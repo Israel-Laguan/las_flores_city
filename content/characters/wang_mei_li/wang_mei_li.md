@@ -7,14 +7,7 @@
 - Eyes: Dark brown, sharp and determined
 - Build: Slender and poised, moves with confidence
 - Skin: Fair, smooth and carefully maintained
-- Distinguishing features: Minimalist gold jewelry, tailored business suits, commanding presence, composed expression
-
-**Physical Description:**
-- Hair: Jet black, worn in a sleek professional bob
-- Eyes: Dark brown, sharp and determined
-- Build: Slender and poised, moves with confidence
-- Skin: Fair with a warm undertone
-- Distinguishing features: Minimalist gold jewelry, designer clothing, perfect posture, calm measured gestures, subtle smile
+- Distinguishing features: Minimalist gold jewelry, tailored business suits, commanding presence, composed expression, subtle smile
 
 **Description (full):**
 

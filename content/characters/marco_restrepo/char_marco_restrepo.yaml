@@ -1,8 +1,15 @@
 id: b2c3d4e5-f6a7-8901-bcde-f12345678901
 name: Marco Restrepo
 title: Café Owner & Neighborhood Fixture
+birth_year: 2029
 description: |
   The owner of Old Town Cafe. A warm, talkative man in his late 40s who remembers every customer's order. He's watched Old Town change around him—corporate chains, gentrification—and stayed rooted. People confide in him, meaning he knows more about the district's secrets than anyone realizes.
+physical_description: Stocky Latino man in his late 40s with a warm face and laugh lines, dark wavy hair with gray temples and streaks, and calloused hands with faint burn marks, wearing a canvas apron over casual clothes.
+psychological_description: Warm, talkative and observant with a streak of cynicism; confidants confide in him, so he knows the district's secrets.
+background_and_role:
+  - Owner of Old Town Cafe, a second-generation fixture of Old Town
+  - Holds ground against corporate chains and gentrification
+  - Remembers every customer's order
 metadata:
   type: human
   role: npc

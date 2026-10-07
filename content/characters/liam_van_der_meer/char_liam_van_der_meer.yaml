@@ -1,7 +1,14 @@
 id: a7b8c9d0-e1f2-4a3b-8c5d-6e7f8a9b0c1d
 name: Liam van der Meer
 title: Executive, Van der Meer Industries
+birth_year: 2035
 description: Cousin of Sebastian van der Meer. Together they have led strategic decisions at Van der Meer Industries, driving exponential growth and identifying profitable investment opportunities.
+physical_description: Dutch man in his early 40s with an athletic-compact build, straight blonde hair threaded with gray, an angular face with high cheekbones and thick brows, and a small scar near his left ear; wears executive business attire with a Van der Meer Industries pin.
+psychological_description: Strategic and business-minded executive, focused on growth and profitable investment opportunities.
+background_and_role:
+  - Cousin of Sebastian van der Meer
+  - Executive at Van der Meer Industries
+  - Helps lead strategic decisions and identify profitable investments
 metadata:
   type: human
   role: npc

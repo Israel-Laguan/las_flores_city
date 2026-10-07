@@ -3,6 +3,12 @@ name: Sophia van der Meer Rodriguez
 title: Philanthropist, Nueva Esperanza Foundation Founder
 birth_year: 2041
 description: Sophia van der Meer Rodriguez is a compassionate philanthropist who transformed personal hardship into community impact. Born in 2041 into the prominent van der Meer family, she grew up amidst the opulence of Las Flores' high society. Her parents' divorce left a profound mark on her, shaping her perspective on marriage, family responsibility, and the importance of standing for one's principles. After completing her studies at an elite European university, Sophia returned to Las Flores determined to make a positive difference in her hometown.
+physical_description: "A tall, slender woman of 36 with dark blond hair with golden highlights and pale blue-green eyes. She has fair skin with a warm undertone, wears pearl earrings and elegant gowns, and carries herself with a poised, graceful bearing."
+psychological_description: "A compassionate, principled woman whose parents' divorce shaped her views on marriage, family responsibility and standing for her convictions."
+background_and_role:
+  - "Philanthropist and founder of the Nueva Esperanza Foundation"
+  - "Daughter of Elisabeth van der Meer and Carlos Alberto Hernandez"
+  - "Divorced from Carlos Rodriguez Jr. in 2070"
 metadata:
   type: human
   role: npc

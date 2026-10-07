@@ -1,11 +1,18 @@
 id: df2cde6a-f29c-40cd-bf38-b8661fc967ee
 name: Lucía Torres
 title: Airport Stand Vendor — Local Crafts & Andean Products
+birth_year: 2049
 description: >
   Overworked 28-year-old vendor from Camino Verde who runs a stand at
   Aeropuerto Internacional de Las Flores selling authentic Andean crafts,
   snacks, and textiles. Soft build, chestnut hair, colorful apron, tired eyes —
   still shares the story behind every product between flight banks.
+physical_description: Medium-height Latina woman of about 28 with a soft solid frame, chestnut wavy-curly hair in a loosening ponytail, tired warm brown eyes with under-eye shadows, and a colorful vendor apron over practical clothes.
+psychological_description: Tired but warm, an entrepreneurial storyteller who fears burnout and losing the lease; her real humor appears late in the shift.
+background_and_role:
+  - Airport stand vendor at Aeropuerto Internacional de Las Flores selling Andean crafts
+  - From a Camino Verde family shop
+  - Saving toward a Camino Verde café-cultural hub
 metadata:
   type: human
   role: npc

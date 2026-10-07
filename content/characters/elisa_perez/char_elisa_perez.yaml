@@ -1,10 +1,17 @@
 id: e2f3a4b6-c6d7-4e8f-9a0b-1c2d3e4f5a6e
 name: Elisa Pérez
 title: Social Media & Community Manager, El Informador
+birth_year: 2052
 description: |
   Elisa Pérez is a Social Media & Community Manager at El Informador de Las Flores. She joined the newspaper as an intern while studying communications at the University of Las Flores and quickly rose through the ranks to become the paper's point-person for digital outreach and engagement. Her campaigns helped significantly grow El Informador's online presence and reader loyalty.
 
   Tech-savvy and empathetic, Elisa thrives on building two-way relationships between the newspaper and its audience. She crafts shareable content around local investigative stories, moderates community discussions, and turns readers into active participants in the news cycle. Despite the fast pace of digital media, she remains committed to responsible journalism and giving voice to underrepresented communities.
+physical_description: Petite, energetic Latina woman in her mid-20s with thick wavy dark brown hair in a messy bun or loose curls, bright alert warm brown eyes and light brown skin; wears a small nose ring, a colorful beaded bracelet and smart-casual newsroom attire, with earbuds around her neck.
+psychological_description: Tech-savvy and empathetic; builds two-way relationships with readers while staying committed to responsible journalism.
+background_and_role:
+  - Social Media & Community Manager at El Informador de Las Flores
+  - Joined as an intern while studying communications at the University of Las Flores
+  - Leads the paper's digital outreach and reader engagement
 metadata:
   type: human
   role: npc

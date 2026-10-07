@@ -11,14 +11,7 @@
 - Eyes: Pale blue, sharp and calculating
 - Build: Tall and imposing, slightly stooped with age
 - Skin: Fair, weathered and lined from decades of field work
-- Distinguishing features: Gold signet ring, wire-rimmed glasses, tailored suits, commanding presence
-
-## Physical Description
-- Hair: Silver-white, once dark blond, worn in a distinguished style
-- Eyes: Pale blue, sharp and calculating
-- Build: Tall and imposing, straight-backed despite his age
-- Skin: Fair, weathered from years of fieldwork
-- Distinguishing features: Strong square jaw, silver pocket watch, tailored tweed jacket, commanding presence that fills a room
+- Distinguishing features: Gold signet ring, wire-rimmed glasses, tailored suits, commanding presence, strong square jaw, silver pocket watch
 
 ## Overview
 Pieter van der Meer is a formidable figure in the international mining industry, born into a family of Dutch diplomats and businesspeople. With a towering presence and strategic mind, he built a distinguished career managing international mining operations before leading the Dutch mining consortium that discovered the lithium vein near Las Flores in 2029. 

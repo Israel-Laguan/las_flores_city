@@ -1,7 +1,14 @@
 id: c3000018-e29b-41d4-a716-446655440018
 name: Yang Chen
 title: PR Strategist, CLM
+birth_year: 1995
 description: CLM's master storyteller who framed the Las Flores partnership as a symbiotic dance of progress. Retired to Old Las Flores where he was dismissed as eccentric, only to leave his children a hidden fortune when he died in 2069.
+physical_description: "A slight, stooped elderly Chinese man with thin gray hair, warm distant dark brown eyes and lined fair skin. He wears simple cotton shirts and worn sandals, with a gentle smile and a small notebook always at hand."
+psychological_description: "A quiet, brilliant man whose gift for storytelling hid how much he understood, and who was dismissed by many as eccentric."
+background_and_role:
+  - "PR strategist for China Lithium & Metals (CLM)"
+  - "Framed the Las Flores partnership as a symbiotic dance of progress"
+  - "Retired to Old Las Flores and died in 2069, leaving his children a hidden fortune"
 metadata:
   type: human
   role: npc

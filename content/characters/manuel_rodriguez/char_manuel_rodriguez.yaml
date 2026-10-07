@@ -1,7 +1,14 @@
 id: c3000009-e29b-41d4-a716-446655440009
 name: Manuel Rodriguez
 title: Governor's Representative
+birth_year: 2029
 description: Appointed Governor's representative for the Pacific District, he abused travel expenses to fund a lavish lifestyle. After being exposed, he plotted revenge against his whistleblower but only further disgraced himself.
+physical_description: Medium-height Latino man in his late 40s, slightly paunchy, with thinning dark brown hair and shifty dark brown eyes, a practiced smile, and tailored suits slightly too tight with an expensive gold watch.
+psychological_description: Charming but corrupt and vindictive; indulges a lavish lifestyle and lashes out at those who expose him.
+background_and_role:
+  - Governor's representative for the Pacific District
+  - Abused travel expenses to fund a lavish lifestyle
+  - Disgraced after plotting revenge on his whistleblower
 metadata:
   type: human
   role: npc

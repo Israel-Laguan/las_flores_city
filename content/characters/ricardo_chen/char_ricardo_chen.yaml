@@ -1,7 +1,15 @@
 id: 7d73b295-541b-4c7b-8ebb-de40cafa0d98
 name: Ricardo Chen
 title: Senator Representing Chinese Community Interests
+birth_year: 2019
 description: Wealthy son of Chinese immigrants who established an export business in Latin America. Emigrated from China at a young age, adapting to the cultural landscape while retaining connections to his heritage. Charismatic and manipulative, skilled at navigating political discourse and maneuvering through complex social dynamics. Extremely ambitious, driven by a desire to accumulate power, wealth, and influence.
+physical_description: "Medium-height Chinese man in his late 50s with a solid, poised build, neatly combed black hair with a few gray strands, sharp dark brown eyes and fair skin; wears impeccable tailored suits and gold cufflinks."
+psychological_description: "Charismatic, manipulative and extremely ambitious; a shrewd political operator who masks calculation behind a subtle smile."
+background_and_role:
+  - "Senator representing Chinese community interests (born Chen Guangming)"
+  - "Son of Chinese immigrants who built an export business in Latin America"
+  - "Damaged by the 2052 Great Lithium Leak scandal"
+  - "Rehabilitating his image by 2070"
 metadata:
   type: human
   role: npc

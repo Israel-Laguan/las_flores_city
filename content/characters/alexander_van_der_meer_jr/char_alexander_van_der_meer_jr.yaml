@@ -1,7 +1,14 @@
 id: f7a8b9c0-d1e2-4f3a-9b6c-7d8e9f0a1b2c
 name: Alexander van der Meer Jr.
 title: European Businessman, Van der Meer Family Cousin
+birth_year: 2002
 description: Alexander van der Meer Jr. is the son of Pieter van der Meer's brother Hendrik, making him first cousin to Elisabeth, Alexander, and Jan. Born and raised in Europe, he maintained close ties with the Las Flores branch of the family. In his youth, he had a brief romantic relationship with his cousin Elisabeth before she married Carlos Alberto Hernandez — a connection that led to confusion in later family records. Alexander Jr. built a successful import-export business in Rotterdam, occasionally visiting Las Flores for family events and business partnerships with GLC. He is the father of Nico van der Meer.
+physical_description: "Dutch man in his mid-70s with a soft, rounded, prosperous build, thin white hair receding at the temples, thick white-gray brows and deep-set eyes; weathered fair skin with age spots, a well-tailored European suit with a pocket square and a signet ring."
+psychological_description: "Cosmopolitan and composed, a polished businessman."
+background_and_role:
+  - "Son of Hendrik van der Meer and first cousin to the Las Flores van der Meers"
+  - "Built an import-export business in Rotterdam"
+  - "Father of Nico van der Meer; visits Las Flores for family events and GLC partnerships"
 metadata:
   type: human
   role: npc

@@ -1,7 +1,14 @@
 id: c0d1e2f3-a4b5-4c6d-be8f-9a0b1c2d3e4f
 name: El Caimán
 title: Crime Syndicate Leader
+birth_year: 2019
 description: Head of Las Flores' most powerful criminal syndicate. Maintains an uneasy alliance with Dragon Head's organization; allegedly involved in the transportation and processing of lithium ore.
+physical_description: Latino man in his late 50s, medium height with a stocky, powerful build and thick neck; slicked-back black hair, cold hooded dark brown eyes, thick mustache, scarred weathered skin, forearm tattoos, a missing left pinky, a gold-capped front tooth and gold chains.
+psychological_description: A ruthless syndicate boss; cold, calculating and heavy-lidded, carrying his weight like authority.
+background_and_role:
+  - Head of Las Flores' most powerful criminal syndicate
+  - Maintains an uneasy alliance with Dragon Head's organization
+  - Allegedly involved in transporting and processing lithium ore
 metadata:
   type: human
   role: npc

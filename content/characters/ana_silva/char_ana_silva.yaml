@@ -1,8 +1,15 @@
 id: "66666666-7777-4888-8999-aaaaaaaa0001"
 name: Ana Silva
 title: Progressive City Council Member
+birth_year: 2022
 description: |
   Councilwoman Ana Silva is a progressive voice and fierce champion of the poor in the Las Flores City Council. She is one of the only elected officials who consistently advocates for marginalized communities against corporate interests.
+physical_description: "Afro-Latina woman in her mid-50s with a sturdy, imposing build, smooth deep brown skin, thick curly black hair, deep-set fiery dark brown eyes and a strong jawline; silver hoop earrings and a worn leather folder of case documents."
+psychological_description: "Fierce and progressive, a determined champion of the poor."
+background_and_role:
+  - "Progressive member of the Las Flores City Council"
+  - "Advocate for marginalized communities against corporate interests"
+  - "Vocal critic of Mayor Carlos Hernandez's ties to the Chinese business coalition"
 metadata:
   type: human
   role: npc

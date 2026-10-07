@@ -2,7 +2,7 @@
 
 > Tags: `#figure` `#lw_group` `#finance` `#negotiation`
 >
-> **Born:** ~1990s (China)
+> **Born:** ~2015 (China)
 > **Role:** Financial negotiator, CLM
 > **Status:** Active
 
@@ -11,14 +11,7 @@
 - Eyes: Dark brown, sharp and calculating
 - Build: Slender and poised, moves with quiet confidence
 - Skin: Fair, smooth and carefully maintained
-- Distinguishing features: Minimalist gold jewelry, perfectly tailored suits, carries a slim portfolio, composed expression that rarely betrays emotion
-
-## Physical Description
-- Hair: Jet black, cut in a sleek professional bob
-- Eyes: Dark brown, sharp and calculating
-- Build: Average height, poised and controlled
-- Skin: Fair with a warm undertone
-- Distinguishing features: Pearl earrings, designer watch, always impeccably dressed in tailored suits, minimal makeup, precise gestures
+- Distinguishing features: Minimalist gold jewelry, perfectly tailored suits, carries a slim portfolio, composed expression that rarely betrays emotion, pearl earrings, designer watch
 
 ## Overview
 Mei Xiang was the lead financial negotiator for China Lithium & Metals (CLM) during the 2024–2025 negotiations to secure the lithium mining concession in Las Flores. She crafted the financial packages that enticed Mayor Carlos Hernandez and the city council, combining direct infrastructure investments, tax breaks, and community project funding into an offer the city couldn't refuse.

@@ -3,7 +3,7 @@ name: Juan Rodríguez
 type: portrait
 size: 1024x1024
 source: content/characters/juan_rodriguez/juan_rodriguez.md
-target: `portrait_urls[].url` in `content/characters/char_juan_rodr_guez.yaml`
+target: `portrait_urls[].url` in `content/characters/juan_rodriguez/char_juan_rodriguez.yaml`
 consumer: portrait
 aspect_ratio: 3:4
 ---

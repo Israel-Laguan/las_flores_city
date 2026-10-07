@@ -7,14 +7,7 @@
 - Eyes: Dark brown, sharp and penetrating on camera
 - Build: Tall and poised, commanding presence
 - Skin: Light brown, flawless on-air complexion
-- Distinguishing features: Signature red lipstick, pearl earrings, always impeccably dressed in camera-ready attire, confident posture
-
-## Physical Description
-- Hair: Dark brown, styled in a sleek professional bob
-- Eyes: Dark brown, sharp and authoritative
-- Build: Average height, poised and commanding presence
-- Skin: Light brown, smooth and camera-ready
-- Distinguishing features: Structured blazers, statement earrings, confident posture, piercing gaze
+- Distinguishing features: Signature red lipstick, pearl earrings, always impeccably dressed in camera-ready attire, confident posture, structured blazers, piercing gaze
 
 **Description (full):**
 

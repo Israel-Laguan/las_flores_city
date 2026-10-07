@@ -274,13 +274,12 @@ conveying tension and the moment of decision, cinematic, ultra-detailed, 8k
 ## Lore Connections
 
 ### Connected Files
-- [Alex Garcia](alex.md) — Group leader, visionary
-- [Miguel Jhonson](miguel_jhonson.md) — Logistics expert, practical anchor
-- [Carlos Lacan](carlos_lacan.md) — Technical expert, emotional heart
-- [Isabella Vargas](isabella_vargas.md) — Intelligence, pattern recognition
-- [The 2077 Core Group](gdd_friends.md) — Complete group overview
-- [Las Estrellas Investigation](../stories/retirement_complex_murders.md) — The case they worked on
-- [Alex & Evelyn: The 2077 Endgame](../stories/alex_and_evelyn_2077.md) — Climax of the movement
+- [Alex Garcia](../alex_garcia/alex_garcia.md) — Group leader, visionary
+- [Miguel Jhonson](../miguel_jhonson/miguel_jhonson.md) — Logistics expert, practical anchor
+- [Carlos Lacan](../carlos_lacan/carlos_lacan.md) — Technical expert, emotional heart
+- [Isabella Vargas](../isabella_vargas/isabella_vargas.md) — Intelligence, pattern recognition
+- [Las Estrellas Investigation](../../lore/stories/retirement_complex_murders/retirement_complex_murders.md) — The case they worked on
+- [Alex & Evelyn: The 2077 Endgame](../../lore/stories/alex_and_evelyn_2077/alex_and_evelyn_2077.md) — Climax of the movement
 
 ### Key Events
 - Returning Alex's notebook (accidental entry to investigation)

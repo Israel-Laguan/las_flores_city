@@ -1,6 +1,7 @@
 id: 3315f76b-a1dc-4525-b247-bcb99560b606
 name: Carlos Rodriguez
 title: Mayor of Las Flores Free City
+birth_year: 2029
 description: |
   Carlos Rodriguez is a 48-year-old Progressive Alliance mayor serving his second term. A founding member, his partnership with Ana Silva — the coalition's environmental policy architect — anchors his agenda. Together they co-authored three contamination oversight bills; two passed in weakened form under LW Group lobbying pressure.
 
@@ -18,6 +19,12 @@ relationships:
     closeness: -40
     trust: -80
     context: Corporate opposition in city council, primary lobbying pressure
+physical_description: "Latino man of 48 with an athletic-compact build, wavy dark hair graying at the temples, almond dark eyes, thick brows and a faint old scar on the chin; wears a well-fitted suit with an open collar and a city pin."
+psychological_description: "Pragmatic reformer who identifies the achievable within his constraints and achieves it, governing a city whose largest employer is LW Group."
+background_and_role:
+  - "Progressive Alliance mayor of Las Flores Free City, elected 2071 and serving a second term"
+  - "Career politician from a working-class Central City background"
+  - "Co-authored contamination oversight bills with Ana Silva"
 metadata:
   type: human
   role: npc

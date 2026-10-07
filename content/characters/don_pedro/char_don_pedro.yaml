@@ -1,6 +1,7 @@
 id: b369c8c3-35cf-4d12-a660-1a3f0e83e170
 name: Don Pedro
 title: La Familia Gang Leader
+birth_year: 2015
 description: "Don Pedro — Pedro Vargas Castellano, 62 — has controlled La Familia's territory across the Industrial Zone and Old Las Flores border for over two decades. Born in the district, he runs his organisation as a substitute state: security where police response averages forty-seven minutes, protection for ignored vendors, credit where formal lenders refuse. The rackets funding these services are, in his framing, a tax for maintaining order where government under-governs. His uneasy co-existence with El Caimán's Cartel and Dragon Head's Chinese Mafia is his most durable achievement — 2055 and 2063 conflicts changed nothing; his 2063 settlement has held fourteen years. His paternalistic style is genuine and extractive: he attends events, resolves disputes, supports families in crisis, and runs rackets against the same people."
 relationships:
   - target_id: El Caimán's Cartel
@@ -13,6 +14,12 @@ relationships:
     closeness: -10
     trust: 40
     context: Uneasy co-existence and territorial settlement
+physical_description: Latino patriarch in his early 60s with a broad, heavy build and weathered, scarred skin; thin, severely receding gray hair, thick brows, deep-set watchful eyes, a broken-healed nose and a faded knife scar across the jaw; wears an open-collared guayabera and heavy rings.
+psychological_description: A territorial patriarch; paternalistic and watchful, he frames his rackets as maintaining order where the city declined to govern.
+background_and_role:
+  - Pedro Vargas Castellano, leader of La Familia
+  - Controls the Industrial Zone and the Old Las Flores northern border
+  - Assumed leadership in 2055 and negotiated the 2063 territorial settlement
 metadata:
   type: human
   role: npc

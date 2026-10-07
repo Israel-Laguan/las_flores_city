@@ -1,6 +1,7 @@
 id: d9927cf6-cc6c-42d3-b39c-023e6252b453
 name: Layla Al-Rashid
 title: University Student, Double Life
+birth_year: 2055
 description: |
   Layla Al-Rashid is a young Arab woman in her early 20s, daughter of Mineria
   Estrella workers, raised in the tight-knit northern district where the Arab
@@ -14,6 +15,12 @@ description: |
   She resists long-term commitment, asks few personal questions, and keeps the
   relationship ritualistic — until, slowly, she begins to discover what it means
   to be romantically close, not just performatively so.
+physical_description: Young Middle Eastern Arab woman in her early 20s with soft rounded youthful features, deep amber-brown eyes, long dark brown wavy hair with a slight widow's peak worn loose, and a warm olive complexion; dresses in plain modest high-necked long-sleeve blouses with no jewelry or makeup.
+psychological_description: Sheltered and quietly rebellious; performs the obedient devout daughter at home while experimenting with a book-learned, liberated persona at university, afraid of dishonoring her family.
+background_and_role:
+  - Daughter of Arab immigrant Mineria Estrella workers
+  - University student studying a degree her father approved
+  - Rehearses freedom and romance through a performed relationship with the player
 metadata:
   type: human
   role: npc

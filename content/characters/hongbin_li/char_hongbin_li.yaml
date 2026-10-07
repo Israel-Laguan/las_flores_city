@@ -1,12 +1,19 @@
 id: fd23ae91-2fec-4750-a168-666f0ec7556a
 name: Hongbin Li
 title: Senior Manager for a Beijing-based Public Relations Firm
+birth_year: 2045
 description: |
   Hongbin Li is a charismatic and strategic early 30s professional from Shanghai, now based in Las Flores as part of a government initiative to expand Chinese influence. He earned his degree in Communications from Fudan University and works as a senior manager for a Beijing-based PR firm specializing in digital media and influencer marketing.
 
   He oversees social media managers who work with influencers across Las Flores and South America to promote Chinese culture and political agendas. Hongbin collaborates with local media outlets to ensure favorable coverage of China-related news, while coordinating with Chinese-owned businesses to increase their visibility.
 
   Despite his charming demeanor, he can be ruthless when protecting China's image. He lives in an upscale high-rise in Las Flores' financial district and is actively working on a major campaign to showcase Chinese investments, aiming to sway public opinion in favor of closer ties between China and the region.
+physical_description: Chinese man in his early 30s, average height and lean, with neat jet-black side-parted hair, sharp dark brown eyes and fair skin; wears designer clothing, an Apple Watch and has perfect white veneers.
+psychological_description: Charismatic, strategic and shrewd; charming on the surface but ruthless when protecting China's image.
+background_and_role:
+  - Senior manager at a Beijing-based public relations firm, from Shanghai
+  - Posted to Las Flores as part of a government initiative to expand Chinese influence
+  - Oversees social media managers and influencer campaigns promoting Chinese interests
 metadata:
   type: human
   role: npc

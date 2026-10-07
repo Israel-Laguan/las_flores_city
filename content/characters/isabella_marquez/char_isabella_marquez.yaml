@@ -1,10 +1,17 @@
 id: e1f2a3b4-c5d6-7890-abcd-ef1234567890
 name: Isabella Marquez
 title: Port Community Matriarch
+birth_year: 2035
 description: |
   Isabella Marquez is a vibrant Latina community figure in Las Flores's bustling port district. Born in a small coastal village, she settled in the port area where she is beloved by sailors, dockworkers, and local families. Strong, expressive, and fiercely connected to her roots, she radiates warmth while navigating the challenges of raising three young sons alone.
 
   Known for long loose waves, sun-kissed skin, and expressive brown eyes, Bella dresses in vibrant flowing clothing and handmade jewelry that celebrate her heritage. Her home is a gathering place for neighbors and travelers, filled with Caribbean rhythms, home cooking, and laughter. She is fiercely protective of Joaquín, Mateo, and Luis while remaining unapologetically open about the joys and heartbreaks of her personal life.
+physical_description: "Latina woman of 42 with thick dark curly hair worn loose or in a messy bun, bright warm brown eyes, warm brown skin with laugh lines and a wide smile; curvy, strong build, gold hoop earrings, beaded bracelets and a floral dress with a cooking apron."
+psychological_description: "Vibrant, magnetic and resilient; expressive and warm, she dances through hardship and is fiercely protective of her three sons."
+background_and_role:
+  - Community matriarch of the port district
+  - Single mother of Joaquín, Mateo and Luis
+  - Hosts neighbors and travelers in her home
 metadata:
   type: human
   role: npc

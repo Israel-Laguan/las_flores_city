@@ -85,6 +85,15 @@ wholesale array replacement — naive `jsonb ||` is incorrect for array fields p
 priority-order or schema-order is owned by the entity's schema definition in
 `contracts/`.
 
+**When overlays apply (SC-S13, `spikes/SC-S13-flag-gated-overlays.md`).** Overlay *ordering,
+validity and conflicts* are resolved at compile time; the compiled artifact is not always a
+single resolved scene. Overlays whose `availability` is constant are folded into the base at
+compile. Overlays gated on per-player flags cannot be resolved at compile (and enumerating
+2^k variants does not scale), so the artifact keeps them as **ordered conditional layers**
+(`ResolvedScene = {base, layers[], flags[]}`) and the runtime evaluates each layer's condition
+with the shared evaluator and applies the already-validated order. Equal-priority conflicts
+fail the compile only for *co-satisfiable* `availability` pairs.
+
 > **Existing precedent:** `content/overlays/` already does exactly this at the dialogue
 > level — an overlay injects nodes into a base tree, gated by `mission_id`, ordered by an
 > explicit `priority` field. This generalizes that pattern from trees to scenes rather

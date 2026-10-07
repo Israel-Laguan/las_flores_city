@@ -1,7 +1,14 @@
 id: b2c3d4e5-f6a7-8901-bcde-234567890abc
 name: Alberto Ramirez
 title: The Younger Brother
+birth_year: 2061
 description: Alberto is Sofia's (Graciela's) younger brother. Growing up in a secondary South American city, he found himself orbiting local gang activity, not as a kingpin, but as a disposable kid—a messenger, a watcher, a motorcycle runner. His presence in her life constantly reminds Sofia of the kids she is trying to save in Las Flores.
+physical_description: "16-year-old South American boy with warm olive-brown skin, slightly wide-set dark eyes, a straight nose and faint stubble; messy dark curly hair, a cheap sports jacket, a cap slightly askew and a red earbud clipped to his earlobe."
+psychological_description: "Restless and caught between the safety of family and the pull of gang life."
+background_and_role:
+  - "Younger brother of Sofia (Graciela)"
+  - "Street runner orbiting local gang activity as a messenger and watcher"
+  - "The personal stakes behind Sofia's mission to save at-risk youth"
 metadata:
   type: human
   role: npc

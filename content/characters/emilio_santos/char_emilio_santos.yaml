@@ -1,7 +1,14 @@
 id: c3000008-e29b-41d4-a716-446655440008
 name: Emilio Santos
 title: Disgraced Politician
+birth_year: 2009
 description: Born into a prominent Pacific District family, Emilio rose through politics only to fall into smuggling, gang threats, and bribery. Now lives alone in his beach house, reflecting on his ruined career.
+physical_description: Latino man in his late 60s of medium height, broad-shouldered but softening with age, with slicked-back thinning dark brown hair, tired haunted eyes and lined tan skin; has a gold chain at an open collar, an expensive watch and a slight alcohol flush.
+psychological_description: Fallen and ambitious; tired and haunted, reflecting on a ruined career.
+background_and_role:
+  - Born into a prominent Pacific District political family
+  - Rose through politics, then fell into smuggling, gang threats and bribery
+  - Now lives alone in his beach house
 metadata:
   type: human
   role: npc

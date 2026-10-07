@@ -2,7 +2,7 @@
 
 > Tags: `#figure` `#lw_group` `#chinese_community` `#legacy`
 >
-> **Born:** ~1990s (China)
+> **Born:** ~1995 (China)
 > **Died:** 2069 (Old Las Flores)
 > **Role:** Public relations, CLM/LW Group
 > **Status:** Deceased
