@@ -3,6 +3,10 @@
 // entry side effects of migrate.ts (which declares __dirname via import.meta
 // and collides with ts-jest's CommonJS transform).
 
+export function schemaOnlyRequested(argv: readonly string[]): boolean {
+  return argv.includes('--schema-only');
+}
+
 export function hashText(value: string): number {
   let hash = 0;
   for (let i = 0; i < value.length; i++) {
