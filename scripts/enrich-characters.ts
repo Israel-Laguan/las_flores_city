@@ -315,14 +315,12 @@ async function enrichCharacter(characterFolder: string, index: number): Promise<
     // Update character data with enrichment, PRESERVING existing values
     const enrichedData = {
       ...characterData,
-      physical_description: enrichment.physical_description || characterData.physical_description || undefined,
-      psychological_description: enrichment.psychological_description || characterData.psychological_description || undefined,
-      background_and_role: enrichment.background_and_role?.length > 0 
-        ? enrichment.background_and_role 
-        : (characterData.background_and_role?.length > 0 ? characterData.background_and_role : undefined),
-      birth_year: enrichment.birth_year !== undefined 
-        ? enrichment.birth_year 
-        : (characterData.birth_year !== undefined ? characterData.birth_year : undefined),
+      physical_description: characterData.physical_description || enrichment.physical_description || undefined,
+      psychological_description: characterData.psychological_description || enrichment.psychological_description || undefined,
+      background_and_role: characterData.background_and_role?.length
+        ? characterData.background_and_role
+        : (Array.isArray(enrichment.background_and_role) && enrichment.background_and_role.length ? enrichment.background_and_role : undefined),
+      birth_year: characterData.birth_year ?? (Number.isInteger(enrichment.birth_year) ? enrichment.birth_year : undefined),
     };
 
     // Write back to YAML file
@@ -376,7 +374,7 @@ async function main() {
         const testResponse = await fetch(url, {
           method: 'GET',
           headers: { 'Authorization': `Bearer ${LLM_CONFIG.apiKey}` },
-          timeout: 5000,
+          signal: AbortSignal.timeout(5000),
         });
         if (testResponse.ok) {
           isHealthy = true;

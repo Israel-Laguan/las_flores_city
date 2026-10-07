@@ -19,7 +19,8 @@ import { load as yamlLoad } from 'js-yaml';
 // ─── Configuration ────────────────────────────────────────────────────────────
 const CONTENT_DIR = path.resolve('content/characters');
 const OUTPUT_JSON = process.argv.includes('--json');
-const LIMIT = process.argv.includes('--limit=') ? parseInt(process.argv.find(a => a.startsWith('--limit='))?.split('=')[1] || '0') : 0;
+const limitArg = process.argv.find(a => a.startsWith('--limit='));
+const LIMIT = limitArg ? parseInt(limitArg.split('=')[1] || '0', 10) : 0;
 
 // ─── Scoring Weights ──────────────────────────────────────────────────────────
 const WEIGHTS = {

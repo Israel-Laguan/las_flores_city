@@ -32,7 +32,7 @@ export async function upsertCharacter(data: any, slug?: string): Promise<string>
         data.physical_description ? sanitizeText(data.physical_description) : null,
         data.psychological_description ? sanitizeText(data.psychological_description) : null,
         data.background_and_role?.length > 0 ? data.background_and_role : null,
-        data.birth_year || null,
+        data.birth_year ?? null,
         data.avatar_url || null,
         JSON.stringify(data.portrait_urls || []),
         data.atlas_url || null,
