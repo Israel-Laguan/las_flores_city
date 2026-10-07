@@ -12,3 +12,6 @@ export {
   stringifySceneDef,
 } from './scene-def.js';
 export { isValidSlug, isUuid } from './slug.js';
+
+export type { RoleSlot, SlotPosition } from './role-slot.js';
+export { SLOT_POSITIONS, isSlotPosition, findDuplicateSlotIds } from './role-slot.js';

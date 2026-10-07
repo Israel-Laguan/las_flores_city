@@ -14,6 +14,14 @@
 import type { WeatherTag } from '../weather/weather-tag.js';
 import { WEATHER_TAGS, isWeatherTag } from '../weather/weather-tag.js';
 import { isUuid, isValidSlug } from './slug.js';
+import {
+  ROLE_SLOT_JSON_KEYS,
+  SLOT_POSITIONS,
+  findDuplicateSlotIds,
+  isSlotPosition,
+  roleSlotToJSON,
+  type RoleSlot,
+} from './role-slot.js';
 
 /**
  * Version of the serialized SceneDef shape. Stamped into every `toJSON` output (and
@@ -57,6 +65,8 @@ export interface SceneDef {
   items: string[];
   /** Dialogue tree/chunk slugs (not UUIDs, so scenes survive re-imports). Ordered. */
   dialogue_refs: string[];
+  /** Cast positions (SC-302). `slot_id` is unique within the scene. */
+  role_slots: RoleSlot[];
   /** Overlay precedence; base scenes use 0. */
   priority: number;
 }
@@ -77,6 +87,7 @@ const SCENE_JSON_KEYS = [
   'items',
   'location',
   'priority',
+  'role_slots',
   'schema_version',
   'slug',
   'time',
@@ -96,6 +107,7 @@ export function sceneDefToJSON(scene: SceneDef): Record<string, unknown> {
     items: [...scene.items],
     location: scene.location,
     priority: scene.priority,
+    role_slots: scene.role_slots.map(roleSlotToJSON),
     schema_version: SCENE_SCHEMA_VERSION,
     slug: scene.slug,
     time: scene.time ?? null,
@@ -126,6 +138,28 @@ function readSlugList(obj: Record<string, unknown>, key: string): string[] {
     if (!isValidSlug(entry)) fail(`${key}[${i}]`, 'must be a valid slug');
     return entry;
   });
+}
+
+function readRoleSlots(obj: Record<string, unknown>): RoleSlot[] {
+  const raw = obj.role_slots;
+  if (!Array.isArray(raw)) fail('role_slots', 'must be an array');
+  const slots = raw.map((entry, i): RoleSlot => {
+    const path = `role_slots[${i}]`;
+    if (typeof entry !== 'object' || entry === null || Array.isArray(entry)) fail(path, 'must be an object');
+    const slot = entry as Record<string, unknown>;
+    for (const key of Object.keys(slot)) {
+      if (!(ROLE_SLOT_JSON_KEYS as readonly string[]).includes(key)) {
+        throw new InvalidSceneDefError(`unknown field '${key}' in '${path}'`);
+      }
+    }
+    if (!isValidSlug(slot.slot_id)) fail(`${path}.slot_id`, 'must be a valid slug');
+    if (slot.cast !== null && !isValidSlug(slot.cast)) fail(`${path}.cast`, 'must be null or a valid character slug');
+    if (!isSlotPosition(slot.position)) fail(`${path}.position`, `must be one of: ${SLOT_POSITIONS.join(', ')}`);
+    return { slot_id: slot.slot_id, cast: slot.cast, position: slot.position };
+  });
+  const [dupe] = findDuplicateSlotIds(slots);
+  if (dupe !== undefined) throw new InvalidSceneDefError(`duplicate slot_id '${dupe}' in 'role_slots'`);
+  return slots;
 }
 
 /**
@@ -179,6 +213,7 @@ export function sceneDefFromJSON(value: unknown): SceneDef {
     weather,
     items: readSlugList(obj, 'items'),
     dialogue_refs: readSlugList(obj, 'dialogue_refs'),
+    role_slots: readRoleSlots(obj),
     priority,
   };
 }

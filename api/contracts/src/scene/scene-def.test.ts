@@ -24,6 +24,7 @@ function makeScene(overrides: Partial<SceneDef> = {}): SceneDef {
     weather: 'rain',
     items: ['umbrella'],
     dialogue_refs: ['dialogue_b', 'dialogue_a'],
+    role_slots: [{ slot_id: 'host', cast: 'valentina_quan', position: 'center' }],
     priority: 0,
     ...overrides,
   };

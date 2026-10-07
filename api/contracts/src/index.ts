@@ -55,7 +55,7 @@ export {
 } from './condition/index.js';
 
 // Scene (SC-301)
-export type { SceneDef, SceneTime } from './scene/index.js';
+export type { SceneDef, SceneTime, RoleSlot, SlotPosition } from './scene/index.js';
 export {
   SCENE_SCHEMA_VERSION,
   SCENE_TIMES,
@@ -66,6 +66,9 @@ export {
   stringifySceneDef,
   isValidSlug,
   isUuid,
+  SLOT_POSITIONS,
+  isSlotPosition,
+  findDuplicateSlotIds,
 } from './scene/index.js';
 
 // Artifact
