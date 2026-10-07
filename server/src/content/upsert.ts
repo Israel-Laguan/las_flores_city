@@ -24,6 +24,9 @@ async function processCharacterData(data: any, filePath: string): Promise<string
   // Derive slug from the character's folder name:
   //   content/characters/carlos_mendoza/char_carlos_mendoza.yaml → "carlos_mendoza"
   const slug = path.basename(path.dirname(filePath));
+  if (!/^[a-z0-9]+(?:_[a-z0-9]+)*$/.test(slug)) {
+    throw new Error(`Cannot derive a valid character slug from path: ${filePath}`);
+  }
   return upsertCharacter(data, slug);
 }
 

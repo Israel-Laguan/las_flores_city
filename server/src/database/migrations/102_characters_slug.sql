@@ -16,5 +16,4 @@ ALTER TABLE characters ADD COLUMN IF NOT EXISTS slug TEXT;
 CREATE UNIQUE INDEX IF NOT EXISTS idx_characters_slug_unique
   ON characters (slug) WHERE slug IS NOT NULL;
 
--- Fast lookup by slug (the index above already covers unique lookups, but
--- an explicit comment clarifies intent for future readers).
+
