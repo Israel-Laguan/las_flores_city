@@ -261,7 +261,7 @@ async function enrichCharacter(characterFolder: string, index: number): Promise<
   // Skip if already fully enriched with all 4 fields
   if (characterData.physical_description && characterData.psychological_description && 
       characterData.background_and_role?.length > 0 && 
-characterData.birth_year != null) {
+      characterData.birth_year != null) {
     console.log(`  ✅ Already fully enriched: ${characterData.name}`);
     return { success: true, character: characterData.name, folder: characterFolder };
   }
@@ -271,7 +271,7 @@ characterData.birth_year != null) {
   if (!characterData.physical_description) missingFields.push('physical_description');
   if (!characterData.psychological_description) missingFields.push('psychological_description');
   if (!characterData.background_and_role?.length) missingFields.push('background_and_role');
-  if (characterData.birth_year == null) missingFields.push('birth_year');
+if (characterData.birth_year == null) missingFields.push('birth_year');
   if (missingFields.length > 0) {
     console.log(`  📝 Needs enrichment (missing: ${missingFields.join(', ')}): ${characterData.name}`);
   }
@@ -316,7 +316,7 @@ characterData.birth_year != null) {
     // Update character data with enrichment, PRESERVING existing values
     const enrichedData = {
       ...characterData,
-      physical_description: characterData.physical_description || enrichment.physical_description || undefined,
+physical_description: characterData.physical_description || enrichment.physical_description || undefined,
       psychological_description: characterData.psychological_description || enrichment.psychological_description || undefined,
       background_and_role: characterData.background_and_role?.length
         ? characterData.background_and_role
