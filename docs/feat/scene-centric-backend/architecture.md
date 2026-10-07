@@ -152,6 +152,43 @@ architecture most directly:
 | **R12** revision-scoped lookups; validate transitions before effects | Structural via §4; `effects/` may not apply an effect it has not validated as reachable |
 | **R13** no performance goal without a baseline | The serving benchmark is an SC-M3 deliverable, not an optimization follow-up |
 
+### 6.1 Validation tiers and the issue format
+
+`planning/validate/` and `contracts/` validators share one result shape
+(`api/contracts/src/validation/issue.ts`): `{ valid, issues[] }` where each issue is
+`{ code, path, message, severity }`. `code` is a stable constant (match on it, never on
+`message`); `path` is `role_slots[1].slot_id`-style (`''` = root); `severity` is `error`
+(fails), `warning` (surfaced, never blocks) or `hint` (advisory). Validators **return**
+issues, collect all of them in one pass, and never throw strings. Composition conflicts
+(E3) and later checks (SC-603/SC-405) reuse the format.
+
+| Tier | Checks | Needs other entities? | Where |
+|---|---|---|---|
+| 1 shape | presence, types, enums, slug/uuid format, in-payload uniqueness | no | `contracts` (`validateScene`, SC-301b) |
+| 2 reference | location/dialogue/item/cast/flag slugs resolve | yes | `planning/validate` (SC-604) |
+| 3 reachability | the scene graph can actually be traversed | yes | `planning/validate` |
+
+**Tier-1 `SceneDef` codes** (`SCENE_ISSUE_CODES`, `api/contracts/src/scene/validate.ts`):
+
+| Code | Severity | Path | Meaning |
+|---|---|---|---|
+| `SCENE_NOT_OBJECT` | error | `''` | input is not a plain object |
+| `SCENE_FIELD_UNKNOWN` | error | `<key>`, `role_slots[i].<key>` | key not in the contract (a slot may never carry personality/relationship data) |
+| `SCENE_FIELD_MISSING` | error | `<key>` | required key absent or `undefined` (use `null` for "none") |
+| `SCENE_FIELD_TYPE` | error | `<key>` | wrong JS type (string / array / object) |
+| `SCENE_SCHEMA_VERSION_MISMATCH` | error | `schema_version` | differs from `SCENE_SCHEMA_VERSION` |
+| `SCENE_SLUG_INVALID` | error | `slug` | not an identifier-valid slug |
+| `SCENE_LOCATION_INVALID` | error | `location` | not a UUID of a legacy location row |
+| `SCENE_TIME_INVALID` | error | `time` | not `null` / `day` / `sunset` / `night` |
+| `SCENE_WEATHER_INVALID` | error | `weather` | not `null` (inherit) or a `WeatherTag` |
+| `SCENE_PRIORITY_INVALID` | error | `priority` | not an integer |
+| `SCENE_REF_SLUG_INVALID` | error | `items[i]`, `dialogue_refs[i]` | entry is not a valid slug |
+| `SCENE_DIALOGUE_REF_DUPLICATE` | warning | `dialogue_refs[i]` | same ref listed twice |
+| `SCENE_SLOT_ID_INVALID` | error | `role_slots[i].slot_id` | not an identifier-valid slug |
+| `SCENE_SLOT_DUPLICATE` | error | `role_slots[i].slot_id` | repeats an earlier slot's id |
+| `SCENE_SLOT_CAST_INVALID` | error | `role_slots[i].cast` | not `null` or a valid character slug |
+| `SCENE_SLOT_POSITION_INVALID` | error | `role_slots[i].position` | not `left` / `center` / `right` |
+
 ## 7. Initial setup — the concrete steps
 
 Sprint 1 work, in order. Detail and acceptance criteria in `sprint-01.md`.

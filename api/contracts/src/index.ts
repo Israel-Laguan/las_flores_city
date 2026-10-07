@@ -69,7 +69,14 @@ export {
   SLOT_POSITIONS,
   isSlotPosition,
   findDuplicateSlotIds,
+  SCENE_ISSUE_CODES,
+  validateScene,
 } from './scene/index.js';
+export type { SceneIssueCode, SceneIssue, SceneValidationResult } from './scene/index.js';
+
+// Validation (shared issue format)
+export type { IssueSeverity, ValidationIssue, ValidationResult } from './validation/index.js';
+export { ISSUE_SEVERITIES, createValidationResult, issuePath } from './validation/index.js';
 
 // Artifact
 export type {
