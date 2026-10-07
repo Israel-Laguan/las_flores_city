@@ -331,6 +331,7 @@ physical_description: characterData.physical_description || enrichment.physical_
       console.error(`  ❌ Enriched data failed schema validation for ${characterData.name}: ${detail}`);
       return { success: false, character: characterData.name, folder: characterFolder, error: `Schema validation failed: ${detail}` };
     }
+}
     // Write back to YAML file
     const writeSuccess = writeYamlFile(yamlPath, enrichedData);
     
