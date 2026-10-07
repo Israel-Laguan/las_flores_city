@@ -2,40 +2,46 @@
 name: Anna van der Meer
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/anna_van_der_meer/anna_van_der_meer.md
 target: `asset_paths.portrait` in `content/characters/anna_van_der_meer/char_anna_van_der_meer.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Anna van der Meer
 
+NOTE: regeneration needed: current PNG has a stray black bar artifact (top right) and shows a sleeveless tank instead of the charcoal suit
+
 ## Prompt (Draft)
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 36-year-old Dutch female. Athletic toned build, dark brown hair in practical elegant style, deep blue eyes, oval face, warm intelligent expression, tailored charcoal suit with white shirt, Van der Meer Industries office, Las Flores skyline, no Latin American features
+Dutch woman of 36, athletic toned build, oval face, deep blue eyes, fair skin, dark brown hair neatly styled behind the ears, warm intelligent expression, tailored charcoal suit jacket over a crisp white shirt, plain flat grey background. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 36-year-old Dutch woman. Athletic, toned build shaped by an active lifestyle. Dark brown hair, usually styled in a practical but elegant manner. Deep blue eyes — intelligent, appraising, and capable of genuine warmth. Oval face with an open, approachable bearing. She wears a tailored charcoal suit, crisp white shirt, a simple platinum band on her left hand. Her expression is empathetic composure. The backdrop is a corporate executive office in an old city district. Dark wood, a photograph of an older man on the credenza, a window showing a city skyline. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch woman of 36. Athletic, toned build with squared, upright shoulders. Fair skin, an oval face with an open, approachable look, and deep blue eyes. Dark brown hair shoulder-length and neatly styled behind the ears. Tailored charcoal suit jacket over a crisp white shirt. Level gaze with a faint, warm smile. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no Latin American features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, Latino features, East Asian features, African features
 
 ## Variations
 
-- [ ] Anna at the Van der Meer Industries board table, leaning forward with quiet resolve, the family photograph behind her
-- [ ] Anna at a Las Flores City Council podium, speaking with progressive fire, city seal on the wall
-- [ ] Anna at her seaside home at golden hour, phone in one hand, the other resting on a social-advocacy leaflet
+- [ ] At a board table leaning forward with quiet resolve
+- [ ] At a council podium speaking with conviction
+- [ ] At home in golden hour light, casual jacket, phone in hand
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral warm composed expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__calculating.png`**: Use the base portrait as reference. Sharp, assessing focus, looking directly at the camera, 3/4 take. Eyes narrowed with shrewd evaluation. Keep the same art style as reference, same charcoal suit. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral warm composed expression, faint smile, looking at the camera, 3/4 take. Shoulders upright, hands relaxed at her sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__focused.png`**: Use the base portrait as reference. Intense concentration, looking directly at the camera, 3/4 take. Eyes sharply focused, brow slightly furrowed. Keep the same art style as reference, same tailored suit. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__calculating.png`**: Use the base portrait as reference. Sharp assessing focus, eyes narrowed, lips closed, looking at the camera, 3/4 take. Chin raised slightly, one hand lifted with fingertips resting against her jaw. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__determined.png`**: Use the base portrait as reference. Resolute, firm expression, looking unflinchingly at the camera, 3/4 take. Eyes steady with quiet resolve, jaw squared. Keep the same art style as reference, same charcoal suit and platinum band. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__focused.png`**: Use the base portrait as reference. Intense concentration, eyes sharp, brow slightly furrowed, looking at the camera, 3/4 take. Leaning forward a little, both hands gripping an unseen table edge. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__tender.png`**: Use the base portrait as reference. Soft, open expression, looking warmly at the camera, 3/4 take. Eyes softened. Keep the same art style as reference, same suit. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__determined.png`**: Use the base portrait as reference. Resolute firm expression, eyes steady, jaw squared, looking at the camera, 3/4 take. Shoulders squared, one hand curled into a controlled fist at her waist. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__tender.png`**: Use the base portrait as reference. Soft open expression, eyes warm and gently lowered, looking at the camera, 3/4 take. Shoulders easing, one hand reaching forward palm-up. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__sad.png`**: Use the base portrait as reference. Eyes lowered and glistening, mouth drawn down, looking at the camera, 3/4 take. Shoulders sinking, head bowed, both hands resting limp at her waist. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.

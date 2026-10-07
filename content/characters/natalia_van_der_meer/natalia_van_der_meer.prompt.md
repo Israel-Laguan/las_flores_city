@@ -2,40 +2,44 @@
 name: Natalia van der Meer
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/natalia_van_der_meer/natalia_van_der_meer.md
 target: `asset_paths.portrait` in `content/characters/natalia_van_der_meer/char_natalia_van_der_meer.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Natalia van der Meer
 
+NOTE: regeneration needed: blonde hair and paint-flecked overalls per lore (current PNG shows dark hair and a grey sweatshirt)
+
 ## Prompt (Draft)
 
-Dutch artist in her 20s-30s, lean-wiry expressive build, clear fair skin. Heart-shaped face, prominent jaw, high cheekbones, pointed nose, almond eyes, arched brows, full lips. Wavy blonde undyed messy-chic hair, paint-stained fingers, faint paint smear on jaw, small scar on knuckle. Artistic rebellious bearing, vivid open expression. Artsy unconventional attire, paint-flecked overalls, sport earbud. Art studio backdrop, abstract paintings and mixed-media sculptures, skylight. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Dutch artist of about 30, lean wiry build, clear fair skin, heart-shaped face, prominent jaw, high cheekbones, pointed nose, almond eyes, arched brows, full lips. Wavy blonde messy-chic hair, paint-flecked denim overalls over a white long-sleeve tee, paint-stained fingers, smear of paint on jaw, plain flat grey background. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch artist in her 20s-30s. Lean-wiry expressive build with a vivid, rebellious presence. Clear fair skin. Heart-shaped face with a prominent jaw and high cheekbones. Pointed nose, almond eyes, arched brows, full lips. Wavy blonde undyed hair, messy-chic and unkempt, paint-stained fingers, a faint smear of paint on her jaw, a small scar on one knuckle. Artistic rebellious bearing, a vivid open expression looking straight through the frame. Artsy unconventional attire: a paint-flecked smock over layered clothing, a sport earbud clipped to her earlobe. The backdrop is an art studio with abstract paintings and mixed-media sculptures, soft skylight falling across the chaos of her work space. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch artist of about 30. Lean, wiry build with a vivid presence. Clear fair skin. Heart-shaped face with a prominent jaw and high cheekbones. Pointed nose, almond eyes, arched brows, full lips. Wavy blonde undyed hair, messy-chic and unkempt, a faint smear of paint on the jaw. Paint-flecked denim overalls over a white long-sleeve tee with sleeves pushed up, paint-stained fingers and a small scar on one knuckle. Open, vivid expression. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no Latino features, no East Asian features, no African features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, Latino features, East Asian features, African features
 
 ## Variations
 
-- [ ] Before a large abstract canvas, brush in hand, skylight overhead
-- [ ] Surrounded by mixed-media sculptures in her messy studio
-- [ ] Crouched on a studio floor, palette held low, canvases stacked behind her
+- [ ] Before a large abstract canvas, brush in hand
+- [ ] Among mixed-media sculptures in a messy studio
+- [ ] Crouched on the floor, palette held low
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral vivid resting expression, looking at the camera, 3/4 take. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__happy.png`**: Use the base portrait as reference. A bright, unguarded laugh, looking at the camera, 3/4 take. Full lips wide open mid-laugh, eyes crinkling with delight, brows lifted high. Keep the same art style as reference, same smock, attire, and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral vivid resting expression, looking at the camera, 3/4 take. Shoulders loose, paint-stained hands hanging at her sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__vulnerable.png`**: Use the base portrait as reference. A soft, open vulnerability, looking at the camera, 3/4 take. Eyes wide and sincere, full lips slightly parted, brows lifted with honest uncertainty. Keep the same art style as reference, same clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__happy.png`**: Use the base portrait as reference. Bright unguarded laugh, mouth open, eyes crinkling, brows lifted, looking at the camera, 3/4 take. Head thrown back slightly, shoulders shaking, one paint-stained hand pressed to her chest. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__calculating.png`**: Use the base portrait as reference. A sharp, appraising gaze, looking at the camera, 3/4 take. Eyes narrowed and measuring a stroke, brows drawn low in focus, full lips set in a critical line. Keep the same art style as reference, same smock and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__vulnerable.png`**: Use the base portrait as reference. Soft open vulnerability, eyes wide and sincere, lips slightly parted, looking at the camera, 3/4 take. Shoulders curling in, both hands holding a paintbrush loosely in front of her. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__afraid.png`**: Use the base portrait as reference. A guarded, startled tension, looking at the camera, 3/4 take. Eyes widened, brows raised, full lips parted in unease. Keep the same art style as reference, same clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__calculating.png`**: Use the base portrait as reference. Sharp appraising gaze, eyes narrowed, lips in a critical line, looking at the camera, 3/4 take. Chin raised, one arm across her body, the other hand lifted with a thumb measuring an unseen canvas. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__afraid.png`**: Use the base portrait as reference. Guarded startled tension, eyes widened, brows raised, lips parted, looking at the camera, 3/4 take. Shoulders up, one hand clutching the overall strap, the other held out defensively. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.

@@ -8,13 +8,15 @@ target: content/characters/anna_van_der_meer/assets/
 
 # Video Prompts: Anna van der Meer
 
+NOTE: regeneration needed: current PNG has a stray black bar artifact (top right) and shows a sleeveless tank instead of the charcoal suit
+
 Generate seamless looping portrait videos from each expression variant PNG. Use the corresponding `anna_van_der_meer__<expression>.png` as the input image for each prompt. The woman on the reference image is the character described in the source prompt file.
 
 ## Base Loop (Default)
 
 **Input**: `assets/anna_van_der_meer__default.png`
 
-Create a seamless looping video. The woman on the reference image holds an expression of neutral empathetic composure with genuine warmth. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle, and a calm, approachable warmth across her features. Hair and clothing respond to a faint ambient breeze. The tailored lapels of her charcoal suit jacket shift subtly, the crisp collar of her white shirt stirs faintly, and stray strands of dark brown hair drift delicately across her forehead and temples. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a neutral composed resting expression, looking at the camera with steady presence. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Dutch woman of 36, athletic toned build, fair skin, oval face, deep blue eyes, dark brown shoulder-length hair, charcoal suit jacket over a white shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
 
@@ -22,22 +24,28 @@ Create a seamless looping video. The woman on the reference image holds an expre
 
 **Input**: `assets/anna_van_der_meer__calculating.png`
 
-Create a seamless looping video. The woman on the reference image has deep blue eyes narrowed in sharp strategic assessment, a set jaw, and an expression of calculating focus. Subtle idle animation: steady, controlled breathing in the chest and shoulders, a subtle micro-narrowing cycle in her appraising deep blue eyes as she calculates, faint micro-tension along her set jawline, and a disciplined, deliberate blink cycle. Hair and clothing respond to a faint ambient breeze. The structured shoulders and lapels of her charcoal suit jacket shift subtly with each breath, her white shirt collar catches a faint draft, and wisps of dark brown hair stir gently near her cheekbones. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows sharp analytical thought with narrowed eyes and a measured mouth. Subtle idle animation only: slow measured breathing, a subtle micro-narrowing of the eyes, an infrequent deliberate blink. Dutch woman of 36, athletic toned build, fair skin, oval face, deep blue eyes, dark brown shoulder-length hair, charcoal suit jacket over a white shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__focused` loop
 
 **Input**: `assets/anna_van_der_meer__focused.png`
 
-Create a seamless looping video. The woman on the reference image has steady sharp deep blue eyes holding intense executive concentration, a squared posture, and an expression of focused determination. Subtle idle animation: rhythmic, focused breathing motion lifting her squared chest and shoulders, an unwavering gaze with a calm, deliberate blink cycle, and subtle micro-focus adjustments in the eyes. Hair and clothing respond to a faint ambient breeze. The tailored charcoal jacket fabric remains steady with minimal subtle shifts, the crisp white shirt moves faintly against her throat, and fine strands of dark brown hair flutter delicately in the ambient draft. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows absorbed concentration with intent eyes and knit brows. Subtle idle animation only: slow controlled breathing, a subtle narrowing of the eyes, a deliberate blink cycle. Dutch woman of 36, athletic toned build, fair skin, oval face, deep blue eyes, dark brown shoulder-length hair, charcoal suit jacket over a white shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__determined` loop
 
 **Input**: `assets/anna_van_der_meer__determined.png`
 
-Create a seamless looping video. The woman on the reference image has unwavering deep blue eyes filled with resolute corporate determination, a firm set jaw, and an expression of resolute focus. Subtle idle animation: deep, measured breathing elevating her chest and shoulders, a slight firming micro-motion along the jawline, and a confident, disciplined blink cycle holding resolute focus. Hair and clothing respond to a faint ambient breeze. The sharp lapels of her tailored charcoal suit shift subtly with respiration, the crisp white shirt collar ripples faintly, and dark brown hair strands stir softly at her temples. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a resolved, firm expression with steady unflinching eyes and a set mouth. Subtle idle animation only: deep controlled breathing in the chest and shoulders, a slight firming of the jaw, a slow unwavering blink cycle. Dutch woman of 36, athletic toned build, fair skin, oval face, deep blue eyes, dark brown shoulder-length hair, charcoal suit jacket over a white shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__tender` loop
 
 **Input**: `assets/anna_van_der_meer__tender.png`
 
-Create a seamless looping video. The woman on the reference image has deep blue eyes brightening with soft genuine warmth and affection, a relaxed posture, and an expression of tender warmth. Subtle idle animation: soft, gentle breathing motion causing a relaxed rise and fall in the chest and shoulders, a warm gentle blink cycle with eyelashes fluttering softly, and a subtle softening and brightening around the eyes and corners of her mouth. Hair and clothing respond to a faint ambient breeze. The charcoal suit jacket drapes comfortably and shifts softly with her relaxed breaths, the white shirt collar flutters faintly, and fine strands of dark brown hair drift gently across her forehead. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a soft open expression with a gentle gaze. Subtle idle animation only: soft easy breathing, a slow relaxing of the shoulders, a slow warm blink. Dutch woman of 36, athletic toned build, fair skin, oval face, deep blue eyes, dark brown shoulder-length hair, charcoal suit jacket over a white shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+
+### `__sad` loop
+
+**Input**: `assets/anna_van_der_meer__sad.png`
+
+Create a seamless looping video. The woman on the reference image shows a heavy quiet sadness with lowered glistening eyes and a downturned mouth. Subtle idle animation only: slow heavy breathing, a slight sinking of the shoulders, a slow blink with a faint lip tremor. Dutch woman of 36, athletic toned build, fair skin, oval face, deep blue eyes, dark brown shoulder-length hair, charcoal suit jacket over a white shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

@@ -2,42 +2,46 @@
 name: Peter van der Meer Jr.
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/peter_van_der_meer_jr/peter_van_der_meer_jr.md
 target: `asset_paths.portrait` in `content/characters/peter_van_der_meer_jr/char_peter_van_der_meer_jr.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Peter van der Meer Jr.
 
-NOTE: re-dated to b.2063 (age ~14); portrait/variants/videos need regeneration
+NOTE: re-dated to b.2063 (age ~14); portrait/variants/videos need regeneration (current PNG depicts an adult)
 
 ## Prompt (Draft)
 
-Dutch-Latina mixed boy of about 14, lean wiry build, clear olive-fair skin. Angular face, high cheekbones, defined but youthful jawline, wavy dark-blonde hair. Straight nose, round warm eyes, thick brows, full lips. Small scar near right ear, one brow sitting slightly higher. Confident warm young-advocate bearing, small sport earbud clipped to earlobe. Youth casual attire with an Amor Verdadero pin, community-center backdrop with understated pride accents. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Dutch-Latina mixed boy of about 14, slim adolescent build, narrow shoulders, smooth beardless olive-fair skin, soft youthful cheeks. Angular face, high cheekbones, wavy dark-blonde hair, straight nose, round warm brown eyes, thick brows with the right slightly higher, full lips, small scar near right ear. Upright shoulders and level chin, small sport earbud clipped to one earlobe, light casual collared shirt with a small rainbow-enamel pin, plain flat grey background. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch-Latina mixed boy of about 14. Lean wiry build, youthful and poised. Clear olive-fair skin with a healthy warmth. Angular face with high cheekbones and a defined but youthful jawline, wavy dark-blonde hair styled with easy confidence. Straight nose, round warm brown eyes, thick slightly asymmetric brows — one sits a fraction higher than the other — and full lips. A small scar near the right ear, a faint marker of a lived, active life. Self-assured young-advocate bearing, open and determined expression. Small sport non-in-ear earbud clipped to earlobe. Youth casual attire: a casual collared shirt with a small Amor Verdadero pin at the chest, relaxed layers. The backdrop is a community center hosting an advocacy event, understated pride-color banners and warm ambient light, softly blurred depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch-Latina mixed boy of about 14. Slim adolescent build with narrow shoulders and a long neck, smooth beardless olive-fair skin with soft youthful cheeks. Angular face with high cheekbones and a youthful, not yet fully defined jaw, wavy dark-blonde hair worn slightly tousled, straight nose, round warm brown eyes, thick brows with the right one sitting a fraction higher, full lips, and a small scar near the right ear. Upright shoulders and a level chin give a poised, open look. Small sport non-in-ear earbud clipped to one earlobe. Light casual collared shirt with sleeves rolled to the forearm and a small rainbow-enamel pin on the chest. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no East Asian features, no African features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, stubble, facial hair, muscular, adult, East Asian features
 
 ## Variations
 
-- [ ] At a community-center podium addressing a small advocacy crowd under warm lights
-- [ ] In casual conversation with allies, Amor Verdadero pin catching the light
-- [ ] Outside the center at golden hour, pride colors draped beneath an awning
+- [ ] Standing at a podium addressing a small crowd, one hand on the lectern
+- [ ] Chatting with friends, small pin catching the light
+- [ ] Walking out of a building at golden hour with a folder under one arm
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__determined.png`**: Use the base portrait as reference. Resolute and focused, looking directly at the camera, 3/4 take. Round eyes steady and intent, thick brows drawn together slightly, full lips pressed into a firm line. Keep the same art style as reference, same youth casual attire and Amor Verdadero pin. Clean confident linework, painterly soft shading with deeper shadows, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders relaxed and level, arms hanging loosely at his sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__happy.png`**: Use the base portrait as reference. Genuine, warm smile, looking at the camera, 3/4 take. Round eyes crinkling, full lips curved up naturally, thick brows relaxed and lifted, frame open and at ease. Keep the same art style as reference, same clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__determined.png`**: Use the base portrait as reference. Round eyes steady, brows drawn slightly together, lips pressed in a firm line, looking at the camera, 3/4 take. Chin lifted a little, shoulders squared, one hand curled into a loose fist at chest height. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__vulnerable.png`**: Use the base portrait as reference. Soft, guarded openness, looking at the camera, 3/4 take. Round eyes with a searching, sincere quality, one brow lifted higher as emotion surfaces, full lips parted slightly. Keep the same art style as reference, same shirt and pin. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__happy.png`**: Use the base portrait as reference. Genuine warm smile, eyes crinkling, brows relaxed and lifted, looking at the camera, 3/4 take. Shoulders loose and slightly raised, one hand lifted in a small open wave. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__angry.png`**: Use the base portrait as reference. Firm, righteous anger, looking at the camera, 3/4 take. Oval-round eyes narrowed, thick brows drawn low and hard, full lips tight, jawline clenched. Keep the same art style as reference, same clothing and earbud. Clean confident linework, painterly soft shading with strong contrast, muted natural palette.
+- **`__vulnerable.png`**: Use the base portrait as reference. Soft guarded openness, one brow lifted, lips slightly parted, looking at the camera, 3/4 take. Shoulders drawn in a little, one hand holding the opposite forearm. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__angry.png`**: Use the base portrait as reference. Eyes narrowed, brows low and hard, lips tight, looking at the camera, 3/4 take. Shoulders squared and rigid, both hands clenched into fists at his sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__sad.png`**: Use the base portrait as reference. Eyes downcast and glossy, inner brows tilted up, mouth turned down, looking at the camera, 3/4 take. Shoulders slumped, head bowed slightly, arms limp with hands loosely together at the waist. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
