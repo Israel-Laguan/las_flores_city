@@ -54,6 +54,20 @@ export {
   flagObjectFromSet,
 } from './condition/index.js';
 
+// Scene (SC-301)
+export type { SceneDef, SceneTime } from './scene/index.js';
+export {
+  SCENE_SCHEMA_VERSION,
+  SCENE_TIMES,
+  InvalidSceneDefError,
+  isSceneTime,
+  sceneDefToJSON,
+  sceneDefFromJSON,
+  stringifySceneDef,
+  isValidSlug,
+  isUuid,
+} from './scene/index.js';
+
 // Artifact
 export type {
   Artifact,
