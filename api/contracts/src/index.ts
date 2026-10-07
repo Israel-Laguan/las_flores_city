@@ -75,6 +75,39 @@ export {
 } from './scene/index.js';
 export type { SceneIssueCode, SceneIssue, SceneValidationResult } from './scene/index.js';
 
+// Scene overlays (SC-303a)
+export type {
+  SceneOverlay,
+  SceneOverlayInput,
+  SceneOverlayOp,
+  AddDialogueRefsOp,
+  AddItemsOp,
+  AddRoleSlotOp,
+  CastSlotOp,
+  SetWeatherOp,
+  SetTimeOp,
+  SceneOverlayOpName,
+  SceneOverlayOpKind,
+  ValidateSceneOverlayOptions,
+  SceneOverlayIssueCode,
+  SceneOverlayIssue,
+  SceneOverlayValidationResult,
+} from './scene/index.js';
+export {
+  InvalidSceneOverlayError,
+  createSceneOverlay,
+  sceneOverlayOpToJSON,
+  sceneOverlayToJSON,
+  sceneOverlayFromJSON,
+  stringifySceneOverlay,
+  SCENE_OVERLAY_SCHEMA_VERSION,
+  SCENE_OVERLAY_OPS,
+  SCENE_OVERLAY_OP_NAMES,
+  isSceneOverlayOpName,
+  SCENE_OVERLAY_ISSUE_CODES,
+  validateSceneOverlay,
+} from './scene/index.js';
+
 // Validation (shared issue format)
 export type { IssueSeverity, ValidationIssue, ValidationResult } from './validation/index.js';
 export { ISSUE_SEVERITIES, createValidationResult, issuePath } from './validation/index.js';
