@@ -18,6 +18,7 @@
 import fs from 'fs';
 import path from 'path';
 import { load as yamlLoad, dump as yamlDump } from 'js-yaml';
+import { YAMLCharacterSchema } from '@las-flores/shared';
 
 // ─── Configuration ────────────────────────────────────────────────────────────
 const CONTENT_DIR = path.resolve('content/characters');
@@ -260,7 +261,7 @@ async function enrichCharacter(characterFolder: string, index: number): Promise<
   // Skip if already fully enriched with all 4 fields
   if (characterData.physical_description && characterData.psychological_description && 
       characterData.background_and_role?.length > 0 && 
-      characterData.birth_year !== undefined) {
+      characterData.birth_year != null) {
     console.log(`  ✅ Already fully enriched: ${characterData.name}`);
     return { success: true, character: characterData.name, folder: characterFolder };
   }
@@ -270,7 +271,7 @@ async function enrichCharacter(characterFolder: string, index: number): Promise<
   if (!characterData.physical_description) missingFields.push('physical_description');
   if (!characterData.psychological_description) missingFields.push('psychological_description');
   if (!characterData.background_and_role?.length) missingFields.push('background_and_role');
-  if (characterData.birth_year === undefined) missingFields.push('birth_year');
+  if (characterData.birth_year == null) missingFields.push('birth_year');
   if (missingFields.length > 0) {
     console.log(`  📝 Needs enrichment (missing: ${missingFields.join(', ')}): ${characterData.name}`);
   }
@@ -322,6 +323,14 @@ async function enrichCharacter(characterFolder: string, index: number): Promise<
         : (Array.isArray(enrichment.background_and_role) && enrichment.background_and_role.length ? enrichment.background_and_role : undefined),
       birth_year: characterData.birth_year ?? (Number.isInteger(enrichment.birth_year) ? enrichment.birth_year : undefined),
     };
+
+    // LLM output is unvalidated JSON; reject schema-invalid merges before persisting
+    const parsed = YAMLCharacterSchema.safeParse(enrichedData);
+    if (!parsed.success) {
+      const detail = parsed.error.issues.map(i => `${i.path.join('.')}: ${i.message}`).join('; ');
+      console.error(`  ❌ Enriched data failed schema validation for ${characterData.name}: ${detail}`);
+      return { success: false, character: characterData.name, folder: characterFolder, error: `Schema validation failed: ${detail}` };
+    }
 
     // Write back to YAML file
     const writeSuccess = writeYamlFile(yamlPath, enrichedData);

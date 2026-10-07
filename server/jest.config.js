@@ -137,7 +137,7 @@ const MINIO_SUITES = [
   'vault.test.ts',
 ];
 const MINIO_IGNORE = process.env.CI_NO_MINIO === '1'
-  ? MINIO_SUITES.map((f) => `${INTEGRATION_DIR}/${f}`)
+  ? MINIO_SUITES.map((f) => `${INTEGRATION_DIR}/${f.replace(/\./g, '\\.')}$`)
   : [];
 
 export default {
