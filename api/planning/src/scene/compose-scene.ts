@@ -14,8 +14,9 @@
 //    everything from the first flag-gated overlay on is kept, in order, as `layers`.
 //    Folding only the prefix keeps runtime == "apply all active overlays in sorted
 //    order": a static overlay sorting after a layer must still be able to override it;
-//  - layered `cast_slot`/`add_role_slot` are checked against the folded base so a
-//    dangling target is reported at compile, not discovered by players.
+//  - layered `cast_slot`/`add_role_slot` are checked against the folded base (a cast must
+//    be implied by the layers that add its slot) so a dangling target is reported at
+//    compile, not discovered by players.
 // Both modes run SC-304 conflict detection over every overlay for this base (folded or
 // layered): an `error` there fails the compile.
 // Player mode (`flags` given, SC-312): overlays whose availability is false for `flags`
@@ -23,10 +24,15 @@
 
 import {
   applyOverlayOps,
+  coSatisfiable,
   evaluate,
   extractFlagSlugs,
   issuePath,
+  not,
+  or,
   toComposedScene,
+  type CoSatisfiableResult,
+  type ConditionExpr,
   type ConditionalLayer,
   type ComposedScene,
   type FlagSet,
@@ -59,10 +65,25 @@ function toLayer(o: SceneOverlay): ConditionalLayer {
   return { slug: o.slug, priority: o.priority, availability: o.availability, ops: o.ops };
 }
 
-/** Compile-time reference check for layered slot ops against the folded base. */
+/**
+ * Can `layer` apply while none of `adders` (the earlier layers that add the slot) does?
+ * That is `availability ∧ ¬(adder₁ ∨ … ∨ adderₙ)` being satisfiable — the cast would
+ * then target a missing slot for some player.
+ */
+function castCanMissSlot(layer: ConditionalLayer, adders: ReadonlyArray<ConditionExpr>): CoSatisfiableResult {
+  return coSatisfiable(layer.availability, not(or(adders)));
+}
+
+/**
+ * Compile-time reference check for layered slot ops against the folded base:
+ * - `add_role_slot` of a slot the folded base already has → SCENE_SLOT_ALREADY_EXISTS;
+ * - `cast_slot` of a slot not in the folded base must be IMPLIED by earlier adders: if
+ *   some flag assignment activates the cast but no earlier layer adding the slot →
+ *   SCENE_SLOT_MISSING (`hint` when undecidable). Runtime then never hits a dangling cast.
+ */
 function checkLayerSlots(base: ComposedScene, layers: ReadonlyArray<ConditionalLayer>): ValidationIssue[] {
   const inBase = new Set(base.role_slots.map((s) => s.slot_id));
-  const known = new Set(inBase);
+  const adders = new Map<string, ConditionExpr[]>();
   const issues: ValidationIssue[] = [];
   for (const layer of layers) {
     layer.ops.forEach((op, i) => {
@@ -71,15 +92,20 @@ function checkLayerSlots(base: ComposedScene, layers: ReadonlyArray<ConditionalL
         if (inBase.has(op.slot.slot_id)) {
           issues.push({ code: 'SCENE_SLOT_ALREADY_EXISTS', path, severity: 'error', message: `slot '${op.slot.slot_id}' already exists in the base scene` });
         }
-        known.add(op.slot.slot_id);
-      } else if (op.op === 'cast_slot' && !known.has(op.slot_id)) {
-        issues.push({
-          code: 'SCENE_SLOT_MISSING',
-          path,
-          severity: 'error',
-          message: `cast_slot targets slot '${op.slot_id}', which neither the base nor an earlier layer defines`,
-        });
+        adders.set(op.slot.slot_id, [...(adders.get(op.slot.slot_id) ?? []), layer.availability]);
+        return;
       }
+      if (op.op !== 'cast_slot' || inBase.has(op.slot_id)) return;
+      const sat = castCanMissSlot(layer, adders.get(op.slot_id) ?? []);
+      if (sat.result === false) return;
+      issues.push({
+        code: 'SCENE_SLOT_MISSING',
+        path,
+        severity: sat.result === true ? 'error' : 'hint',
+        message:
+          `cast_slot targets slot '${op.slot_id}', which neither the base nor an earlier layer is guaranteed to define` +
+          (sat.result === true ? ` (e.g. flags {${sat.witness.join(', ')}})` : ' (undecided)'),
+      });
     });
   }
   return issues;

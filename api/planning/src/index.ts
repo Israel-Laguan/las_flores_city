@@ -80,6 +80,15 @@ export { resolveSceneForPlayer, selectActiveOverlays } from '@las-flores/api-con
 export type { ResolvedWeather, WeatherInput, WeatherSource } from './scene/resolve-weather.js';
 export { resolveWeather } from './scene/resolve-weather.js';
 
+// Composition golden fixtures (SC-313) — data in api/planning/test-fixtures/scene-composition
+export type {
+  GoldenCase,
+  GoldenCaseExpectation,
+  GoldenFixture,
+  GoldenPlayerExpectation,
+} from './scene/golden-fixtures.js';
+export { InvalidGoldenFixtureError, parseGoldenFixture } from './scene/golden-fixtures.js';
+
 // Overlay conflict detection (SC-304)
 export type { ConflictReport, SceneConflict, SceneConflictCode } from './scene/conflicts.js';
 export {

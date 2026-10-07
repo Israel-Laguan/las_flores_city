@@ -1,0 +1,90 @@
+{
+  "name": "flag_gated_rain_and_cast",
+  "description": "SC-313 golden 1 (SC-M2 demo): a flag-gated rain overlay over a base in an overcast district, plus a cast overlay that adds a role slot and casts the open bystander slot. One compiled artifact resolves differently as the flags flip.",
+  "district_weather": "overcast",
+  "base": {
+    "availability": { "type": "true" },
+    "description": "The public concourse at the airport gate.",
+    "dialogue_refs": ["dialogue_vq_endings"],
+    "id": "c3000000-0000-4000-8000-0000000000f1",
+    "items": [],
+    "location": "f007b9f2-7e50-48ee-9133-4ba2cb27af12",
+    "priority": 0,
+    "role_slots": [
+      { "cast": "valentina_quan", "position": "left", "slot_id": "valentina" },
+      { "cast": null, "position": "right", "slot_id": "bystander" }
+    ],
+    "schema_version": 1,
+    "slug": "vq_airport_gate",
+    "time": "night",
+    "title": "Airport gate",
+    "weather": null
+  },
+  "cases": [
+    {
+      "name": "rain_and_cast",
+      "overlays": [
+        {
+          "availability": { "type": "flag", "flag": "vq_pushed_away", "expected": true },
+          "base_scene_slug": "vq_airport_gate",
+          "ops": [
+            { "op": "set_weather", "weather": "rain" },
+            { "items": ["umbrella"], "op": "add_items" }
+          ],
+          "priority": 10,
+          "schema_version": 1,
+          "slug": "vq_pushed_away_rain"
+        },
+        {
+          "availability": { "type": "flag", "flag": "vq_gave_space", "expected": true },
+          "base_scene_slug": "vq_airport_gate",
+          "ops": [
+            { "op": "add_role_slot", "slot": { "cast": "ana_castillo", "position": "center", "slot_id": "gate_agent" } },
+            { "cast": "carlos_mendoza", "op": "cast_slot", "slot_id": "bystander" }
+          ],
+          "priority": 5,
+          "schema_version": 1,
+          "slug": "vq_gave_space_cast"
+        }
+      ],
+      "expect": {
+        "error_codes": [],
+        "layers": ["vq_gave_space_cast", "vq_pushed_away_rain"],
+        "flags": ["vq_gave_space", "vq_pushed_away"],
+        "players": [
+          {
+            "flags": [],
+            "active_layers": [],
+            "weather": { "weather": "overcast", "source": "district" },
+            "items": [],
+            "role_slots": [
+              { "slot_id": "valentina", "cast": "valentina_quan", "position": "left" },
+              { "slot_id": "bystander", "cast": null, "position": "right" }
+            ]
+          },
+          {
+            "flags": ["vq_pushed_away"],
+            "active_layers": ["vq_pushed_away_rain"],
+            "weather": { "weather": "rain", "source": "overlay:vq_pushed_away_rain" },
+            "items": ["umbrella"],
+            "role_slots": [
+              { "slot_id": "valentina", "cast": "valentina_quan", "position": "left" },
+              { "slot_id": "bystander", "cast": null, "position": "right" }
+            ]
+          },
+          {
+            "flags": ["vq_gave_space"],
+            "active_layers": ["vq_gave_space_cast"],
+            "weather": { "weather": "overcast", "source": "district" },
+            "items": [],
+            "role_slots": [
+              { "slot_id": "valentina", "cast": "valentina_quan", "position": "left" },
+              { "slot_id": "bystander", "cast": "carlos_mendoza", "position": "right" },
+              { "slot_id": "gate_agent", "cast": "ana_castillo", "position": "center" }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

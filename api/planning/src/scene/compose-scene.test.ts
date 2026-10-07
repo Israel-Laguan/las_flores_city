@@ -180,10 +180,25 @@ describe('composeScene ordering and folding', () => {
     expect(layered.issues).toEqual([expect.objectContaining({ code: 'SCENE_SLOT_MISSING', path: 'l.ops[0]' })]);
   });
 
-  test('a layer may cast a slot added by an earlier layer; adding a base slot again is an error', () => {
+  test('a layer may cast a slot added by an earlier layer only when its availability implies the adder', () => {
     const add = ov('a_add', 0, { availability: flag('f', true), ops: [{ op: 'add_role_slot', slot: { slot_id: 'guard', cast: null, position: 'left' } }] });
-    const cast = ov('b_cast', 0, { availability: flag('g', true), ops: [{ op: 'cast_slot', slot_id: 'guard', cast: 'x' }] });
-    expect(composeScene(base(), [cast, add]).issues).toEqual([]);
+    const implied = ov('b_cast', 0, { availability: and([flag('f', true), flag('g', true)]), ops: [{ op: 'cast_slot', slot_id: 'guard', cast: 'x' }] });
+    expect(composeScene(base(), [implied, add]).issues).toEqual([]);
+    const loose = { ...implied, availability: flag('g', true) };
+    expect(composeScene(base(), [loose, add]).issues).toEqual([
+      expect.objectContaining({ code: 'SCENE_SLOT_MISSING', path: 'b_cast.ops[0]', severity: 'error' }),
+    ]);
+    const sameLayer = ov('c_both', 0, {
+      availability: flag('g', true),
+      ops: [
+        { op: 'add_role_slot', slot: { slot_id: 'guard2', cast: null, position: 'left' } },
+        { op: 'cast_slot', slot_id: 'guard2', cast: 'x' },
+      ],
+    });
+    expect(composeScene(base(), [sameLayer]).issues).toEqual([]);
+  });
+
+  test('adding a base slot again from a layer is an error', () => {
     const dup = ov('dup', 0, { availability: flag('f', true), ops: [{ op: 'add_role_slot', slot: { slot_id: 'valentina', cast: null, position: 'left' } }] });
     expect(composeScene(base(), [dup]).issues.map((i) => i.code)).toEqual(['SCENE_SLOT_ALREADY_EXISTS']);
   });
