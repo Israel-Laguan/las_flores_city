@@ -3,10 +3,10 @@ import { sanitizeText } from './validate-xss.js';
 import { normalizeUuid } from './uuid-utils.js';
 import { publishDialogueTree } from '../services/ContentPublishService.js';
 
-export async function upsertCharacter(data: any): Promise<string> {
+export async function upsertCharacter(data: any, slug?: string): Promise<string> {
   const result = await queryOLTP(
-    `INSERT INTO characters (id, name, title, description, avatar_url, portrait_urls, atlas_url, available_dialogues, metadata)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    `INSERT INTO characters (id, name, title, description, avatar_url, portrait_urls, atlas_url, available_dialogues, metadata, slug)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
       ON CONFLICT (id) DO UPDATE SET
         name = EXCLUDED.name,
         title = EXCLUDED.title,
@@ -16,10 +16,11 @@ export async function upsertCharacter(data: any): Promise<string> {
         atlas_url = EXCLUDED.atlas_url,
         available_dialogues = EXCLUDED.available_dialogues,
         metadata = EXCLUDED.metadata,
+        slug = COALESCE(EXCLUDED.slug, characters.slug),
         updated_at = NOW()
       RETURNING id`,
     [data.id, data.name, data.title || null, sanitizeText(data.description), data.avatar_url || null, JSON.stringify(data.portrait_urls || []), data.atlas_url || null,
-     data.available_dialogues?.length > 0 ? `{${data.available_dialogues.join(',')}}` : '{}', JSON.stringify(data.metadata || {})]
+     data.available_dialogues?.length > 0 ? `{${data.available_dialogues.join(',')}}` : '{}', JSON.stringify(data.metadata || {}), slug || null]
   );
   return result.rows[0].id;
 }
