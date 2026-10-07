@@ -247,8 +247,7 @@ export interface ValidateSceneOverlayOptions {
   knownFlags?: ReadonlySet<string> | readonly string[];
 }
 
-/**
- * Validates an untrusted value as a SceneOverlay (tier 1, shape only).
+/** Validates an untrusted value as a SceneOverlay (tier 1, shape only).
  *
  * Never throws. Collects every issue in one pass. Within a single
  * overlay it rejects ops that contradict each other (two `set_weather`,
