@@ -14,7 +14,7 @@ Generate seamless looping portrait videos from each expression variant PNG. Use 
 
 **Input**: `assets/don_pedro__default.png`
 
-Create a seamless looping video. The man on the reference image holds a neutral, contemplative resting expression with a curved nose with a healed break and a faded knife scar across the jaw. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, and a barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. Thin gray hair severely receding shifts minimally, and the worn open-collared guayabera shirt with heavy signet rings on his fingers shifts gently in the draft. The small sport earbud clipped to his earlobe remains still. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a neutral composed resting expression, looking at the camera with steady presence. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Latino man of about 62, broad heavy build, weathered tan skin with fine scars, deep-set blue-grey eyes, thin receding grey hair, short grey stubble, dark navy collared shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
 
@@ -22,22 +22,22 @@ Create a seamless looping video. The man on the reference image holds a neutral,
 
 **Input**: `assets/don_pedro__calculating.png`
 
-Create a seamless looping video. The man on the reference image shows weighing a proposition with deep-set eyes narrowed and thick brows drawn, his jaw set. Subtle idle animation: measured, deliberate breathing motion in the chest, a subtle eye-narrowing cycle as he assesses, and a calm, deliberate blink cycle. Hair and clothing respond to a faint ambient breeze. Thin gray hair drifts gently in the draft, and the guayabera fabric shifts subtly with his breath. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a cool calculating expression with a lowered chin and narrowed, weighing eyes. Subtle idle animation only: slow even breathing, a faint tightening at the corner of the mouth, a small shift of the gaze as if weighing something, a slow deliberate blink. Latino man of about 62, broad heavy build, weathered tan skin with fine scars, deep-set blue-grey eyes, thin receding grey hair, short grey stubble, dark navy collared shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__smirk` loop
 
 **Input**: `assets/don_pedro__smirk.png`
 
-Create a seamless looping video. The man on the reference image shows a paternal knowing smirk with one corner of the mouth pulled up and deep-set eyes glinting with dry humor. Subtle idle animation: relaxed, easy breathing motion rising and falling in the chest, a subtle micro-lift at the corner of the smirk, and an easy, barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. The guayabera shirt shifts softly over his shoulders, and the signet rings catch a faint draft. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a one-sided knowing smirk with a lifted brow. Subtle idle animation only: slow easy breathing, a subtle flex of the cheek at the smirk, a slow lazy blink. Latino man of about 62, broad heavy build, weathered tan skin with fine scars, deep-set blue-grey eyes, thin receding grey hair, short grey stubble, dark navy collared shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__angry` loop
 
 **Input**: `assets/don_pedro__angry.png`
 
-Create a seamless looping video. The man on the reference image shows a hard, warning glare with deep-set eyes narrowed to slits and thick brows low and heavy. Subtle idle animation: tight, controlled, sharp breathing motion rising and falling in the chest, a subtle micro-clenching cycle in the jaw muscles, and a curt, intense blink cycle. Hair and clothing respond to a faint ambient breeze. Gray hair shifts sharply in the draft, and the guayabera shirt strains subtly across his broad shoulders. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows sharp anger with narrowed eyes, low brows and tight lips. Subtle idle animation only: tight breathing with visible rise and fall in the chest, a micro-clench in the jaw, a curt blink cycle. Latino man of about 62, broad heavy build, weathered tan skin with fine scars, deep-set blue-grey eyes, thin receding grey hair, short grey stubble, dark navy collared shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__tender` loop
 
 **Input**: `assets/don_pedro__tender.png`
 
-Create a seamless looping video. The man on the reference image shows a rare paternal softness with deep-set eyes gentler and mouth relaxed into warmth. Subtle idle animation: soft, peaceful breathing motion in the chest, a gentle softening cycle around the eyes and corners of his mouth, an easing of shoulder tension, and a slow, tender blink cycle. Hair and clothing respond to a faint ambient breeze. Soft wavy strands of gray hair stir lightly across his temples, and the open collar and fabric of the guayabera relax and shift subtly with each breath. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a soft tender expression with gentle eyes and a faint warm smile. Subtle idle animation only: slow warm breathing, a slight softening of the shoulders, a slow gentle blink. Latino man of about 62, broad heavy build, weathered tan skin with fine scars, deep-set blue-grey eyes, thin receding grey hair, short grey stubble, dark navy collared shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

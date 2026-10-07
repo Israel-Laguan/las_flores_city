@@ -1,38 +1,51 @@
 ---
 name: Dr. Maria Hernandez
 type: portrait
-size: 1024x1408
+size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/maria_hernandez/maria_hernandez.md
 target: `asset_paths.portrait` in `content/characters/maria_hernandez/char_maria_hernandez.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Dr. Maria Hernandez
 
+NOTE: current PNG shows solid black hair with no gray and reads as about 62; canon is dark brown hair streaked with gray at 58. Regenerate (low priority).
+
 ## Prompt (Draft)
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-built Latin woman in her late 50s, Dr. Maria Hernandez. Her frame is sturdy, slightly scholarly. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, thoughtful and scholarly behind wire-rimmed glasses. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her dark brown shoulder-length hair is grouped into simple, un-styled flowing shapes. She wears a minimalist, pocketless professional blazer over a blouse. Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO 3D render, anime, cartoon, text, watermarks, blurry, low quality...
+
+Latina woman of 58, sturdy build with a slight stoop, lined forehead, thoughtful dark brown eyes behind round dark-framed glasses, medium-brown skin, shoulder-length dark brown hair streaked with gray, grey-blue collared shirt, neutral relaxed expression with mouth closed and relaxed, brows unfurrowed, eyes straight at the camera, facing front, level shoulders, arms hanging relaxed at the sides, plain flat light-grey background, premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-built Latin American woman in her late 50s. Her frame is sturdy, slightly scholarly. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown eyes that are thoughtful and scholarly behind wire-rimmed glasses. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her dark brown shoulder-length hair is grouped into simple, un-styled flowing shapes. She wears minimalist, pocketless professional attire: a blazer over a blouse. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman of 58. Sturdy, practical build with a slight scholarly stoop. Face with a lined forehead and thoughtful dark brown eyes behind round dark-framed glasses. Medium-brown skin. Shoulder-length dark brown hair streaked with gray, parted off-center. Grey-blue collared shirt with the top button open. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
---no neon, no androids, no clean backgrounds, no modern clothing
+
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Northern European features
 
 ## Variations
 
-- [ ] Dr. Maria Hernandez reviewing water sample data at her university desk
-- [ ] Dr. Maria Hernandez presenting environmental findings to concerned community members
-- [ ] Dr. Maria Hernandez collaborating with colleagues on water quality research
+- [ ] Leaning over a laboratory bench lined with water sample vials
+- [ ] Standing by a whiteboard addressing a lecture hall
+- [ ] Kneeling at a stream bank filling a sample bottle
 
 ## Expression Variants
 
-- **`maria_hernandez__default.png`**: Use the base portrait as reference. Calm, determined resting expression behind wire-rimmed glasses, looking at the camera, 3/4 take. Keep the same art style as reference, same glasses and blazer, backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`maria_hernandez__focused.png`**: Use the base portrait as reference. Absorbed in reviewing water sample data, looking at the camera, 3/4 take. Eyes intent behind her glasses, brows drawn, lips pressed in quiet concentration. Lab charts and data edge the frame. Keep the same art style as reference, same glasses and blazer. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral relaxed resting expression, mouth closed, brows unfurrowed, looking at the camera, 3/4 take. Shoulders level, arms hanging loosely at her sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`maria_hernandez__contemplative.png`**: Use the base portrait as reference. A scholarly, reflective pause, looking at the camera, 3/4 take. Eyes softening behind her glasses into the middle distance, lips relaxed, head tilted. Keep the same art style as reference, same glasses and blazer, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__focused.png`**: Use the base portrait as reference. Eyes lowered and intent behind the glasses, brows drawn slightly together, head angled toward the camera, 3/4 take. Head bowed, one hand holding a small glass vial up at chest height, the other hand pinching the bridge of the glasses. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`maria_hernandez__happy.png`**: Use the base portrait as reference. A warm, genuine smile, looking at the camera, 3/4 take. Eyes crinkling warmly behind her glasses, lips curving up with kindness. Keep the same art style as reference, same glasses and blazer, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__contemplative.png`**: Use the base portrait as reference. Eyes soft and distant, brows relaxed, lips slightly parted, looking at the camera, 3/4 take. Head tilted, arms loosely folded, one hand holding the folded earpiece of the glasses against the chin. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`maria_hernandez__determined.png`**: Use the base portrait as reference. Quiet conviction, looking directly at the camera, 3/4 take. Eyes sharp and fixed behind her glasses, jaw set, brow firm. The scientist standing by her findings. Keep the same art style as reference, same glasses and blazer, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__happy.png`**: Use the base portrait as reference. Gentle genuine smile, eyes crinkled behind the glasses, looking at the camera, 3/4 take. Shoulders loose and slightly raised, both hands clasped warmly at the chest. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__determined.png`**: Use the base portrait as reference. Steady level eyes, lips set, jaw firm, looking at the camera, 3/4 take. Chin lifted, shoulders squared, one fist closed at chest height. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Lore wardrobe staged as outfit variants of the base portrait: `assets/<slug>__outfit-<name>.png`. Same face, hair and build as the base. -->
+
+- **`__outfit-blazer.png`**: Use the base portrait as reference. Same woman, now wearing a professional blazer over a blouse, a small gold cross necklace and a leather satchel strap across one shoulder, hair pulled back with a practical clip. Neutral relaxed expression, shoulders level, looking at the camera, 3/4 take. Keep the same face, hair, build and art style as reference, plain flat neutral light-grey backdrop. Clean confident linework, painterly soft shading, muted natural palette.

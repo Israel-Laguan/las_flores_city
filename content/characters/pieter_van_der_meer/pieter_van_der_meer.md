@@ -7,6 +7,7 @@
 > **Status:** Deceased (2045)
 
 ## Physical Description
+- Age depicted: early 70s, during the Free City period (c. 2033); he died in 2045 at 85, so he appears only in flashback (no 2077 version)
 - Hair: Silver-white, once blond, swept back in distinguished style
 - Eyes: Pale blue, sharp and calculating
 - Build: Tall and imposing, slightly stooped with age

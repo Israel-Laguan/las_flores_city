@@ -3,7 +3,8 @@
 **Title:** Final Year Medicine Student & Shipibo Advocate
 
 ## Physical Description
-- Hair: Dark brown, long and thick, often worn in traditional braids or flowing loose
+- Heritage and age: Indigenous Amazonian (Shipibo) woman of about 22
+- Hair: Jet-black, long and thick, worn loose with several thin braids woven with small colorful beads
 - Eyes: Dark brown, bright and confident
 - Build: Slender and graceful, moves with poise
 - Skin: Warm brown, smooth and radiant

@@ -3,7 +3,7 @@
 **Title:** Architecture Student, Van der Meer Scholar, Leader of the 2077 Grassroots Movement
 
 **Physical Description:**
-- Distinctive appearance fitting their background
+- 22-year-old Latino person of lean, wiry, medium-height build with straight, shaggy dark hair, hooded dark eyes with faint dark circles and a heart-shaped face; ink-stained hands, jeans, a hoodie, old sneakers and an overstuffed backpack of sketchbooks.
 
 **Description (full):**
 
@@ -13,4 +13,4 @@ The central protagonist of the 2077 endgame arc. Born in the Garcia family's flo
 **Family:** Youngest child of Alejandro and Maria Garcia; younger brother of Isabella and Sofia Garcia (the Garcia flower-field family of Old Las Flores).
 **District:** Las Flores
 **Role:** Architecture Student
-**Descendancy:** i
+**Descendancy:** Latin American

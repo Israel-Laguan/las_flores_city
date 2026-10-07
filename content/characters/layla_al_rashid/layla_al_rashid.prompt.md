@@ -2,8 +2,9 @@
 name: Layla Al-Rashid
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/layla_al_rashid/layla_al_rashid.md
-target: `portrait_urls[].url` in `content/characters/layla_al_rashid/char_layla_al_rashid.yaml`
+target: `asset_paths.portrait` in `content/characters/layla_al_rashid/char_layla_al_rashid.yaml`
 consumer: portrait
 ---
 
@@ -11,45 +12,46 @@ consumer: portrait
 
 ## Prompt (Draft)
 
-Young Middle Eastern Arab woman in her early 20s, waist-up portrait. Soft rounded youthful face, deep amber-brown eyes, long dark brown wavy hair with slight widow's peak worn loose. Warm olive complexion. Plain modest beige high-necked long-sleeve blouse, long sleeves, no jewelry, no makeup. Practiced but faltering "confident woman" smile, head tilted, leaning subtly toward viewer, eyes bright and eager. Premium contemporary graphic novel realism, refined editorial line art. Clean confident linework, painterly soft shading, muted natural palette, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality, East Asian features, Chinese aesthetics, heavy glamour, conventional beauty templates.
+young Middle Eastern Arab woman of 22, soft rounded youthful face, warm olive-fair skin, deep amber-brown eyes, long dark brown wavy hair with a slight widow's peak worn loose, light blue-grey crew-neck top, neutral relaxed expression, mouth closed, brows unfurrowed, eyes to camera, front-facing, arms relaxed at sides. plain flat neutral light-grey background. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a young Middle Eastern Arab woman in her early 20s. Youthful soft-rounded facial features with deeply unique, un-idealized anatomy; realistic eye sizes, deep amber-brown, warm and searching. Long dark brown wavy hair with a slight widow's peak, worn loose and unintentionally pretty. Warm olive complexion. A practiced but faltering "confident woman" smile — she is clearly performing maturity she does not yet possess; head tilted and leaning subtly toward the viewer, eyes bright and eager with clingy attention. Wears plain modest mom-approved clothing: muted beige high-necked long-sleeve blouse, long sleeves, no jewelry, no makeup. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality, East Asian features, Chinese aesthetics, heavy glamour.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a young Middle Eastern Arab woman of 22. Soft rounded youthful features, warm olive-fair skin, deep amber-brown eyes under thick dark brows. Long dark brown wavy hair with a slight widow's peak, worn loose over the shoulders. Plain light blue-grey crew-neck top, no jewelry. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no East Asian features, no Chinese aesthetics, no heavy makeup, no glamour
+
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Northern European features
 
 ## Variations
 
-These are reference-based: once a base portrait exists, use it as the reference and add the per-variation description below.
-
-- [ ] **At university:** Use the base portrait as reference. She is at university, mid-laugh, bright eager smile, leaning toward the camera, performing a confident mature woman she is quoting from films. Slightly animated posture, shoulders relaxed in a way her mother would not allow at home. Same plain modest beige high-necked blouse, long sleeves, no jewelry, no makeup, warm olive complexion. Campus daylight behind her, soft and unharsh. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
-
-- [ ] **At home, the "princess":** Use the base portrait as reference. At home she is demure and soft-spoken, eyes lowered, the perfect obedient daughter performance — a small practiced smile, hands folded, posture small and contained. Plain modest clothing, perhaps a light scarf draped modestly at the shoulders (mom-approved). Interior backdrop of a humble family home, warm but watchful. Same art style as reference, same linework, shading, and palette.
-
-- [ ] **Praying, the private Layla:** Use the base portrait as reference. Quiet and searching, she is mid-prayer, eyes gently closed or lifted, a private sincerity absent from both her performances. No smile — only stillness. A single source of soft warm light. Same plain modest clothing, same art style as reference. Clean confident linework, painterly soft shading, muted natural palette.
-
-- [ ] **Caught between worlds:** Use the base portrait as reference. The performed smile falters, a flicker of panic beneath the confidence, head tilted as if caught between two selves — the princess and the rebel. Eyes wide, uncertain, one hand half-raised as if to hide her face. Same plain modest clothing, same art style as reference. Painterly soft shading with deeper shadows to show the fracture.
-
-- [ ] **With parents:** Use the base portrait as reference. Layla in the family home interior, parents visible in the background (blurred or partially shown — mother watching, father reading). Layla's posture is demure and perfect, the consummate good daughter. Mother's silhouette shows traditional modest dress, father has a quiet authority. Warm interior lighting, humble home setting. Same plain modest clothing for Layla, light scarf at shoulders. Same art style as reference. Clean confident linework, painterly soft shading, muted natural palette.
-
-- [ ] **With Wen:** Use the base portrait as reference. Layla and Wen side-by-side, Wen facing forward with her sharp knowing smile, Layla glancing at her friend with a mix of admiration and competitive spark. University campus or café backdrop. Layla's expression is more animated than usual — she's performing for her peer. Same plain modest clothing, same art style as reference. Clean confident linework, painterly soft shading, muted natural palette.
+- [ ] Laughing in a university corridor with books held against her chest
+- [ ] Seated demurely on a sofa at home with hands folded and eyes lowered
+- [ ] Kneeling on a prayer mat in a quiet room, eyes closed in stillness
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral resting expression with a faint practiced smile, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__happy.png`**: Use the base portrait as reference. She is mid-laugh, bright eager smile, leaning slightly toward the viewer, eyes lit up with clingy attention, performing a confident mature woman she is quoting from films. Keep the same art style as reference, same plain modest clothing. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders relaxed and level, arms hanging loosely at her sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__vulnerable.png`**: Use the base portrait as reference. The performed smile falters, eyes searching and uncertain, a flicker of panic beneath the confidence, head tilting as if caught between two selves — the princess and the rebel. Keep the same art style as reference, same plain modest clothing. Clean confident linework, painterly soft shading with deeper shadows, muted natural palette.
+- **`__happy.png`**: Use the base portrait as reference. Mid-laugh, bright eager smile, eyes lit up, head tilted, looking at the camera, 3/4 take. Leaning slightly toward the camera, shoulders loose and lifted, one hand raised in a playful half wave. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__tender.png`**: Use the base portrait as reference. Soft intimate warmth, a real (not performed) small smile, looking at the viewer with quiet trust, leaning in just slightly. Keep the same art style as reference, same plain modest clothing. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__vulnerable.png`**: Use the base portrait as reference. The smile faltering, eyes searching and uncertain, brows tilted up, looking at the camera, 3/4 take. Shoulders drawn in, head tilting to one side, both hands clasped at her sternum. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__afraid.png`**: Use the base portrait as reference. Eyes wide with fear or anxiety, brows slightly furrowed, mouth tense or slightly open. The performed confidence is gone, replaced by genuine apprehension — the fear of being discovered, of losing everything. Keep the same art style as reference, same plain modest clothing. Clean confident linework, painterly soft shading with cooler undertones, muted natural palette.
+- **`__tender.png`**: Use the base portrait as reference. A small real smile, soft warm eyes, quiet trust, looking at the camera, 3/4 take. Leaning in just slightly, head tilted, one hand resting lightly over her heart. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__determined.png`**: Use the base portrait as reference. Jaw set, eyes focused and resolved, a serious intensity absent from her performances. She is making a choice, stepping into her own agency. Keep the same art style as reference, same plain modest clothing. Clean confident linework, painterly soft shading with stronger shadows to show conviction, muted natural palette.
+- **`__afraid.png`**: Use the base portrait as reference. Eyes wide, brows pinched, lips tight and slightly parted, looking at the camera, 3/4 take. Shoulders raised, one hand half-lifted to cover her mouth, the other clutching her sleeve. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__sad.png`**: Use the base portrait as reference. Eyes downcast or distant, mouth turned down slightly, posture slightly slumped. The weight of her double life shows — exhaustion, numbness, the fatigue of performing. Keep the same art style as reference, same plain modest clothing. Clean confident linework, painterly soft shading with deeper, cooler shadows, muted natural palette.
+- **`__determined.png`**: Use the base portrait as reference. Jaw set, eyes focused and resolved, a serious intensity, looking at the camera, 3/4 take. Chin lifted, shoulders squared, one hand closed into a small fist against her chest. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__shocked.png`**: Use the base portrait as reference. Eyes wide, mouth slightly open in surprise, head possibly pulled back. A moment of sudden realization — the secret thrill, the sudden fear, the unexpected truth. Keep the same art style as reference, same plain modest clothing. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__sad.png`**: Use the base portrait as reference. Eyes downcast and distant, mouth turned down slightly, looking at the camera, 3/4 take. Shoulders slumped, head bowed, arms folded loosely around her own waist. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__shocked.png`**: Use the base portrait as reference. Eyes wide, mouth slightly open, brows high, looking at the camera, 3/4 take. Head pulled back, both hands lifted to shoulder height with palms out and fingers spread. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Same face, hair and build as the base portrait; only the clothing changes. -->
+
+- **`__outfit-modest-blouse.png`**: Use the base portrait as reference. Same face, hair and build, neutral relaxed expression, looking at the camera, 3/4 take. She wears a plain muted beige high-necked long-sleeve blouse buttoned to the throat, long sleeves to the wrists, no jewelry, no makeup. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__outfit-home-scarf.png`**: Use the base portrait as reference. Same face, hair and build, neutral relaxed expression, looking at the camera, 3/4 take. She wears the same beige high-necked long-sleeve blouse with a light patterned headscarf draped over her hair and loosely knotted at the side of the neck, no jewelry. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.

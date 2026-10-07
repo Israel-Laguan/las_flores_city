@@ -2,7 +2,7 @@
 
 > Tags: `#figure` `#politics` `#industrial` `#populism`
 >
-> **Born:** ~2020s (Las Flores)
+> **Born:** ~2019 (Las Flores)
 > **Role:** Politician, store owner
 > **Status:** Retired/disgraced
 

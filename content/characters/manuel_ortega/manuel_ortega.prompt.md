@@ -2,40 +2,48 @@
 name: Manuel Ortega
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/manuel_ortega/manuel_ortega.md
 target: `asset_paths.portrait` in `content/characters/manuel_ortega/char_manuel_ortega.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Manuel Ortega
 
 ## Prompt (Draft)
 
-Latino man in his early sixties, long face, strong jawline, wide nose with a broken-curve hint, deep-set eyes, thin gray-white receding hair, weathered scarred salt-stained skin, faded smuggling scar across right cheek, thick brows, deep lines, lean wiry build, weathered fisherman's layers, practical clothes, small sport earbud, Old Las Flores dock backdrop with fishing nets and crates, premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Latino man of 63, lean wiry build, long weathered face, deep creases, deep-set grey eyes, grey-white hair combed back to the collar, grey stubble, black collared work jacket, neutral relaxed expression, mouth closed, brows unfurrowed, eyes to camera, front-facing, arms relaxed at sides. plain flat neutral light-grey background. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man in his early sixties. Long face with a strong jawline, weathered and deeply lined. Wide nose carrying a faint broken-curve hint, deep-set eyes watchful and knowing. Thin gray-white hair receding from the temples. Thick brows and deep lines etched into pale, salt-stained, scarred skin. A faded scar crosses his right cheek. Lean, wiry build — slender, weatherworn, with salt-stained, callused hands. Weathered fisherman's layers, practical clothes suited to dock work. Small sport non-in-ear earbud clipped to his earlobe. The backdrop is a dock or back-room with coils of fishing nets and wooden crates under muted harbor light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man of 63. Lean, wiry build with a long weathered face, deep creases at the forehead and cheeks, and deep-set grey eyes under heavy dark brows. Thin grey-white hair combed back, hanging to the collar, with grey stubble. Black collared work jacket over a dark shirt. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no East Asian features, no Northern European features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Northern European features
 
 ## Variations
 
-- [ ] On the dock at dusk, mending a net by the water
-- [ ] In a dim back-room stacked with crates, weighing a proposition
-- [ ] By the harbor wall, smoking, eyes on the horizon
+- [ ] Mending a fishing net on a weathered dock at dawn
+- [ ] Counting folded bills at a table under a single dim lamp
+- [ ] Standing at the stern of a small boat in pre-dawn mist with his hands in his pockets
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__calculating.png`**: Use the base portrait as reference. He is weighing an offer, looking at the camera, 3/4 take. Deep-set eyes narrowed and appraising, thin lips pressed into a hard line. Long face etched with deep lines, strong jawline set. Thick brows drawn down over old knowing eyes. Keep the same art style as reference, same fisherman's layers and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders relaxed and level, arms hanging loosely at his sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__smirk.png`**: Use the base portrait as reference. A dry, knowing half-smile, looking at the camera, 3/4 take. The corner of his mouth curls up, deep-set eyes glinting with dark amusement. Long face relaxed into a knowing cast, strong jawline loose. Keep the same art style as reference, same practical clothes and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__calculating.png`**: Use the base portrait as reference. Deep-set eyes narrowed and sidelong, chin lowered, lips pressed, looking at the camera, 3/4 take. Head tilted, one hand raised with the thumb slowly rubbing the first two fingers, the other arm folded at his waist. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__afraid.png`**: Use the base portrait as reference. A guarded, wary tension cracks his composure, looking at the camera, 3/4 take. Deep-set eyes sharp with unease, brows tight, thin lips parted. Long face drawn, strong jawline clenched beneath weathered skin. Keep the same art style as reference, same fisherman's layers and earbud. Clean confident linework, painterly soft shading with deeper shadow, muted natural palette.
+- **`__smirk.png`**: Use the base portrait as reference. A sly lopsided half-grin, one heavy brow raised, looking at the camera, 3/4 take. Shoulders loose, leaning back slightly, arms folded across his chest. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__determined.png`**: Use the base portrait as reference. A hardened, resolute expression, looking unflinchingly at the camera, 3/4 take. Deep-set eyes steady and fixed, jaw set, the broken-curve hint of his nose squared toward the light. Long face carved with deep lines. Keep the same art style as reference, same practical clothes and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__afraid.png`**: Use the base portrait as reference. Eyes wide and darting, brows pinched, lips tight, looking at the camera, 3/4 take. Shoulders hunched, chin tucked, one hand lifted halfway as if to ward something off. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__determined.png`**: Use the base portrait as reference. Jaw set, grey eyes steady and hard, brows level, looking at the camera, 3/4 take. Chin lifted, shoulders squared, one fist closed at chest height. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Same face, hair and build as the base portrait; only the clothing changes. -->
+
+- **`__outfit-fisherman.png`**: Use the base portrait as reference. Same face, hair and build, neutral relaxed expression, looking at the camera, 3/4 take. He wears practical fisherman's layers: a weathered waxed jacket over a thick knit sweater, with a faded scar visible across his right cheek. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.

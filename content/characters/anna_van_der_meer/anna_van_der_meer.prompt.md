@@ -14,11 +14,11 @@ NOTE: regeneration needed: current PNG has a stray black bar artifact (top right
 
 ## Prompt (Draft)
 
-Dutch woman of 36, athletic toned build, oval face, deep blue eyes, fair skin, dark brown hair neatly styled behind the ears, warm intelligent expression, tailored charcoal suit jacket over a crisp white shirt, plain flat grey background. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Dutch woman of 36, athletic toned build, oval face, deep blue eyes, fair skin, dark brown hair neatly styled behind the ears, tailored charcoal suit jacket over a crisp white shirt, plain flat grey background. neutral relaxed expression, front-facing, arms relaxed. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch woman of 36. Athletic, toned build with squared, upright shoulders. Fair skin, an oval face with an open, approachable look, and deep blue eyes. Dark brown hair shoulder-length and neatly styled behind the ears. Tailored charcoal suit jacket over a crisp white shirt. Level gaze with a faint, warm smile. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch woman of 36. Athletic, toned build. Fair skin, an oval face with an open, approachable look, and deep blue eyes. Dark brown hair shoulder-length and neatly styled behind the ears. Tailored charcoal suit jacket over a crisp white shirt. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

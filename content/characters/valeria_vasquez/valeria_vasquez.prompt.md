@@ -2,41 +2,44 @@
 name: Valeria Vasquez
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/valeria_vasquez/valeria_vasquez.md
 target: `asset_paths.portrait` in `content/characters/valeria_vasquez/char_valeria_vasquez.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Valeria Vasquez
 
+NOTE: existing PNG is landscape-framed with a detailed night-skyline interior and a revealing plunging dress; regenerate on plain flat grey in portrait framing. Tag `melancholy` renamed to `sad` (not in vocabulary). Skin reads tan rather than lore's "pale-to-light".
+
 ## Prompt (Draft)
 
-Latina woman mid-to-late 30s, tall surgically exaggerated hourglass doll physique (enhanced breasts and hips, extremely narrow waist, long legs), face with obvious aesthetic work — fuller lips, refined narrow nose, high tight cheekbones, lifted brows, smooth forehead — still recognizably pretty underneath the exaggeration. Light brown to honey-blonde long salon hair. Soft melancholy in the eyes despite glam makeup and practiced almost-smile. Pale-to-light skin with warm contour. Designer clingy evening top, loud photogenic jewelry, small sport earbud on earlobe. Prestige condo interior backdrop, floor-to-ceiling window, soft luxury lighting. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy with deliberate over-idealized surgical look, clean confident linework, painterly soft shading, muted natural palette with glam accents, 8k.
+Latina woman of about 37, tall hourglass build, full lips, refined narrow nose, high cheekbones, lifted brows, smooth forehead, soft grey-green eyes under glam makeup, long honey-blonde waves, taupe draped wrap dress, ornate gold-and-sapphire earrings and necklace, small black sport earbud. Plain flat grey background. Neutral relaxed expression, mouth closed, eyes straight at camera, facing front, arms relaxed at sides. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman in her mid-to-late 30s. Tall surgically exaggerated hourglass doll build — enhanced bust and hips, cinched waist, display posture. Face shows stacked aesthetic surgery on top of natural prettiness: fuller lips, refined nose, high tight cheekbones, lifted brows, smooth forehead, glam contour. Soft melancholy in the eyes; practiced almost-smile that does not fully reach them. Long light brown to honey-blonde salon hair, glossy and heavy. Pale-to-light skin. Clingy designer top, statement jewelry meant to photograph as wealth. Small sport non-in-ear earbud clipped to earlobe. Backdrop: immaculate prestige condo living room, night city glow through glass, soft luxury lamps. Clean confident linework, painterly soft shading, muted natural palette with glam highlights, zero anime, grounded anatomy emphasizing deliberate surgical exaggeration (not natural hourglass), 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a tall Latina woman of about 37. Full hourglass build with a cinched waist, a face with visible cosmetic enhancement: full lips, a refined narrow nose, high tight cheekbones, lifted brows and a smooth forehead, still recognizably pretty underneath. Soft grey-green eyes under polished glam eye makeup, warm light-tan skin with warm contour. Long honey-blonde salon-finished waves falling over one shoulder. A taupe draped wrap-front dress with a deep V neckline, ornate gold-and-sapphire drop earrings with a matching pendant necklace, and a small black sport earbud clipped to one ear. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no East Asian features, no natural unenhanced face, no ugly, no masculine features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, African features
 
 ## Variations
 
-- [ ] Condo window at night, phone in hand, social-feed glow on her face, melancholy soft
-- [ ] Gala entrance, exaggerated silhouette in clingy gown, camera-ready smile
-- [ ] Soft morning light, less makeup, surgical work still visible, eyes tired and tender
-- [ ] Glam profile-selfie pose vs private unposed stillness
+- [ ] At a penthouse window at night, phone in hand, screen glow on her face, eyes soft and tired
+- [ ] Arriving at a gala in a clinging gown, camera-ready smile
+- [ ] Soft morning light, little makeup, tucking a child's drawing into a frame
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral glam resting face, looking at camera, 3/4 take. Soft melancholy under polish. Same clothing, jewelry, earbud, condo backdrop. Keep the same art style as reference. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette with glam highlights, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__smirk.png`**: Use the base portrait as reference. Practiced flirt smirk for the feed, looking at camera, 3/4 take. Fuller lips curved, eyes still a little sad. Same glam look and backdrop. Keep the same art style as reference. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette with glam highlights, zero conventional beauty templates.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders relaxed and level, arms hanging loosely at her sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__melancholy.png`**: Use the base portrait as reference. Mask down — eyes wet-bright, smile gone, looking slightly past camera, 3/4 take. Surgical face still perfect; emotion breaks it. Same clothing, jewelry, earbud, condo. Keep the same art style as reference. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette with glam highlights, zero conventional beauty templates.
+- **`__smirk.png`**: Use the base portrait as reference. Practiced flirtatious smirk, full lips curved, one brow lifted, eyes still soft, looking at the camera, 3/4 take. Hip cocked, one hand sweeping hair back over her shoulder, the other resting on her waist, chin tilted down. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__happy.png`**: Use the base portrait as reference. Genuine warm smile rare and brief, looking at camera, 3/4 take. Eyes finally match the mouth. Same clothing, jewelry, earbud, condo. Keep the same art style as reference. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette with glam highlights, zero conventional beauty templates.
+- **`__sad.png`**: Use the base portrait as reference. Eyes wet and bright, smile gone, brows tilted up, gaze slightly lowered, looking at the camera, 3/4 take. Shoulders sagging, one hand touching her cheek as if checking it, the other arm folded across her waist. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__afraid.png`**: Use the base portrait as reference. Fear of the past returning — eyes widened slightly, lips parted, looking at camera as if someone just mentioned the videos, 3/4 take. Same clothing, jewelry, earbud, condo. Keep the same art style as reference. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette with glam highlights, zero conventional beauty templates.
+- **`__happy.png`**: Use the base portrait as reference. Rare genuine warm smile reaching the eyes, cheeks lifted, looking at the camera, 3/4 take. Shoulders loosened, head tilted, both hands pressed lightly together at her chest. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__afraid.png`**: Use the base portrait as reference. Eyes widened, lips parted, brows pulled up, as if hearing something that frightens her, looking at the camera, 3/4 take. Shoulders raised, body turning slightly away, one hand at her throat above the necklace, the other arm guarding her stomach. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.

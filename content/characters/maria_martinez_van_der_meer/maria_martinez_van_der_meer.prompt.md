@@ -14,11 +14,11 @@ NOTE: regeneration needed: re-specified as a Latina woman in her late 50s (curre
 
 ## Prompt (Draft)
 
-Latina woman in her late 50s, medium height, slender elegant frame, smooth olive skin with fine lines at eyes and mouth, dark expressive eyes, straight nose, defined jaw. Dark hair with soft silver streaks in a loose low chignon, upright posture, cream silk blouse, small pearl earrings, plain flat grey background. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Latina woman in her late 50s, medium height, slender elegant frame, smooth olive skin with fine lines at eyes and mouth, dark expressive eyes, straight nose, defined jaw. Dark hair with soft silver streaks in a loose low chignon, cream silk blouse, small pearl earrings, plain flat grey background. neutral relaxed expression, front-facing, arms relaxed. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman in her late 50s, medium height, slender and elegant. Smooth olive skin with fine lines at the eyes and mouth, dark expressive eyes, a straight nose and a defined jaw. Dark hair with soft silver streaks gathered in a loose low chignon. Upright, poised posture with level shoulders. Cream silk blouse with a soft collar and small pearl earrings. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman in her late 50s, medium height, slender and elegant. Smooth olive skin with fine lines at the eyes and mouth, dark expressive eyes, a straight nose and a defined jaw. Dark hair with soft silver streaks gathered in a loose low chignon. Cream silk blouse with a soft collar and small pearl earrings. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

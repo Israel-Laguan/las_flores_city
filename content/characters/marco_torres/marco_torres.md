@@ -7,7 +7,7 @@
 ---
 
 ## Appearance
-Marco has a rugged yet approachable look, with dark brown hair that he keeps neat but casual. He has deep brown eyes that reveal his serious nature and reflect his diligent work ethic. His build is athletic from years of hard work—often seen wearing a simple white t-shirt and cargo shorts paired with sturdy sandals that are practical for his job on the sandy beach.
+Marco is a Latino man with sun-warmed tan skin and light stubble. He has a rugged yet approachable look, with dark brown hair that he keeps neat but casual. He has deep brown eyes that reveal his serious nature and reflect his diligent work ethic. His build is athletic from years of hard work—often seen wearing a simple white t-shirt and cargo shorts paired with sturdy sandals that are practical for his job on the sandy beach.
 
 ## Personality
 Marco is hardworking and dedicated, often seen moving with purpose as he prepares food and serves customers. While he may seem serious and reserved at first, he has a deep commitment to his craft and takes pride in providing high-quality meals. His silence speaks volumes; he prefers to let his actions and the taste of his food speak for him, believing that a job well done is the best form of communication.

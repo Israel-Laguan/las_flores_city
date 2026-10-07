@@ -2,38 +2,50 @@
 name: María Fernanda Rodriguez
 type: portrait
 size: 1024x1024
-source: content/characters/maria_fernanda_rodriguez/maria_fernanda_rodriguez.md
-target: `portrait_urls[].url` in `content/characters/char_mar_a_fernanda_rodriguez.yaml`
-consumer: portrait
 aspect_ratio: 3:4
+source: content/characters/maria_fernanda_rodriguez/maria_fernanda_rodriguez.md
+target: `asset_paths.portrait` in `content/characters/maria_fernanda_rodriguez/char_maria_fernanda_rodriguez.yaml`
+consumer: portrait
 ---
 
 # Prompt: María Fernanda Rodriguez
 
+NOTE: current PNG reads as about 58 with loose black hair; canon is 48 with a sleek dark-brown blowout. Regenerate younger (low priority).
+
 ## Prompt (Draft)
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height in her late 40s Latin Photorealistic portrait of María Fernanda Rodriguez. Her frame is solid and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, sharp authoritative. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her dark brown bob hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless p. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...
+
+Latina woman of 48, tall poised build, composed face with faint lines, sharp dark brown eyes, strong straight brows, light brown skin, sleek dark brown shoulder-length blowout with a side part, navy collared top, neutral relaxed expression with mouth closed and relaxed, brows unfurrowed, eyes straight at the camera, facing front, level shoulders, arms hanging relaxed at the sides, plain flat light-grey background, premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height Latin American woman in her late 40s. Her frame is solid and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown eyes that are sharp and authoritative. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her dark brown hair is cut in a bob and grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears minimalist, pocketless practical work clothing. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman of 48. Tall, poised build with a straight spine. Composed face with sharp dark brown eyes, strong straight brows and faint lines at the eyes and mouth. Light brown skin. Sleek dark brown shoulder-length blowout with a side part. Navy crew-neck top under a navy open collar. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
---no neon, no androids, no clean backgrounds, no modern clothing
+
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Northern European features
 
 ## Variations
 
-- [ ] María Fernanda Rodriguez preparing for broadcast, reviewing notes with professional composure
-- [ ] María Fernanda Rodriguez with the news team, preparing for a broadcast together
-- [ ] María Fernanda Rodriguez thoughtfully reviewing evidence, determined to uncover the truth
+- [ ] Seated at a curved desk in a dim broadcast studio
+- [ ] Holding a microphone at a street gathering with a camera nearby
+- [ ] Leafing through a stack of documents at a late-night desk
 
 ## Expression Variants
 
-- **`maria_fernanda_rodriguez__default.png`**: Use the base portrait as reference. Calm, determined resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same earbud and work clothing, backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`maria_fernanda_rodriguez__determined.png`**: Use the base portrait as reference. Quiet professional resolve, looking directly at the camera, 3/4 take. Eyes sharp and fixed, jaw set, brow firm. The newswoman closing in on the truth. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral relaxed resting expression, mouth closed, brows unfurrowed, looking at the camera, 3/4 take. Shoulders level, arms hanging loosely at her sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`maria_fernanda_rodriguez__focused.png`**: Use the base portrait as reference. Absorbed in reviewing evidence, looking at the camera, 3/4 take. Eyes narrowed and intent, brows drawn, lips pressed in concentration. Keep the same art style as reference, same earbud and work clothing, broadcast room light. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__determined.png`**: Use the base portrait as reference. Sharp eyes locked on the camera, jaw set, lips pressed, looking at the camera, 3/4 take. Chin lifted, shoulders squared, one fist closed at the waist, the other hand held flat as if cutting off an evasive answer. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`maria_fernanda_rodriguez__contemplative.png`**: Use the base portrait as reference. Weighing a story angle, looking thoughtfully at the camera, 3/4 take. Eyes softening into the middle distance, lips relaxed, head tilted. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__focused.png`**: Use the base portrait as reference. Eyes lowered and intent, brows drawn slightly, lips set, head angled toward the camera, 3/4 take. Head bowed, shoulders curved forward, a few papers held in both hands at chest height. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`maria_fernanda_rodriguez__happy.png`**: Use the base portrait as reference. A warm, professional smile, looking at the camera, 3/4 take. Eyes brightening, lips curving up, the authoritative bearing warming. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__contemplative.png`**: Use the base portrait as reference. Eyes soft and unfocused, brows relaxed, lips slightly parted, looking at the camera, 3/4 take. Head tilted, arms loosely folded, fingertips of one hand resting on the collarbone. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
+- **`__happy.png`**: Use the base portrait as reference. Genuine smile, eyes crinkling, cheeks lifted, looking at the camera, 3/4 take. Shoulders lifted and loose, both hands clasped warmly at the chest. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Lore wardrobe staged as outfit variants of the base portrait: `assets/<slug>__outfit-<name>.png`. Same face, hair and build as the base. -->
+
+- **`__outfit-anchor.png`**: Use the base portrait as reference. Same woman, now wearing a structured tailored blazer over a crisp blouse, small pearl earrings and bold red lipstick, hair in the same sleek blowout. Neutral relaxed expression, shoulders level, looking at the camera, 3/4 take. Keep the same face, hair, build and art style as reference, plain flat neutral light-grey backdrop. Clean confident linework, painterly soft shading, muted natural palette.

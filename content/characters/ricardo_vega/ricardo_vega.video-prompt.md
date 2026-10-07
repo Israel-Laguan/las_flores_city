@@ -8,13 +8,15 @@ target: content/characters/ricardo_vega/assets/
 
 # Video Prompts: Ricardo Vega
 
+NOTE: PNG is caught mid-speech with a wide-eyed open mouth, in a plain black shirt; regenerate the base with the neutral clause (low priority). Rumpled suit and pins live in the outfit variant. Lore (.md) says hair thinning, YAML says thick.
+
 Generate seamless looping portrait videos from each expression variant PNG. Use the corresponding `ricardo_vega__<expression>.png` as the input image for each prompt. The man on the reference image is the character described in the source prompt file.
 
 ## Base Loop (Default)
 
 **Input**: `assets/ricardo_vega__default.png`
 
-Create a seamless looping video. The man on the reference image holds a calm determined resting expression with thick dark brown hair. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, and a barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. Thick dark brown hair shifts subtly, and the rumpled suit shifts gently in the draft. The small sport earbud clipped to his earlobe remains still. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a neutral composed resting expression, looking at the camera with steady presence. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Latino man in his late 50s, slight sturdy build, medium-brown skin lined around the eyes, expressive dark brown eyes, graying stubble, dark brown hair combed back and thinning at the crown, plain black collared shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
 
@@ -22,22 +24,30 @@ Create a seamless looping video. The man on the reference image holds a calm det
 
 **Input**: `assets/ricardo_vega__determined.png`
 
-Create a seamless looping video. The man on the reference image shows fiery conviction with eyes blazing and animated and brow firm and mouth set. Subtle idle animation: steady, controlled breathing motion in the chest and shoulders, a slight firming micro-motion in the jawline, and a resolute, slow blink cycle. Hair and clothing respond to a faint ambient breeze. The rumpled suit shifts crisply in the draft, and the earbud catches a faint draft. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a resolved, firm expression with steady unflinching eyes and a set mouth. Subtle idle animation only: deep controlled breathing in the chest and shoulders, a slight firming of the jaw, a slow unwavering blink cycle. Latino man in his late 50s, slight sturdy build, medium-brown skin lined around the eyes, expressive dark brown eyes, graying stubble, dark brown hair combed back and thinning at the crown, plain black collared shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__contemplative` loop
 
 **Input**: `assets/ricardo_vega__contemplative.png`
 
-Create a seamless looping video. The man on the reference image shows quiet reflection with eyes softening into the middle distance and lips relaxed. Subtle idle animation: slow, measured breathing motion rising and falling gently in the chest, a quiet softening of gaze into the distance, and a slow, reflective blink cycle. Hair and clothing respond to a faint ambient breeze. Strands of dark hair drift delicately across his forehead, the rumpled suit shifts gently with his breath, and the earbud shifts slightly. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a reflective pause with eyes drifting into the middle distance and relaxed lips. Subtle idle animation only: soft easy breathing, a gentle settling of the shoulders, a slow measured blink. Latino man in his late 50s, slight sturdy build, medium-brown skin lined around the eyes, expressive dark brown eyes, graying stubble, dark brown hair combed back and thinning at the crown, plain black collared shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__happy` loop
 
 **Input**: `assets/ricardo_vega__happy.png`
 
-Create a seamless looping video. The man on the reference image shows an animated, warm smile with eyes bright and lively and cheeks lifting and lips curving up engagingly. Subtle idle animation: warm, buoyant breathing motion lifting his chest and shoulders, a soft pulsing ease in the crinkles around his eyes, and an easy, natural blink cycle. Hair and clothing respond to a faint ambient breeze. Dark hair shifts gently in the draft, and the rumpled suit shifts softly with his buoyant breathing. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a warm genuine smile with brightening eyes and lifted cheeks. Subtle idle animation only: buoyant breathing lifting the chest and shoulders, a soft crinkling around the eyes, a warm natural blink cycle. Latino man in his late 50s, slight sturdy build, medium-brown skin lined around the eyes, expressive dark brown eyes, graying stubble, dark brown hair combed back and thinning at the crown, plain black collared shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__surprised` loop
 
 **Input**: `assets/ricardo_vega__surprised.png`
 
-Create a seamless looping video. The man on the reference image shows a sharp, caught-off-guard moment with eyes widened and animated and brows lifted and lips parting. Subtle idle animation: a momentary catch in breath followed by gentle chest motion, a sudden quick blink cycle that settles back into composed alertness, and micro-tension across the collarbone. Hair and clothing respond to a faint ambient breeze. Dark hair strands lift faintly in the air, and the rumpled suit shifts subtly in the ambient air. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows raised brows, widened eyes and slightly parted lips. Subtle idle animation only: a quick intake of breath, a small lift of the brows that slowly eases, a startled blink. Latino man in his late 50s, slight sturdy build, medium-brown skin lined around the eyes, expressive dark brown eyes, graying stubble, dark brown hair combed back and thinning at the crown, plain black collared shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+
+## Wardrobe Loops
+
+### `__outfit-suit` loop
+
+**Input**: `assets/ricardo_vega__outfit-suit.png`
+
+Create a seamless looping video. The man on the reference image shows a neutral composed resting expression, looking at the camera with steady presence. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Latino man in his late 50s, slight sturdy build, medium-brown skin, expressive dark brown eyes, graying stubble, dark brown hair combed back, rumpled dark suit with a loosened tie, colourful round pins on the lapel, gold watch. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

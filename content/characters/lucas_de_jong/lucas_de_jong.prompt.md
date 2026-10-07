@@ -2,40 +2,42 @@
 name: Lucas de Jong
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/lucas_de_jong/lucas_de_jong.md
 target: `asset_paths.portrait` in `content/characters/lucas_de_jong/char_lucas_de_jong.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Lucas de Jong
 
 ## Prompt (Draft)
 
-Dutch man in his mid-20s, angular face, strong jawline, straight nose, wide-set piercing blue eyes, stylishly cut dark hair, clear skin, athletic build, polished fashionable look, designer shirt, skinny jeans, elegant shoes, small sport earbud, upscale Las Flores lounge backdrop, premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Dutch man of 24, athletic build, fair skin, angular face, strong jaw, piercing blue eyes, thick dark brows, glossy black hair swept up and back, light stubble, black collared designer shirt, neutral relaxed expression, mouth closed, brows unfurrowed, eyes to camera, front-facing, arms relaxed at sides. plain flat neutral light-grey background. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch man in his mid-20s. Angular face with a strong jawline, a straight nose, and wide-set piercing blue eyes. Stylishly cut dark hair, clear skin, thin lips, thick brows — with one brow sitting a fraction lower than the other. A small chip in a front tooth, half-hidden behind a composed, calculating smile. Sleek, polished presentation: an athletic, gym-trim build beneath a designer shirt with skinny jeans and elegant shoes, careful attention to appearance. Small sport non-in-ear earbud clipped to his earlobe. The backdrop is an upscale lounge, warm low lighting, an affluent setting. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch man of 24. Athletic build with a long neck and fair skin, an angular face with a strong jawline and piercing blue eyes under thick dark brows. Stylishly cut glossy black hair swept up and back, with light stubble. Fitted black collared designer shirt with the top button open. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no Latino features, no East Asian features, no African features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, Latino features, East Asian features, African features
 
 ## Variations
 
-- [ ] At an upscale lounge bar, nursing a drink and appraising the room
-- [ ] At the gym mid-workout, athletic and focused
-- [ ] In a sleek penthouse, arms crossed in quiet confidence
+- [ ] Checking his watch outside an upscale bar under evening light
+- [ ] Walking a polished corridor with a leather bag over one shoulder
+- [ ] Leaning back on a lounge sofa with a drink in hand
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__smirk.png`**: Use the base portrait as reference. He wears a sly half-smile, looking at the camera, 3/4 take. Wide-set piercing eyes half-lidded with amusement, one corner of his mouth pulled up, the small front-tooth chip faintly visible. Angular face and strong jawline angled with easy confidence. Keep the same art style as reference, same designer shirt and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders relaxed and level, arms hanging loosely at his sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__calculating.png`**: Use the base portrait as reference. He is sizing up the room, looking at the camera with a sharp, measuring gaze, 3/4 take. Wide-set piercing eyes narrowed, thin lips pressed into a flat line, brows leveling into scrutiny. Angular face, strong jawline set. Keep the same art style as reference, same fashionable clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__smirk.png`**: Use the base portrait as reference. One corner of the mouth lifted in a sly smirk, one thick brow raised, eyes half-lidded, looking at the camera, 3/4 take. Head tilted, weight on one leg, one hand adjusting a cuff while the other slips into a pocket. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__happy.png`**: Use the base portrait as reference. A bright, easy smile, looking at the camera, 3/4 take. Wide-set piercing eyes warm and crinkled, the small front-tooth chip showing in an open grin. Angular face relaxed, strong jawline softened. Keep the same art style as reference, same designer outfit and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__calculating.png`**: Use the base portrait as reference. Blue eyes narrowed and appraising, chin lowered, lips thin, looking at the camera, 3/4 take. One hand raised with a fingertip resting against his lips, the other arm folded across his waist. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__afraid.png`**: Use the base portrait as reference. A guarded, wary moment, looking at the camera, 3/4 take. Wide-set piercing eyes widened, brows drawn up, thin lips pressed tight, the composed facade cracking. Angular face tense, strong jawline clenched. Keep the same art style as reference, same clothing and earbud. Clean confident linework, painterly soft shading with deeper shadow, muted natural palette.
+- **`__happy.png`**: Use the base portrait as reference. A bright charming smile, eyes crinkling, brows lifted, looking at the camera, 3/4 take. Shoulders loosened, one hand raised in a casual wave, the other relaxed at his side. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__afraid.png`**: Use the base portrait as reference. Eyes wide, brows pinched, lips tense and slightly parted, looking at the camera, 3/4 take. Shoulders raised, chin tucked, one hand pulling at his collar, the other held out defensively. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.

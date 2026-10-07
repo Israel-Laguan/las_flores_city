@@ -4,7 +4,7 @@ title: First Wife of Pieter van der Meer
 birth_year: 1960
 description: |
   Marleen van der Meer was the first wife of Pieter van der Meer and mother of Alexander and Elisabeth. She passed away before Pieter's move to Las Flores, leaving him to raise their children alone until he met and married Annabella.
-physical_description: "Elegant Dutch woman in her early 40s with ash-blonde shoulder-length hair, pale blue eyes, fair skin with subtle laugh lines, and a refined cream blouse with a strand of pearls."
+physical_description: "Elegant Dutch woman in her early 40s (flashback-era figure, depicted a few years before her death at about 45 in ~2005) with ash-blonde shoulder-length hair, pale blue eyes, fair skin with subtle laugh lines, and a refined cream blouse with a strand of pearls."
 psychological_description: "Gentle and reserved, depicted as a devoted mother."
 background_and_role:
   - "First wife of Pieter van der Meer"
@@ -15,7 +15,7 @@ metadata:
   role: npc
   faction: van_der_meer
   personality: unknown
-  age: 45
+  age_at_death: 45
   family: wife of Pieter van der Meer; mother of Alexander and Elisabeth
   occupation: homemaker
 lore_path: marleen_van_der_meer.md

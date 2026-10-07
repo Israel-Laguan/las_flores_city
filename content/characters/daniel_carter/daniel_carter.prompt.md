@@ -2,40 +2,48 @@
 name: Daniel Carter
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/daniel_carter/daniel_carter.md
 target: `asset_paths.portrait` in `content/characters/daniel_carter/char_daniel_carter.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Daniel Carter
 
 ## Prompt (Draft)
 
-Canadian settler in his mid-60s, broad heavy build, weathered wind-crinkled skin with deep forehead lines. Thin receding gray-white hair, thick heavy brows, warm round eyes, straight nose, square face with a receding jawline, faded old scar across one brow. Practical weathered jacket with a Humanity First lapel pin, small sport earbud clipped to earlobe. Warm communal community-hall backdrop with handmade banners. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Man of about 65, broad heavy build, square weathered face with deep lines, thin receding grey-white hair combed back, thick grey brows, blue-grey eyes, olive-green collared polo shirt. neutral relaxed expression, mouth closed, brows unfurrowed, eyes to camera, front-facing, arms relaxed. plain flat grey background. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Canadian settler in his mid-60s. Broad, heavy build with a grounded, weathered presence. Wind-crinkled, sun-worn skin etched with deep forehead lines and creases beside the eyes. Thin gray-white hair receding from the crown, cropped short and practical. Square face with a receding jawline softened by age. Thick, heavy brows over warm round eyes, their gaze steady and quietly benevolent. Straight nose, the cartilage carrying a slight age-related offset. A faded old scar crosses one brow, adding character to a lined, weathered face. Small sport non-in-ear earbud clipped to the left earlobe. Practical clothing: a weathered field jacket with a rolled collar and a small lapel pin, sturdy walking boots framing the base. The backdrop is a warm community hall, handmade banners and worn wooden benches, soft communal light slanting through high windows. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a man of about 65, broad and heavy in build with thick shoulders and neck. Square weathered face with deep wind-crinkled lines, thick grey brows, blue-grey eyes, a wide nose and a short grey stubble. Thin receding grey-white hair combed back from the forehead. Olive-green collared polo shirt with the top button open. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no Latino features, no East Asian features, no African features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Latino features
 
 ## Variations
 
-- [ ] Addressing a community council gathering from a worn podium, hands resting on the rail
-- [ ] Meeting neighbors at the community-hall doorway, warm daylight spilling in behind him
-- [ ] In quiet conference with a fellow organizer over a map of the district
+- [ ] Standing at the front of a community hall, hands raised to quiet a meeting
+- [ ] Sharing a thermos with neighbours on a cold morning
+- [ ] Seated alone on a porch, looking at an old photograph
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__happy.png`**: Use the base portrait as reference. A gentle, warm smile softens his face, looking at the camera, 3/4 take. Eyes crinkle at the corners, brows relaxing, deep forehead lines smoothing slightly, creases beside the eyes deepening warmly. Keep the same art style as reference, same weathered jacket, lapel pin, and earbud: premium contemporary graphic novel realism, refined editorial line art illustration. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders relaxed and level, arms hanging loosely at his sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__determined.png`**: Use the base portrait as reference. A firm, resolved expression, looking steadily at the camera, 3/4 take. Eyes steady, jaw set, face squared with conviction. Brows drawn slightly forward, deep forehead lines standing out under directional light. Keep the same art style as reference, same field jacket and earbud: premium contemporary graphic novel realism, refined editorial line art illustration. Clean confident linework, painterly soft shading with deep shadows, muted natural palette.
+- **`__happy.png`**: Use the base portrait as reference. Warm broad smile, eyes crinkling deeply, brows lifted, looking at the camera, 3/4 take. Shoulders loosened, one large hand raised in a friendly open greeting, the other hand on his belt. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__tender.png`**: Use the base portrait as reference. A soft, gentle expression, looking at the camera with warmth, 3/4 take. Eyes softened, mouth relaxed into a kind line, the lines beside his eyes deepening with care, brows lifted gently. Keep the same art style as reference, same clothing and earbud: premium contemporary graphic novel realism, refined editorial line art illustration. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__determined.png`**: Use the base portrait as reference. Blue-grey eyes steady, brows low, jaw set, looking at the camera, 3/4 take. Shoulders squared and chest out, one fist planted at his side, the other hand pressed flat against his chest. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__sad.png`**: Use the base portrait as reference. A quiet, weary sorrow, looking at the camera, 3/4 take. Eyes slightly downcast behind a composed mask, brows drawn, mouth set in a thin, restrained line. Deep forehead lines prominent. Keep the same art style as reference, same jacket and earbud: premium contemporary graphic novel realism, refined editorial line art illustration. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__tender.png`**: Use the base portrait as reference. Soft eyes, a faint warm smile, brows relaxed, looking at the camera, 3/4 take. Head tilted gently, one hand reaching forward palm-up as if offering a handshake, the other resting over his heart. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__sad.png`**: Use the base portrait as reference. Eyes heavy and downcast, brows tilted up inwards, mouth turned down, looking at the camera, 3/4 take. Head bowed, shoulders slumped, both hands hanging heavy with fingers loosely curled. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Lore wardrobe staged as outfit variants of the base portrait: `assets/<slug>__outfit-<name>.png`. Same face, hair and build as the base. -->
+
+- **`__outfit-weathered-jacket.png`**: Use the base portrait as reference. Same man, now wearing a practical weathered canvas jacket over the polo shirt with a small round enamel pin on the lapel without lettering, neutral relaxed expression, shoulders level, looking at the camera, 3/4 take. Keep the same face, build and art style as reference, plain flat neutral light-grey backdrop. Clean confident linework, painterly soft shading, muted natural palette.

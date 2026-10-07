@@ -2,46 +2,44 @@
 name: Zheng Wuhao
 type: portrait
 size: 1024x1024
-source: content/characters/zheng_wuhao/zheng_wuhao.md
-target: `portrait_urls[].url` in `content/characters/char_zheng_wuhao.yaml`
-consumer: portrait
 aspect_ratio: 3:4
+source: content/characters/zheng_wuhao/zheng_wuhao.md
+target: `asset_paths.portrait` in `content/characters/zheng_wuhao/char_zheng_wuhao.yaml`
+consumer: portrait
 ---
 
 # Prompt: Zheng Wuhao
 
-## Timeline
-
-Game year **2077**. Zheng is **~77**, long retired. All current portrait prompts must depict an elderly Chinese man in his late 70s — not his early-50s disaster-era self.
+NOTE: two-era flag: `zheng_wuhao__disaster_era.png` (about early 50s) exists; no second set created. Existing PNG backdrop shows a street with legible signage text; regenerate on plain flat grey. Lore zheng_wuhao.md:18 says existing default and variants are early-50s likenesses, but the current default and focused PNGs already read elderly (lore note likely stale).
 
 ## Prompt (Draft)
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of an elderly Chinese man about 77 years old, Zheng Wuhao. His frame was once stocky; age has softened the shoulders and thinned the chest, still sturdy and un-sculpted. Deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown tired guarded eyes, heavy lids, liver spots, deep nasolabial folds, soft jowls. Thin white and steel-gray short hair kept practical. A small sport non-in-ear earbud clipped firmly to his earlobe. He wears minimalist practical retirement clothing — muted work-shirt silhouette without a uniform. Weathered urban Latin American industrial-fringe backdrop under tropical light. Clean confident linework, painterly soft shading, muted natural palette, grounded human anatomy with natural asymmetry, 8k.
+Elderly Chinese man of about 77, softened once-stocky frame, deeply weathered fair skin with liver spots, tired guarded dark brown eyes, short thin white and steel-gray hair, small black sport earbud, olive work shirt-jacket over a grey T-shirt. Plain flat grey background. Neutral relaxed expression, mouth closed, eyes straight at camera, facing front, arms relaxed at sides. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of an elderly Chinese man in his late 70s (~77). His frame was once stocky and is now softer through the shoulders, un-sculpted and natural. Deeply unique, un-idealized facial anatomy with realistic eye sizes and dark brown, tired and guarded eyes under heavy lids. Deep wrinkles, soft jowls, liver spots on temples and hands, thin white and steel-gray short hair in simple un-styled shapes. Expression weathered and steady. A small sport non-in-ear earbud clipped firmly to his earlobe. He wears minimalist, pocketless practical retirement clothing in muted workwear tones, thermos or folded newspaper optional prop. Backdrop: weathered urban Latin American industrial-fringe building under intense vertical tropical sunlight, soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of an elderly Chinese man of about 77 with a once-stocky frame softened by age. Deeply weathered fair skin with liver spots, tired guarded dark brown eyes under heavy lids, a broad nose, thin lips. Short thin white and steel-gray hair. A small black sport earbud in one ear. An olive work shirt-jacket with chest pockets worn over a grey crew-neck T-shirt. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no young face, no early 50s, no black hair without gray, no neon, no androids, no clean backgrounds, no glamorous styling, no anime, no cartoon, no text, no watermarks
-
-> **Asset TODO:** Elderly portrait (`zheng_wuhao__default.png` late-70s) is pending generation. Until published and re-selected in `char_zheng_wuhao.yaml` `asset_paths.portrait`/`portrait_urls`, the shipped asset remains the early-50s historical likeness noted in `zheng_wuhao.md`.
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, Latino features, European features, African features
 
 ## Variations
 
-- [ ] Zheng Wuhao reflecting on recent events — elderly retiree, guarded memory of the leak
-- [ ] Zheng Wuhao in a tense moment — brittle composure when asked about rainfall testimony
-- [ ] Zheng Wuhao caught in a pivotal scene — partial confession, exhausted honesty
+- [ ] Sitting on a park bench with a steel thermos, watching passers-by
+- [ ] Folding a newspaper slowly at a small cafe table
+- [ ] Standing in a narrow apartment hallway, one hand on the doorframe
 
-## Expression Variants (2077, age ~77)
+## Expression Variants
 
-- **`zheng_wuhao__default.png`**: Use identity reference if available, aged to late 70s. Weathered steady resting expression, looking at the camera, 3/4 take. Thin white/steel-gray hair, sport earbud, practical retirement clothing, industrial-fringe backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`zheng_wuhao__focused.png`**: Same elderly identity. Absorbed in a task or document, looking at the camera, 3/4 take. Eyes intent beneath weariness, brows knit, lips set. Same earbud, clothing, backdrop, art style.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders relaxed and level, arms hanging loosely at his sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`zheng_wuhao__contemplative.png`**: Same elderly identity. Guarded reflective pause, looking at the camera, 3/4 take. Eyes softening warily into middle distance, lips relaxed, head slightly tilted. Same earbud, clothing, backdrop, art style.
+- **`__focused.png`**: Use the base portrait as reference. Eyes down and squinting, brows knit, looking at the camera, 3/4 take. Head bowed, both hands holding a folded newspaper at chest height. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`zheng_wuhao__happy.png`**: Same elderly identity. Tired but genuine smile, looking at the camera, 3/4 take. Eyes warming a fraction, lips curving up, guarded composure easing. Same earbud, clothing, backdrop, art style.
+- **`__contemplative.png`**: Use the base portrait as reference. Tired gaze drifting into the middle distance, lips closed, looking at the camera, 3/4 take. Head tilted down slightly, one hand cradling a steel thermos at waist height, the other arm hanging. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`zheng_wuhao__surprised.png`**: Same elderly identity. Sharp controlled startle, looking at the camera, 3/4 take. Eyes widened, brows lifted, lips parting. Same earbud, clothing, backdrop, art style.
+- **`__happy.png`**: Use the base portrait as reference. Rare small smile, eyes creasing, looking at the camera, 3/4 take. Shoulders loosened, one hand lifted in a small acknowledging wave. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__surprised.png`**: Use the base portrait as reference. Eyes widening, brows lifting, lips parting, looking at the camera, 3/4 take. Head drawn back, both hands lifted halfway with the palms out. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.

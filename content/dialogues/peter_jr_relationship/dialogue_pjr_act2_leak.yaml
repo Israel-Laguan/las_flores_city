@@ -1,0 +1,349 @@
+id: d2c8775f-e54b-4029-84c8-33d35f6bb634
+name: "Peter Jr. Act 2 - The Old Quote"
+description: "World event the player does not control. A society-feed account reposts Rafaela's 2070 line ('I worry that Peter Jr. will face the same struggles his father did, hiding who he is') under a headline questioning whether the heir is 'really choosing this'. Peter Jr. finds it while the player is in the room. The response style (steady, practical, dismissive) sets how he files the player: someone who stays, someone who helps, or someone who treats it as a spectacle."
+character_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+scene_id: 696f4dc1-3bc7-4c52-a4f5-247aa8f5e468
+dialogue_scope: character
+start_node_id: pjr2_start
+
+nodes:
+  pjr2_start:
+    id: pjr2_start
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Okay. Okay, don't look at the screen. Or — do, it's fine, it's going to be everywhere anyway. Somebody dug up Mãe's old interview. 'I worry that Peter Jr. will face the same struggles his father did.' And then underneath, 'Is the heir really choosing this?' Like it's a mystery. Like I haven't been answering that question since I could talk. ...Seven years old, first time. Do you know how many takes that's been?"
+    thought: "He is standing very still with his thumb on the edge of the tablet, as if holding it level will keep the performance from cracking. The mask is on — the light, quick voice, the practiced shrug — but underneath, the anger simmers. He's not sure at whom, exactly. The headline? The quote? Himself for not having a better soundbite ready?"
+    visual:
+      expression: default
+      position: right
+      transition: fade
+    effects:
+      relationship_effect:
+        axes:
+          tension: 12
+          visibility: 10
+      state_set:
+        last_pjr_encounter_at: NOW
+    choices:
+      - id: pjr2_steady
+        text: "[Stay and listen. Let him say what he needs to.]"
+        next_node_id: pjr2_steady_response
+      - id: pjr2_practical
+        text: "Let's look at who posted it. Accounts like this usually have a source."
+        next_node_id: pjr2_practical_response
+      - id: pjr2_dismissive
+        text: "It's just gossip. Everyone has an embarrassing parent."
+        next_node_id: pjr2_dismissive_response
+      - id: pjr2_script
+        text: "[A message pops up on his tablet, from someone called A. Read it.]"
+        next_node_id: pjr2_script_response
+      - id: pjr2_hostile
+        text: "Your mother's right to worry. You don't even know what you stand for."
+        next_node_id: pjr2_hostile_response
+        required_flags:
+          pjr_hostile_path: true
+        hidden_if:
+          pjr_lover_path: true
+
+  pjr2_steady_response:
+    id: pjr2_steady_response
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "...Thanks. For not fixing it. Everyone wants to fix it. Mãe isn't a villain, you know. She was scared, and she said it into a microphone because she was told that's where scared things go. I'm not even mad at her. I'm mad that every time it's quoted, nobody asks what I think about my own life."
+    thought: "The anger drains out and leaves something smaller and more honest behind. He sits on the edge of a planter and lets the tablet go dark."
+    visual:
+      expression: vulnerable
+      position: right
+    choices:
+      - id: pjr2_steady_ask
+        text: "Then what do you think about your own life?"
+        next_node_id: pjr2_end_steady
+        effects:
+          relationship_effect:
+            axes:
+              trust: 12
+              familiarity: 10
+              alignment: 6
+              tension: -4
+          state_set:
+            last_pjr_encounter_at: NOW
+      - id: pjr2_steady_stay
+        text: "[Sit down next to him. Say nothing.]"
+        next_node_id: pjr2_end_steady
+        effects:
+          relationship_effect:
+            axes:
+              trust: 10
+              familiarity: 6
+              alignment: 4
+              tension: -6
+          state_set:
+            last_pjr_encounter_at: NOW
+
+  pjr2_practical_response:
+    id: pjr2_practical_response
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "A source. Yeah. Yes — that's actually smart. Nossa, I was so busy being angry I didn't ask who benefits. It's an account that mostly posts about the Port tailings. Which is weird. Why would they care about me? ...Okay. Okay, I like that you looked sideways instead of straight at the hurt. It's what a lawyer would do."
+    thought: "He grabs the tablet again, and now it is a case file instead of a wound. His shoulders drop a little. He has found something he is good at."
+    visual:
+      expression: determined
+      position: right
+    choices:
+      - id: pjr2_practical_dig
+        text: "Send me the account name. I'll see what else it posts."
+        next_node_id: pjr2_end_practical
+        effects:
+          relationship_effect:
+            axes:
+              trust: 8
+              familiarity: 6
+              alignment: 10
+              debt: 4
+          state_set:
+            last_pjr_encounter_at: NOW
+      - id: pjr2_practical_calm
+        text: "Don't answer it today. Let it sit until we know who's behind it."
+        next_node_id: pjr2_end_practical
+        effects:
+          relationship_effect:
+            axes:
+              trust: 6
+              familiarity: 4
+              alignment: 8
+          state_set:
+            last_pjr_encounter_at: NOW
+
+  pjr2_dismissive_response:
+    id: pjr2_dismissive_response
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Just gossip. Right. ...Sure. For you it's gossip. For me it's a thing people say to my face at galas. 'Oh Peter, how are you holding up?' Like I'm a charity case instead of the guy with the pin and the perfectly curated feed. I'm fourteen, I'm holding up *great*. Watch. *Smile for the imaginary camera.* See? Fine. You don't have to care. Just don't tell me how much I should, when you're treating me like a prop."
+    thought: "He says it flat and polite, the voice he uses for adults who are not going to help. But there's an edge now, a performative one. He flashes a bright, empty smile to demonstrate his point. The mask is on, but it's the cold version."
+    visual:
+      expression: default
+      position: right
+    choices:
+      - id: pjr2_dismissive_sorry
+        text: "That was a careless thing to say. I'm sorry."
+        next_node_id: pjr2_end_dismissive
+        effects:
+          relationship_effect:
+            axes:
+              trust: 2
+              familiarity: 3
+              tension: -2
+          state_set:
+            last_pjr_encounter_at: NOW
+      - id: pjr2_dismissive_shrug
+        text: "I just think you're overreacting."
+        next_node_id: pjr2_end_dismissive_cold
+        effects:
+          relationship_effect:
+            axes:
+              trust: -10
+              alignment: -10
+              tension: 12
+          state_set:
+            last_pjr_encounter_at: NOW
+
+  pjr2_end_steady:
+    id: pjr2_end_steady
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "...I think I'm a person who likes being useful. I think I like standing up there. And I think sometimes I'm scared the day I stop wanting to, everyone will say I was only ever his son. ...Alright. That's enough of my sad hour. Come see the terrace? Gezellig, at least, is free."
+    thought: "He wipes his eyes with the heel of his hand, brisk, like a boy who has been trained not to cry in front of cameras. He is embarrassed and, underneath that, a little lighter."
+    visual:
+      expression: vulnerable
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_act2_done: true
+        pjr_leak_response_steady: true
+      state_set:
+        pjr_act: "2_done"
+        pjr_leak_response: steady
+        last_pjr_encounter_at: NOW
+      story_beat: pjr_act2_leak
+
+  pjr2_hostile_response:
+    id: pjr2_hostile_response
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "...Wow. Okay. So that's how it is. You know what? You're probably right. I don't know what I stand for. Not really. I know what my father stands for, what Anna stands for, what the whole damn Van der Meer brand stands for. But me? Maybe I'm just the pretty face. ...Then again, at least I *have* a face people look at. At least I'm not just the person who shows up to tear it down."
+    thought: "The mask is back, but harder, colder. His eyes are sharp and his voice has an edge that wasn't there before. He is building a wall, brick by brick, and each one has a name: Peter van der Meer Jr., heir, advocate, target. The boy underneath is retreating."
+    visual:
+      expression: angry
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_act2_done: true
+        pjr_leak_response_hostile: true
+      state_set:
+        pjr_act: "2_done"
+        pjr_leak_response: hostile
+        last_pjr_encounter_at: NOW
+      story_beat: pjr_act2_leak
+      relationship_effect:
+        axes:
+          trust: -15
+          alignment: -12
+          tension: 20
+
+  pjr2_end_practical:
+    id: pjr2_end_practical
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Okay. Okay. I'll keep it quiet and I'll find out who posted it. And you — you get a pin and a seat at the table. Seriously, tá bom? I don't have a lot of people who ask a question before they ask me how I feel."
+    thought: "He is already tapping out a note to himself. For a heartbeat he looks like the lawyer he wants to become. He has the lopsided half-smile of someone who just found a tool he did not know he had."
+    visual:
+      expression: determined
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_act2_done: true
+        pjr_leak_response_practical: true
+      state_set:
+        pjr_act: "2_done"
+        pjr_leak_response: practical
+        last_pjr_encounter_at: NOW
+      story_beat: pjr_act2_leak
+
+  pjr2_end_dismissive:
+    id: pjr2_end_dismissive
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "...Okay. Thank you for saying sorry. Most people don't. ...I should get back to the table. There's a rally prep thing. You can stay or go, honestly. Both are fine."
+    thought: "The apology lands and he accepts it, but warily, as if being handled carefully. He is not angry any more. He is just a little further away."
+    visual:
+      expression: default
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_act2_done: true
+        pjr_leak_response_dismissive: true
+      state_set:
+        pjr_act: "2_done"
+        pjr_leak_response: dismissive
+        last_pjr_encounter_at: NOW
+      story_beat: pjr_act2_leak
+
+  pjr2_end_dismissive_cold:
+    id: pjr2_end_dismissive_cold
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Overreacting. Right. Marco, could you walk our guest to the lift when they're ready? ...No, I'm fine. I just remembered I have somewhere to be."
+    thought: "He doesn't raise his voice. The polite closing of a door is the clearest 'no' he has. He is fourteen and has already learned to end conversations like a diplomat."
+    visual:
+      expression: angry
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_act2_done: true
+        pjr_leak_response_dismissive: true
+        pjr_mocked_movement: true
+        pjr_rival_path: true
+      state_set:
+        pjr_act: "2_done"
+        pjr_leak_response: cold
+        last_pjr_encounter_at: NOW
+      story_beat: pjr_act2_leak
+
+  pjr2_script_response:
+    id: pjr2_script_response
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Oh — that's Adrián. 'Post a response at five. Caption attached. Keep the pin visible. Warm, not angry.' ...He wrote me my reaction. Again. He always does, when something like this happens. Keeps the brand consistent, you know? The pin in every shot, the perfect soundbite. It's usually good! It's... usually better than what I'd say on my own. Which is the point, I guess."
+    thought: "He reads it as if reciting a weather report about himself. He does not look angry about it. That is the strange part: he looks used to it, like a boy who has been wearing a mask so long he's forgotten what his own voice sounds like. The pin glints on his collar."
+    visual:
+      expression: default
+      position: right
+    effects:
+      stat_set:
+        pjr_dig: 1
+      flag_set:
+        pjr_saw_script: true
+    choices:
+      - id: pjr2_script_ask
+        text: "Is that what you would have said?"
+        next_node_id: pjr2_end_script
+        effects:
+          relationship_effect:
+            axes:
+              trust: 10
+              familiarity: 8
+              alignment: 6
+              tension: 4
+          state_set:
+            last_pjr_encounter_at: NOW
+      - id: pjr2_script_post
+        text: "Good caption. Post it. Keep the brand consistent."
+        next_node_id: pjr2_end_script_post
+        effects:
+          relationship_effect:
+            axes:
+              trust: -4
+              alignment: -6
+              tension: 6
+          state_set:
+            last_pjr_encounter_at: NOW
+
+  pjr2_end_script:
+    id: pjr2_end_script
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "...I don't know. I haven't said one in a while. It's easier when someone else says it. Cleaner. ...That's a strange thing to hear out loud. Okay. I'm not posting it yet. Come on, I'll show you the terrace."
+    thought: "He sets the tablet face-down on the planter bench and leaves it there. It is a very small act, and the tablet keeps glowing underneath."
+    visual:
+      expression: vulnerable
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_act2_done: true
+        pjr_leak_response_script: true
+      state_set:
+        pjr_act: "2_done"
+        pjr_leak_response: script
+        last_pjr_encounter_at: NOW
+      story_beat: pjr_act2_leak
+
+  pjr2_end_script_post:
+    id: pjr2_end_script_post
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Yeah. It's good. Everybody says so. ...Posting. See? Done. Four hundred likes already. The pin's getting all the attention, just like Adrián wanted. Okay. Terrace? Or do you need me to pose for another shot? *grins, already striking the pose*"
+    thought: "He taps the screen before the sentence is over. The smile is back, quick and bright, like a lamp clicking on. He strikes a practiced pose, the pin gleaming. He doesn't look at the like count again. The mask is seamless."
+    visual:
+      expression: happy
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_act2_done: true
+        pjr_leak_response_script: true
+      state_set:
+        pjr_act: "2_done"
+        pjr_leak_response: script_posted
+        last_pjr_encounter_at: NOW
+      story_beat: pjr_act2_leak
+
+metadata:
+  version: "2.0"
+  required_flags:
+    pjr_act1_done: true
+  tags:
+    - "peter_jr"
+    - "act2"
+    - "world_event"
+    - "rafaela_interview"
+    - "gate_logic"
+  notes: |
+    The world event is unavoidable. The player does not choose whether the
+    quote resurfaces, only how to respond. `pjr_rival_path` can be set here
+    by a cold dismissal and is also set in Acts 3 and 4.

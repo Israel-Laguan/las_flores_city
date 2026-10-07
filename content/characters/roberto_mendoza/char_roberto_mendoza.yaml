@@ -1,15 +1,16 @@
 id: b3c7d1e2-4f5a-4b6c-8d9e-0f1a2b3c4d5e
 name: Roberto Mendoza
-title: Retired Minera Estrella Engineer
+title: Retired Minera Estrella Process Engineer
 birth_year: 2005
-description: A retired engineer who worked at Minera Estrella during the 2052 lithium leak, Roberto Mendoza quietly provided crucial technical information to the 2077 investigators about the structural failures at the processing facility. He was not among the building owners at Residencial Las Estrellas, but his knowledge of the pipe systems and containment failures helped prove the cover-up. He lived in fear of retaliation for decades, and only came forward when it became clear the movement had the strength to protect him.
-physical_description: "Latino man in his 70s with a lean, wiry build, weathered skin, thin white receding hair, spectacles, deep worry lines and a slight tremor."
-psychological_description: "Cautious and principled; lived in fear of retaliation for decades before coming forward."
+description: "The elder Mendoza brother. A process and piping engineer at Minera Estrella who signed the corrosion reports on the high-pressure lines that failed in the 2052 lithium leak, and was pressured to countersign a deferred-remediation waiver. Father of Javier Mendoza. Not among the building owners at Residencial Las Estrellas. He lived in fear of retaliation for decades and in 2077 gave investigators the pressure-line logs and waiver that prove the failure was mechanical, not electrical, once the movement could protect him."
+physical_description: "Latino man in his 70s with a lean, wiry build, weathered tan skin, sunken dark eyes, thin white receding hair swept back and deep worry lines; stiff hip, walks with a wooden cane; thin-rimmed spectacles only for reading."
+psychological_description: "Cautious, measured and slow to speak; wants things in writing. Carries the guilt of a signature and the fear of exposing his son."
 background_and_role:
-  - "Retired Minera Estrella mining engineer"
-  - "Worked there during the 2052 lithium leak"
-  - "Gave 2077 investigators technical evidence of the cover-up"
-  - "Lives in Old Las Flores District"
+  - "Retired Minera Estrella process and piping engineer; worked under Zheng Wuhao"
+  - "Signed corrosion reports on the lines that failed in the 2052 lithium leak"
+  - "Gave 2077 investigators the pressure-line logs and waiver proving a mechanical failure"
+  - "Elder brother of Carlos Mendoza and father of Javier Mendoza"
+  - "Lives in Old Las Flores; known as Don Beto"
 metadata:
   type: human
   role: npc

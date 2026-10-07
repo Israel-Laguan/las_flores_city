@@ -15,7 +15,7 @@
 
 A small business owner who serves as a vital verifier for Humanity First's projects. His practical skepticism and keen eye are essential for ensuring funds are used transparently.
 
-**Age (2077):** ~adult
+**Age (2077):** 45 (b. 2032)
 **District:** Las Flores
 **Role:** Community Verifier
-**Descendancy:** h
+**Descendancy:** Latin American

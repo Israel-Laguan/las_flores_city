@@ -2,7 +2,7 @@
 
 > Tags: `#figure` `#politics` `#corruption` `#pacific`
 >
-> **Born:** ~2010s (Pacific District, Las Flores)
+> **Born:** ~2009 (Pacific District, Las Flores); about 68 in 2077
 > **Role:** Politician
 > **Status:** Disgraced, retired to beach house
 

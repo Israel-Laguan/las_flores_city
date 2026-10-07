@@ -2,40 +2,50 @@
 name: Emilio Reyes
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/emilio_reyes/emilio_reyes.md
 target: `asset_paths.portrait` in `content/characters/emilio_reyes/char_emilio_reyes.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Emilio Reyes
 
+NOTE: canon age is 72 (birth_year 2005; yaml physical_description says middle-aged); current PNG depicts a man of about 55 with full dark hair, no mustache and a blue t-shirt; portrait/variants/videos need regeneration. Two-era character (trial period in flashbacks): do not create a second set here.
+
 ## Prompt (Draft)
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a middle-aged Latino male. Dark brown thinning hair combed carefully, dark brown shifty evasive eyes, medium height slightly overweight soft hands, medium brown smooth but lined around mouth, thin mustache, gold watch, nervous habit of adjusting tie, sweat on brow, cheap gray suit, Andean District courthouse, no European features
+Latino man of 72, medium height, slightly overweight, with soft hands, medium brown skin, smooth but lined around the mouth, thinning dark brown hair carefully combed over to cover the crown, shifty dark brown eyes under heavy lids, a thin mustache, a gold wristwatch, a plain slate-blue crew-neck t-shirt, plain flat grey background. neutral relaxed expression, front-facing, arms relaxed. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a middle-aged Latino man. Dark brown hair, thinning, combed carefully to cover it. Dark brown, shifty and evasive eyes that will not hold a steady gaze. Medium height, slightly overweight, soft hands. Medium brown skin, smooth but lined around the mouth from stress. A thin mustache. A nervous habit of adjusting his tie. Sweat on his brow even in a cool room. He wears a cheap gray suit, poorly pressed. His expression is defensive unease. The backdrop is a courthouse corridor — faded institutional paint, a wooden door, fluorescent light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man of 72. Medium height, slightly overweight, with soft hands. Medium brown skin, smooth but lined around the mouth. Thinning dark brown hair carefully combed over to cover the crown. Shifty dark brown eyes under heavy lids. A thin mustache. A gold wristwatch. Wears a plain slate-blue crew-neck t-shirt. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no European features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Northern European features
 
 ## Variations
 
-- [ ] Emilio in a courthouse corridor, tie pulled loose, glancing over his shoulder as if expecting to be followed
-- [ ] Emilio at his bench, sweat on his brow, refusing to meet the camera's gaze
-- [ ] Emilio alone in a courthouse stairwell, cheap gray suit jacket hanging off one shoulder, the weight of exposure pressing in
+- [ ] Presiding from a raised bench in a wood-panelled hearing room, gavel at hand
+- [ ] Mopping his brow with a handkerchief while answering questions at a witness table
+- [ ] Sliding a thick envelope across a quiet restaurant table
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral nervous evasive expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__shocked.png`**: Use the base portrait as reference. Caught mid-exposure, looking at the camera with sudden alarm, 3/4 take. Eyes wide, sweat beading on his brow, mustache bristling, jacket half off one shoulder. Keep the same art style as reference, same cheap gray suit. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral relaxed resting expression, mouth closed and relaxed, brows unfurrowed, looking at the camera, 3/4 take. Shoulders level, arms hanging relaxed at his sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__calculating.png`**: Use the base portrait as reference. A shrewd, calculating focus, looking directly at the camera, 3/4 take. Eyes narrowed with nervous evaluation, tie being adjusted, soft hands clenched. Keep the same art style as reference, same gray suit. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__shocked.png`**: Use the base portrait as reference. Eyes wide, brows jumping, mouth falling open, beads of sweat on his brow, looking at the camera, 3/4 take. Body jerking upright, both soft hands raised halfway with palms out. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__defeated.png`**: Use the base portrait as reference. A worn, defeated expression, looking gently at the camera, 3/4 take. Eyes open and exhausted, mouth slack, tie hanging, suit hanging loosely. Keep the same art style as reference, same gray suit. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__calculating.png`**: Use the base portrait as reference. Chin lowered, eyes narrowed and sliding sideways, lips pursed under the mustache, looking at the camera, 3/4 take. One hand at his mouth with a finger pressed to his lip, the other tugging at his collar. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__angry.png`**: Use the base portrait as reference. A flushed, angry expression, looking at the camera, 3/4 take. Eyes blazing with defensiveness, jaw squared, mustache bristling, jacket open. Keep the same art style as reference, same gray suit. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__sad.png`**: Use the base portrait as reference. Eyes heavy and reddened, brows tilted up, mouth slack and turned down, looking at the camera, 3/4 take. Shoulders slumped forward, head hanging, both arms limp with the soft hands loose at his thighs. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__angry.png`**: Use the base portrait as reference. Face flushed, eyes narrowed and glaring, jaw squared, mouth tight under the mustache, looking at the camera, 3/4 take. Shoulders hunched forward, one finger jabbing outward, the other hand clenched into a fist at his waist. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Lore wardrobe staged as outfit variants of the base portrait: `assets/<slug>__outfit-<name>.png`. Same face, hair and build as the base. -->
+
+- **`__outfit-suit.png`**: Use the base portrait as reference. Same man, same face, hair and build, now wearing a cheap, ill-fitting grey two-piece suit with a white shirt and a loosened plain tie, the gold wristwatch showing at the cuff, a sheen of sweat on the brow, neutral calm expression, shoulders level, looking at the camera, 3/4 take. Keep the same face, build and art style as reference, plain flat neutral light-grey backdrop. Clean confident linework, painterly soft shading, muted natural palette.

@@ -8,13 +8,15 @@ target: content/characters/carlos_alberto_hernandez/assets/
 
 # Video Prompts: Carlos Alberto Hernandez
 
+NOTE: the PNG matches the YAML on age, ethnicity and hair but shows a faint smile and no silver-framed glasses or signet ring; both are staged in the spectacles outfit variant. Regenerate with a neutral mouth, ideally with the glasses.
+
 Generate seamless looping portrait videos from each expression variant PNG. Use the corresponding `carlos_alberto_hernandez__<expression>.png` as the input image for each prompt. The man on the reference image is the character described in the source prompt file.
 
 ## Base Loop (Default)
 
 **Input**: `assets/carlos_alberto_hernandez__default.png`
 
-Create a seamless looping video. The man on the reference image wears a neutral, practiced politician's smile that does not quite reach his eyes, maintaining an aura of polished public composure. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle behind his glasses. Hair and clothing respond to a faint ambient breeze. Fine strands of carefully combed-over hair stir faintly, and the lapels and fabric of the well-tailored navy suit shift subtly in the air draft. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image has a neutral relaxed resting expression with a closed relaxed mouth. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Latino man of 62, medium height, slight paunch, medium brown skin lined around the eyes and mouth, thinning dark brown hair combed to one side, hooded dark brown eyes, tailored navy suit over a white open-collar shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
 
@@ -22,22 +24,22 @@ Create a seamless looping video. The man on the reference image wears a neutral,
 
 **Input**: `assets/carlos_alberto_hernandez__calculating.png`
 
-Create a seamless looping video. The man on the reference image shows shrewd political assessment with his practiced smile dropped, sharp eyes narrowing behind his glasses as he calculates and evaluates. Subtle idle animation: slow, measured breathing motion in the chest, a subtle eye-narrowing cycle behind the silver-framed lenses, micro-tension shifting along his jawline, and a slow, deliberate blink cycle. Hair and clothing respond to a faint ambient breeze. Thin strands of dark hair shift faintly along his crown, and the crisp fabric of his tailored navy suit settles smoothly over his shoulders. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a cool assessing look with a lowered chin and narrowed eyes. Subtle idle animation only: slow measured breathing, the eyes shifting slightly as if weighing options, a deliberate slow blink. Latino man of 62, medium height, slight paunch, medium brown skin lined around the eyes and mouth, thinning dark brown hair combed to one side, hooded dark brown eyes, tailored navy suit over a white open-collar shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__shocked` loop
 
 **Input**: `assets/carlos_alberto_hernandez__shocked.png`
 
-Create a seamless looping video. The man on the reference image displays sudden alarm with his political composure shattered, wide alarmed eyes, mouth slightly parted, and glasses shifting minutely on the bridge of his nose. Subtle idle animation: shallow, rapid micro-breathing held high in his chest, a subtle startle micro-tension in his neck and shoulders, an alert micro-quiver, and a quick, sharp blink cycle before returning to wide-eyed shock. Hair and clothing respond to a faint ambient breeze. Delicate wisps of combed-over hair tremble lightly, and the structured lapels of his navy suit shift minutely with his elevated breathing. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows wide-eyed shock with high brows and parted lips. Subtle idle animation only: a sharp intake of breath lifting the shoulders, a held tension, a slow shaky exhale. Latino man of 62, medium height, slight paunch, medium brown skin lined around the eyes and mouth, thinning dark brown hair combed to one side, hooded dark brown eyes, tailored navy suit over a white open-collar shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__determined` loop
 
 **Input**: `assets/carlos_alberto_hernandez__determined.png`
 
-Create a seamless looping video. The man on the reference image exhibits steely political resolve with steady sharp eyes fixed behind his glasses and a squared jaw defying his age. Subtle idle animation: deep, controlled breathing motion lifting the chest, firm posture with a subtle grounding micro-shift in weight, a subtle jaw-tightening cycle, and a slow, unflinching blink cycle. Hair and clothing respond to a faint ambient breeze. Carefully combed dark brown hair strands sway faintly, and the shoulders and collar of the well-tailored navy suit rustle imperceptibly. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows firm resolve with steady eyes and a set mouth. Subtle idle animation only: deep controlled breathing, a slight firming of the jaw, a slow unwavering blink cycle. Latino man of 62, medium height, slight paunch, medium brown skin lined around the eyes and mouth, thinning dark brown hair combed to one side, hooded dark brown eyes, tailored navy suit over a white open-collar shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__contemplative` loop
 
 **Input**: `assets/carlos_alberto_hernandez__contemplative.png`
 
-Create a seamless looping video. The man on the reference image appears lost in private reflection with his practiced political smile completely absent, gaze distant and weary behind his lenses, shoulders slightly relaxed. Subtle idle animation: slow, contemplative breathing motion rising and falling softly in the chest, a slight micro-softening around the mouth and brow, and a gentle, heavy blink cycle drifting in thought. Hair and clothing respond to a faint ambient breeze. Wisps of thinning combed-over hair stir gently in the quiet draft, and the fabric of the navy suit jacket settles softly against his frame. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a distant thoughtful gaze. Subtle idle animation only: slow breathing, a slow drift of the gaze, a slow blink. Latino man of 62, medium height, slight paunch, medium brown skin lined around the eyes and mouth, thinning dark brown hair combed to one side, hooded dark brown eyes, tailored navy suit over a white open-collar shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

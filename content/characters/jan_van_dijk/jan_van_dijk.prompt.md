@@ -2,40 +2,50 @@
 name: Jan van Dijk
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/jan_van_dijk/jan_van_dijk.md
 target: `asset_paths.portrait` in `content/characters/jan_van_dijk/char_jan_van_dijk.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Jan van Dijk
 
+NOTE: PNG reads about 58 against a computed age of 52 (mild; no regeneration required). The lore lapel pin, mole and almond-eye detail are not visible in the PNG.
+
 ## Prompt (Draft)
 
-Dutch man in his early 50s, broad-heavy prosperous build, clear skin, thin receding gray-blonde hair. Square face with a soft jawline, pronounced cheekbones, almond eyes, thick brows, thin lips, pointed nose. A small mole on his left cheek, one brow sitting lower than the other. Deepening lines from age. Small sport earbud clipped to earlobe, CEO business attire with a GLC lapel pin and tasteful watch. Executive office backdrop with lithium-blue accent lighting and a city view. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Dutch man of 52, broad heavy build, square face, thinning swept-back grey-blond hair, grey-blue eyes, black blazer over white open-collar shirt, plain flat grey background. Neutral relaxed expression, mouth closed, eyes to camera, front-facing, arms relaxed. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch man in his early 50s. Broad-heavy, prosperous build with a commanding, settled presence. Clear skin. Thin receding gray-blonde hair, combed and groomed. Square face with a soft jawline and pronounced cheekbones. Almond eyes, shrewd and watchful, thick gray-blonde brows, thin lips, and a pointed nose. A small mole on his left cheek and a subtle asymmetry — one brow sits a fraction lower than the other. Deepening lines around the eyes and mouth from age. Composed CEO poise, air of measured authority. Small sport non-in-ear earbud clipped to earlobe. Executive business attire: tailored suit, GLC lapel pin, tasteful watch. The backdrop is a GLC executive office with lithium-blue accent lighting and a sweeping city view through plate glass. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch man of 52 with a broad, heavy, prosperous build. Fair ruddy skin, a square face with deep forehead lines, thinning swept-back grey-blond hair, shrewd heavy-lidded grey-blue eyes under thick brows, and a thick neck. Black tailored blazer over a white open-collar shirt. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no Latino features, no East Asian features, no African features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, Latino features, East Asian features, African features, young
 
 ## Variations
 
-- [ ] At his desk reviewing scholarship paperwork, city lights beyond the glass
-- [ ] Speaking to a board, hands spread over plans, lithium-blue glow behind him
-- [ ] On a call with a student program, the GLC pin catching the light
+- [ ] Seated at the head of a glass boardroom table, fingertips pressed together
+- [ ] Standing on a hotel terrace at night with a drink, looking down on the city lights
+- [ ] Shaking hands with a smiling official in front of a ribbon
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__smirk.png`**: Use the base portrait as reference. He wears a faint, self-assured half-smile, looking at the camera, 3/4 take. Eyes glinting with private amusement, the thin lips curled at one corner, the lower brow lending a knowing tilt. Keep the same art style as reference, same suit, GLC pin and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders relaxed and level, arms hanging loosely at his sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__calculating.png`**: Use the base portrait as reference. He is weighing a decision, looking directly at the camera, 3/4 take. Eyes narrowed and intent, thick brows drawn slightly, thin lips pressed together. Keep the same art style as reference, same clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__smirk.png`**: Use the base portrait as reference. One corner of the mouth pulled up in a knowing half-smile, one brow slightly raised, eyes narrowed a touch, looking at the camera, 3/4 take. Chin slightly raised, head tilted back, one hand tucked into his jacket pocket, the other holding a glass loosely. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__determined.png`**: Use the base portrait as reference. He is fixed on an objective, looking unflinchingly at the camera, 3/4 take. Eyes locked, jaw set, thick brows firm, thin lips in a resolute line. Keep the same art style as reference, same suit and GLC pin. Clean confident linework, painterly soft shading with deeper shadows, muted natural palette.
+- **`__calculating.png`**: Use the base portrait as reference. Chin lowered, eyes narrowed and fixed, lips pressed together, brows drawn slightly down, looking at the camera, 3/4 take. Chin lowered, brow heavy, one hand at his jaw with a finger along his lip, the other arm across his stomach. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__happy.png`**: Use the base portrait as reference. His severity cracks into warmth, looking at the camera, 3/4 take. Eyes bright and crinkled, thin lips curved in an unguarded smile, the lower brow relaxed. The lines around his eyes deepen pleasantly. Keep the same art style as reference, same clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__determined.png`**: Use the base portrait as reference. Eyes steady, brows drawn slightly together, lips pressed in a firm line, chin lifted a little, looking at the camera, 3/4 take. Squared heavy shoulders, chin level, one fist planted on an imaginary table edge at waist height. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__happy.png`**: Use the base portrait as reference. Genuine warm smile, eyes crinkling, brows relaxed and lifted, looking at the camera, 3/4 take. Broad shoulders relaxed, a hearty smile, one hand extended open in a welcoming gesture. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Same face, hair and build as the base portrait; only the outfit changes. -->
+
+- **`__outfit-boardroom.png`**: Use the base portrait as reference. Same face, hair and build as the base. Charcoal tailored suit with a white shirt and a dark silk tie, a small plain gold lapel pin without lettering. Neutral relaxed resting expression, front-facing, arms relaxed at the sides. Keep the same art style as reference and the backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.

@@ -4,10 +4,11 @@
 >
 > **Born:** 2000 (Chengdu, Sichuan Province, China)
 > **Role:** Former military operative, restaurateur
-> **Status:** Active (as of 2059)
+> **Status:** Active (as of 2077)
 
 ## Physical Description
-- Hair: Black with silver streaks, worn in a practical bun
+- Age (2077): 77 (born 2000)
+- Hair: Silver-white (once black), worn in a practical bun
 - Eyes: Dark brown, sharp and alert from years of covert work
 - Build: Slender and strong, moves with military precision
 - Skin: Fair with weathered lines from decades of cooking

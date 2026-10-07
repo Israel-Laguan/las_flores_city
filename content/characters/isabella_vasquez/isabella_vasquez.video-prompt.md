@@ -8,13 +8,15 @@ target: content/characters/isabella_vasquez/assets/
 
 # Video Prompts: Isabella Vasquez
 
+NOTE: the current PNG contradicts canon: it shows a slim woman with a tan complexion and chestnut-brown hair, while lore/YAML call for a pale, petite, full-figured pear-shaped woman with light brown to dark blonde hair; portrait/variants/videos need regeneration.
+
 Generate seamless looping portrait videos from each expression variant PNG. Use the corresponding `isabella_vasquez__<expression>.png` as the input image for each prompt. The woman on the reference image is the character described in the source prompt file.
 
 ## Base Loop (Default)
 
 **Input**: `assets/isabella_vasquez__default.png`
 
-Create a seamless looping video. The woman on the reference image holds a neutral resting expression with light brown–dark blonde wavy hair styled and glossy, wide-set dark eyes, and a tiny scar near one hairline. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, and a barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. Light brown–dark blonde wavy hair shifts subtly, and the elegant high-society attire with a tailored blazer over a silk blouse and tasteful statement jewelry shifts gently in the draft. The small sport earbud clipped to her earlobe remains still. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a neutral relaxed resting expression, looking at the camera. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Petite full-figured Latina woman of 42, pear-shaped build, pale skin, wide-set sharp brown eyes, light brown to dark blonde wavy shoulder-length hair, fitted black V-neck top, fine silver necklace. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
 
@@ -22,22 +24,22 @@ Create a seamless looping video. The woman on the reference image holds a neutra
 
 **Input**: `assets/isabella_vasquez__smirk.png`
 
-Create a seamless looping video. The woman on the reference image shows a knowing, slightly mocking half-smile with wide-set eyes glinting with dry wit and one corner of the full lips pulled up. Subtle idle animation: relaxed, easy breathing motion rising and falling in the chest, a subtle micro-lift at the corner of the smirk, and an easy, barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. The tailored blazer settles naturally over her shoulders, and the statement jewelry catches a faint ambient draft. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a knowing smirk with one raised brow and a half-smile. Subtle idle animation only: a slow settling of the shoulders, a faint lift at one corner of the mouth, a slow confident blink. Petite full-figured Latina woman of 42, pear-shaped build, pale skin, wide-set sharp brown eyes, light brown to dark blonde wavy shoulder-length hair, fitted black V-neck top, fine silver necklace. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__calculating` loop
 
 **Input**: `assets/isabella_vasquez__calculating.png`
 
-Create a seamless looping video. The woman on the reference image shows sharp assessment mode with wide-set eyes narrowed slightly and head tilted, mouth set in a neutral evaluating line. Subtle idle animation: slow, controlled breathing in the chest and shoulders, a subtle eye-narrowing cycle as she evaluates, and a calm, deliberate blink cycle. Hair and clothing respond to a faint ambient breeze. Light brown–dark blonde wavy hair shifts subtly against her neck, and the blazer shifts gently with her breath. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a cold calculating look with lowered chin and narrowed eyes. Subtle idle animation only: slow measured breathing, a slight tightening of the jaw, a slow deliberate blink. Petite full-figured Latina woman of 42, pear-shaped build, pale skin, wide-set sharp brown eyes, light brown to dark blonde wavy shoulder-length hair, fitted black V-neck top, fine silver necklace. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__happy` loop
 
 **Input**: `assets/isabella_vasquez__happy.png`
 
-Create a seamless looping video. The woman on the reference image shows a warm, gracious smile with wide-set eyes bright and full lips curved warmly. Subtle idle animation: light, buoyant breathing motion lifting her chest and shoulders, a gentle relaxed blink cycle with joyful crinkles around the eyes, and a subtle micro-softening in her warm smile. Hair and clothing respond to a faint ambient breeze. Light brown–dark blonde hair shifts gently around her face, and the blazer and silk blouse shift softly with her breath. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a warm genuine smile with crinkled eyes. Subtle idle animation only: light easy breathing, a slight lift of the shoulders, a soft blink as the smile brightens and eases. Petite full-figured Latina woman of 42, pear-shaped build, pale skin, wide-set sharp brown eyes, light brown to dark blonde wavy shoulder-length hair, fitted black V-neck top, fine silver necklace. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__angry` loop
 
 **Input**: `assets/isabella_vasquez__angry.png`
 
-Create a seamless looping video. The woman on the reference image shows restrained irritation with wide-set eyes narrowed and arched brows angled down. Subtle idle animation: tight, controlled, sharp breathing motion rising and falling in the chest, a subtle micro-clenching cycle in the jaw muscles, and a curt, intense blink cycle. Hair and clothing respond to a faint ambient breeze. Light brown–dark blonde wavy hair shifts sharply in the draft, and the blazer fabric tenses subtly across her frame. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows barely held anger with narrowed eyes and a set jaw. Subtle idle animation only: deep tense breathing, a flex of the jaw, a hard slow blink. Petite full-figured Latina woman of 42, pear-shaped build, pale skin, wide-set sharp brown eyes, light brown to dark blonde wavy shoulder-length hair, fitted black V-neck top, fine silver necklace. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

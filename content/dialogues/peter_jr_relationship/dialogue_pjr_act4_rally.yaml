@@ -1,0 +1,399 @@
+id: f2b45586-8d36-419a-9e49-604c55f5a809
+name: "Peter Jr. Act 4 - The Rally Steps"
+description: "Pressure point, a world action rather than a talking beat. At an Amor Verdadero youth rally a reporter and a heckler corner Peter Jr. about his mother's quote. The player's action sets the branch: cover him, witness, coach him (mentor path only), slip away, or leak something about the family."
+character_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+scene_id: 696f4dc1-3bc7-4c52-a4f5-247aa8f5e468
+dialogue_scope: character
+start_node_id: pjr4_start
+
+nodes:
+  pjr4_start:
+    id: pjr4_start
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Two minutes. The speech is on cards but I keep forgetting the first line. There's a reporter by the terrace door who keeps saying 'Peter, Peter' like it's my name and not a hook, and a man in a grey suit who just asked me whether my parents put me up here, or my agency. Adrián's line is 'I was born into this, and I chose it' — smile on 'chose'. Marco wants to take me inside. I don't want to go inside."
+    thought: "He is standing on the steps with a stack of index cards that have gone damp at the corners. His voice is almost steady. The pin on his collar catches the light every time he breathes."
+    visual:
+      expression: vulnerable
+      position: right
+      transition: fade
+    effects:
+      relationship_effect:
+        axes:
+          tension: 12
+          visibility: 8
+      state_set:
+        last_pjr_encounter_at: NOW
+    choices:
+      - id: pjr4_cover
+        text: "[Step up beside him. Say you're with him.]"
+        next_node_id: pjr4_covered
+      - id: pjr4_witness
+        text: "[Step back. Let him answer for himself, and stay where he can see you.]"
+        next_node_id: pjr4_witnessed
+      - id: pjr4_coach
+        text: "[Pull him aside for ten seconds. Help him find the first line.]"
+        next_node_id: pjr4_coached
+        required_flags:
+          pjr_mentor_path: true
+      - id: pjr4_mother
+        text: "[Someone is arriving through the crowd, calling his name. Face her.]"
+        next_node_id: pjr4_mother_arrives
+        required_stats:
+          pjr_dig: "gte:3"
+        required_relationship:
+          axes:
+            trust: "gte:30"
+      - id: pjr4_escapade
+        text: "[Pull him toward the side exit. The terrace is too loud, too bright. Slip away with him.]"
+        next_node_id: pjr4_escapade_start
+        required_stats:
+          pjr_dig: "gte:1"
+        hidden_if:
+          pjr_hostile_path: true
+      - id: pjr4_deflect
+        text: "[Slip away before the cameras turn. This isn't your fight.]"
+        next_node_id: pjr4_deflected
+      - id: pjr4_leak
+        text: "[Quietly give the reporter something about the family.]"
+        next_node_id: pjr4_betrayed
+
+  pjr4_covered:
+    id: pjr4_covered
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "You're — okay. Okay. They're looking at you now instead of me, and I don't hate it. Obrigado. I'm going to say the first line and you're going to nod like it's the best first line ever written. Ready? 'My name is Peter van der Meer Jr., and I'm here because I want to be.' ...Hah. That's it. That's the whole first line. I had it all along."
+    thought: "He draws himself up and his hands stop shaking, because someone is standing in the spot where the fear lives. He walks to the microphone looking steadier than he has in weeks."
+    visual:
+      expression: determined
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_act4_done: true
+        pjr_act4_covered: true
+        pjr_friend_path: true
+      state_set:
+        pjr_act: "4_done"
+        pjr_act4_choice: covered
+        last_pjr_encounter_at: NOW
+      story_beat: pjr_act4_rally
+      relationship_effect:
+        axes:
+          trust: 18
+          alignment: 10
+          tension: -10
+          debt: 8
+
+  pjr4_witnessed:
+    id: pjr4_witnessed
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "...Okay. You're not coming up. Okay. That's — actually, that's right. This is mine. Stay where I can see you, tá? I'm going to look at your face when I'm scared and pretend it's a friendly one. Which it is. Isn't it?"
+    thought: "He takes a breath that goes all the way down. When he turns, the man in the grey suit is still talking. Peter Jr. waits until he has finished and then answers him. He answers calmly, and he does not look away from the player once."
+    visual:
+      expression: determined
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_act4_done: true
+        pjr_act4_witnessed: true
+        pjr_friend_path: true
+      state_set:
+        pjr_act: "4_done"
+        pjr_act4_choice: witnessed
+        last_pjr_encounter_at: NOW
+      story_beat: pjr_act4_rally
+      relationship_effect:
+        axes:
+          trust: 14
+          alignment: 8
+          familiarity: 8
+          tension: -4
+
+  pjr4_coached:
+    id: pjr4_coached
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Ten seconds. You want me to start with the clause, not the feeling. Nou — of course. 'Article four says nobody can be turned away for who they are. I'm here to make sure it stays that way.' Say it again, slower. ...Okay. I have it. Thank you. I am going to remember this when I'm a lawyer and somebody is panicking in front of me."
+    thought: "He mouths the line twice and the shaking leaves his hands. The brief he never wrote is already in his head, shaped like a lawyer who has found his footing. He goes out to the microphone with his chin level and a very small, private smile."
+    visual:
+      expression: determined
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_act4_done: true
+        pjr_act4_coached: true
+        pjr_mentor_path: true
+      state_set:
+        pjr_act: "4_done"
+        pjr_act4_choice: coached
+        last_pjr_encounter_at: NOW
+      story_beat: pjr_act4_rally
+      relationship_effect:
+        axes:
+          trust: 16
+          alignment: 12
+          familiarity: 8
+          debt: 10
+
+  pjr4_deflected:
+    id: pjr4_deflected
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "...You're leaving. No — it's okay. It's loud and there are cameras and it isn't your thing, I get it. Go. I'll be fine. I've been fine before. ...I just thought for a second you'd be standing there when I looked."
+    thought: "He says it lightly, without blame, and that is what stays with the player. By the time he turns to face the microphone he is already someone who has done this alone before. The steps look bigger from behind him."
+    visual:
+      expression: sad
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_act4_done: true
+        pjr_act4_deflected: true
+      state_set:
+        pjr_act: "4_done"
+        pjr_act4_choice: deflected
+        last_pjr_encounter_at: NOW
+      story_beat: pjr_act4_rally
+      relationship_effect:
+        axes:
+          trust: -10
+          familiarity: 2
+          alignment: -4
+          tension: 6
+
+  pjr4_betrayed:
+    id: pjr4_betrayed
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Hey — wait, what did you just say to her? ...What did you tell her? That's not — that's not public. That was — that was just Mãe and me. You — Marco! Marco, I don't want them in the building. I don't want them at the table. I don't want them anywhere near me."
+    thought: "The colour goes out of his face and then comes back all at once, angrier than he has ever let himself be in public. He is fourteen, in front of cameras, and he has just learned that being generous with the wrong person is expensive. He will not forget the exact shape of this moment."
+    visual:
+      expression: angry
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_act4_done: true
+        pjr_act4_betrayed: true
+        pjr_leaked_family: true
+        pjr_rival_path: true
+      state_set:
+        pjr_act: "4_done"
+        pjr_act4_choice: betrayed
+        last_pjr_encounter_at: NOW
+      story_beat: pjr_act4_rally
+      relationship_effect:
+        axes:
+          trust: -30
+          alignment: -25
+          tension: 25
+          debt: -10
+
+  pjr4_mother_arrives:
+    id: pjr4_mother_arrives
+    type: character
+    speaker_id: c3d4e5f6-a7b8-4c9d-8e1f-2a3b4c5d6e7f
+    text: "Meu amor! There's my star! Querido, you look tired — did Adrián feed you? Smile for Mãe — Jorge, the shot from the left, the pin, the pin! Is someone being rude to my boy? Amor, say the pretty line, they love it. Everyone is watching, nobody remembers a shy boy."
+    thought: "She arrives like weather: laughing, arms open, one hand cupping his face, another waving at a photographer. Her voice carries to the back of the terrace. Her love is not fake, and neither is the camera. The boy goes still in her hands."
+    visual:
+      expression: default
+      position: left
+    choices:
+      - id: pjr4_mother_ask
+        text: "Does he get to say no, Rafaela?"
+        next_node_id: pjr4_mother_laugh
+      - id: pjr4_mother_back
+        text: "[Stay quiet. It's not yours to ask. Step back.]"
+        next_node_id: pjr4_witnessed
+
+  pjr4_mother_laugh:
+    id: pjr4_mother_laugh
+    type: character
+    speaker_id: c3d4e5f6-a7b8-4c9d-8e1f-2a3b4c5d6e7f
+    text: "Say no? Querido, he's fourteen, he says no to broccoli! Hah! Where would he be without a name? Without a mother who opens doors? In my country nobody called my life a scandal — his father and I never 'namoramos', we ficamos, we married, pronto. Here they call that a crime. I call it publicity. ...Filho? Tell them it's your choice. Tell them."
+    thought: "Her laugh is huge and real, and her hand stays on the player's arm a beat too long. When she turns to her son the laugh does not leave her face, but it stops reaching her eyes. She is asking him to answer for her."
+    visual:
+      expression: default
+      position: left
+    choices:
+      - id: pjr4_mother_turn
+        text: "[Look at Peter Jr. Let him answer.]"
+        next_node_id: pjr4_mother_peter
+
+  pjr4_mother_peter:
+    id: pjr4_mother_peter
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "...Mãe. Can I say it without the line? Not Adrián's line, not yours. Mine. It might not be good. It might not even be pretty. ...I don't know if I chose this. But I'd like to find out, and I can't find out if everyone keeps handing me the answer."
+    thought: "He takes the cards out of his pocket and puts them, carefully, in the player's hand. His voice shakes on 'chose' and he does not smile on it. It is the first honest word anyone has heard from him all afternoon."
+    visual:
+      expression: determined
+      position: right
+    choices:
+      - id: pjr4_mother_nod
+        text: "Then say it your way. I'm right here."
+        next_node_id: pjr4_found_truth
+        required_relationship:
+          axes:
+            trust: "gte:30"
+
+  pjr4_found_truth:
+    id: pjr4_found_truth
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Okay. Okay. 'My name is Peter. I'm fourteen. I don't know yet which parts of this are mine — but I'm going to find out, in front of you, and I'd like you to let me.' ...That wasn't on the cards. Adrián's going to be so angry. Obrigado."
+    thought: "He walks up to the microphone with his chin level and no script. Behind him Rafaela has her hands pressed to her mouth, half pride, half alarm. Adrián is already typing. The crowd does not know what it has just seen, but it stays very quiet."
+    visual:
+      expression: determined
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_act4_done: true
+        pjr_act4_found_truth: true
+        pjr_found_truth: true
+      state_set:
+        pjr_act: "4_done"
+        pjr_act4_choice: found_truth
+        last_pjr_encounter_at: NOW
+      story_beat: pjr_act4_rally
+      relationship_effect:
+        axes:
+          trust: 22
+          alignment: 14
+          familiarity: 10
+          tension: -8
+          debt: 6
+
+  pjr4_escapade_start:
+    id: pjr4_escapade_start
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Wait — where? The exit? The *side* exit? There's nobody there. There's no cameras there. There's no... Why are we going there? ...Oh. Oh, I see. You want to. Okay. Okay, come on, before Marco sees. Quick. Through the service door — yes, that one. Don't look at the cameras. Don't look at *anything*."
+    thought: "He moves fast and low, like a boy who has practiced slipping away from things. The pin on his collar swings as he turns, catching the light one last time before they round the corner into the dim service corridor."
+    visual:
+      expression: happy
+      position: right
+    effects:
+      stat_set:
+        pjr_dig: 1
+      relationship_effect:
+        axes:
+          trust: 8
+          familiarity: 8
+          tension: -6
+      state_set:
+        last_pjr_encounter_at: NOW
+    choices:
+      - id: pjr4_escapade_romantic
+        text: "You looked like you needed a door that wasn't for the cameras."
+        next_node_id: pjr4_escapade_romantic
+        required_flags:
+          pjr_lover_path: true
+      - id: pjr4_escapade_friend
+        text: "The rally can wait five minutes. You can breathe first."
+        next_node_id: pjr4_escapade_friend
+
+  pjr4_escapade_romantic:
+    id: pjr4_escapade_romantic
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: |
+      Breathe. Right. I keep forgetting. It's darker here. And quieter. And there's nobody asking me to smile. Or to be brave. Or to be Peter Jr. Can I take this off for a second? Just just to see what it feels like. He touches the pin. It's not that I don't believe in it. It's that I don't know if I do. Without the camera, without the crowd, without all of this.
+    thought: "He unclips the pin and sets it on the ledge between them, carefully, like it might bite. The collar of his shirt looks strange without it, bare and almost vulnerable. He looks at the pin, then at the player, then back at the pin, like he's trying to remember which one is real."
+    visual:
+      expression: vulnerable
+      position: right
+    choices:
+      - id: pjr4_escapade_pin_off
+        text: "Leave it off. It suits you better without it."
+        next_node_id: pjr4_escapade_end_romantic
+        effects:
+          relationship_effect:
+            axes:
+              trust: 10
+              intimacy: 12
+          flag_set:
+            pjr_pin_removed: true
+          state_set:
+            last_pjr_encounter_at: NOW
+      - id: pjr4_escapade_pin_on
+        text: "Put it back on. The cameras will notice."
+        next_node_id: pjr4_escapade_end_romantic
+        effects:
+          relationship_effect:
+            axes:
+              trust: 4
+              tension: 6
+          state_set:
+            last_pjr_encounter_at: NOW
+
+  pjr4_escapade_end_romantic:
+    id: pjr4_escapade_end_romantic
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "...Okay. Maybe I will. For a bit. Or maybe I won't. I don't know yet. But I know I can put it back on whenever I want. That's — that's new. That I can choose. ...We should get back. Before Adrián notices the pin is missing from the shots. But. Thank you. For the door. And for... not looking."
+    thought: "He picks up the pin and turns it over in his fingers, but he doesn't clip it back on. Not yet. He looks at the player for a long moment, and there's something in his eyes that isn't for the cameras, isn't for the brand, isn't for anyone but them. Then he tucks the pin into his pocket and takes a breath, like he's remembering how."
+    visual:
+      expression: happy
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_act4_done: true
+        pjr_act4_escapade: true
+      state_set:
+        pjr_act: "4_done"
+        pjr_act4_choice: escapade
+        last_pjr_encounter_at: NOW
+      story_beat: pjr_act4_escapade
+      relationship_effect:
+        axes:
+          trust: 12
+          familiarity: 8
+          intimacy: 10
+
+  pjr4_escapade_friend:
+    id: pjr4_escapade_friend
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Five minutes. Nobody will miss me for five minutes. Five minutes is an eternity in content time, actually. They'll think I'm being mysterious. ...What? No, I'm not — it's fine. I'm just. Standing. Not performing. It's a novel concept. ...Do you want to see the view from the service balcony? It's not as good as the terrace, but you can see the whole city from here. And nobody can see us."
+    thought: "He takes a deep breath, then another, like he's testing the air. He hasn't stood still without an audience in a very long time. His shoulders drop a little. He looks younger, somehow, without the weight of the performance pressing down on him."
+    visual:
+      expression: happy
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_act4_done: true
+        pjr_act4_escapade: true
+      state_set:
+        pjr_act: "4_done"
+        pjr_act4_choice: escapade
+        last_pjr_encounter_at: NOW
+      story_beat: pjr_act4_escapade
+      relationship_effect:
+        axes:
+          trust: 10
+          familiarity: 8
+          alignment: 6
+
+metadata:
+  version: "2.0"
+  required_flags:
+    pjr_act3_done: true
+  tags:
+    - "peter_jr"
+    - "act4"
+    - "pressure_point"
+    - "rally"
+    - "gate_logic"
+  notes: |
+    Act 4 is a world action, not a talking beat. Branch flags: covered /
+    witnessed / coached / deflected / betrayed (`pjr_act4_choice`).
+    `pjr_act4_betrayed` and `pjr_leaked_family` both set `pjr_rival_path`.
+    The coach choice only appears if the mentor path is open from Act 3.

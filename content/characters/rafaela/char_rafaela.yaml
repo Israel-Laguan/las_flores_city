@@ -2,9 +2,9 @@ id: c3d4e5f6-a7b8-4c9d-8e1f-2a3b4c5d6e7f
 name: Rafaela
 title: Ex-Wife of Peter van der Meer
 birth_year: 2022
-description: Married Peter van der Meer in a marriage of convenience to please their families. Later gave a tell-all interview in 2070 revealing the truth about their marriage and expressing concerns about their son Peter Jr.'s sexuality.
+description: "Brazilian socialite who married Peter van der Meer in a marriage of convenience and gave a tell-all interview in 2070. Expressive, physical and warm, she turned scrutiny into a media career and encourages her son Peter Jr. toward a public, glamorous life."
 physical_description: "Latina woman in her 50s with an athletic-compact build; heart-shaped face, high cheekbones, wavy dark styled hair with gray streaks, almond eyes and full lips, dressed as a well-to-do socialite with tasteful jewelry."
-psychological_description: "Candid and composed; willing to speak openly about private family truths despite social pressure."
+psychological_description: "Expressive, warm and attention-hungry; loud with love, fluent in cameras, and unsure whether she is protecting her son or using him."
 background_and_role:
   - "Ex-wife of Peter van der Meer"
   - "Entered a marriage of convenience to please their families"
@@ -14,7 +14,7 @@ metadata:
   type: human
   role: npc
   faction: van_der_meer
-  personality: candid_socialite
+  personality: expressive_socialite
 asset_paths:
   portrait: rafaela__default.png
 

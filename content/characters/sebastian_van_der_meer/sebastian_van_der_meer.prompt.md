@@ -12,11 +12,11 @@ consumer: portrait
 
 ## Prompt (Draft)
 
-Dutch man of 45, athletic-compact build, angular face, strong jaw, high cheekbones, pointed nose, wide-set pale blue-grey eyes, thick brows, thin lips, light stubble. Straight swept-back blond hair threaded with gray, dark navy button-up shirt with open collar, plain flat grey background. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Dutch man of 45, athletic-compact build, angular face, strong jaw, high cheekbones, pointed nose, wide-set pale blue-grey eyes, thick brows, thin lips, light stubble. Straight swept-back blond hair threaded with gray, dark navy button-up shirt with open collar, plain flat grey background. neutral relaxed expression, front-facing, arms relaxed. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch man of 45. Athletic-compact build, commanding and upright. Angular face with high cheekbones and a strong jaw, a pointed nose, wide-set pale blue-grey eyes, thick brows with one sitting a fraction lower, thin lips and light stubble. Straight swept-back blond hair threaded with gray. Dark navy button-up shirt with an open collar. Level, faintly intense gaze. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch man of 45. Athletic-compact build. Angular face with high cheekbones and a strong jaw, a pointed nose, wide-set pale blue-grey eyes, thick brows with one sitting a fraction lower, thin lips and light stubble. Straight swept-back blond hair threaded with gray. Dark navy button-up shirt with an open collar. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

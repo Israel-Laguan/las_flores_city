@@ -8,7 +8,7 @@
 > **Status:** Active
 
 ## Physical Description
-- Hair: Jet black, thick and lustrous, worn in a sleek blowout or elegant updo
+- Hair: Jet black, thick and lustrous, worn sleek and swept back
 - Eyes: Dark brown, sharp and commanding, lined with subtle kohl
 - Build: Slender and poised, moves with confident grace
 - Skin: Warm olive complexion, smooth and carefully maintained

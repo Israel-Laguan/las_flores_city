@@ -1,0 +1,33 @@
+id: 696f4dc1-3bc7-4c52-a4f5-247aa8f5e468
+name: Van der Meer Tower — Sky Atrium
+description: A glass-roofed garden atrium on the upper floors of the Van der Meer tower, kept private for family events and the Amor Verdadero youth salon. A greeter and two quiet security staff screen anyone who comes up the private lift. Real soil, real trees and a long table of rainbow-ribboned flyers sit under a skyline the lower districts rarely see.
+district: City
+district_lore: urban_core
+district_subzone: Central City
+mood: warm
+available_dialogues:
+  - d2c8775f-e54b-4029-84c8-33d35f6bb634
+  - 4fbed4ae-dfce-4c02-9d5b-28b76c550558
+  - f2b45586-8d36-419a-9e49-604c55f5a809
+  - d0684d96-c949-47aa-aadc-dca2c1b366f5
+metadata:
+  type: private_venue
+  accessible: true
+  npcs:
+    - d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    - c3d4e5f6-a7b8-4c9d-8e1f-2a3b4c5d6e7f
+    - ba8c295e-b0d2-4d0e-8bfd-447ce1a42b3c
+  features:
+    - private_lift_checkpoint
+    - rooftop_garden
+    - amor_verdadero_flyer_table
+    - skyline_terrace
+  ambiance:
+    - quiet_conversation
+    - sprinkler_mist
+    - distant_city_hum
+  idle_thoughts:
+    - Real soil, real trees, and a humidity setting nobody on the ground floor can afford. The garden is the family's idea of a public gesture. It is closed to the public.
+    - A table near the terrace is stacked with flyers for Amor Verdadero. Someone has hand-drawn a small rainbow on each corner. The handwriting is young and in a hurry.
+    - The security staff stand at the lift without ever looking bored. They are not guarding the building so much as one specific teenager.
+lore_path: van_der_meer_atrium.md

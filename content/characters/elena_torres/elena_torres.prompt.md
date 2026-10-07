@@ -2,40 +2,44 @@
 name: Elena Torres
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/elena_torres/elena_torres.md
 target: `asset_paths.portrait` in `content/characters/elena_torres/char_elena_torres.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Elena Torres
 
+NOTE: canon age is 75 (birth_year 2002); current PNG depicts a woman of about 55-60 with fewer lines and less silver; portrait/variants/videos need regeneration. Two-era character (early-20s translator in flashbacks): do not create a second set here.
+
 ## Prompt (Draft)
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a mid-70s Latina female. Dark brown hair with silver threads in professional bob, warm brown shrewd experienced eyes, average height poised controlled posture, light brown smooth with fine lines, small jade stud earrings, slim portfolio always in hand, measured deliberate gestures, tailored designer navy suit, LW Group Sustainability Lead office, Las Flores, no European features
+Latina woman of 75, average height, slender build with an upright, composed posture, light brown skin with fine lines and deeper creases around the eyes and mouth, neat dark brown chin-length bob threaded with silver, more silver at the temples, warm brown eyes under level brows, a measured steady look in the lids, small jade stud earrings, a tailored navy blazer over a crisp white open-collared blouse, plain flat grey background. neutral relaxed expression, front-facing, arms relaxed. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina corporate strategist in her mid-70s. Dark brown hair with silver threads, worn in a neat professional bob. Warm brown, shrewd and experienced eyes. Average height, poised and controlled posture. Light brown skin, smooth with fine lines around the eyes and mouth. Small jade stud earrings. A slim portfolio always in her hand, held close to her side. She wears a tailored designer navy suit, with measured, deliberate gestures — every movement economical and precise. Her expression is pragmatic composure. The backdrop is a corporate office — dark wood, community engagement reports on the desk, photographs of restoration projects on the wall, fluorescent light mixed with window light showing a city skyline. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman of 75. Average height, slender build with an upright, composed posture. Light brown skin with fine lines and deeper creases around the eyes and mouth. Neat dark brown chin-length bob threaded with silver, more silver at the temples. Warm brown eyes under level brows, a measured steady look in the lids. Small jade stud earrings. Wears a tailored navy blazer over a crisp white open-collared blouse. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no European features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Northern European features
 
 ## Variations
 
-- [ ] Elena in her LW Group office, portfolio open to a community engagement report, reviewing language with a critical eye
-- [ ] Elena at a Las Flores community meeting, speaking to residents, slim portfolio at her side, the corporate reformer performing her role
-- [ ] Elena standing alone at a window in her office, Las Flores skyline behind her, the weight of five decades in her expression
+- [ ] Walking down a bright corridor with a slim leather portfolio under one arm
+- [ ] Addressing a small group at a long table, one hand lifted in a measured gesture
+- [ ] Standing alone at a tall window, portfolio held against her chest
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral composed pragmatic expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__focused.png`**: Use the base portrait as reference. Sharp concentration, looking directly at the camera, 3/4 take. Eyes narrowed with analytical precision, brow slightly furrowed. Keep the same art style as reference, same navy suit. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral relaxed resting expression, mouth closed and relaxed, brows unfurrowed, looking at the camera, 3/4 take. Shoulders level, arms hanging relaxed at her sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__determined.png`**: Use the base portrait as reference. A resolute, firm expression, looking unflinchingly at the camera, 3/4 take. Eyes steady with pragmatic resolve, jaw set. Keep the same art style as reference, same navy suit and jade earrings. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__focused.png`**: Use the base portrait as reference. Head bowed over a task, brows slightly drawn, lips set, eyes glancing up from the page, looking at the camera, 3/4 take. Shoulders leaning forward, a slim leather portfolio held open in both hands at chest height. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__vulnerable.png`**: Use the base portrait as reference. A quietly reflective expression, looking gently at the camera, 3/4 take. Eyes open and honest, the private cost of fifty years showing through the composure. Keep the same art style as reference, same navy suit. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__determined.png`**: Use the base portrait as reference. Steady level gaze, jaw set, lips pressed, chin level, looking at the camera, 3/4 take. Shoulders squared, one hand closed in a controlled fist at hip height, the other hand holding the edge of her blazer. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__contemplative.png`**: Use the base portrait as reference. Deep thought, looking thoughtfully at the camera with a 3/4 take. Eyes distant, evaluating something beyond the frame. Keep the same art style as reference, same navy suit. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__vulnerable.png`**: Use the base portrait as reference. Guard lowered, eyes glistening and open, brows lifted at the inner ends, lips slightly parted, looking at the camera, 3/4 take. Shoulders drawn in, both arms wrapped loosely across her waist, one hand gripping the opposite elbow. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__contemplative.png`**: Use the base portrait as reference. Eyes drifting to the side and slightly upward, brow smooth, lips softly closed, looking at the camera, 3/4 take. Weight shifted, one hand resting lightly at her collarbone, the other arm tucked across her waist. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.

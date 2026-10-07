@@ -10,7 +10,7 @@ Diego Sulca represents the journey of a young man caught between aspiration and 
 
 **Appearance:**
 
-Diego has a lean, athletic build from years of helping his mother with fishing. He has dark, curly hair and warm brown eyes that reflect his inherent kindness but also reveal his shyness. His clothing typically consists of comfortable, casual wear, often a bit rumpled due to his easygoing nature. He prefers practicality over fashion, reflecting his working-class roots and the practical lifestyle he grew up with.
+Diego has a slim, wiry build from years of helping his mother with fishing on the river, with narrow shoulders and a slight stoop, and is of average height. He has short, messy dark wavy-curly hair that falls over his forehead, a faint peach-fuzz stubble, light brown olive skin and warm brown eyes that reflect his inherent kindness but also reveal his shyness. His clothing typically consists of comfortable, casual wear, often a bit rumpled due to his easygoing nature: a faded light grey work shirt with dusty smudges and rolled sleeves, or a faded university hoodie and cargo pants. He always wears a braided blue net-twine bracelet his mother made from old fishing line. He prefers practicality over fashion, reflecting his working-class roots and the practical lifestyle he grew up with.
 
 **Personality:**
 
@@ -32,7 +32,7 @@ Currently pursuing a major in Environmental Science, inspired by a desire to hel
 
 **Interests:**
 
-Outside of his studies, Diego has a deep appreciation for nature and enjoys hiking and spending time outdoors. He finds solace in the mountains around Las Flores, where he can escape from the pressure of university life and reconnect with the natural world. He also loves traditional Andean music and plays the charango (a small stringed instrument), which brings him a sense of joy and connection to his cultural roots. These activities provide him with emotional relief and a sense of identity.
+Outside of his studies, Diego has a deep appreciation for nature and enjoys hiking and spending time outdoors. He finds solace in the mountains around Las Flores, where he can escape from the pressure of university life and reconnect with the natural world. He also loves traditional Andean music and plays the charango (a small stringed instrument), which brings him a sense of joy and connection to his cultural roots. The instrument was his Quechua grandfather's (invented); Diego plays it alone, quietly, on hillsides and in the stairwell of his residence, never on a stage. These activities provide him with emotional relief and a sense of identity.
 
 **Goals:**
 
@@ -45,6 +45,34 @@ Diego's shyness makes it difficult for him to make friends at university. He oft
 **Family Connections:**
 
 Diego maintains close ties with his mother in San Pedro de los Pescadores, who continues to be a source of support and wisdom for him. His father from Old Las Flores provides practical advice and encouragement. Both parents are proud of their son's determination to pursue higher education, even if they don't fully understand the challenges he faces.
+
+**Place in the world**
+
+Diego's mother fishes the Río de las Flores from San Pedro de los Pescadores, a river village in the Far South district (not a sea coast), with fishing docks, a central plaza and a school. His father's family lives in Old Las Flores, among the Quechua-descended families near the river (invented: this is why he carries a Quechua surname, an Andean instrument and a love of the mountains despite his river upbringing). Diego was born in 2058, six years after the Great Lithium Leak (2052) killed fish in the Río de las Flores and collapsed local fishing (established events; restoration is still ongoing). He grew up on a river in recovery, helping his mother fish what had returned (invented), and that is the root of his wish to teach sustainable, river-safe fishing.
+
+**Differs from Diego Huamán**
+
+Both are 19, study at the same campus and play the charango. Sulca is the shy, river-fishing family's son, slim and stooped, who studies environmental science with a focus on river water quality, repeats courses and keeps to himself; Huamán is the tall, outgoing highland farmer's son who studies agroecology and organizes in public. Sulca plays alone; Huamán plays for a crowd. See the physical contrast in the portrait prompts (Sulca: slim, stubbled, short messy waves, rumpled grey button-up, blue twine bracelet).
+
+**Arc**
+
+1. **Struggling in silence.** He repeats a hydrology course, avoids study groups and sends his mother cheerful half-truths.
+2. **Asking for help.** Sofia Aguirre, a San Pedro native at the university, notices him and nudges him to a tutor; Camila Reyes pulls him into her field sampling because he knows how to read a river.
+3. **The river as a textbook.** On a field assignment in San Pedro he samples the water where his mother fishes and finds that his hands-on knowledge (currents, spawning grounds, what a healthy catch looks like) outperforms his classmates' theory.
+4. **Finding a voice.** He presents the results to the fishers at the docks, in plain language and with his charango in the room, and decides to finish the degree and come home, which gives the shy kid a reason to speak.
+
+**Relationships**
+
+| Name | Nature | Notes | Status |
+|------|--------|-------|--------|
+| Mother (fisherwoman, San Pedro de los Pescadores) | Foundational | Source of support and wisdom; he helped her fish; made his bracelet | Established (bracelet invented) |
+| Father (Old Las Flores) | Practical support | Gives practical advice; Quechua-descended family | Established; descent invented |
+| Sofia Aguirre | Mentor, fellow San Pedro native | Nursing student from San Pedro de los Pescadores at Universidad Nacional, described as a natural mentor to younger peers; she looks out for him | Character established; relationship invented |
+| Camila Reyes | Classmate, foil | 19-year-old Environmental Science student from a coastal fishing village; passionate and single-minded where he is shy and doubtful; both feel like outsiders and struggle with imposter feelings and homesickness | Character established; relationship invented |
+| Isabella Quispe | Younger neighbor | 17-year-old high school student who stays in San Pedro; he is the one who left, she is the one who stayed | Character established; relationship invented |
+| Quechua families of Old Las Flores | Father's community | Andean music, textile and farming traditions near the river; elder Mauro (Kusi) is its best known figure | Community established; link invented |
+| Alejandro Diaz | Potential antagonist | Local authority figure in San Pedro with shady dealings; the sustainable-fishing push could cross his interests | Character established; link invented and only proposed |
+| Diego Huamán | Peer, mirror | Same age, campus and instrument; see above | Characters established; acquaintance invented |
 
 **Quote:**
 

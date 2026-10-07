@@ -7,7 +7,7 @@
 **District:** Las Flores (Chronicle offices; elite party circuit)
 **Role:** Star journalist / elite scandal hunter
 **Faction:** Media
-**Descendancy:** m
+**Descendancy:** Latin American
 
 **Physical Description:**
 - Charismatic presence; dresses like someone who expects to be photographed at galas

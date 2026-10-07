@@ -14,30 +14,30 @@ Generate seamless looping portrait videos from each expression variant PNG. Use 
 
 **Input**: `assets/isabella_rodriguez__default.png`
 
-Create a seamless looping video. The woman on the reference image holds a neutral warm resting expression with a subtle, knowing half-smile and dark hair. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, and a barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. Dark hair shifts subtly, and the practical clothing suited to a working environment shifts gently in the draft. The small sport earbud clipped to her earlobe remains still. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a neutral composed resting expression, looking at the camera with steady presence. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Latina woman of 23, athletic build, light olive skin, straight dark hair to the shoulders, warm brown eyes, light blue button-up shirt with a small round enamel pin on the pocket. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
-
-### `__focused` loop
-
-**Input**: `assets/isabella_rodriguez__focused.png`
-
-Create a seamless looping video. The woman on the reference image displays absorbed concentration with eyes narrowed with intent and brows slightly drawn. Subtle idle animation: slow, controlled breathing rhythm in the chest, a subtle micro-narrowing cycle of focused scrutiny in the eyes, and a deliberate, focused blink cycle. Hair and clothing respond to a faint ambient breeze. Dark hair shifts minimally, and the practical clothing fabric catches a faint draft. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__happy` loop
 
 **Input**: `assets/isabella_rodriguez__happy.png`
 
-Create a seamless looping video. The woman on the reference image shows a warm, genuine smile with eyes bright with warmth and cheeks lifting. Subtle idle animation: warm, buoyant breathing motion lifting her chest and shoulders, a soft crinkling smile cycle around her eyes, and a warm, natural blink cycle. Hair and clothing respond to a faint ambient breeze. Dark hair strands flutter lightly around her face, and the practical clothing shifts softly with her buoyant breathing. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
-
-### `__contemplative` loop
-
-**Input**: `assets/isabella_rodriguez__contemplative.png`
-
-Create a seamless looping video. The woman on the reference image is in thought with eyes gazing into the middle distance and lips relaxed. Subtle idle animation: slow, measured breathing motion rising and falling gently in the chest, a quiet softening of gaze into the distance, and a slow, reflective blink cycle. Hair and clothing respond to a faint ambient breeze. Strands of dark hair drift delicately across her forehead, the practical clothing shifts faintly in the breeze, and the earbud shifts slightly. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a warm genuine smile with brightening eyes and lifted cheeks. Subtle idle animation only: buoyant breathing lifting the chest and shoulders, a soft crinkling around the eyes, a warm natural blink cycle. Latina woman of 23, athletic build, light olive skin, straight dark hair to the shoulders, warm brown eyes, light blue button-up shirt with a small round enamel pin on the pocket. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__determined` loop
 
 **Input**: `assets/isabella_rodriguez__determined.png`
 
-Create a seamless looping video. The woman on the reference image shows steady resolve with eyes fixed and sharp and defined jaw set. Subtle idle animation: steady, controlled breathing motion in the chest and shoulders, a slight firming micro-motion in the jawline, and a resolute, slow blink cycle. Hair and clothing respond to a faint ambient breeze. The practical clothing shifts crisply in the draft, and the earbud remains steady against her frame. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a resolved, firm expression with steady unflinching eyes and a set mouth. Subtle idle animation only: deep controlled breathing in the chest and shoulders, a slight firming of the jaw, a slow unwavering blink cycle. Latina woman of 23, athletic build, light olive skin, straight dark hair to the shoulders, warm brown eyes, light blue button-up shirt with a small round enamel pin on the pocket. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+
+### `__vulnerable` loop
+
+**Input**: `assets/isabella_rodriguez__vulnerable.png`
+
+Create a seamless looping video. The woman on the reference image shows a quietly vulnerable expression with open honest eyes and softened features. Subtle idle animation only: soft shallow breathing, a slow easing of tension in the shoulders, a slow tender blink. Latina woman of 23, athletic build, light olive skin, straight dark hair to the shoulders, warm brown eyes, light blue button-up shirt with a small round enamel pin on the pocket. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+
+### `__sad` loop
+
+**Input**: `assets/isabella_rodriguez__sad.png`
+
+Create a seamless looping video. The woman on the reference image shows a heavy quiet sadness with lowered glistening eyes and a downturned mouth. Subtle idle animation only: slow heavy breathing, a slight sinking of the shoulders, a slow blink with a faint lip tremor. Latina woman of 23, athletic build, light olive skin, straight dark hair to the shoulders, warm brown eyes, light blue button-up shirt with a small round enamel pin on the pocket. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

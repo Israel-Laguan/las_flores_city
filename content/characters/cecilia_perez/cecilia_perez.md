@@ -8,6 +8,7 @@
 > **Status:** Deceased — murder suspected
 
 ## Physical Description
+- Age depicted: about 24, shortly before her murder in 2049; flashback-era figure (birth_year 2025 is not a present-day age, no 2077 version)
 - Hair: Dark brown, shoulder-length, often tied back in a messy bun while working
 - Eyes: Warm brown, intense and focused when examining data
 - Build: Slender and slightly below average height, wiry strength

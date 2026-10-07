@@ -1,19 +1,26 @@
 id: c2000010-e29b-41d4-a716-446655440010
 name: Carlos Mendoza
-title: Retired Minera Estrella Engineer
+title: Retired Minera Estrella Structural Engineer
 birth_year: 2009
-description: A retired engineer who worked at Minera Estrella during the 2052 lithium leak, Carlos Mendoza quietly provided crucial technical information to the 2077 investigators about the structural failures at the processing facility. He was not among the building owners at Residencial Las Estrellas, but his knowledge of the pipe systems and containment failures helped prove the cover-up. He lived in fear of retaliation for decades, and only came forward when it became clear the movement had the strength to protect him.
+description: "The younger Mendoza brother. A structural engineer at Minera Estrella (embankments, tank foundations, pipe supports by the river) who refused to re-run his calculations to fit the staged electrical-failure story and secretly kept the originals. Uncle of Javier Mendoza. Not among the building owners at Residencial Las Estrellas. He lived in fear of retaliation for decades; in 2077 he came forward first, with drawings and calculations proving the structural failure, once the movement could protect him."
 physical_description: "Elderly, lean and wiry Latino man of about 68 with a long face, thin gray-white receding hair, weathered skin, a deep worry line between the brows and a slight tremor in his hands; wears old engineer's clothes with spectacles on a chain."
 psychological_description: "Cautious and principled; lived in fear of retaliation for decades and came forward only once the movement could protect him."
 background_and_role:
-  - "Retired Minera Estrella engineer"
-  - "Worked there during the 2052 lithium leak"
-  - "Quietly provided technical information to the 2077 investigators"
+  - "Retired Minera Estrella structural engineer"
+  - "Refused to re-run his calculations after the 2052 lithium leak and kept the originals"
+  - "First to come forward to the 2077 investigators with drawings and load calculations"
+  - "Younger brother of Roberto Mendoza and uncle of Javier Mendoza"
+  - "Lives by the river; known as el Ingeniero"
 metadata:
   type: human
   role: npc
   faction: independent
   personality: cautious_principled
+  age: 68
+  gender: Male
+  occupation: Retired Structural Engineer (Minera Estrella)
+  residence: Las Flores, river side
+  status: Active (2077 and beyond)
 asset_paths:
   portrait: carlos_mendoza__default.png
 

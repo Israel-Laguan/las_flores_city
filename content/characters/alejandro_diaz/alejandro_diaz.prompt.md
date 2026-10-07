@@ -2,40 +2,44 @@
 name: Alejandro Díaz
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/alejandro_diaz/alejandro_diaz.md
 target: `asset_paths.portrait` in `content/characters/alejandro_diaz/char_alejandro_diaz.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Alejandro Díaz
 
+NOTE: PNG shows black hair, brown eyes and a green jacket; canon is slicked-back salt-and-pepper hair, green eyes and an ill-fitting suit with flashy tie (b.2032, age 45). Regenerate (medium priority). A duplicate typo file `alejandro_d_az__default.png` also exists in assets/.
+
 ## Prompt (Draft)
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 45-year-old Latino male. Sharp cunning green eyes, strong prominent nose, angular defined jaw with faint eyebrow scar, salt-and-pepper hair slicked back, slightly disheveled sturdy build, ill-fitting suit jacket, flashy silk tie, small gold pinky ring, municipal office backdrop, no European features
+Latino man of about 45, sturdy slightly disheveled build, sharp green eyes, strong nose, faint scar across the left eyebrow, slicked-back salt-and-pepper hair, ill-fitting rumpled dark suit, flashy silk tie, small gold pinky ring. Plain flat grey background. Neutral relaxed expression, mouth closed, looking at the camera, front-facing, arms relaxed at the sides. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 45-year-old Latino man. Sharp, cunning green eyes. Strong prominent nose, angular defined jaw with a faint scar across the left eyebrow. Salt-and-pepper hair slicked back with a casual, studied flair. Sturdy build, slightly disheveled — an ill-fitting suit jacket with a flashy silk tie. A small gold pinky ring catches the light. His expression is smooth-talking charm held just below the surface. The backdrop is a municipal office. Faded institutional paint, half-empty coffee mug on a metal desk, fluorescent light mixed with window light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man of about 45. Sturdy, slightly disheveled build. Sharp green eyes, a strong nose and a faint scar across the left eyebrow, olive-tan skin with creases at the eyes. Slicked-back salt-and-pepper hair worn with a casual flair. Ill-fitting rumpled dark suit with a flashy patterned silk tie knotted a little loose, a small gold ring on the little finger. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no European features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Northern European features
 
 ## Variations
 
-- [ ] Alejandro in his municipal office, phone pressed to his ear with a practiced, too-friendly smile
-- [ ] Alejandro at a back-room card table, cards fanned, smile dropping to calculation
-- [ ] Alejandro in a corridor outside the council chamber, tie loosened, speaking quietly to an unsavory contact
+- [ ] Man in a municipal office with a phone pressed to his ear and an overly friendly grin
+- [ ] Man at a back-room card table, cards fanned, the grin dropping into calculation
+- [ ] Man in a corridor outside a council chamber, tie loosened, speaking low to an unsavory contact
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral composed expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__calculating.png`**: Use the base portrait as reference. Cold, assessing focus, looking directly at the camera, 3/4 take. Eyes narrowing slightly, mouth pressed in a thin line, jaw set. Keep the same art style as reference, same suit and pinky ring and backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders level and relaxed, arms hanging loosely at his sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__smirk.png`**: Use the base portrait as reference. A sardonic half-smile, looking at the camera, 3/4 take. Eyes glinting with concealed amusement, one corner of his mouth pulled up, left brow shifting. Keep the same art style as reference, same suit and backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__calculating.png`**: Use the base portrait as reference. Eyes narrowed and cool, one brow slightly raised, lips pressed thin, looking at the camera, 3/4 take. Chin lowered, one hand rubbing his lower lip with a finger, the other hand tucked in his suit pocket. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__angry.png`**: Use the base portrait as reference. A flushed, confrontational expression, looking at the camera, 3/4 take. Eyes blazing, jaw squared, scar standing out. Keep the same art style as reference, same suit and pinky ring and backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__smirk.png`**: Use the base portrait as reference. One corner of the mouth lifted in a knowing half-smile, one brow raised, looking at the camera, 3/4 take. Head tilted, one finger hooked in the knot of his tie to loosen it, the other thumb hooked in his pocket. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__shocked.png`**: Use the base portrait as reference. Caught mid-exposure, looking at the camera with sudden alarm, 3/4 take. Eyes wide open, mouth slightly parted, brow raised high. Keep the same art style as reference, same suit and pinky ring and backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__angry.png`**: Use the base portrait as reference. Eyes narrowed, brows low and hard, lips tight, looking at the camera, 3/4 take. Jaw thrust forward, shoulders squared and rigid, both hands clenched into fists, tie knocked askew. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__shocked.png`**: Use the base portrait as reference. Eyes wide and fixed, brows jumping, lips parted, looking at the camera, 3/4 take. Body jerking back a step, both hands flying up with palms out, tie swinging loose. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.

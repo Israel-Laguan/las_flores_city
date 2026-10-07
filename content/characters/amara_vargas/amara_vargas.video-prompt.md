@@ -8,13 +8,15 @@ target: content/characters/amara_vargas/assets/
 
 # Video Prompts: Amara Vargas
 
+NOTE: the current PNG backdrop is a detailed hillside street (not plain grey) and shows a garbled text artifact in the top-left corner; no pendant is visible. Regenerate against a plain flat grey backdrop with no lettering.
+
 Generate seamless looping portrait videos from each expression variant PNG. Use the corresponding `amara_vargas__<expression>.png` as the input image for each prompt. The woman on the reference image is the character described in the source prompt file.
 
 ## Base Loop (Default)
 
 **Input**: `assets/amara_vargas__default.png`
 
-Create a seamless looping video. The woman on the reference image has a neutral alert composed resting expression, watching her surroundings with quiet, steady intensity. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. Loose wisps of black hair near her temples and the tip of her braid stir faintly, the collar and fabric of her faded cotton work shirt shift subtly, and the silver pickaxe pendant sways barely perceptibly against her collarbone. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image has a neutral relaxed resting expression with a closed relaxed mouth. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Andean woman of 68, petite wiry build, deep brown weathered skin with deep lines, dark brown eyes, long black braid over one shoulder, small silver pickaxe-shaped pendant, faded brown collared cotton work shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
 
@@ -22,22 +24,22 @@ Create a seamless looping video. The woman on the reference image has a neutral 
 
 **Input**: `assets/amara_vargas__vulnerable.png`
 
-Create a seamless looping video. The woman on the reference image shows a quietly vulnerable expression with dark brown eyes open and softer than usual as her lifelong vigilance momentarily drops. Subtle idle animation: soft, gentle breathing motion in the chest, a slight easing of tension in her shoulders and neck, and a slow, tender blink cycle with a momentary drop of her gaze before returning forward. Hair and clothing respond to a faint ambient breeze. Fine black hair wisps flutter softly at her temples, and the faded cotton work shirt fabric shifts gently with her breath and the draft. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows quiet vulnerability with open honest eyes and softened features. Subtle idle animation only: soft shallow breathing, a slow easing of tension in the shoulders, a slow tender blink. Andean woman of 68, petite wiry build, deep brown weathered skin with deep lines, dark brown eyes, long black braid over one shoulder, small silver pickaxe-shaped pendant, faded brown collared cotton work shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__determined` loop
 
 **Input**: `assets/amara_vargas__determined.png`
 
-Create a seamless looping video. The woman on the reference image holds a hard, resolved expression with sharp, unblinking dark brown eyes and a firm set to her weathered jaw. Subtle idle animation: steady, controlled breathing motion in the chest and shoulders, a subtle micro-tension tightening across her jawline, and an unflinching, disciplined slow blink cycle. Hair and clothing respond to a faint ambient breeze. Faint stray strands of black hair stir lightly in the mountain draft, and the sturdy fabric of her faded work shirt and woven belt shift subtly against her frame. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows firm resolve with steady eyes and a set mouth. Subtle idle animation only: deep controlled breathing, a slight firming of the jaw, a slow unwavering blink cycle. Andean woman of 68, petite wiry build, deep brown weathered skin with deep lines, dark brown eyes, long black braid over one shoulder, small silver pickaxe-shaped pendant, faded brown collared cotton work shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__calculating` loop
 
 **Input**: `assets/amara_vargas__calculating.png`
 
-Create a seamless looping video. The woman on the reference image holds an assessing, measuring look with sharp dark brown eyes narrowed in trained mineral-sorter evaluation. Subtle idle animation: slow, deliberate breathing motion in the chest, a subtle micro-narrowing cycle of the eyes as she evaluates her subject with forensic scrutiny, minimal shifting tension in her brow, and a calm, deliberate blink cycle. Hair and clothing respond to a faint ambient breeze. Stray black hair strands drift faintly across her temples, and the collar and seams of her faded cotton work shirt shift subtly in the air currents. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a cool assessing look with a lowered chin and narrowed eyes. Subtle idle animation only: slow measured breathing, the eyes shifting slightly as if weighing options, a deliberate slow blink. Andean woman of 68, petite wiry build, deep brown weathered skin with deep lines, dark brown eyes, long black braid over one shoulder, small silver pickaxe-shaped pendant, faded brown collared cotton work shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__tender` loop
 
 **Input**: `assets/amara_vargas__tender.png`
 
-Create a seamless looping video. The woman on the reference image displays a gentle, open expression with soft affectionate dark brown eyes and a relaxed, warm mouth. Subtle idle animation: deep, tranquil breathing motion in the chest and shoulders, a slight micro-softening around the corners of her mouth, and a slow, warm, gentle blink cycle. Hair and clothing respond to a faint ambient breeze. Soft loose strands of black hair sway gently around her ears, and the worn fabric of her faded cotton work shirt ripples faintly in the ambient air. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows gentle affection with soft eyes and a faint smile. Subtle idle animation only: slow warm breathing, a soft tilt of the head, a slow gentle blink. Andean woman of 68, petite wiry build, deep brown weathered skin with deep lines, dark brown eyes, long black braid over one shoulder, small silver pickaxe-shaped pendant, faded brown collared cotton work shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

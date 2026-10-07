@@ -2,40 +2,48 @@
 name: Soledad Ortega
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/soledad_ortega/soledad_ortega.md
 target: `asset_paths.portrait` in `content/characters/soledad_ortega/char_soledad_ortega.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Soledad Ortega
 
 ## Prompt (Draft)
 
-Latina woman in her early 40s, sharp managing-editor presence, square face, prominent jaw, pronounced cheekbones, curved nose, almond eyes, thick brows, full lips, athletic-compact build, clear warm skin, straight dark hair in a sharp bob, small scar on left brow, small sport earbud clipped to earlobe, modern editor attire with tablet, cool digital newsroom backdrop. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Latina woman of 42, athletic-compact build, square face, prominent jaw, almond dark brown eyes, strong straight brows, small scar through the left brow, full lips, warm brown skin, straight dark hair parted in the center to just above the shoulders, navy crew-neck top, neutral relaxed expression, mouth closed, brows unfurrowed, eyes to camera, facing front, arms relaxed, plain flat grey background. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman in her early 40s. Square face with a prominent, decisive jaw, pronounced cheekbones, a curved nose, and almond eyes set with calm editorial authority. Thick brows and full lips complete a composed, exacting countenance. Athletic-compact build, poised and upright with a still, watchful bearing. Clear warm skin with subtle fine lines around the eyes, and a small scar cutting through her left brow; one brow sits a fraction lower than the other, a natural asymmetry she carries unselfconsciously. Straight dark hair cut into a sharp, angled bob that frames her face cleanly. Small sport non-in-ear earbud clipped to her earlobe. Modern managing-editor attire: a tailored blazer, a tablet or slim holographic reader held in one hand. The backdrop is a digital newsroom, banks of multi-platform screens glowing with headlines and live feeds, cool flat light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman of 42. Athletic-compact build with broad shoulders. Square face with a prominent jaw, almond-shaped dark brown eyes under strong straight brows with a small scar cutting through the left brow, a straight nose, and full lips. Warm brown skin with faint lines at the eyes. Straight dark hair parted in the center and cut sharply to just above the shoulders. Navy crew-neck top. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no East Asian features, no Northern European features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Northern European features
 
 ## Variations
 
-- [ ] Directing a breaking-news huddle at her desk amid live multi-platform screens
-- [ ] Reviewing a layout on a holographic reader in the cool-lit newsroom
-- [ ] Standing at the digital desk, thumb on a tablet, orchestrating coverage
+- [ ] Standing at a glass wall covered in sticky notes, tablet in hand
+- [ ] Leaning over a colleague's screen in a busy newsroom, finger on a line of copy
+- [ ] Pacing a corridor mid-call with an earbud in and a coffee cup
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral composed resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__calculating.png`**: Use the base portrait as reference. She is weighing a story angle, looking directly at the camera, 3/4 take. Eyes narrowed in assessment, thick brows drawn, full lips pressed in a crisp line, square face and prominent jaw set with quiet intensity. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders relaxed and level, arms hanging loosely at her sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__determined.png`**: Use the base portrait as reference. She has an unshakable resolve, looking squarely at the camera, 3/4 take. Eyes steady and hard, square jaw squared, full lips closed firm, cheekbones and thick brows giving her face force. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading with deeper shadows, muted natural palette.
+- **`__calculating.png`**: Use the base portrait as reference. Eyes narrowed and sharp, one brow slightly lifted, lips pressed together, looking at the camera, 3/4 take. Chin lowered, head tilted, one hand at the jaw with a fingertip along the cheek, the other arm holding a tablet against the chest. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__angry.png`**: Use the base portrait as reference. A controlled flash of frustrated anger, looking at the camera, 3/4 take. Eyes narrowed sharply, thick brows lowered, full lips set in a hard line, square face tense, prominent jaw tight. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__determined.png`**: Use the base portrait as reference. Eyes steady and level, brows drawn slightly together, lips pressed in a firm line, looking at the camera, 3/4 take. Chin lifted, shoulders squared, one hand curled into a firm fist at chest height. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__happy.png`**: Use the base portrait as reference. A rare warm smile of satisfaction, looking at the camera, 3/4 take. Eyes softening, full lips curved up, thick brows relaxed, square face and cheekbones lifted warmly. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__angry.png`**: Use the base portrait as reference. Eyes narrowed, brows low and hard, lips tight, jaw clenched, looking at the camera, 3/4 take. Shoulders rigid, chin forward, one fist clenched at the side, the other hand slapping flat down on an imaginary desk. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__happy.png`**: Use the base portrait as reference. Sharp amused smile, eyes crinkling, cheeks lifted, looking at the camera, 3/4 take. Shoulders loose, head tilted, one hand giving a small thumbs-up, the other relaxed at the side. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Lore wardrobe staged as outfit variants of the base portrait: `assets/<slug>__outfit-<name>.png`. Same face, hair and build as the base. -->
+
+- **`__outfit-editor.png`**: Use the base portrait as reference. Same woman, wearing a modern slim charcoal blazer over a fitted top, a small sport earbud clipped to one earlobe, a slim tablet held in one hand, neutral calm expression, shoulders level, looking at the camera, 3/4 take. Keep the same face, build and art style as reference, plain flat neutral light-grey backdrop. Clean confident linework, painterly soft shading, muted natural palette.

@@ -8,6 +8,7 @@
 > **Status:** Deceased
 
 ## Physical Description
+- Age depicted: early 40s, shortly before his death at 41 in January 2060 (flashback-era figure; birth_year 2019 would make him 58 in 2077, but he did not live to that age)
 - Hair: Sandy blond, neatly combed, slightly wavy
 - Eyes: Pale blue, thoughtful and reserved
 - Build: Tall and lean, slightly stooped from long hours at a desk

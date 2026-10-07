@@ -7,7 +7,7 @@
 **Occupation:** Human Rights Lawyer, Founder & Director of COFAVIC (Comité de Familiares Víctimas del Conflicto)
 
 **Physical Description:**
-- Hair: Dark brown, streaked with gray, worn in a practical bun
+- Hair: Dark brown, straight and shoulder-length, center-parted
 - Eyes: Dark brown, intense and compassionate
 - Build: Medium height, slender but strong, carries herself with quiet authority
 - Skin: Medium brown, lined around eyes from stress and long hours

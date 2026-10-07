@@ -2,40 +2,48 @@
 name: Sofia Delgado
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/sofia_delgado/sofia_delgado.md
 target: `asset_paths.portrait` in `content/characters/sofia_delgado/char_sofia_delgado.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Sofia Delgado
 
 ## Prompt (Draft)
 
-Latina woman in her early 20s, radiant beach-vendor energy, heart-shaped face, soft jaw, pronounced cheekbones, pointed nose, round warm brown eyes, arched brows, full lips, athletic-compact build, sun-damaged skin with sun-freckles, wavy dark sun-lightened hair, faint scar on left forearm, small sport earbud clipped to earlobe, practical beach-vendor attire with seafood apron, bright Bahia de las Olas beach backdrop. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Latina woman of 22, athletic-compact build, heart-shaped face, round warm honey-brown eyes, strong straight brows, sun-freckled tan skin, long wavy sun-lightened brown hair parted slightly off-center, light blue collared shirt with top buttons open, neutral relaxed expression, mouth closed, brows unfurrowed, eyes to camera, facing front, arms relaxed, plain flat grey background. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman in her early 20s. Heart-shaped face with a soft, rounded jaw, pronounced cheekbones catching the coastal light, a pointed nose, and round warm brown eyes full of easy charisma. Arched brows and full lips give her an open, sun-bright demeanor. Athletic-compact build, lean and sure from a life on the water. Sun-damaged warm brown skin flecked with sun-freckles across the nose and cheeks, and a faint pale scar running along her left forearm from years of fishing work. Wavy dark hair sun-lightened at the ends, loosely tied back. Her smile sits slightly deeper on one side, a natural asymmetry that reads as genuine and approachable. Small sport non-in-ear earbud clipped to her earlobe. Practical beach-vendor clothing: rolled sleeves, a canvas apron dusted with seafood, wet with salt spray. The backdrop is the bay at bright midday - fishing boats bobbing at the docks, seafood stalls with ice and catch, hard coastal sunlight, salt-bright air. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman of 22. Athletic-compact build with strong shoulders. Heart-shaped face with a pointed chin, a straight nose, round warm honey-brown eyes under strong straight brows, and full lips. Sun-freckled tan skin. Long wavy hair, dark brown with sun-lightened highlights, parted slightly off-center and falling past the shoulders. Light blue collared shirt with the top buttons open. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no East Asian features, no Northern European features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Northern European features
 
 ## Variations
 
-- [ ] At her beach stall at first light, laying out the morning's catch under the bright Bahia sky
-- [ ] Hosing down the deck of the family boat after a run, laughing with the fishermen
-- [ ] Negotiating in the seafood market, sharp-eyed and quick-witted with a customer
+- [ ] Standing behind a beachside stall stacked with fresh fish on ice
+- [ ] Wading through shallow surf with a basket on one hip at golden hour
+- [ ] Bargaining with a customer, tallying coins on one palm
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral warm resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__happy.png`**: Use the base portrait as reference. She is laughing warmly, looking at the camera, 3/4 take. Eyes bright and crinkled at the corners, full lips open in a genuine smile, the one-side-deeper asymmetry of her smile more pronounced. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders relaxed and level, arms hanging loosely at her sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__calculating.png`**: Use the base portrait as reference. She sizes up a deal with quick shrewdness, looking directly at the camera, 3/4 take. Eyes narrowed in appraisal, arched brows lifted slightly, full lips pressed in a knowing line. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__happy.png`**: Use the base portrait as reference. Bright, confident smile, eyes sparkling, cheeks lifted, looking at the camera, 3/4 take. Shoulders loose, head tilted, one hand holding up an imaginary fresh catch by the tail, the other on the hip. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__determined.png`**: Use the base portrait as reference. She has a firm, no-nonsense resolve, looking squarely at the camera, 3/4 take. Eyes steady, heart-shaped face set, soft jaw squared, full lips closed firm, shoulders squared. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading with deeper shadows, muted natural palette.
+- **`__calculating.png`**: Use the base portrait as reference. Eyes narrowed shrewdly, one brow slightly lifted, lips pressed together, looking at the camera, 3/4 take. Chin lowered, head tilted, one hand rubbing thumb against fingertips as if counting coins, the other arm folded across the waist. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__surprised.png`**: Use the base portrait as reference. Caught off guard, looking at the camera with wide-startled eyes, 3/4 take. Eyes opened wide, arched brows raised high, full lips parted, heart-shaped face lifted by surprise. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__determined.png`**: Use the base portrait as reference. Eyes steady and level, brows drawn slightly together, lips pressed in a firm line, looking at the camera, 3/4 take. Chin lifted, shoulders squared, both hands planted on the hips. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__surprised.png`**: Use the base portrait as reference. Eyes opened wide, brows shot up, lips parted, looking at the camera, 3/4 take. Body leaning back a little, both hands lifted halfway to the chest with palms out and fingers spread. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Lore wardrobe staged as outfit variants of the base portrait: `assets/<slug>__outfit-<name>.png`. Same face, hair and build as the base. -->
+
+- **`__outfit-seafood-apron.png`**: Use the base portrait as reference. Same woman, wearing a waterproof seafood apron over a rolled-sleeve tee, hair tied back in a loose braid, small flecks of sea spray on the forearms, neutral calm expression, shoulders level, looking at the camera, 3/4 take. Keep the same face, build and art style as reference, plain flat neutral light-grey backdrop. Clean confident linework, painterly soft shading, muted natural palette.

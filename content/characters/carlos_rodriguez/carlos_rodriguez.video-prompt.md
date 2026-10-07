@@ -14,8 +14,7 @@ Generate seamless looping portrait videos from each expression variant PNG. Use 
 
 **Input**: `assets/carlos_rodriguez__default.png`
 
-Create a seamless looping video. The man on the reference image holds a neutral composed resting expression, looking at the camera with steady presence. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Latino man of 48, athletic-compact build, wavy dark hair with gray streaks at the temples, early receding. The background remains static.
-The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a neutral composed resting expression, looking at the camera with steady presence. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Latino man of about 48, athletic-compact build, almond dark eyes, thick brows, short black side-parted hair, light stubble, faint scar on the chin, fitted black sleeveless top. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
 
@@ -23,27 +22,22 @@ The motion must loop perfectly — the last frame blends seamlessly into the fir
 
 **Input**: `assets/carlos_rodriguez__calculating.png`
 
-Create a seamless looping video. The man on the reference image is engaged in sharp analytical thought with eyes narrowed in assessment and lips pressed into a measured line. Subtle idle animation: slow, measured breathing rhythm in the chest, a subtle micro-narrowing cycle of the eyes, and an infrequent deliberate blink cycle. Latino man of 48, athletic-compact build, wavy dark hair with gray streaks at the temples, early receding. The background remains static.
-The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a cool calculating expression with a lowered chin and narrowed, weighing eyes. Subtle idle animation only: slow even breathing, a faint tightening at the corner of the mouth, a small shift of the gaze as if weighing something, a slow deliberate blink. Latino man of about 48, athletic-compact build, almond dark eyes, thick brows, short black side-parted hair, light stubble, faint scar on the chin, fitted black sleeveless top. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__determined` loop
 
 **Input**: `assets/carlos_rodriguez__determined.png`
 
-Create a seamless looping video. The man on the reference image shows a resolved, firm expression with steady unflinching eyes and a squared jaw. Subtle idle animation: deep controlled breathing motion in the chest and shoulders, a slight firming micro-motion in the jawline, and an unwavering slow blink cycle. Latino man of 48, athletic-compact build, wavy dark hair with gray streaks at the temples, early receding. The background remains static.
-The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a resolved, firm expression with steady unflinching eyes and a set mouth. Subtle idle animation only: deep controlled breathing in the chest and shoulders, a slight firming of the jaw, a slow unwavering blink cycle. Latino man of about 48, athletic-compact build, almond dark eyes, thick brows, short black side-parted hair, light stubble, faint scar on the chin, fitted black sleeveless top. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__smirk` loop
 
 **Input**: `assets/carlos_rodriguez__smirk.png`
 
-Create a seamless looping video. The man on the reference image wears a faint knowing half-smile with eyes glinting with private amusement. Subtle idle animation: relaxed easy breathing motion rising and falling in the chest, a subtle micro-lift at the corner of the smirk, and an easy barely perceptible blink cycle. Latino man of 48, athletic-compact build, wavy dark hair with gray streaks at the temples, early receding. The background remains static.
-The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a one-sided knowing smirk with a lifted brow. Subtle idle animation only: slow easy breathing, a subtle flex of the cheek at the smirk, a slow lazy blink. Latino man of about 48, athletic-compact build, almond dark eyes, thick brows, short black side-parted hair, light stubble, faint scar on the chin, fitted black sleeveless top. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__sad` loop
 
 **Input**: `assets/carlos_rodriguez__sad.png`
 
-Create a seamless looping video. The man on the reference image carries quiet sorrow with downcast eyes and flat pressed lips. Subtle idle animation: slow sorrowful breathing with a quiet heaviness in the shoulders, downcast eyes with a minute moist glint, and a slow despondent blink cycle. Latino man of 48, athletic-compact build, wavy dark hair with gray streaks at the temples, early receding. The background remains static.
-The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
-
+Create a seamless looping video. The man on the reference image shows a heavy quiet sadness with lowered glistening eyes and a downturned mouth. Subtle idle animation only: slow heavy breathing, a slight sinking of the shoulders, a slow blink with a faint lip tremor. Latino man of about 48, athletic-compact build, almond dark eyes, thick brows, short black side-parted hair, light stubble, faint scar on the chin, fitted black sleeveless top. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

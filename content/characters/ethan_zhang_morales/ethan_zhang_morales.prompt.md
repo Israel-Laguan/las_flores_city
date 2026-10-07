@@ -2,40 +2,48 @@
 name: Ethan Zhang-Morales
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/ethan_zhang_morales/ethan_zhang_morales.md
 target: `asset_paths.portrait` in `content/characters/ethan_zhang_morales/char_ethan_zhang_morales.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Ethan Zhang-Morales
 
 ## Prompt (Draft)
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 21-year-old mixed Chinese-Latino male. Somewhat chubby rounded face with noticeable double chin, short messy black hair, round glasses slipping down nose, expressive mischievous brown eyes, goofy lopsided smile, faded oversized anime graphic tee, comfortable cargo pants, student housing backdrop, no European features
+mixed Chinese-Latino young man of 21, somewhat chubby build with a rounded face, soft cheeks and a slight double chin, light warm-toned skin, short, messy black hair, round thin-framed glasses sitting low on the nose, warm brown eyes under thick dark brows, a taupe sleeveless utility vest over a black mock-neck top and a white t-shirt, plain flat grey background. neutral relaxed expression, front-facing, arms relaxed. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 21-year-old Mechanical Engineering student of mixed Chinese and Latino heritage from a multicultural neighborhood near the port. Somewhat chubby, with a rounded face and a noticeable double chin. Short, messy black hair. Round glasses that often slip down his nose. Expressive brown eyes twinkling with mischief. A goofy, lopsided smile — endearing and slightly annoying at the same time. He wears a faded oversized anime graphic tee and comfortable cargo pants. His posture is relaxed, self-assured, a little too pleased with himself. His expression is charmless charm — the proudly goofy kid who trolls online communities but still wants you to like him. The backdrop is student housing near the port. Bare walls, anime posters, a half-disassembled machine on a desk. Afternoon light through a smudged window. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a mixed Chinese-Latino young man of 21. Somewhat chubby build with a rounded face, soft cheeks and a slight double chin. Light warm-toned skin. Short, messy black hair. Round thin-framed glasses sitting low on the nose. Warm brown eyes under thick dark brows. Wears a taupe sleeveless utility vest over a black mock-neck top and a white t-shirt. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no European features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, African features, Northern European features
 
 ## Variations
 
-- [ ] Ethan at his student housing desk, anime poster on the wall behind him, half-disassembled machine spread before him, glasses slipping
-- [ ] Ethan in a university engineering lab, oversized anime tee, grinning at a classmate who just caught him doing something silly
-- [ ] Ethan at a port-area bar, phone in hand, anime t-shirt, mid-troll, the online confidence fully in place
+- [ ] Hunched over a disassembled gadget on a cluttered workbench with a screwdriver
+- [ ] Laughing with friends in a campus cafeteria, game controller in hand
+- [ ] Sprawled on a bed with a laptop, scrolling a forum with a smug grin
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral goofy proud expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__happy.png`**: Use the base portrait as reference. A broad, goofy grin, looking at the camera, 3/4 take. Eyes crinkled with mirth, mouth wide with goofy warmth, round glasses pushed up his nose. Keep the same art style as reference, same anime tee. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral relaxed resting expression, mouth closed and relaxed, brows unfurrowed, looking at the camera, 3/4 take. Shoulders level, arms hanging relaxed at his sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__focused.png`**: Use the base portrait as reference. Surprising concentration, looking directly at the camera, 3/4 take. Eyes narrowed behind round glasses, brow furrowed in actual focus. Keep the same art style as reference, same anime tee. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__happy.png`**: Use the base portrait as reference. Broad goofy lopsided grin, eyes squeezed into crescents, glasses riding up on the cheeks, looking at the camera, 3/4 take. Both arms thrown up in triumph, shoulders bouncing, fists loose. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__vulnerable.png`**: Use the base portrait as reference. A quietly uncertain expression, looking gently at the camera, 3/4 take. Eyes open and searching, the goofy smile faltering, glasses slipping down his nose. Keep the same art style as reference, same anime tee. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__focused.png`**: Use the base portrait as reference. Head bowed, brows drawn, tongue pressed in the cheek, eyes glancing up over the glasses, looking at the camera, 3/4 take. Both hands holding a small mechanical part and a screwdriver at chest height. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__smirk.png`**: Use the base portrait as reference. A proud, knowing smirk, looking at the camera, 3/4 take. Eyes glinting with mischief, one corner of the mouth pulled up, glasses slipping down his nose. Keep the same art style as reference, same anime tee. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__vulnerable.png`**: Use the base portrait as reference. Wide uncertain eyes, brows tilted up, goofy smile faltering into a small pout, looking at the camera, 3/4 take. Shoulders hunched inward, one hand rubbing the back of his neck, the other tugging at his shirt hem. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__smirk.png`**: Use the base portrait as reference. Proud lopsided smirk, one brow high, chin lifted, looking at the camera, 3/4 take. Arms crossed over his chest, one hand pushing the glasses up the bridge of his nose. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Lore wardrobe staged as outfit variants of the base portrait: `assets/<slug>__outfit-<name>.png`. Same face, hair and build as the base. -->
+
+- **`__outfit-graphic-tee.png`**: Use the base portrait as reference. Same man, same face, hair and build, now wearing an oversized t-shirt with a bold colourful comic-style character print (no lettering) and comfortable cargo shorts, neutral calm expression, shoulders level, looking at the camera, 3/4 take. Keep the same face, build and art style as reference, plain flat neutral light-grey backdrop. Clean confident linework, painterly soft shading, muted natural palette.

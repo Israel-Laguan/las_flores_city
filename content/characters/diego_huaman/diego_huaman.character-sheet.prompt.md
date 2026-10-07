@@ -53,5 +53,5 @@ standing upright, open palms toward audience, confident delivery posture
 The character sheet is an assembly reference (neutral face + body geometry from the biometric sheets). It does not author expression portrait variants directly; expression variants are produced from the base portrait per `diego_huaman.prompt.md`'s `## Expression Variants` section (`__default`, `__happy`, `__focused`, `__vulnerable`, `__determined`). This sheet feeds those variants by locking:
 
 - **Face base**: neutral, hair pulled back, no makeup/jewelry (from biometric Sheet 1/2).
-- **Body base**: lean athletic build, minimal black gym clothes (from biometric Sheet 3).
+- **Body base**: tall broad-shouldered hiker's build, minimal black gym clothes (from biometric Sheet 3).
 - **Consistency rule**: every expression variant must reuse this exact face + body geometry.

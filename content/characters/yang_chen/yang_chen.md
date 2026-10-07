@@ -8,6 +8,7 @@
 > **Status:** Deceased
 
 ## Physical Description
+- Age depicted: about 74, in old age shortly before his death in 2069 (no 2077 version)
 - Hair: Gray and thinning, kept neat but unpretentious
 - Eyes: Dark brown, warm and distant
 - Build: Slight and stooped, walks with quiet dignity

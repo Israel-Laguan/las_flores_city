@@ -14,8 +14,7 @@ Generate seamless looping portrait videos from each expression variant PNG. Use 
 
 **Input**: `assets/soledad_ortega__default.png`
 
-Create a seamless looping video. The woman on the reference image holds a neutral composed resting expression, looking at the camera with steady presence. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Latina woman in her early 40s, athletic-compact build, square face with prominent decisive jaw, pronounced cheekbones, straight dark hair in sharp angled bob, small scar cutting through left brow, one brow sitting lower. The background remains static.
-The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a neutral composed resting expression, looking at the camera with steady presence. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Latina woman of 42, athletic-compact build, square face, prominent jaw, almond dark brown eyes, small scar through the left brow, warm brown skin, straight dark hair to just above the shoulders, navy crew-neck top. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
 
@@ -23,27 +22,22 @@ The motion must loop perfectly — the last frame blends seamlessly into the fir
 
 **Input**: `assets/soledad_ortega__calculating.png`
 
-Create a seamless looping video. The woman on the reference image is engaged in sharp analytical thought with eyes narrowed in assessment and lips pressed into a measured line. Subtle idle animation: slow, measured breathing rhythm in the chest, a subtle micro-narrowing cycle of the eyes, and an infrequent deliberate blink cycle. Latina woman in her early 40s, athletic-compact build, square face with prominent decisive jaw, pronounced cheekbones, straight dark hair in sharp angled bob, small scar cutting through left brow, one brow sitting lower. The background remains static.
-The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a cold, sharp, assessing expression with narrowed eyes and a lowered chin. Subtle idle animation only: controlled shallow breathing, a slow tap of one fingertip against the lips, an occasional deliberate blink. Latina woman of 42, athletic-compact build, square face, prominent jaw, almond dark brown eyes, small scar through the left brow, warm brown skin, straight dark hair to just above the shoulders, navy crew-neck top. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__determined` loop
 
 **Input**: `assets/soledad_ortega__determined.png`
 
-Create a seamless looping video. The woman on the reference image shows a resolved, firm expression with steady unflinching eyes and a squared jaw. Subtle idle animation: deep controlled breathing motion in the chest and shoulders, a slight firming micro-motion in the jawline, and an unwavering slow blink cycle. Latina woman in her early 40s, athletic-compact build, square face with prominent decisive jaw, pronounced cheekbones, straight dark hair in sharp angled bob, small scar cutting through left brow, one brow sitting lower. The background remains static.
-The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a resolved, firm expression with steady unflinching eyes and a set mouth. Subtle idle animation only: deep controlled breathing in the chest and shoulders, a slight firming of the jaw, a slow unwavering blink cycle. Latina woman of 42, athletic-compact build, square face, prominent jaw, almond dark brown eyes, small scar through the left brow, warm brown skin, straight dark hair to just above the shoulders, navy crew-neck top. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__angry` loop
 
 **Input**: `assets/soledad_ortega__angry.png`
 
-Create a seamless looping video. The woman on the reference image displays sharp anger with narrowed heated eyes, brows drawn tightly together, and tightly compressed lips. Subtle idle animation: tight sharp breathing motion with visible rising and falling in the chest, subtle micro-clenching in the jaw muscles, and a curt intense blink cycle. Latina woman in her early 40s, athletic-compact build, square face with prominent decisive jaw, pronounced cheekbones, straight dark hair in sharp angled bob, small scar cutting through left brow, one brow sitting lower. The background remains static.
-The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows sharp anger with narrowed eyes, low brows and tight lips. Subtle idle animation only: tight breathing with visible rise and fall in the chest, a micro-clench in the jaw, a curt blink cycle. Latina woman of 42, athletic-compact build, square face, prominent jaw, almond dark brown eyes, small scar through the left brow, warm brown skin, straight dark hair to just above the shoulders, navy crew-neck top. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__happy` loop
 
 **Input**: `assets/soledad_ortega__happy.png`
 
-Create a seamless looping video. The woman on the reference image displays a warm genuine smile with eyes brightening and cheeks lifting. Subtle idle animation: buoyant rhythmic breathing motion lifting the chest and shoulders, a soft crinkling smile cycle around the eyes, and a warm natural blink cycle. Latina woman in her early 40s, athletic-compact build, square face with prominent decisive jaw, pronounced cheekbones, straight dark hair in sharp angled bob, small scar cutting through left brow, one brow sitting lower. The background remains static.
-The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
-
+Create a seamless looping video. The woman on the reference image shows a warm genuine smile with brightening eyes and lifted cheeks. Subtle idle animation only: buoyant breathing lifting the chest and shoulders, a soft crinkling around the eyes, a warm natural blink cycle. Latina woman of 42, athletic-compact build, square face, prominent jaw, almond dark brown eyes, small scar through the left brow, warm brown skin, straight dark hair to just above the shoulders, navy crew-neck top. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

@@ -1,0 +1,452 @@
+id: 4fbed4ae-dfce-4c02-9d5b-28b76c550558
+name: "Peter Jr. Act 3 - The Law Notebook"
+description: "Voluntary disclosure. Peter Jr. shows the player a battered notebook where he copies out city statutes and the 2075 anti-discrimination law, and admits his private fear: that he is only the brave kid because it is expected, and that when he stops wanting to, no one will see who he is without the pin. The player can receive it, share a fear of their own, advise him (opening the mentor path), or use it. Gated on familiarity."
+character_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+scene_id: 696f4dc1-3bc7-4c52-a4f5-247aa8f5e468
+dialogue_scope: character
+start_node_id: pjr3_start
+
+nodes:
+  pjr3_start:
+    id: pjr3_start
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Can I show you something? You can say no. It's — nobody here has seen it. Not pap, not Jan, not even Tante Anna. Okay. Here."
+    thought: "He pulls a battered notebook out of the inside of a planter bench, where a boy with security staff on every floor has learned to hide one small thing. The cover is soft with handling. The corners are covered in tiny handwriting."
+    visual:
+      expression: vulnerable
+      position: right
+      transition: fade
+    effects:
+      relationship_effect:
+        axes:
+          visibility: 5
+      state_set:
+        last_pjr_encounter_at: NOW
+    choices:
+      - id: pjr3_look
+        text: "[Take it, carefully. Read the first page.]"
+        next_node_id: pjr3_notebook
+      - id: pjr3_decline
+        text: "You don't have to show me. I can wait."
+        next_node_id: pjr3_notebook_gentle
+        required_relationship:
+          axes:
+            trust: "gte:20"
+      - id: pjr3_overhear
+        text: "[Two voices drift in from the terrace. Listen first.]"
+        next_node_id: pjr3_overhear
+        hidden_if:
+          pjr_overheard: true
+
+  pjr3_notebook:
+    id: pjr3_notebook
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "It's the 2075 law. Every article. I copy them out so I understand where the cracks are — where somebody could squeeze a loophole and say 'technically'. Because nothing that was won for us was won forever. Pap says the law is the finish line. I think it's the starting block."
+    thought: "He watches the player's face while they read, the way a defendant watches a jury. The pages are neat and overwritten, annotated in two pens, with one corner marked in pencil: 'what if they repeal this?'"
+    visual:
+      expression: determined
+      position: right
+    choices:
+      - id: pjr3_notebook_praise
+        text: "This is serious work. Why keep it hidden?"
+        next_node_id: pjr3_fear
+        effects:
+          relationship_effect:
+            axes:
+              trust: 6
+              familiarity: 8
+              alignment: 4
+          state_set:
+            last_pjr_encounter_at: NOW
+      - id: pjr3_notebook_tomas
+        text: "The feed keeps calling Tomás your 'namorado'. Is that true?"
+        next_node_id: pjr3_tomas
+        required_stats:
+          pjr_dig: "gte:1"
+        hidden_if:
+          pjr_tomas_truth: true
+      - id: pjr3_notebook_advise
+        text: "Pick one clause and write a one-page brief on how it could be attacked. I'll read it."
+        next_node_id: pjr3_fear
+        effects:
+          relationship_effect:
+            axes:
+              trust: 6
+              familiarity: 5
+              alignment: 8
+          flag_set:
+            pjr_mentor_path: true
+          state_set:
+            last_pjr_encounter_at: NOW
+
+  pjr3_notebook_gentle:
+    id: pjr3_notebook_gentle
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "...No, I want to. It's just easier when someone says I don't have to. Okay. It's the 2075 law. I copy it out, article by article, to find where somebody could slip a loophole through. It's the only thing I do that nobody photographs."
+    thought: "He laughs shakily, relieved. He has just learned that being offered an exit is what makes him walk through the door."
+    visual:
+      expression: happy
+      position: right
+    choices:
+      - id: pjr3_gentle_continue
+        text: "What made you start?"
+        next_node_id: pjr3_fear
+        effects:
+          relationship_effect:
+            axes:
+              trust: 8
+              familiarity: 8
+              tension: -4
+          state_set:
+            last_pjr_encounter_at: NOW
+
+  pjr3_fear:
+    id: pjr3_fear
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Because up there I'm the brave kid. I smile, I speak, people clap, and somebody says 'he's just like his father'. And I keep thinking — what if one day I don't want to be brave? What if I want to be bored, or wrong, or just a boy who is good at maths? Who am I then? Without the pin, I mean. Saudade for a person I haven't met yet."
+    thought: "His voice is very even, and that is how the player knows it matters. He has said this to a mirror many times. He has never said it to someone who could answer."
+    visual:
+      expression: vulnerable
+      position: right
+    choices:
+      - id: pjr3_receive
+        text: "You don't have to earn the pin every day. You can be tired and still be you."
+        next_node_id: pjr3_end_received
+        effects:
+          relationship_effect:
+            axes:
+              trust: 14
+              familiarity: 12
+              alignment: 6
+              tension: -8
+          state_set:
+            last_pjr_encounter_at: NOW
+      - id: pjr3_reciprocate
+        text: "I know that feeling. I've been scared of the version of me that people expect."
+        next_node_id: pjr3_end_reciprocated
+        required_relationship:
+          axes:
+            familiarity: "gte:20"
+        effects:
+          relationship_effect:
+            axes:
+              trust: 16
+              familiarity: 14
+              alignment: 8
+              tension: -6
+          state_set:
+            last_pjr_encounter_at: NOW
+      - id: pjr3_romantic
+        text: "You don't have to be brave for me. Or interesting. Or even Peter Jr. You can just... be here."
+        next_node_id: pjr3_romantic_response
+        required_stats:
+          pjr_dig: "gte:1"
+        hidden_if:
+          pjr_lover_path: true
+          pjr_hostile_path: true
+        effects:
+          relationship_effect:
+            axes:
+              trust: 8
+              familiarity: 6
+              intimacy: 10
+          state_set:
+            last_pjr_encounter_at: NOW
+      - id: pjr3_exploit
+        text: "This vulnerability would make a great story. The heir who doubts himself. People would eat it up."
+        next_node_id: pjr3_exploit_response
+        required_stats:
+          pjr_dig: "gte:1"
+        hidden_if:
+          pjr_lover_path: true
+        effects:
+          relationship_effect:
+            axes:
+              trust: -15
+              alignment: -12
+              tension: 15
+          state_set:
+            last_pjr_encounter_at: NOW
+      - id: pjr3_use
+        text: "That's powerful. Tell it at the rally and people will listen."
+        next_node_id: pjr3_end_used
+        effects:
+          relationship_effect:
+            axes:
+              trust: -14
+              alignment: -12
+              tension: 14
+          state_set:
+            last_pjr_encounter_at: NOW
+      - id: pjr3_deflect
+        text: "That's heavy. Maybe talk to someone qualified about it."
+        next_node_id: pjr3_end_deflected
+        effects:
+          relationship_effect:
+            axes:
+              trust: -3
+              familiarity: -2
+              tension: 4
+          state_set:
+            last_pjr_encounter_at: NOW
+
+  pjr3_end_received:
+    id: pjr3_end_received
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "...Tired and still me. Okay. Okay. I'm going to write that down, actually. Nobody's ever told me I could be tired and still count. Thank you. For reading it, and for not turning it into something."
+    thought: "He closes the notebook and holds it to his chest with both arms. It is the first time the player has seen him look his age, and it looks good on him."
+    visual:
+      expression: happy
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_act3_done: true
+        pjr_confession_received: true
+        pjr_friend_path: true
+      state_set:
+        pjr_act: "3_done"
+        last_pjr_encounter_at: NOW
+      story_beat: pjr_act3_notebook
+
+  pjr3_end_reciprocated:
+    id: pjr3_end_reciprocated
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "You too? ...Huh. I always thought grown-ups had finished figuring that out. That's a relief and a terrible thing to find out at the same time. Okay — we can be scared of ourselves together. I'll go first next time. Deal?"
+    thought: "He reaches out his hand like a negotiator sealing a treaty, and it is half a joke. Underneath the joke, it is the first real handshake he has offered someone outside his family."
+    visual:
+      expression: happy
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_act3_done: true
+        pjr_confession_received: true
+        pjr_vulnerability_shared: true
+        pjr_friend_path: true
+      state_set:
+        pjr_act: "3_done"
+        last_pjr_encounter_at: NOW
+      story_beat: pjr_act3_notebook
+
+  pjr3_end_used:
+    id: pjr3_end_used
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Tell it at the rally. ...Right. Of course. It's a good story. It would play very well. ...Please give me back the notebook."
+    thought: "His face shuts quietly, like a lift door. He is not angry yet. He is recalculating, and what he is recalculating is how much of himself he let this person see."
+    visual:
+      expression: sad
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_act3_done: true
+        pjr_used_confession: true
+        pjr_rival_path: true
+      state_set:
+        pjr_act: "3_done"
+        last_pjr_encounter_at: NOW
+      story_beat: pjr_act3_notebook
+
+  pjr3_romantic_response:
+    id: pjr3_romantic_response
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "...Be here. Just be here. Okay. That's — that's not nothing. That's... I don't know. It feels like a lot. ...You're the first person who's said I could take the pin off. Not for a photo. Not for a story. Not for the brand. Just... because. Okay. I'm going to try that. Not right now. But. Soon. Maybe."
+    thought: "He looks at the player and for the first time, there's no calculation in his eyes. No performance, no persona, just a boy considering what it would mean to be seen without the costume. The notebook is still open between them, and it feels like a promise."
+    visual:
+      expression: vulnerable
+      position: right
+    choices:
+      - id: pjr3_romantic_accept
+        text: "I'll be here. With or without the pin."
+        next_node_id: pjr3_end_romantic
+        effects:
+          relationship_effect:
+            axes:
+              trust: 8
+              intimacy: 8
+          state_set:
+            last_pjr_encounter_at: NOW
+
+  pjr3_end_romantic:
+    id: pjr3_end_romantic
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Okay. Good. Thank you. For... for seeing that. ...I should put this back. Before Adrián misses it. Or before I miss it. The notebook, I mean. Not the pin. I don't know about the pin anymore. The Atrium, tomorrow. Maybe I'll be different. Maybe I won't. But I'll be there."
+    thought: "He closes the notebook carefully and slides it back into its hiding place. His fingers brush the pin on his collar, but this time the touch is questioning, not automatic. The player has become a place where he can be something other than the brand."
+    visual:
+      expression: happy
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_act3_done: true
+        pjr_lover_path: true
+      state_set:
+        pjr_act: "3_done"
+        last_pjr_encounter_at: NOW
+      story_beat: pjr_act3_romantic_start
+      relationship_effect:
+        axes:
+          trust: 8
+          familiarity: 6
+          intimacy: 12
+
+  pjr3_exploit_response:
+    id: pjr3_exploit_response
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: |
+      Oh. Wow. That's a really good idea. I mean. For the brand. For the numbers.
+      People do love a redemption arc. "Van der Meer heir reveals self-doubt."
+      It's got legs. It's got... wait. What am I doing? I'm talking about my fear
+      like it's content. Of course I am. That's what I do. Everything's content.
+      Even this. He snaps the notebook shut. Get out.
+    thought: "His face goes through three emotions in five seconds: consideration, realization, and then a cold, hard anger. He has been reminded, brutally, that he is a product. He doesn't look at the player. He looks at the notebook, like it betrayed him too."
+    visual:
+      expression: angry
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_act3_done: true
+        pjr_exploited_confession: true
+        pjr_hostile_path: true
+      state_set:
+        pjr_act: "3_done"
+        last_pjr_encounter_at: NOW
+      story_beat: pjr_act3_exploited
+      relationship_effect:
+        axes:
+          trust: -20
+          alignment: -15
+          tension: 20
+
+  pjr3_end_deflected:
+    id: pjr3_end_deflected
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Someone qualified. Yeah, I have one of those, she's on retainer. ...It's fine. I shouldn't have unloaded. Forget the notebook. I'll see you at the rally, maybe."
+    thought: "He smiles quickly, covering for them both, and tucks the notebook back where it lives. The offer to open it a second time will not come soon."
+    visual:
+      expression: default
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_act3_done: true
+        pjr_confession_deflected: true
+      state_set:
+        pjr_act: "3_done"
+        last_pjr_encounter_at: NOW
+      story_beat: pjr_act3_notebook
+
+  pjr3_overhear:
+    id: pjr3_overhear
+    type: character
+    speaker_id: 2b16c495-8a5a-4a1a-8f1b-5be27cd97d84
+    text: "...no, he's sweet, but honestly? The pin kid pays for everything and posts three times a day. Bruno, get the VIP code before he changes it. I'm only here because Adrián tags the best photos. Shh, he'll hear you."
+    thought: "Kiara's voice is bright and unbothered, the same voice she uses on camera. Bruno laughs at something and says nothing back. Neither of them knows the door is open."
+    visual:
+      expression: default
+      position: left
+    effects:
+      stat_set:
+        pjr_dig: 1
+      flag_set:
+        pjr_overheard: true
+    choices:
+      - id: pjr3_overhear_tell
+        text: "[Tell Peter Jr. what you heard.]"
+        next_node_id: pjr3_overhear_tell
+      - id: pjr3_overhear_quiet
+        text: "[Say nothing. Go back inside.]"
+        next_node_id: pjr3_notebook
+
+  pjr3_overhear_tell:
+    id: pjr3_overhear_tell
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "I know. ...I've known since the second party. The way they look at the lights, not at me. Do you know how many people have my phone number and none of them have my real one? Nou. It's fine. It's the deal. They get the boat, I get the crowd."
+    thought: "He says it flatly, like reading a contract aloud. When he finishes, he is not looking at the player. Whatever he feels about the deal, he has had a long time to make it sound reasonable."
+    visual:
+      expression: sad
+      position: right
+    choices:
+      - id: pjr3_overhear_tell_back
+        text: "That's not a deal. That's a bill."
+        next_node_id: pjr3_notebook
+        effects:
+          flag_set:
+            pjr_told_overheard: true
+          relationship_effect:
+            axes:
+              trust: 8
+              familiarity: 6
+              alignment: 4
+          state_set:
+            last_pjr_encounter_at: NOW
+
+  pjr3_tomas:
+    id: pjr3_tomas
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Namorado? Oh my — no. No no no. That's Tomás. He's my friend. He's the only person who tells me when I'm being weird. Adrián said 'the mystery sells' and let it run, because people like a story, and Mãe loved it, she said it made me look 'interesting'. Tomás hates it. He says it makes him look like a prop. He's right."
+    thought: "He puts a hand over his face, half laughing and half embarrassed, and for the first time all afternoon it looks entirely real. The rumor is a headline built by adults. The boy at the center of it just wants his friend left alone."
+    visual:
+      expression: vulnerable
+      position: right
+    effects:
+      stat_set:
+        pjr_dig: 1
+      flag_set:
+        pjr_tomas_truth: true
+    choices:
+      - id: pjr3_tomas_respect
+        text: "He sounds like a good friend. I'm glad you have him."
+        next_node_id: pjr3_fear
+        effects:
+          relationship_effect:
+            axes:
+              trust: 8
+              familiarity: 8
+              alignment: 4
+          state_set:
+            last_pjr_encounter_at: NOW
+      - id: pjr3_tomas_press
+        text: "Then say so publicly. Correct the story."
+        next_node_id: pjr3_fear
+        effects:
+          relationship_effect:
+            axes:
+              trust: 4
+              familiarity: 4
+              alignment: 6
+              tension: 6
+          state_set:
+            last_pjr_encounter_at: NOW
+
+metadata:
+  version: "2.0"
+  required_flags:
+    pjr_act2_done: true
+  tags:
+    - "peter_jr"
+    - "act3"
+    - "disclosure"
+    - "law_notebook"
+    - "mentor_path"
+    - "gate_logic"
+  notes: |
+    Gated on `pjr_act2_done`. The reciprocate choice also requires familiarity
+    >= 20 so a player who skipped the earlier beats cannot jump to the deepest
+    option. `pjr_mentor_path` is opened by offering to read a brief; `pjr_friend_path`
+    by receiving or reciprocating. `pjr_used_confession` sets `pjr_rival_path`.

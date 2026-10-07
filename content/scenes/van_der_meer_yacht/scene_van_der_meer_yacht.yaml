@@ -1,0 +1,32 @@
+id: 4810b5b7-71da-464e-9837-85f094e42f93
+name: Van der Meer Yacht — Sundeck
+description: The sundeck of a Van der Meer family yacht moored off the Port, hired out most weekends for Peter Jr.'s "Amor Verdadero Sunset Socials". Ring lights, a hired photographer, a speaker rig and a crowd of well-dressed teenagers and twenty-somethings who all seem to know exactly where the cameras are. The pin on his collar is always in frame.
+district: Port
+district_lore: port_area
+district_subzone: Port Area
+mood: glossy
+available_dialogues:
+  - e0d019c9-cddd-4ae4-99c6-f84156f0261b
+metadata:
+  type: private_venue
+  accessible: true
+  npcs:
+    - d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    - 2b16c495-8a5a-4a1a-8f1b-5be27cd97d84
+    - c58a2e41-7113-4ecc-894c-66c939388602
+    - ba8c295e-b0d2-4d0e-8bfd-447ce1a42b3c
+  features:
+    - ring_light_stations
+    - hired_photographer
+    - speaker_rig
+    - stern_rail
+  ambiance:
+    - music
+    - camera_shutters
+    - laughter
+    - water_against_hull
+  idle_thoughts:
+    - Every guest on this deck knows where the cameras are. Almost nobody looks at them directly, which is how you can tell they are posing.
+    - The rainbow pin is visible in nearly every photograph taken today. Its position on the collar does not change between photographs.
+    - The stern rail is the only part of the deck without a ring light. A figure stands there alone for a moment between shots, looking at a phone.
+lore_path: van_der_meer_yacht.md

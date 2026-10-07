@@ -37,9 +37,9 @@ By 2077, Lucas's condition had deteriorated significantly. After a series of pub
 
 Despite his family's tireless efforts to secure him treatment, Lucas's mental health continued to decline. The combination of addiction and psychosis created a perfect storm that overwhelmed every intervention attempt.
 
-## Institutionalization (2081)
+## Institutionalization (2081, epilogue)
 
-In 2081, after years of struggling with addiction and psychosis, Lucas was committed indefinitely to a psychiatric institution for his own safety and the protection of others. The decision was heartbreaking for his family, who had exhausted every other option in their attempts to help him.
+In 2081 (after the 2077 present day, as recorded in the epilogue), after years of struggling with addiction and psychosis, Lucas was committed indefinitely to a psychiatric institution for his own safety and the protection of others. The decision was heartbreaking for his family, who had exhausted every other option in their attempts to help him.
 
 ## Legacy and Family Impact
 

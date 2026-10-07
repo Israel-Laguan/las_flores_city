@@ -2,40 +2,48 @@
 name: Isabella Marquez
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/isabella_marquez/isabella_marquez.md
 target: `asset_paths.portrait` in `content/characters/isabella_marquez/char_isabella_marquez.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Isabella Marquez
 
 ## Prompt (Draft)
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 42-year-old Latina female. Dark brown thick curly hair worn loose or in messy bun, warm brown bright welcoming eyes, curvy strong build, warm brown smooth skin with laugh lines, wide infectious smile, gold hoop earrings, colorful beaded bracelets, floral print dress, apron with cooking traces, port district home backdrop, no European features
+Latina woman of 42, curvy, strong build, warm tan skin with a natural glow and laugh lines, thick dark brown curly hair worn loose to the shoulders with the top pinned up in a messy bun, bright, warm brown eyes, small gold hoop earrings and colourful beaded bracelets, a slate-grey short-sleeved collared button shirt, plain flat grey background. neutral relaxed expression, front-facing, arms relaxed. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 42-year-old port district community matriarch. Dark brown, thick curly hair worn loose or in a messy bun. Warm brown, bright and welcoming eyes. Curvy and strong build, carried with confident grace. Warm brown skin, smooth with laugh lines around her eyes and mouth. A wide, infectious smile. Gold hoop earrings, colorful beaded bracelets. She wears a vibrant floral print dress with an apron that shows traces of cooking — the kind of woman whose clothes always smell of food and flowers. Her expression is radiant warmth — the heart of the port community, the mother of three boys whose fathers all disappeared, who dances through the hard parts so her sons learn that life is still worth celebrating. The backdrop is the entrance to her home in the port district. Colorful, lived-in, children's toys visible, the sound of the port in the background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman of 42. Curvy, strong build. Warm tan skin with a natural glow and laugh lines. Thick dark brown curly hair worn loose to the shoulders with the top pinned up in a messy bun. Bright, warm brown eyes. Small gold hoop earrings and colourful beaded bracelets. Wears a slate-grey short-sleeved collared button shirt. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no European features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Northern European features
 
 ## Variations
 
-- [ ] Isabella dancing at a port district bar, infectious laughter drawing everyone in, the life of every gathering
-- [ ] Isabella cooking in her kitchen, surrounded by her three sons and neighborhood children, apron dusted with flour
-- [ ] Isabella welcoming sailors and dockworkers into her home, arms open, the port's unofficial matriarch at work
+- [ ] Stirring a large pot in a lively kitchen with children underfoot
+- [ ] Dancing at an outdoor celebration, skirt swirling, drink in hand
+- [ ] Laughing with sailors on a pier at sunset, hair blowing in the wind
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral warm radiant expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__happy.png`**: Use the base portrait as reference. A broad, radiant grin, looking at the camera, 3/4 take. Eyes crinkled with joy, the wide infectious smile full and open. Keep the same art style as reference, same floral dress and bracelets. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral relaxed resting expression, mouth closed and relaxed, brows unfurrowed, looking at the camera, 3/4 take. Shoulders level, arms hanging relaxed at her sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__dancing.png`**: Use the base portrait as reference. Caught mid-movement, looking at the camera with playful energy, 3/4 take. Eyes bright with laughter, the wide infectious smile, hair flying, dress swirling. Keep the same art style as reference, same floral dress. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__happy.png`**: Use the base portrait as reference. Broad radiant grin, eyes crinkled, head thrown back mid-laugh, looking at the camera, 3/4 take. Both arms raised overhead, hips swaying, beaded bracelets sliding down her forearms. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__tender.png`**: Use the base portrait as reference. A soft, affectionate expression, looking warmly at the camera, 3/4 take. Eyes gentle, the wide smile softening at the corners. Keep the same art style as reference, same floral dress. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__tender.png`**: Use the base portrait as reference. Soft affectionate gaze, smile gentle at the corners, head tilted, looking at the camera, 3/4 take. Arms curved in front of her as if hugging a small child, one hand stroking the air at head height. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__determined.png`**: Use the base portrait as reference. A resolute, firm expression, looking unflinchingly at the camera, 3/4 take. Eyes steady with matriarchal resolve, jaw squared, the wide infectious smile firm. Keep the same art style as reference, same floral dress. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__determined.png`**: Use the base portrait as reference. Jaw squared, gaze steady, smile gone, looking at the camera, 3/4 take. Hands planted on her hips, shoulders squared, chin lifted. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__sad.png`**: Use the base portrait as reference. Eyes wet, smile gone, brows tilted up, looking at the camera, 3/4 take. Shoulders sagging, one hand pressed to her chest, the other wiping the corner of her eye. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Lore wardrobe staged as outfit variants of the base portrait: `assets/<slug>__outfit-<name>.png`. Same face, hair and build as the base. -->
+
+- **`__outfit-kitchen.png`**: Use the base portrait as reference. Same woman, same face, hair and build, now wearing a floral summer dress under a cooking apron with the sleeves pushed up, beaded bracelets on both wrists, neutral calm expression, shoulders level, looking at the camera, 3/4 take. Keep the same face, build and art style as reference, plain flat neutral light-grey backdrop. Clean confident linework, painterly soft shading, muted natural palette.

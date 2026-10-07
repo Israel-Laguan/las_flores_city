@@ -2,40 +2,48 @@
 name: Diego López
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/diego_lopez/diego_lopez.md
 target: `asset_paths.portrait` in `content/characters/diego_lopez/char_diego_lopez.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Diego López
 
 ## Prompt (Draft)
 
-Latino business journalist in his 40s, stocky comfortable build, clear olive-tan skin. Wavy dark hair with gray threading, thick slightly asymmetric brows, narrow appraising eyes, straight nose, round face with a prominent jawline, slightly crooked smile that lifts more on the left, small chip in one molar. Business-casual editor attire, reading glasses looped on a chain, small sport earbud clipped to earlobe. El Informador business desk backdrop with financial charts on screens. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Stocky Latino man of about 45, comfortable heavy build, olive-tan skin, wavy dark hair threaded with grey, thick dark brows, narrow dark eyes, navy suit with white shirt and navy tie. neutral relaxed expression, mouth closed, brows unfurrowed, eyes to camera, front-facing, arms relaxed. plain flat grey background. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino business journalist in his 40s. Stocky, comfortable build with a broad settled presence. Clear olive-tan skin with faint lines at the eyes and brow. Wavy dark hair with visible gray threading, neatly styled. Thick, slightly asymmetric brows over narrow, appraising eyes. Straight nose, round face with a strong prominent jawline. A slightly crooked smile, the left corner lifting more than the right, revealing a small chip in a lower molar when he speaks. Small sport non-in-ear earbud clipped to the left earlobe. Business-casual editor attire: a crisp open-collar shirt under a tailored blazer, reading glasses looped on a chain at his chest. The backdrop is a newsroom business desk, financial charts flickering on wall screens, warm office light over papers and a tablet. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man of about 45. Stocky, comfortable build with broad shoulders and a heavy jaw. Round broad face with narrow dark eyes, thick dark brows, olive-tan skin and light lines at the eyes. Wavy dark hair swept back and threaded with grey, longer at the sides. Navy suit jacket over a white shirt with a navy tie. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no East Asian features, no Northern European features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Northern European features
 
 ## Variations
 
-- [ ] At his desk cross-referencing investment figures against a tablet, screens glowing behind him
-- [ ] Interviewing a local business owner across a small table, notebook and recorder out
-- [ ] Rising from his chair to greet a source, tie loosened, charts crowding every screen
+- [ ] Reading a financial report at a crowded desk, red pen in hand
+- [ ] Interviewing an executive in a glass meeting room, notepad open
+- [ ] Stepping out of a taxi in the rain, newspaper over his head
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__calculating.png`**: Use the base portrait as reference. Sharp assessment mode, looking directly at the camera, 3/4 take. Eyes narrowing further, brows drawn, mouth pressed into a flat line as he weighs a figure, the crooked smile fading. Keep the same art style as reference, same blazer, glasses, and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders relaxed and level, arms hanging loosely at his sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__smirk.png`**: Use the base portrait as reference. A faint knowing half-smile, looking at the camera, 3/4 take. The crooked, left-leaning grin more pronounced, one corner tugged up, eyes glinting dry humor. Keep the same art style as reference, same shirt, blazer, and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__calculating.png`**: Use the base portrait as reference. Narrow dark eyes weighing, one brow lowered, lips pressed, looking at the camera, 3/4 take. Chin lowered, one hand at the jaw with the thumb under the chin, the other holding a pen against his chest. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__determined.png`**: Use the base portrait as reference. A firm, resolved expression, looking unflinchingly at the camera, 3/4 take. Eyes steady, jawline set, face squared with intent, the crooked smile gone. Keep the same art style as reference, same clothing and earbud. Clean confident linework, painterly soft shading with deeper shadows, muted natural palette.
+- **`__smirk.png`**: Use the base portrait as reference. Lopsided knowing smirk, one brow arched, eyes half-lidded, looking at the camera, 3/4 take. Head tipped back slightly, one hand adjusting the tie knot, the other thumb hooked in a jacket pocket. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__surprised.png`**: Use the base portrait as reference. Caught off guard by a figure, looking at the camera with sudden startlement, 3/4 take. Eyes widened, brows raised high, mouth slightly open, the crooked smile wiped away. Keep the same art style as reference, same jacket and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__determined.png`**: Use the base portrait as reference. Eyes steady and level, jaw set, brows low, looking at the camera, 3/4 take. Shoulders squared and broad, one fist planted on a hip, the other hand closing the jacket button. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__surprised.png`**: Use the base portrait as reference. Eyes widening, brows lifting, mouth parting, looking at the camera, 3/4 take. Torso leaning back, one hand rising with the palm out, the other holding a pen mid-air. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Lore wardrobe staged as outfit variants of the base portrait: `assets/<slug>__outfit-<name>.png`. Same face, hair and build as the base. -->
+
+- **`__outfit-editor.png`**: Use the base portrait as reference. Same man, now wearing business-casual editor attire, an open-collar shirt under a soft jacket with reading glasses looped on a chain around his neck, neutral relaxed expression, shoulders level, looking at the camera, 3/4 take. Keep the same face, build and art style as reference, plain flat neutral light-grey backdrop. Clean confident linework, painterly soft shading, muted natural palette.

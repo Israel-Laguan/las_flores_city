@@ -2,40 +2,48 @@
 name: Alexandra Isabel Morales
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/alexandra_isabel_morales/alexandra_isabel_morales.md
 target: `asset_paths.portrait` in `content/characters/alexandra_isabel_morales/char_alexandra_isabel_morales.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Alexandra Isabel Morales
 
 ## Prompt (Draft)
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 28-year-old Latina female. Long straight black hair in loose waves, warm almond-shaped dark brown eyes, petite slender graceful build, warm ivory complexion with natural flush, high cheekbones, delicate nose, small gold hoop earrings, tailored blazer over a blouse with chic accessories, San Pedro language classroom, no East Asian features
+Latina woman of about 28, petite slender build, warm ivory skin with a natural flush, high cheekbones, delicate nose, almond-shaped dark brown eyes, long straight black hair in loose waves, light-gray sleeveless V-neck top. Plain flat grey background. Neutral relaxed expression, mouth closed, looking at the camera, front-facing, arms relaxed at the sides. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 28-year-old Latina woman. Long, straight black hair worn in loose waves or a sleek low ponytail. Warm almond-shaped dark brown eyes, expressive and bright. Petite and slender with a graceful posture. Warm ivory complexion with a natural flush to the cheeks. High cheekbones, a delicate nose, carefully manicured nails. Small gold hoop earrings catch the light. She wears a tailored navy blazer over a cream blouse with understated chic accessories — a thin chain necklace, a simple ring. Her expression is warm and open, a subtle knowing half-smile playing at the corner of her mouth. The backdrop is a language classroom with a whiteboard half-written with Chinese characters, bookshelves, a desk covered in travel posters. Soft daylight from large windows. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman of about 28. Petite and slender with graceful posture. Warm ivory skin with a natural flush on the cheeks, high cheekbones, a delicate nose and almond-shaped dark brown eyes. Long straight black hair worn down in loose waves with a side part. Light-gray sleeveless V-neck top, carefully manicured nails. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no East Asian features, no Chinese aesthetics
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Northern European features
 
 ## Variations
 
-- [ ] Izzy at the front of a classroom, writing Chinese characters on the whiteboard while students watch attentively
-- [ ] Izzy grading papers at her desk, head tilted in thought about how best to support a struggling student
-- [ ] Izzy at a café after class, phone in hand showing a travel photo, mid-story to a friend
+- [ ] Woman at the front of a classroom writing characters on a whiteboard while students watch
+- [ ] Woman grading papers at a desk, head tilted in thought
+- [ ] Woman at a café after class, phone in hand showing a travel photo mid-story
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__happy.png`**: Use the base portrait as reference. A bright, open smile, looking at the camera, 3/4 take. Eyes crinkled with genuine delight, smile showing, cheekbones lifted. Keep the same art style as reference, same blazer and accessories and backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders level and relaxed, arms hanging loosely at her sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__focused.png`**: Use the base portrait as reference. Intense concentration, looking directly at the camera, 3/4 take. Eyes sharply focused, brow slightly furrowed, mouth closed in thought. Keep the same art style as reference, same chic accessories and backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__happy.png`**: Use the base portrait as reference. Genuine warm smile, eyes crinkling, brows relaxed and lifted, looking at the camera, 3/4 take. Shoulders lifted, head tilted, both hands raised in an animated open gesture as if telling a story. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__contemplative.png`**: Use the base portrait as reference. Quiet thought, looking thoughtfully at the camera, 3/4 take. Eyes gazing softly into the middle distance, slight downward tilt to the head, cheekbones relaxed. Keep the same art style as reference, same blazer and gold hoops and backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__focused.png`**: Use the base portrait as reference. Head bowed, eyes on a notebook held in front of her, brows drawn in concentration, lips pursed, 3/4 take. Both hands holding the notebook at waist height, a pen tucked between two fingers. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__professional.png`**: Use the base portrait as reference. A composed and polished expression, looking directly at the camera, 3/4 take. Eyes engaged and assessing, slight upward lift to the chin, small smile at the corner of the mouth. Keep the same art style as reference, same blazer and gold hoop earrings and backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__contemplative.png`**: Use the base portrait as reference. Eyes drifting to the middle distance, brows softly knit, mouth relaxed, 3/4 take. Head tilted, one finger resting against her lips, the other arm folded across her waist. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__professional.png`**: Use the base portrait as reference. Composed courteous expression, a faint polite smile, eyes level, looking at the camera, 3/4 take. Back straight, hands clasped lightly at waist height, a slight courteous incline of the head. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Lore wardrobe staged as outfit variants of the base portrait: `assets/<slug>__outfit-<name>.png`. Same face, hair and build as the base. -->
+
+- **`__outfit-blazer.png`**: Use the base portrait as reference. Same woman, now in a tailored blazer over a blouse with small gold hoop earrings, hair worn in the same loose waves. Neutral expression, shoulders level, looking at the camera, 3/4 take. Keep the same face, hair, build and art style as reference, plain flat neutral light-grey backdrop. Clean confident linework, painterly soft shading, muted natural palette.

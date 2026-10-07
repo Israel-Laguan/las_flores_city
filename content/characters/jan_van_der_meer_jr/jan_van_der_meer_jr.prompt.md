@@ -2,40 +2,48 @@
 name: Jan van der Meer Jr.
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/jan_van_der_meer_jr/jan_van_der_meer_jr.md
 target: `asset_paths.portrait` in `content/characters/jan_van_der_meer_jr/char_jan_van_der_meer_jr.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Jan van der Meer Jr.
 
 ## Prompt (Draft)
 
-Dutch man in his early 40s, athletic-compact build, clear skin, straight blonde hair with faint gray threading. Oval face with a strong jawline, high cheekbones, wide-set eyes, thick brows, full lips, straight slightly crooked nose. A barely-there crookedness to the nose, small scar near one ear. Faint gray threading and thicker brows from age. Small sport earbud clipped to earlobe, well-made understated casual-family attire. Tasteful family estate or garden backdrop. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Dutch man of 42, athletic-compact build, fair skin, light stubble, grey-blue eyes, blond hair greying at the temples, black crew-neck t-shirt, plain flat grey background. Neutral relaxed expression, mouth closed, eyes to camera, front-facing, arms relaxed. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch man in his early 40s. Athletic-compact build with a composed, warm presence. Clear skin. Straight blonde hair with faint gray threading at the temples, kept neat. Oval face with a strong jawline and high cheekbones. Wide-set eyes, calm and steady, thick brows, full lips, and a straight nose with the barest hint of a crooked bridge. A small scar near one ear, nearly hidden. Faint gray threading and a touch more brow density from age, laid over an open, loyal expression. Small sport non-in-ear earbud clipped to earlobe. Well-made understated clothing: a soft-collared shirt under a light knit, casual and quietly refined. The backdrop is a tasteful family estate or manicured garden, dappled light, understated wealth. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch man of 42 with an athletic-compact build. Fair skin with light stubble, calm wide-set grey-blue eyes, a strong jaw, a straight nose, and neat blond hair swept back, greying at the temples. Plain black crew-neck t-shirt. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no Latino features, no East Asian features, no African features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, Latino features, East Asian features, African features, old
 
 ## Variations
 
-- [ ] On the family estate lawn with a cup of coffee, warm morning light
-- [ ] At a quiet garden table, hands clasped, steadying a family conversation
-- [ ] In a sunlit study, folding an old photograph of happier years
+- [ ] Sitting on a low wall with a paper cup, watching a distant construction site
+- [ ] Reading a worn notebook alone at a quiet cafe table
+- [ ] Standing behind a small group at a memorial, hands folded in front
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__tender.png`**: Use the base portrait as reference. His expression softens with warmth and affection, looking at the camera, 3/4 take. Wide-set eyes warm and open, thick brows relaxed, full lips curved in a gentle smile. Keep the same art style as reference, same knit shirt and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders relaxed and level, arms hanging loosely at his sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__determined.png`**: Use the base portrait as reference. A resolved, protective set to his jaw, looking at the camera, 3/4 take. Wide-set eyes steady, strong jawline squared, full lips pressed into a firm line. Keep the same art style as reference, same clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__tender.png`**: Use the base portrait as reference. Soft warm half-smile, eyes gentle and slightly glossy, inner brows softly lifted, looking at the camera, 3/4 take. Shoulders softened, head tilted a little, one hand resting lightly over his heart, the other open and relaxed. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__vulnerable.png`**: Use the base portrait as reference. Quietly exposed, looking at the camera with a tentative openness, 3/4 take. Wide-set eyes slightly lowered and glassy, thick brows lifting, mouth soft and uncertain. Keep the same art style as reference, same clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__determined.png`**: Use the base portrait as reference. Eyes steady, brows drawn slightly together, lips pressed in a firm line, chin lifted a little, looking at the camera, 3/4 take. Squared shoulders, chin level, one hand curled into a firm fist at his side, the other arm straight. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__happy.png`**: Use the base portrait as reference. Genuinely glad, looking at the camera, 3/4 take. Wide-set eyes bright and crinkled, full lips in an easy laugh, thick brows lifted. Keep the same art style as reference, same knit shirt and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__vulnerable.png`**: Use the base portrait as reference. Soft guarded openness, one brow lifted, lips slightly parted, looking at the camera, 3/4 take. Shoulders drawn in, one hand gripping the opposite forearm, head slightly lowered. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__happy.png`**: Use the base portrait as reference. Genuine warm smile, eyes crinkling, brows relaxed and lifted, looking at the camera, 3/4 take. Shoulders loose, a quiet laugh, both hands open and relaxed at waist height. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Same face, hair and build as the base portrait; only the outfit changes. -->
+
+- **`__outfit-soft-collar.png`**: Use the base portrait as reference. Same face, hair and build as the base. Understated soft-collared shirt under a light knit sweater, sleeves pushed to the forearm. Neutral relaxed resting expression, front-facing, arms relaxed at the sides. Keep the same art style as reference and the backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.

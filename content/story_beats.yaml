@@ -183,3 +183,53 @@ beats:
     label: "Camila Ending — Distant"
     order: 544
     description: "Player and Camila part ways, forever changed but estranged."
+
+  - slug: pjr_act1_met
+    label: "Peter Jr. Act 1 — Sunset Social"
+    order: 600
+    description: "Player meets Peter van der Meer Jr. on the yacht and catches him alone at the stern."
+
+  - slug: pjr_act2_leak
+    label: "Peter Jr. Act 2 — The Old Quote"
+    order: 601
+    description: "Rafaela's 2070 quote resurfaces; the player's response sets how he files them."
+
+  - slug: pjr_act3_notebook
+    label: "Peter Jr. Act 3 — The Law Notebook"
+    order: 602
+    description: "Peter Jr. shows his hidden notebook and admits his fear of being only the brave kid."
+
+  - slug: pjr_act4_rally
+    label: "Peter Jr. Act 4 — The Rally Steps"
+    order: 603
+    description: "Pressure point at the Amor Verdadero youth rally: cover, witness, coach, deflect or betray."
+
+  - slug: act5_pjr_ally_ending
+    label: "Peter Jr. Ending — Ally"
+    order: 610
+    description: "Player becomes a trusted friend of Peter Jr. and the Amor Verdadero table."
+
+  - slug: act5_pjr_mentor_ending
+    label: "Peter Jr. Ending — Mentor"
+    order: 611
+    description: "Player guides Peter Jr. toward his own legal-aid project."
+
+  - slug: act5_pjr_rival_ending
+    label: "Peter Jr. Ending — Rival"
+    order: 612
+    description: "Player betrayed or mocked Peter Jr. and he turns into a public, patient opponent."
+
+  - slug: act5_pjr_drifted_ending
+    label: "Peter Jr. Ending — Drifted"
+    order: 613
+    description: "Player was absent at the rally; Peter Jr. moves on to a new circle, with the door left open."
+
+  - slug: act5_pjr_distant_ending
+    label: "Peter Jr. Ending — Distant"
+    order: 614
+    description: "Player and Peter Jr. never get close; parallel lives."
+
+  - slug: act5_pjr_his_own_ending
+    label: "Peter Jr. Ending — His Own Schedule"
+    order: 615
+    description: "Player helps Peter Jr. question who his public life is for; he takes his schedule back."

@@ -14,7 +14,7 @@ Generate seamless looping portrait videos from each expression variant PNG. Use 
 
 **Input**: `assets/elena_ramirez__default.png`
 
-Create a seamless looping video. The woman on the reference image holds a neutral, patient resting expression with a faint burn scar on her right hand. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, and a barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. Wavy gray-streaked dark hair in a silver bun shifts subtly, and the simple collared blouse under a cardigan shifts gently in the draft. The reading glasses on a lanyard and the Humanity First pin at her lapel remain still. The small sport earbud clipped to her left earlobe remains still. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a neutral composed resting expression, looking at the camera with steady presence. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Latina woman of 65, soft rounded build, weathered warm-brown skin with fine wrinkles, silver-grey hair in a loose bun, warm almond dark eyes, dark navy collared shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
 
@@ -22,22 +22,22 @@ Create a seamless looping video. The woman on the reference image holds a neutra
 
 **Input**: `assets/elena_ramirez__happy.png`
 
-Create a seamless looping video. The woman on the reference image shows a warm, genuine smile with eyes crinkling at the corners and lips curving up gently. Subtle idle animation: warm, rhythmic breathing motion lifting her chest and shoulders, a soft pulsing ease in the crinkles around her eyes, and a warm, natural blink cycle. Hair and clothing respond to a faint ambient breeze. Gray-streaked dark hair shifts gently in the draft, and the cardigan fabric moves softly with her buoyant breathing. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a warm genuine smile with brightening eyes and lifted cheeks. Subtle idle animation only: buoyant breathing lifting the chest and shoulders, a soft crinkling around the eyes, a warm natural blink cycle. Latina woman of 65, soft rounded build, weathered warm-brown skin with fine wrinkles, silver-grey hair in a loose bun, warm almond dark eyes, dark navy collared shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__tender` loop
 
 **Input**: `assets/elena_ramirez__tender.png`
 
-Create a seamless looping video. The woman on the reference image shows a soft, compassionate expression with gentle eyes and lips relaxed into a kind line. Subtle idle animation: deep, tranquil breathing motion gently expanding the chest, a subtle micro-softening around the corners of her lips, and a slow, warm blink cycle. Hair and clothing respond to a faint ambient breeze. Soft wavy strands of gray-streaked hair sway gently around her ears, and the cardigan fabric shifts softly in the gentle draft. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a soft affectionate expression with gentle eyes. Subtle idle animation only: slow easy breathing, a gentle softening of the shoulders, a slow warm blink. Latina woman of 65, soft rounded build, weathered warm-brown skin with fine wrinkles, silver-grey hair in a loose bun, warm almond dark eyes, dark navy collared shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__determined` loop
 
 **Input**: `assets/elena_ramirez__determined.png`
 
-Create a seamless looping video. The woman on the reference image shows a firm, resolved expression with eyes steady and lips pressed into a strong line and chin lifted. Subtle idle animation: steady, controlled breathing motion in the chest and shoulders, a slight firming micro-motion in the jawline, and a disciplined, slow blink cycle. Hair and clothing respond to a faint ambient breeze. The cardigan shifts subtly across her shoulders, and the Humanity First pin remains still. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a resolved, firm expression with steady unflinching eyes and a set mouth. Subtle idle animation only: deep controlled breathing in the chest and shoulders, a slight firming of the jaw, a slow unwavering blink cycle. Latina woman of 65, soft rounded build, weathered warm-brown skin with fine wrinkles, silver-grey hair in a loose bun, warm almond dark eyes, dark navy collared shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__sad` loop
 
 **Input**: `assets/elena_ramirez__sad.png`
 
-Create a seamless looping video. The woman on the reference image carries a quiet, restrained sorrow with eyes slightly downcast and lips a soft worried line. Subtle idle animation: slow, heavy breathing rhythm sinking in the chest, a quiet easing and downward settling of the shoulders, and a slow, heavy-lidded blink cycle lingering downward. Hair and clothing respond to a faint ambient breeze. Faint wisps of gray-streaked hair drift across her lowered face, and the cardigan fabric shifts minimally with subdued exhalations. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a heavy quiet sadness with lowered glistening eyes and a downturned mouth. Subtle idle animation only: slow heavy breathing, a slight sinking of the shoulders, a slow blink with a faint lip tremor. Latina woman of 65, soft rounded build, weathered warm-brown skin with fine wrinkles, silver-grey hair in a loose bun, warm almond dark eyes, dark navy collared shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

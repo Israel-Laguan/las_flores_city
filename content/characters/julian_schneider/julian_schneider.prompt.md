@@ -2,38 +2,50 @@
 name: Julian Schneider
 type: portrait
 size: 1024x1024
-source: content/characters/julian_schneider/julian_schneider.md
-target: `portrait_urls[].url` in `content/characters/char_julian_schneider.yaml`
-consumer: portrait
 aspect_ratio: 3:4
+source: content/characters/julian_schneider/julian_schneider.md
+target: `asset_paths.portrait` in `content/characters/julian_schneider/char_julian_schneider.yaml`
+consumer: portrait
 ---
 
 # Prompt: Julian Schneider
 
+NOTE: the current PNG shows a man of about 35 with stubble and dark hair; lore says 21 with tousled light-brown hair and bright blue eyes (YAML physical_description says dark hair and dark eyes). Prompts follow the lore .md; portrait/variants/videos need regeneration.
+
 ## Prompt (Draft)
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height European Photorealistic portrait of Julian Schneider. His frame is solid and un-sculpted. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark expressive eyes, a straight nose, and a defined jaw. His expression is calm and determined, as he meets the viewer with steady, composed bearing. His dark hair hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to his earlobe. He wears a minimalist, pocketless pract. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...
+
+European young man of 21, solid build, fair clean-shaven skin, bright blue eyes, tousled light brown hair, navy casual open-collar shirt, plain flat grey background. Neutral relaxed expression, mouth closed, eyes to camera, front-facing, arms relaxed. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height European man. His frame is solid and un-sculpted. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark expressive eyes, a straight nose, and a defined jaw. His expression is calm and determined, as he meets the viewer with steady, composed bearing. His dark hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to his earlobe. He wears minimalist, pocketless practical clothing suited to his environment, with personal items reflecting his role. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a European young man of 21 with a solid, medium-height build. Fair smooth clean-shaven skin, bright blue eyes, a straight nose, a defined jaw, and tousled light brown hair. Navy casual button-up shirt, open at the collar. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
---no neon, no androids, no clean backgrounds, no modern clothing
+
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, Latino features, East Asian features, stubble, beard
 
 ## Variations
 
-- [ ] Julian Schneider reflecting on recent events, Julian Schneider, 21, European descendant in Andean Mountains. Stud...
-- [ ] Julian Schneider in a alert moment, 
-- [ ] Julian Schneider caught in a pivotal scene, Julian Schneider, 21, European descendant in Andean Mountains. Stud...
+- [ ] Laughing with friends on a hostel balcony with mountains behind him
+- [ ] Photographing a sunrise from a ridge, camera raised to one eye
+- [ ] Studying at a library table with a laptop and a half-finished coffee
 
 ## Expression Variants
 
-- **`julian_schneider__default.png`**: Use the base portrait as reference. Calm determined resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`julian_schneider__determined.png`**: Use the base portrait as reference. Steady resolve, looking directly at the camera, 3/4 take. Eyes fixed and sharp, defined jaw set, mouth firm. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders relaxed and level, arms hanging loosely at his sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`julian_schneider__calculating.png`**: Use the base portrait as reference. Sharp strategic focus, looking intensely at the camera, 3/4 take. Eyes narrowed, brows drawn, lips a thin line. Weighing options. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__determined.png`**: Use the base portrait as reference. Eyes steady, brows drawn slightly together, lips pressed in a firm line, chin lifted a little, looking at the camera, 3/4 take. Shoulders squared, chin level, one hand curled into a firm fist at chest height. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`julian_schneider__contemplative.png`**: Use the base portrait as reference. A reflective pause, looking at the camera, 3/4 take. Eyes softening into the middle distance, jaw relaxed, lips set thoughtfully. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__calculating.png`**: Use the base portrait as reference. Chin lowered, eyes narrowed and fixed, lips pressed together, brows drawn slightly down, looking at the camera, 3/4 take. Chin lowered, eyes narrowed, one hand at his jaw with a finger along his lip, the other arm folded across his waist. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`julian_schneider__surprised.png`**: Use the base portrait as reference. A controlled startle, looking at the camera, 3/4 take. Eyes widened, brows lifted, lips parted. Composure intact. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__contemplative.png`**: Use the base portrait as reference. Brows soft, lips relaxed and slightly parted, expression quiet and inward, gaze drifting off-camera into the middle distance, 3/4 take. Head tilted, one hand rubbing the back of his neck, the other thumb hooked in his pocket. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
+- **`__surprised.png`**: Use the base portrait as reference. Eyes wide, brows high, mouth slightly open, looking at the camera, 3/4 take. Shoulders jumping up, brows high, both hands rising with the palms out. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Same face, hair and build as the base portrait; only the outfit changes. -->
+
+- **`__outfit-casual.png`**: Use the base portrait as reference. Same face, hair and build as the base. Stylish light knit sweater over a collared shirt, a small camera on a strap across the chest. Neutral relaxed resting expression, front-facing, arms relaxed at the sides. Keep the same art style as reference and the backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.

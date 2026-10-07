@@ -2,38 +2,44 @@
 name: Lina Kim
 type: portrait
 size: 1024x1024
-source: content/characters/lina_kim/lina_kim.md
-target: `portrait_urls[].url` in `content/characters/char_lina_kim.yaml`
-consumer: portrait
 aspect_ratio: 3:4
+source: content/characters/lina_kim/lina_kim.md
+target: `asset_paths.portrait` in `content/characters/lina_kim/char_lina_kim.yaml`
+consumer: portrait
 ---
 
 # Prompt: Lina Kim
 
+NOTE: current PNG depicts a woman in her early 30s without glasses; canon is 52 with her signature glasses. Portrait/variants/videos need regeneration to this description.
+
 ## Prompt (Draft)
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height Korean Photorealistic portrait in her early 50s of Lina Kim. Her frame is solid and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark expressive eyes, a straight nose, and a defined jaw. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her dark hair hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality,...
+
+Korean woman of 52, slim build, fair skin with fine lines, dark eyes, jet-black shoulder-length straight hair with a centre part, thin-framed glasses, neat charcoal blouse, neutral relaxed expression, mouth closed, brows unfurrowed, eyes to camera, front-facing, arms relaxed at sides. plain flat neutral light-grey background. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height Korean woman in her early 50s. Her frame is solid and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark expressive eyes, a straight nose, and a defined jaw. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her dark hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears minimalist, pocketless practical clothing suited to her environment, with personal items reflecting her role. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Korean woman of 52. Slim, upright build, fair skin with fine lines at the eyes and mouth, dark eyes behind thin dark-framed rectangular glasses. Jet-black straight shoulder-length hair with a centre part, a few silver strands at the temples. Neat charcoal collared blouse with the top button open. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
---no neon, no androids, no clean backgrounds, no modern clothing
+
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, Latino features, African features, Northern European features
 
 ## Variations
 
-- [ ] Lina Kim with notebook in hand, interviewing a local source for a cultural feature story
-- [ ] Lina Kim reviewing interview notes at their desk, thoughtfully considering story angles
-- [ ] Lina Kim with colleagues in the newsroom, collaborating on a breaking story
+- [ ] Interviewing a resident on a doorstep, holding a recorder out
+- [ ] Pinning photographs and notes onto a corkboard, a pen between her teeth
+- [ ] Hiking a forest trail at dawn with a small pack
 
 ## Expression Variants
 
-- **`lina_kim__default.png`**: Use the base portrait as reference. Calm determined resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`lina_kim__focused.png`**: Use the base portrait as reference. Sharp journalistic attention, looking at the camera, 3/4 take. Eyes narrowed and intent, brows drawn, lips firm, notebook poised. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders relaxed and level, arms hanging loosely at her sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`lina_kim__contemplative.png`**: Use the base portrait as reference. Weighing a story angle, looking thoughtfully at the camera, 3/4 take. Eyes softening into the middle distance, lips relaxed, head tilted. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__focused.png`**: Use the base portrait as reference. Head bowed, eyes lowered behind her glasses, brows drawn in concentration, looking at the camera, 3/4 take. One hand holding a notebook against her chest, the other hand poised with a pen, elbows tucked in. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`lina_kim__happy.png`**: Use the base portrait as reference. A warm, genuine smile, looking at the camera, 3/4 take. Eyes brightening, lips curving up, composed bearing warming. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__contemplative.png`**: Use the base portrait as reference. Gaze drifting past the camera, lips closed, brows softly knit, looking at the camera, 3/4 take. Head tilted, one hand lightly touching the temple of her glasses, the other arm folded at her waist. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`lina_kim__determined.png`**: Use the base portrait as reference. Steady resolve, looking directly at the camera, 3/4 take. Eyes fixed and sharp, defined jaw set, mouth firm. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__happy.png`**: Use the base portrait as reference. A warm small smile, eyes crinkling behind the glasses, looking at the camera, 3/4 take. Shoulders loosened and slightly lifted, one hand open and extended as if welcoming someone. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
+- **`__determined.png`**: Use the base portrait as reference. Brows level, eyes steady and sharp, lips set, looking at the camera, 3/4 take. Chin lifted, shoulders squared, one hand closed in a fist against her chest. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.

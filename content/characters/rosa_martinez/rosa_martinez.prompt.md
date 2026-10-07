@@ -1,39 +1,49 @@
 ---
-name: Rosa Marúñez
+name: Rosa Martínez
 type: portrait
 size: 1024x1024
-source: content/characters/rosa_martinez/rosa_martinez.md
-target: `portrait_urls[].url` in `content/characters/char_rosa_mar_ez.yaml`
-consumer: portrait
 aspect_ratio: 3:4
+source: content/characters/rosa_martinez/rosa_martinez.md
+target: `asset_paths.portrait` in `content/characters/rosa_martinez/char_rosa_martinez.yaml`
+consumer: portrait
 ---
 
-# Prompt: Rosa Marúñez
+# Prompt: Rosa Martínez
 
 ## Prompt (Draft)
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height Latin Photorealistic portrait of Rosa Marúñez. Her frame is solid and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark expressive eyes, a straight nose, and a defined jaw. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her dark hair hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless practical. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...
+
+Andean Latina woman of 45, average height, sturdy warm build, oval face, soft jaw, high cheekbones, straight nose, warm brown eyes, straight thick dark brows, full lips, light olive skin with fine forehead lines, long straight dark brown hair with reddish highlights, center part, falling past the shoulders, plain black crew-neck top, neutral relaxed expression, mouth closed, brows unfurrowed, eyes to camera, facing front, arms relaxed, plain flat grey background. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height Latina woman. Her frame is solid and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark expressive eyes, a straight nose, and a defined jaw. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her dark hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears minimalist, pocketless practical clothing suited to her environment, with personal items reflecting her role. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of an Andean Latina woman of 45. Average height with a sturdy, warm build. Oval face with a soft jaw and high cheekbones, a straight nose, warm brown eyes under straight thick dark brows, and full lips. Light olive skin with fine lines across the forehead and faint creases at the corners of the eyes. Long straight dark brown hair with subtle reddish highlights, center-parted and falling past the shoulders. Plain black crew-neck top. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
---no neon, no androids, no clean backgrounds, no modern clothing
+
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Northern European features
 
 ## Variations
 
-- [ ] Rosa Marúñez serving customers with warm hospitality in a busy restaurant
-- [ ] Rosa Marúñez taking a moment to rest between tasks, showing satisfaction in their work
-- [ ] Rosa Marúñez with restaurant staff during a busy service, working as a team
+- [ ] Serving plates at a busy counter with a dish towel over one shoulder
+- [ ] Resting against a kitchen counter between tasks, apron loosened
+- [ ] Standing with a small team of cooks, one hand resting on a younger cook's shoulder
 
 ## Expression Variants
 
-- **`rosa_martinez__default.png`**: Use the base portrait as reference. Calm determined resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`rosa_martinez__happy.png`**: Use the base portrait as reference. Warm hospitality in a genuine smile, looking at the camera, 3/4 take. Eyes bright and welcoming, cheeks lifting, mouth curving up warmly. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders relaxed and level, arms hanging loosely at her sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`rosa_martinez__focused.png`**: Use the base portrait as reference. Absorbed in a task, looking at the camera, 3/4 take. Eyes intent, brows knit, lips set in concentration. Restaurant bustle behind her. Keep the same art style as reference, same earbud and clothing. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__happy.png`**: Use the base portrait as reference. Warm, welcoming smile, eyes bright, cheeks lifted, looking at the camera, 3/4 take. Shoulders loose, head tilted, both hands open with palms up at waist height as if offering a plate. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`rosa_martinez__determined.png`**: Use the base portrait as reference. Steady resolve, looking directly at the camera, 3/4 take. Eyes fixed and sharp, defined jaw set, mouth firm. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__focused.png`**: Use the base portrait as reference. Brows knit lightly, lips set in concentration, 3/4 take, eyes lowered to a task in her hands. Head bowed, shoulders rounded slightly forward, both hands working a small ball of dough on an unseen surface at waist height. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`rosa_martinez__contemplative.png`**: Use the base portrait as reference. A satisfied pause, looking at the camera, 3/4 take. Eyes softening, lips relaxed, satisfaction in a moment of rest. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__determined.png`**: Use the base portrait as reference. Eyes fixed and steady, jaw set, mouth firm, looking at the camera, 3/4 take. Chin level, shoulders squared, one hand curled into a firm fist held against the sternum. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
+- **`__contemplative.png`**: Use the base portrait as reference. Quiet satisfaction, eyes softening and drifting to one side, lips relaxed in a faint resting curve, 3/4 take. Head tilted, one hand resting flat on the opposite upper arm, the other hanging loose, weight settled on one hip. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Lore wardrobe staged as outfit variants of the base portrait: `assets/<slug>__outfit-<name>.png`. Same face, hair and build as the base. -->
+
+- **`__outfit-smart-casual.png`**: Use the base portrait as reference. Same woman, hair tied back in a practical low bun, wearing a smart-casual blazer over a simple blouse with sleeves pushed to the forearms, neutral calm expression, shoulders level, looking at the camera, 3/4 take. Keep the same face, build and art style as reference, plain flat neutral light-grey backdrop. Clean confident linework, painterly soft shading, muted natural palette.

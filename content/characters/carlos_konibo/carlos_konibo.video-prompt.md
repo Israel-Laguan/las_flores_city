@@ -8,13 +8,15 @@ target: content/characters/carlos_konibo/assets/
 
 # Video Prompts: Carlos Konibo
 
+NOTE: the PNG is a soft painterly digital render of a man of about 25 with chin-length loose black hair, lighter unweathered skin and a brown poncho; YAML says late 30s with short black hair silvering at the temples, weathered skin and a cream tunic. Regenerate from this prompt in the locked graphic-novel style.
+
 Generate seamless looping portrait videos from each expression variant PNG. Use the corresponding `carlos_konibo__<expression>.png` as the input image for each prompt. The man on the reference image is the character described in the source prompt file.
 
 ## Base Loop (Default)
 
 **Input**: `assets/carlos_konibo__default.png`
 
-Create a seamless looping video. The man on the reference image holds a neutral proud composed expression with quiet dignity. Subtle idle animation: gentle breathing motion in the chest and broad shoulders, a micro-shift in weight, and a barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. Thick black hair with silver strands at the temples stirs slightly, and the cream woven tunic with traditional Shipibo patterns along the collar shifts gently in the air. The beaded necklace around his throat remains still. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image has a neutral relaxed resting expression with a closed relaxed mouth. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Indigenous Amazonian man of 38, broad-shouldered medium height, warm weathered brown skin, warm brown eyes, thick short black hair silvering at the temples, beaded necklace, cream woven tunic, geometric tattoo on the right forearm. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
 
@@ -22,22 +24,22 @@ Create a seamless looping video. The man on the reference image holds a neutral 
 
 **Input**: `assets/carlos_konibo__happy.png`
 
-Create a seamless looping video. The man on the reference image shows a quiet, broad smile with eyes crinkled with genuine warmth. Subtle idle animation: warm, rhythmic breathing motion lifting his chest and shoulders, a soft pulsing ease in the crinkles around his eyes, and a slow, warm blink cycle. Hair and clothing respond to a faint ambient breeze. Black hair with silver strands at his temples flutter gently, and the lightweight woven tunic ripples softly around his shoulders. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a warm genuine smile with crinkling eyes. Subtle idle animation only: soft breathing, a small lift of the shoulders, a slow warm blink, the smile easing slightly and returning. Indigenous Amazonian man of 38, broad-shouldered medium height, warm weathered brown skin, warm brown eyes, thick short black hair silvering at the temples, beaded necklace, cream woven tunic, geometric tattoo on the right forearm. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__focused` loop
 
 **Input**: `assets/carlos_konibo__focused.png`
 
-Create a seamless looping video. The man on the reference image displays sharp concentration with eyes narrowed in craftsman's focus and a slightly furrowed brow. Subtle idle animation: measured, steady breathing motion in the chest, a slight micro-narrowing cycle of concentrated scrutiny in the eyes, and a disciplined, slow blink cycle. Hair and clothing respond to a faint ambient breeze. The thick black hair with silver strands shifts slightly, and the cream woven tunic fabric moves subtly against his frame. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows intense concentration with the head bowed and the eyes lowered on a task. Subtle idle animation only: steady shallow breathing, the eyes tracking slightly downward, a rare slow blink, tiny finger movements. Indigenous Amazonian man of 38, broad-shouldered medium height, warm weathered brown skin, warm brown eyes, thick short black hair silvering at the temples, beaded necklace, cream woven tunic, geometric tattoo on the right forearm. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__determined` loop
 
 **Input**: `assets/carlos_konibo__determined.png`
 
-Create a seamless looping video. The man on the reference image shows resolved, firm expression with steady eyes and a strong jaw set with cultural resolve. Subtle idle animation: steady, deep, controlled breathing motion in the chest and shoulders, a slight firming micro-motion in the jawline, and an unflinching, slow blink cycle. Hair and clothing respond to a faint ambient breeze. The woven tunic shifts subtly across his broad shoulders, and the beaded necklace catches a faint draft. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows firm resolve with steady eyes and a set mouth. Subtle idle animation only: deep controlled breathing, a slight firming of the jaw, a slow unwavering blink cycle. Indigenous Amazonian man of 38, broad-shouldered medium height, warm weathered brown skin, warm brown eyes, thick short black hair silvering at the temples, beaded necklace, cream woven tunic, geometric tattoo on the right forearm. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__tender` loop
 
 **Input**: `assets/carlos_konibo__tender.png`
 
-Create a seamless looping video. The man on the reference image displays a soft, open expression with gentle, sincere eyes and a relaxed, warm smile. Subtle idle animation: slow, gentle breathing motion in the chest, a subtle softening cycle around the eyes and corners of his mouth, and a gentle, natural blink cycle. Hair and clothing respond to a faint ambient breeze. Soft hair waves above his ears drift slightly in the breeze, and the fabric of the cream woven tunic breathes gently with his motion. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows gentle affection with soft eyes and a faint smile. Subtle idle animation only: slow warm breathing, a soft tilt of the head, a slow gentle blink. Indigenous Amazonian man of 38, broad-shouldered medium height, warm weathered brown skin, warm brown eyes, thick short black hair silvering at the temples, beaded necklace, cream woven tunic, geometric tattoo on the right forearm. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

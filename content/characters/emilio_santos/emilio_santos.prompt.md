@@ -2,40 +2,44 @@
 name: Emilio Santos
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/emilio_santos/emilio_santos.md
 target: `asset_paths.portrait` in `content/characters/emilio_santos/char_emilio_santos.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Emilio Santos
 
+NOTE: canon age is 68 (birth_year 2009); current PNG depicts a man of about 50 with minimal lines and no gold chain; portrait/variants/videos need regeneration.
+
 ## Prompt (Draft)
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a late-60s Latino male. Dark brown hair slicked back slightly thinning, dark brown tired haunted eyes, medium height broad-shouldered softening with age, medium tan lined around eyes from coastal sun, gold chain at open collar, expensive watch, five o'clock shadow, slight alcohol flush on cheeks, disheveled cheap linen shirt, Pacific District beach house terrace at dusk, no European features
+Latino man of 68, medium height, broad-shouldered but softening with age, medium tan skin lined around the eyes from squinting in sun, with a slight flush across the cheeks, slicked-back dark brown hair with a few grey strands, thinning at the crown, tired, haunted dark brown eyes with heavy bags, a perpetual salt-and-pepper five o'clock shadow, a thin gold chain visible at the open collar and an expensive wristwatch, a loose pale blue-grey linen shirt open at the collar, plain flat grey background. neutral relaxed expression, front-facing, arms relaxed. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a disgraced former district politician, retired to his beach house. Dark brown hair, slicked back with pomade, slightly thinning. Dark brown, tired and haunted eyes. Medium height, broad-shouldered but softening with age and drink. Medium tan skin, lined around the eyes from squinting in coastal sun. A gold chain visible at his open collar. An expensive watch on his wrist. A perpetual five-o'clock shadow. A slight alcohol flush on his cheeks. He wears a disheveled cheap linen shirt, half-unbuttoned — the clothes of a man who no longer has an audience to perform for. His expression is the hollow after ambition — haunted, reflective, a little drunk, entirely alone. The backdrop is the terrace of his beach house at dusk. Weathered wooden rail, ocean waves below, string lights overhead. Deep blue twilight, the last of the sun on the water. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man of 68. Medium height, broad-shouldered but softening with age. Medium tan skin lined around the eyes from squinting in sun, with a slight flush across the cheeks. Slicked-back dark brown hair with a few grey strands, thinning at the crown. Tired, haunted dark brown eyes with heavy bags. A perpetual salt-and-pepper five o'clock shadow. A thin gold chain visible at the open collar and an expensive wristwatch. Wears a loose pale blue-grey linen shirt open at the collar. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no European features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Northern European features
 
 ## Variations
 
-- [ ] Emilio alone on his beach house terrace at dusk, linen shirt open, drink in hand, staring at the Pacific
-- [ ] Emilio in his beach house living room, old campaign photos on the walls, the expensive watch still on his wrist
-- [ ] Emilio walking the shoreline near his beach house at dawn, disheveled shirt flapping, a ghost of the politician still visible
+- [ ] Standing on a wooden porch at dusk holding a glass of amber liquor
+- [ ] Sitting alone in a beach chair staring at the waves
+- [ ] Reading a formal letter at a cluttered kitchen table, reading glasses in hand
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral haunted exhausted expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__contemplative.png`**: Use the base portrait as reference. Quiet reflection, looking thoughtfully at the camera with a 3/4 take. Eyes distant, haunted, mouth slack, broad-shouldered frame sagging. Keep the same art style as reference, same linen shirt. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral relaxed resting expression, mouth closed and relaxed, brows unfurrowed, looking at the camera, 3/4 take. Shoulders level, arms hanging relaxed at his sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__determined.png`**: Use the base portrait as reference. A briefly resolved expression, looking unflinchingly at the camera, 3/4 take. Eyes flashing with old ambition, jaw squared, broad-shouldered build squared. Keep the same art style as reference, same linen shirt. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__contemplative.png`**: Use the base portrait as reference. Eyes fixed on a far horizon, lips slack, brow faintly furrowed, looking at the camera, 3/4 take. Shoulders sagging, one hand rubbing the stubble on his jaw, the other arm hanging heavy. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__vulnerable.png`**: Use the base portrait as reference. A quietly broken expression, looking gently at the camera, 3/4 take. Eyes open and honest, haunted, the mask finally gone, broad-shouldered frame sagging. Keep the same art style as reference, same linen shirt. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__determined.png`**: Use the base portrait as reference. Eyes flashing with old ambition, jaw squared, chin lifted, looking at the camera, 3/4 take. Shoulders thrown back, chest out, one hand straightening his collar, the other closed in a fist at his side. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__angry.png`**: Use the base portrait as reference. A flushed, angry expression, looking at the camera, 3/4 take. Eyes blazing with old resentments, jaw set, broad-shouldered build tense. Keep the same art style as reference, same linen shirt. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__vulnerable.png`**: Use the base portrait as reference. Mask gone, eyes wet and open, lips trembling, brows tilted up, looking at the camera, 3/4 take. Shoulders hunched, head dipped, both hands clasped together over his belly. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__angry.png`**: Use the base portrait as reference. Flushed face, eyes blazing, upper lip curled, jaw set, looking at the camera, 3/4 take. Torso leaning forward, one fist raised at shoulder height, the other hand gripping his belt. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.

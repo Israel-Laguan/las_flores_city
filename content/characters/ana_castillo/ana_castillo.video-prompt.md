@@ -1,12 +1,14 @@
 ---
-name: Sofia Ana Castillo
+name: Ana Castillo
 type: video-loop
 model: Seedance 1.5 Pro
 source: content/characters/ana_castillo/ana_castillo.prompt.md
 target: content/characters/ana_castillo/assets/
 ---
 
-# Video Prompts: Sofia Ana Castillo
+# Video Prompts: Ana Castillo
+
+NOTE: the current PNG depicts a much younger woman (about 25) with pale skin and long loose wavy hair and a white top, no clip or apron; YAML/lore say a Latina woman of ~45 with warm brown skin, soft rounded build and hair held back. Regenerate from this prompt.
 
 Generate seamless looping portrait videos from each expression variant PNG. Use the corresponding `ana_castillo__<expression>.png` as the input image for each prompt. The woman on the reference image is the character described in the source prompt file.
 
@@ -14,7 +16,7 @@ Generate seamless looping portrait videos from each expression variant PNG. Use 
 
 **Input**: `assets/ana_castillo__default.png`
 
-Create a seamless looping video. The woman on the reference image holds a neutral resting expression. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. Wavy dark hair held back with a practical clip stirs faintly, and the practical apron fabric over her casual clothes shifts subtly in the draft. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image has a neutral relaxed resting expression with a closed relaxed mouth. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Latina woman of 45, soft rounded build, warm brown skin with fine lines around the eyes, wavy dark hair held back with a clip, dimple on the right cheek, plain cotton top under a practical apron. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
 
@@ -22,22 +24,22 @@ Create a seamless looping video. The woman on the reference image holds a neutra
 
 **Input**: `assets/ana_castillo__happy.png`
 
-Create a seamless looping video. The woman on the reference image displays an open, neighborly smile with warm eyes and lips curving, the right cheek dimple deepening. Subtle idle animation: gentle, warm breathing motion in the chest, a subtle softening around the mouth and eyes, and a cheerful, measured blink cycle. Hair and clothing respond to a faint ambient breeze. The practical clip in her wavy dark hair shifts slightly, and the apron fabric moves gently with her breath. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a warm genuine smile with crinkling eyes. Subtle idle animation only: soft breathing, a small lift of the shoulders, a slow warm blink, the smile easing slightly and returning. Latina woman of 45, soft rounded build, warm brown skin with fine lines around the eyes, wavy dark hair held back with a clip, dimple on the right cheek, plain cotton top under a practical apron. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__determined` loop
 
 **Input**: `assets/ana_castillo__determined.png`
 
-Create a seamless looping video. The woman on the reference image shows steady, principled resolve with firm eyes, brows leveled, and lips set. Subtle idle animation: deep, controlled breathing motion in the chest and shoulders, a slight firming micro-motion in the jawline, and an unwavering, slow blink cycle. Hair and clothing respond to a faint ambient breeze. The practical clip holding back her wavy dark hair shifts subtly, and the apron fabric moves faintly with her determined posture. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows firm resolve with steady eyes and a set mouth. Subtle idle animation only: deep controlled breathing, a slight firming of the jaw, a slow unwavering blink cycle. Latina woman of 45, soft rounded build, warm brown skin with fine lines around the eyes, wavy dark hair held back with a clip, dimple on the right cheek, plain cotton top under a practical apron. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__tender` loop
 
 **Input**: `assets/ana_castillo__tender.png`
 
-Create a seamless looping video. The woman on the reference image radiates quiet, generous warmth with soft eyes and lips curved gently, the right cheek dimple showing. Subtle idle animation: soft, gentle breathing motion in the chest, a subtle micro-softening around the mouth and eyes, and a warm, slow blink cycle. Hair and clothing respond to a faint ambient breeze. Her wavy dark hair held back with the practical clip sways gently, and the apron fabric shifts softly with her tender expression. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows gentle affection with soft eyes and a faint smile. Subtle idle animation only: slow warm breathing, a soft tilt of the head, a slow gentle blink. Latina woman of 45, soft rounded build, warm brown skin with fine lines around the eyes, wavy dark hair held back with a clip, dimple on the right cheek, plain cotton top under a practical apron. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__sad` loop
 
 **Input**: `assets/ana_castillo__sad.png`
 
-Create a seamless looping video. The woman on the reference image carries quiet, weighted sorrow with downcast eyes and flat lips, the right cheek dimple absent. Subtle idle animation: shallow, measured breathing motion in the chest, a subtle micro-settling of the shoulders, and a slow, heavy blink cycle. Hair and clothing respond to a faint ambient breeze. Her wavy dark hair held back with the practical clip moves faintly, and the apron fabric shifts subtly with her somber posture. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows quiet sadness with lowered glistening eyes and a downturned mouth. Subtle idle animation only: slow heavy breathing, a slight sinking of the shoulders, a slow blink with a faint lip tremor. Latina woman of 45, soft rounded build, warm brown skin with fine lines around the eyes, wavy dark hair held back with a clip, dimple on the right cheek, plain cotton top under a practical apron. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

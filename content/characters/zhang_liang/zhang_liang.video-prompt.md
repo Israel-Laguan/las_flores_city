@@ -6,40 +6,40 @@ source: content/characters/zhang_liang/zhang_liang.prompt.md
 target: content/characters/zhang_liang/assets/
 ---
 
-Game year **2077**: Zhang Liang is **~78**, an **investor / elder shadow advisor** (not CFO). Loops match elderly investor portraits — gray-white hair, soft prosperous build, right-cheek mole — with no title text in frame.
-
 # Video Prompts: Zhang Liang
+
+NOTE: two-era flag: `zhang_liang__disaster_era.png` (about 52) exists as a past-era likeness; no second set created. Existing PNG has a detailed wood-panelled study backdrop and a teacup in hand; regenerate on plain flat grey with arms relaxed.
+
+Generate seamless looping portrait videos from each expression variant PNG. Use the corresponding `zhang_liang__<expression>.png` as the input image for each prompt. The man on the reference image is the character described in the source prompt file.
 
 ## Base Loop (Default)
 
 **Input**: `assets/zhang_liang__default.png`
 
-Seamless loop. Composed elderly resting expression, soft prosperous frame, gray-white receded hair, right-cheek mole, muted investor attire, sport earbud. Subtle idle: slow breathing, micro blink. Background static. Perfect loop. No camera move.
+Create a seamless looping video. The man on the reference image shows a neutral relaxed resting expression, looking at the camera. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Elderly Chinese man of about 78, soft-rounded frame, lined fair skin, deep-set dark eyes, thin gray-white swept-back hair, small mole on the right cheek, white earbud, gray mandarin-collar jacket. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
-
-Generate each loop from its corresponding expression PNG.
 
 ### `__calculating` loop
 
 **Input**: `assets/zhang_liang__calculating.png`
 
-Calculating eye-narrowing; slow measured breathing; thoughtful blink cycle. Perfect loop.
+Create a seamless looping video. The man on the reference image shows cold analytical thought with narrowed eyes and a thin set mouth. Subtle idle animation only: slow measured breathing, a subtle micro-narrowing of the eyes, an infrequent deliberate blink cycle. Elderly Chinese man of about 78, soft-rounded frame, lined fair skin, deep-set dark eyes, thin gray-white swept-back hair, small mole on the right cheek, white earbud, gray mandarin-collar jacket. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__smirk` loop
 
 **Input**: `assets/zhang_liang__smirk.png`
 
-Subtle smirk micro-lift at the corner of the mouth; relaxed blink. Perfect loop.
+Create a seamless looping video. The man on the reference image shows a faint knowing half-smile with one raised brow. Subtle idle animation only: relaxed easy breathing, a subtle micro-lift at the corner of the smirk, an unhurried blink cycle. Elderly Chinese man of about 78, soft-rounded frame, lined fair skin, deep-set dark eyes, thin gray-white swept-back hair, small mole on the right cheek, white earbud, gray mandarin-collar jacket. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__determined` loop
 
 **Input**: `assets/zhang_liang__determined.png`
 
-Determined jaw firming; steady controlled breathing; unwavering blink cycle. Perfect loop.
+Create a seamless looping video. The man on the reference image shows firm resolve with steady unflinching eyes and a set jaw. Subtle idle animation only: deep controlled breathing, a slight firming of the jaw, a slow unwavering blink cycle. Elderly Chinese man of about 78, soft-rounded frame, lined fair skin, deep-set dark eyes, thin gray-white swept-back hair, small mole on the right cheek, white earbud, gray mandarin-collar jacket. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__surprised` loop
 
 **Input**: `assets/zhang_liang__surprised.png`
 
-Surprised eye-widening; momentary catch in breath settling to alert composure. Perfect loop.
+Create a seamless looping video. The man on the reference image shows a brief startle with widened eyes, raised brows and parted lips. Subtle idle animation only: a small catch of breath settling into soft breathing, a subtle head tilt, a light attentive blink cycle. Elderly Chinese man of about 78, soft-rounded frame, lined fair skin, deep-set dark eyes, thin gray-white swept-back hair, small mole on the right cheek, white earbud, gray mandarin-collar jacket. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

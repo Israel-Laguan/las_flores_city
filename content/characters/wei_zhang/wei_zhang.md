@@ -2,7 +2,7 @@
 
 > Tags: `#figure` `#scientist` `#phytoremediation` `#lithium` `#double_agent` `#strategist`
 >
-> **Born:** ~2009
+> **Born:** ~2019
 > **Role:** Environmental Scientist, Phytoremediation Expert
 > **Status:** Covert collaborator with Evelyn Ruthenberg (publicly aligned with Minera Estrella/city council as of 2059)
 
@@ -17,7 +17,7 @@
 
 **Description (full):**
 
-Dr. Wei Zhang is a reclusive chemist in his fifties, specializing in environmental chemistry and phytoremediation. He lives a quiet, introspective life, his unassuming presence masking a brilliant mind and a deep, personal stake in environmental justice. While details of his past remain veiled, a formative trauma—likely the environmental ruination of his ancestral village or the silencing of a mentor who championed similar research—instilled in him a profound empathy for ecosystems ravaged by unchecked industry. This fueled an obsession with developing innovative, *sustainable* purification methods, a silent rebellion against the destructive status quo.
+Dr. Wei Zhang is a reclusive chemist in his late fifties (about 58 in 2077), specializing in environmental chemistry and phytoremediation. He lives a quiet, introspective life, his unassuming presence masking a brilliant mind and a deep, personal stake in environmental justice. While details of his past remain veiled, a formative trauma—likely the environmental ruination of his ancestral village or the silencing of a mentor who championed similar research—instilled in him a profound empathy for ecosystems ravaged by unchecked industry. This fueled an obsession with developing innovative, *sustainable* purification methods, a silent rebellion against the destructive status quo.
 
 ## Personality & Mannerisms
 

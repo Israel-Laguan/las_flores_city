@@ -14,7 +14,7 @@ Generate seamless looping portrait videos from each expression variant PNG. Use 
 
 **Input**: `assets/diego_ruiz__default.png`
 
-Create a seamless looping video. The man on the reference image holds a neutral optimistic expression with a slim notebook of pickup techniques peeking from his jacket pocket. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, and a barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. Medium-length carefully styled dark hair shifts subtly, and the neat casual button-down shirt over a plain tee and clean dark trousers shift gently in the draft. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a neutral composed resting expression, looking at the camera with steady presence. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Latino man of about 26, fit athletic build, warm brown eyes, tan skin, light stubble, medium-length dark swept-back hair, steel-blue button-up shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
 
@@ -22,22 +22,22 @@ Create a seamless looping video. The man on the reference image holds a neutral 
 
 **Input**: `assets/diego_ruiz__happy.png`
 
-Create a seamless looping video. The man on the reference image shows a bright, hopeful grin with eyes alight with optimism and mouth wide with charm. Subtle idle animation: warm, buoyant breathing motion lifting his chest and shoulders, a soft crinkling smile cycle around his eyes, and a warm, natural blink cycle. Hair and clothing respond to a faint ambient breeze. Dark hair strands flutter lightly around his face, and the button-down shirt shifts gently with his buoyant breathing. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a warm genuine smile with brightening eyes and lifted cheeks. Subtle idle animation only: buoyant breathing lifting the chest and shoulders, a soft crinkling around the eyes, a warm natural blink cycle. Latino man of about 26, fit athletic build, warm brown eyes, tan skin, light stubble, medium-length dark swept-back hair, steel-blue button-up shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__calculating` loop
 
 **Input**: `assets/diego_ruiz__calculating.png`
 
-Create a seamless looping video. The man on the reference image shows a shrewd, assessing look with eyes narrowed with practiced technique and evaluating the viewer. Subtle idle animation: slow, measured breathing in the chest, a subtle micro-narrowing cycle in his focused gaze, and a slow, deliberate blink cycle. Hair and clothing respond to a faint ambient breeze. Dark hair shifts faintly across his forehead, and the dark trousers shift subtly against his frame. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a cool calculating expression with a lowered chin and narrowed, weighing eyes. Subtle idle animation only: slow even breathing, a faint tightening at the corner of the mouth, a small shift of the gaze as if weighing something, a slow deliberate blink. Latino man of about 26, fit athletic build, warm brown eyes, tan skin, light stubble, medium-length dark swept-back hair, steel-blue button-up shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__vulnerable` loop
 
 **Input**: `assets/diego_ruiz__vulnerable.png`
 
-Create a seamless looping video. The man on the reference image shows a quietly lonely expression with eyes open and searching and charm faltering. Subtle idle animation: soft, gentle breathing motion gently lifting his chest, a subtle easing of tension in the shoulders, and a slow, tender blink cycle with a momentary softening of gaze. Hair and clothing respond to a faint ambient breeze. Fine strands of dark hair drift gently against his temples, and the jacket pocket with the slim notebook shifts softly against his side. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a quietly vulnerable expression with open honest eyes and softened features. Subtle idle animation only: soft shallow breathing, a slow easing of tension in the shoulders, a slow tender blink. Latino man of about 26, fit athletic build, warm brown eyes, tan skin, light stubble, medium-length dark swept-back hair, steel-blue button-up shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__smirk` loop
 
 **Input**: `assets/diego_ruiz__smirk.png`
 
-Create a seamless looping video. The man on the reference image shows a practiced, knowing half-smile with eyes glinting with confidence and one corner of the mouth pulled up. Subtle idle animation: relaxed, easy breathing motion rising and falling in his chest, a subtle micro-lift at the corner of the smirk, and an easy, barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. Dark hair shifts gently across his temples, and the button-down shirt shifts softly with his breath. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a one-sided knowing smirk with a lifted brow. Subtle idle animation only: slow easy breathing, a subtle flex of the cheek at the smirk, a slow lazy blink. Latino man of about 26, fit athletic build, warm brown eyes, tan skin, light stubble, medium-length dark swept-back hair, steel-blue button-up shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

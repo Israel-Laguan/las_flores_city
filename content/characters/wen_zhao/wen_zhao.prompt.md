@@ -1,58 +1,71 @@
 ---
 name: Wen Zhao
 type: portrait
-size: 768x1024
+size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/wen_zhao/wen_zhao.md
 target: `asset_paths.portrait` in `content/characters/wen_zhao/char_wen_zhao.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Wen Zhao
 
+NOTE: existing PNG matches canon well but omits the lore's permanent sport earbud and heavy eyeliner (campus persona is in the wardrobe variants). Full 14-tag set kept: 12 are used by dialogue nodes, `focused` and `surprised` are not.
+
 ## Prompt (Draft)
-Chinese woman in her early 20s, sleek black hair in a high ponytail, sharp angular jawline, bold confident bearing, bright knowing eyes. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+
+Young Chinese woman of about 22, thin frame, long narrow angular face, uneven skin with faint acne on the cheeks and forehead, small close-set dark eyes, thin lips, straight black hair pulled into a tight high ponytail, plain dark grey short-sleeve crew-neck T-shirt. Plain flat grey background. Neutral relaxed expression, mouth closed, eyes straight at camera, facing front, arms relaxed at sides. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Chinese woman in her early 20s. Sleek black hair pulled into a high, sharp ponytail, and an angular jawline that gives her a confident, faintly intimidating presence. She exhibits deeply unique, un-idealized facial anatomy with realistic eye sizes and dark, knowing eyes that meet the viewer with bold composure. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears deliberately provocative, high-exposure university clothing — a cropped fitted top or low-cut blouse, fashionable and attention-seeking, a deliberate contrast to the modest home-wear she is forced into. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a thin young Chinese woman of about 22. Long narrow angular face with a bony jaw, small close-set dark eyes, thin lips, uneven skin with faint acne along the cheeks and forehead, no makeup. Straight, fine black hair scraped into a tight high ponytail that pulls at the hairline. A narrow, flat frame. A plain dark grey short-sleeve crew-neck T-shirt. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no Latino features, no European features, no South Asian features
+
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, Latino features, European features, African features
 
 ## Variations
 
-- [ ] Wen Zhao in a lecture hall, exchanging a knowing glance with a friend
-- [ ] Wen Zhao striding across the university courtyard, chin lifted, self-assured
-- [ ] Wen Zhao at home in the modest clothing her parents expect, her manner softened
-- [ ] Wen Zhao at a dimly lit university party, holding a drink and sizing someone up, her chic clothing sharp and commanding
-- [ ] Wen Zhao in her bedroom, a private moment of vulnerability where the confident mask drops, wearing simple loungewear
+- [ ] Walking a campus path in a short skirt and heels, chin up and elbows out, forcing a confident stride
+- [ ] Sitting cross-legged on a dorm bed, scrolling her phone with the confident mask off
+- [ ] Stepping through a doorway into a family hallway, changing into shapeless clothes
 
 ## Expression Variants
 
-- **`wen_zhao__default.png`**: Use the base portrait as reference. Bold confident resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`wen_zhao__happy.png`**: Use the base portrait as reference. A bright, performatively warm smile — electric and attention-commanding, looking at the camera, 3/4 take. Dark knowing eyes lighting up, cheeks lifting, the smile that of someone who knows exactly what effect it has. Same top, same earbud, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders relaxed and level, arms hanging loosely at her sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`wen_zhao__smirk.png`**: Use the base portrait as reference. A sharp, predatory smirk — she has already decided how this plays out, looking at the camera, 3/4 take. Eyes narrowing with private amusement and calculation, one brow lifted, lips curving in a dangerous, self-aware curve. Same provocative top, same earbud, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__happy.png`**: Use the base portrait as reference. Wide real smile, eyes crinkling, the long face lit up, looking at the camera, 3/4 take. Shoulders loosened, head tilted, both hands clasped together under her chin. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`wen_zhao__focused.png`**: Use the base portrait as reference. Absorbed in a lecture, exchanging a knowing glance, looking at the camera, 3/4 take. Eyes intent and sharp, brows knit, lips pressed in concentration. Same provocative top, same earbud, lecture hall light. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__smirk.png`**: Use the base portrait as reference. Thin lips curled up on one side, one brow raised, looking at the camera, 3/4 take. Chin lifted, elbows out, one hand on her hip, the other flicking the ponytail over her shoulder. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`wen_zhao__contemplative.png`**: Use the base portrait as reference. A rare, private moment of softening — the performative confidence entirely gone, looking at the camera, 3/4 take. Eyes softer and more uncertain, lips slightly parted. Same earbud, modest home light. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__focused.png`**: Use the base portrait as reference. Eyes down on a phone, brows knit, lips pressed, looking at the camera, 3/4 take. Head bowed, shoulders curled over the phone held in both hands, elbows tucked in. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`wen_zhao__vulnerable.png`**: Use the base portrait as reference. The confident mask has completely dropped, looking at the camera, 3/4 take. Eyes wide and uncertain, lips slightly parted in quiet fear. Keep the same art style as reference, same earbud and blouse, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__contemplative.png`**: Use the base portrait as reference. Gaze lifted and drifting away, lips softly closed, looking at the camera, 3/4 take. Head tilted back slightly, arms crossed over her chest, one hand cupping the opposite elbow. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`wen_zhao__tender.png`**: Use the base portrait as reference. A soft, unguarded look of affection, looking at the camera, 3/4 take. Eyes softening with warmth, a faint gentle smile breaking through. Keep the same art style as reference, same earbud and blouse, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__vulnerable.png`**: Use the base portrait as reference. Guard dropped, eyes wide and uncertain, lips slightly parted, looking at the camera, 3/4 take. Shoulders caved inward, one hand gripping the opposite forearm, head tucked, ponytail hanging forward. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`wen_zhao__afraid.png`**: Use the base portrait as reference. Real, unmasked fear, looking at the camera, 3/4 take. Eyes wide and tense, brows drawn up, jaw tight. Keep the same art style as reference, same earbud and blouse, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__tender.png`**: Use the base portrait as reference. Softened eyes with a small gentle smile, looking at the camera, 3/4 take. Head tilted, one hand resting flat over her heart, the other held out loosely with the palm up. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`wen_zhao__determined.png`**: Use the base portrait as reference. A fierce, uncompromising stare, looking at the camera, 3/4 take. Eyes narrowed and locked on, brows pulled down, jaw firmly set. Keep the same art style as reference, same earbud and blouse, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__afraid.png`**: Use the base portrait as reference. Eyes wide, brows pulled up and together, lips pressed tight, looking at the camera, 3/4 take. Body shrinking back, both hands raised near her collarbone, shoulders hunched up. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`wen_zhao__sad.png`**: Use the base portrait as reference. A quiet, heavy sorrow, looking at the camera, 3/4 take. Eyes lowered or pooling with unshed tears, lips pressed flat in resignation. Keep the same art style as reference, same earbud and blouse, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__determined.png`**: Use the base portrait as reference. Eyes fixed, jaw jutting forward, lips firm, looking at the camera, 3/4 take. Chin up, shoulders back, one hand clenched into a fist at her side, elbows out. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`wen_zhao__shocked.png`**: Use the base portrait as reference. Completely caught off guard, looking at the camera, 3/4 take. Eyes blown wide, brows arched high, mouth open in genuine surprise. Keep the same art style as reference, same earbud and blouse, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__sad.png`**: Use the base portrait as reference. Eyes glossy and downcast, mouth turned down, lower lip trembling, looking at the camera, 3/4 take. Shoulders slumped, head bowed, both arms wrapped tight around her torso. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`wen_zhao__angry.png`**: Use the base portrait as reference. Furious and sharp, looking at the camera, 3/4 take. Eyes blazing, brows pulled tight into a deep scowl, lips drawn back in a snarl. Keep the same art style as reference, same earbud and blouse, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__shocked.png`**: Use the base portrait as reference. Eyes wide, mouth open in disbelief, looking at the camera, 3/4 take. Body jerked back, both hands flying to her cheeks. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`wen_zhao__calculating.png`**: Use the base portrait as reference. Coldly assessing a situation, looking at the camera, 3/4 take. Eyes narrowed in thought, head tilted slightly, lips pressed into a thin, unreadable line. Keep the same art style as reference, same earbud and blouse, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__angry.png`**: Use the base portrait as reference. Eyes narrowed, jaw jutting forward, thin lips pulled back in a snarl, looking at the camera, 3/4 take. Elbows flared, both fists clenched at her sides, shoulders rigid, leaning forward. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`wen_zhao__surprised.png`**: Use the base portrait as reference. A lighter, momentary startle, looking at the camera, 3/4 take. Eyes widening briefly, lips parted in an "oh". Keep the same art style as reference, same earbud and blouse, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__calculating.png`**: Use the base portrait as reference. Eyes narrowed and sliding sideways, one brow lowered, thin lips pressed, looking at the camera, 3/4 take. Chin lowered, fingertips of one hand resting against her lips, the other arm across her waist. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__surprised.png`**: Use the base portrait as reference. Eyes widening briefly, brows raised, lips parted in a small "oh", looking at the camera, 3/4 take. Head pulled back slightly, one hand lifted at shoulder height with the palm out. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Same face, hair and build as the base portrait; only the outfit changes. Plain flat backgrounds, neutral expression. -->
+
+- **`__outfit-campus-persona.png`**: Use the base portrait as reference. Same face, hair and build, now wearing a low-cut fitted black top and a short skirt, heavy winged eyeliner, overlined lips and thick foundation, a small sport earbud clipped to one ear, shoulders back and chin up in a forced confident pose. Neutral relaxed expression, looking at the camera, 3/4 take, arms relaxed. Keep the same art style as reference, plain flat neutral light-grey backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__outfit-home-modest.png`**: Use the base portrait as reference. Same face, hair and build, now wearing a shapeless oversized beige cardigan over a plain long-sleeve top, no makeup, hair in the same tight ponytail, a small sport earbud clipped to one ear. Neutral relaxed expression, looking at the camera, 3/4 take, arms relaxed. Keep the same art style as reference, plain flat neutral light-grey backdrop. Clean confident linework, painterly soft shading, muted natural palette.

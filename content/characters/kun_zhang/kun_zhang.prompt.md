@@ -2,38 +2,48 @@
 name: Kun Zhang
 type: portrait
 size: 1024x1024
-source: content/characters/kun_zhang/kun_zhang.md
-target: `portrait_urls[].url` in `content/characters/char_kun_zhang.yaml`
-consumer: portrait
 aspect_ratio: 3:4
+source: content/characters/kun_zhang/kun_zhang.md
+target: `asset_paths.portrait` in `content/characters/kun_zhang/char_kun_zhang.yaml`
+consumer: portrait
 ---
 
 # Prompt: Kun Zhang
 
 ## Prompt (Draft)
-Slight Chinese man in his early 80s, slender build, dark brown eyes that are wise and cautious, calm and determined expression, steady, composed bearing, thin white hair, a traditional buttoned cotton shirt, small sport non-in-ear earbud clipped to earlobe. Weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait, un-idealized facial anatomy with realistic eye sizes, grounded human anatomy with natural asymmetry, clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, 8k.
+
+elderly Chinese man of about 75, slight slender build, deeply lined fair skin, dark brown eyes, silver-grey hair swept back from a high forehead, slate-blue cotton collared shirt, neutral relaxed expression, mouth closed, brows unfurrowed, eyes to camera, front-facing, arms relaxed at sides. plain flat neutral light-grey background. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
-Slight Chinese man in his early 80s, slender build, dark brown eyes that are wise and cautious, calm and determined expression, steady, composed bearing, thin white hair, a traditional buttoned cotton shirt, small sport non-in-ear earbud clipped to earlobe. Weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait, un-idealized facial anatomy with realistic eye sizes, grounded human anatomy with natural asymmetry, clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, 8k.
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of an elderly Chinese man of about 75. Slight, slender build, slightly stooped and thin, with deeply lined fair skin and dark brown eyes under heavy lids. Silver-grey hair swept back from a high forehead, short and neatly kept. Simple slate-blue cotton collared shirt with the top button open. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
---no neon, no androids, no clean backgrounds, no modern clothing
+
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, Latino features, African features, Northern European features
 
 ## Variations
 
-- [ ] Kun Zhang reviewing the situation, Born in China during a period of significant social and economic ch...
-- [ ] Kun Zhang in a tense moment, 
-- [ ] Kun Zhang caught in a pivotal scene, Born in China during a period of significant social and economic ch...
+- [ ] Tending potted plants in a small garden with a watering can in hand
+- [ ] Seated at a round table pouring tea for a younger relative
+- [ ] Walking slowly along a market street with his hands clasped behind his back
 
 ## Expression Variants
 
-- **`kun_zhang__default.png`**: Use the base portrait as reference. Calm determined resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`kun_zhang__contemplative.png`**: Use the base portrait as reference. Deep, measured thought, looking at the camera, 3/4 take. Eyes narrowed in consideration, lips pressed thoughtfully, aged features settling. Keep the same art style as reference, same earbud and cotton shirt, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders relaxed and level, arms hanging loosely at his sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`kun_zhang__calculating.png`**: Use the base portrait as reference. Cautious, sharp focus, looking intensely at the camera, 3/4 take. Eyes sharpened, brows drawn, jaw set. Years of judgment. Keep the same art style as reference, same earbud and cotton shirt, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__contemplative.png`**: Use the base portrait as reference. Eyes lowered and drifting to one side, lips pressed softly, aged features settling, looking at the camera, 3/4 take. Head tipped slightly, shoulders loose, hands clasped loosely at his waist with one thumb rubbing the other knuckle. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`kun_zhang__happy.png`**: Use the base portrait as reference. A gentle, warm smile, looking at the camera, 3/4 take. Eyes crinkling with warmth, lips curving up softly, age lines deepening kindly. Keep the same art style as reference, same earbud and cotton shirt, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__calculating.png`**: Use the base portrait as reference. Eyes sharpened beneath the heavy lids, brows drawn slightly, chin lowered, looking at the camera, 3/4 take. Head tilted a little back, one hand raised with the index finger resting along his jaw, the other arm held close to his side. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`kun_zhang__surprised.png`**: Use the base portrait as reference. A quiet, controlled startle, looking at the camera, 3/4 take. Eyes widened, brows lifted, lips parted. Composure intact. Keep the same art style as reference, same earbud and cotton shirt, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__happy.png`**: Use the base portrait as reference. A gentle warm smile, eyes crinkling, age lines deepening kindly, looking at the camera, 3/4 take. Shoulders softened and slightly lifted, one hand resting flat over his chest, the other open at his side. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
+- **`__surprised.png`**: Use the base portrait as reference. Eyes widened, brows lifted, lips parted, composure just intact, looking at the camera, 3/4 take. Head drawn back a little, shoulders raised, one hand lifted to chest height with the palm open and fingers apart. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Same face, hair and build as the base portrait; only the clothing changes. -->
+
+- **`__outfit-buttoned-pendant.png`**: Use the base portrait as reference. Same face, hair and build, neutral relaxed expression, looking at the camera, 3/4 take. He wears a plain cotton shirt buttoned to the top of the collar, with a small carved jade pendant on a thin cord visible at the collar. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.

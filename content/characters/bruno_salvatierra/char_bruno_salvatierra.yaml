@@ -1,0 +1,15 @@
+id: c58a2e41-7113-4ecc-894c-66c939388602
+name: Bruno Salvatierra
+title: Club Promoter's Son
+birth_year: 2058
+description: "A 19-year-old whose father promotes venues in Port. He brings VIP invitations and takes free access to the yacht. He talks loud and laughs along with Kiara at Peter Jr.'s expense."
+physical_description: "Broad-shouldered Latino young man of 19 with warm tan skin, a square jaw, dark brown eyes, dark brown hair swept back with gel, a loose cream silk shirt open at the collar, a thick gold chain and a confident, lazy grin."
+psychological_description: "Loud, easygoing and shallow; loyal to whoever is paying."
+background_and_role:
+  - "Hanger-on in Peter Jr.'s social circle"
+metadata:
+  type: human
+  role: npc
+  faction: independent
+  personality: opportunist
+lore_path: bruno_salvatierra.md
