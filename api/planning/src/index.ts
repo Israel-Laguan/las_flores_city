@@ -67,6 +67,7 @@ export type {
   FlagWrite,
 } from './edges/flag-tracking.js';
 export {
+  SCENE_DEF_ENTITY_TYPE,
   extractFlagUsage,
   extractFlagReadsFromCondition,
   extractFlagSetsFromEffects,

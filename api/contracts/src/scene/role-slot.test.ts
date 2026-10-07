@@ -1,6 +1,7 @@
 // api/contracts/src/scene/role-slot.test.ts
 // SC-302: role slots — uniqueness, nullable cast, closed position enum, name-only invariant.
 
+import { TRUE } from '../condition/expression.js';
 import {
   SLOT_POSITIONS,
   findDuplicateSlotIds,
@@ -21,6 +22,7 @@ function makeScene(role_slots: RoleSlot[]): SceneDef {
     items: [],
     dialogue_refs: [],
     role_slots,
+    availability: TRUE,
     priority: 0,
   };
 }

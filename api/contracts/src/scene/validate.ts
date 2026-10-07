@@ -31,8 +31,12 @@
 // SCENE_SLOT_DUPLICATE            error     role_slots[i].slot_id         slot_id repeats an earlier slot
 // SCENE_SLOT_CAST_INVALID         error     role_slots[i].cast            not null | a valid character slug
 // SCENE_SLOT_POSITION_INVALID     error     role_slots[i].position        not left | center | right
+// SCENE_AVAILABILITY_INVALID      error     availability                  not a valid ConditionExpr
+// SCENE_AVAILABILITY_UNKNOWN_FLAG warning   availability                  reads a flag outside `knownFlags`
+//                                                                         (only when `knownFlags` is given)
 // ────────────────────────────────────────────────────────────────────────────────────
 
+import { extractFlagSlugs, isConditionExpr } from '../condition/expression.js';
 import {
   createValidationResult,
   issuePath,
@@ -63,6 +67,8 @@ export const SCENE_ISSUE_CODES = {
   SCENE_SLOT_DUPLICATE: 'SCENE_SLOT_DUPLICATE',
   SCENE_SLOT_CAST_INVALID: 'SCENE_SLOT_CAST_INVALID',
   SCENE_SLOT_POSITION_INVALID: 'SCENE_SLOT_POSITION_INVALID',
+  SCENE_AVAILABILITY_INVALID: 'SCENE_AVAILABILITY_INVALID',
+  SCENE_AVAILABILITY_UNKNOWN_FLAG: 'SCENE_AVAILABILITY_UNKNOWN_FLAG',
 } as const;
 
 export type SceneIssueCode = (typeof SCENE_ISSUE_CODES)[keyof typeof SCENE_ISSUE_CODES];
@@ -194,10 +200,39 @@ function checkRoleSlots(sink: IssueSink, obj: Record<string, unknown>): void {
   });
 }
 
+function checkAvailability(sink: IssueSink, obj: Record<string, unknown>, known: ReadonlySet<string> | undefined): void {
+  if (!sink.require(obj, 'availability', 'availability')) return;
+  const cond = obj.availability;
+  if (!isConditionExpr(cond)) {
+    sink.add('SCENE_AVAILABILITY_INVALID', 'availability', `'availability' must be a valid condition expression`);
+    return;
+  }
+  if (known === undefined) return;
+  for (const slug of extractFlagSlugs(cond)) {
+    if (!known.has(slug)) {
+      sink.add(
+        'SCENE_AVAILABILITY_UNKNOWN_FLAG',
+        'availability',
+        `'availability' reads flag '${slug}', which is not in the flag registry`,
+        'warning',
+      );
+    }
+  }
+}
+
+export interface ValidateSceneOptions {
+  /**
+   * Registered flag slugs. When given, availability flags outside it produce a
+   * SCENE_AVAILABILITY_UNKNOWN_FLAG warning (never an error — tier-2, SC-604, decides
+   * what an unknown flag means). Omitted = no registry check.
+   */
+  knownFlags?: ReadonlySet<string> | readonly string[];
+}
+
 /**
  * Validates an untrusted value as a SceneDef (tier 1, shape only). Never throws.
  */
-export function validateScene(input: unknown): SceneValidationResult {
+export function validateScene(input: unknown, options: ValidateSceneOptions = {}): SceneValidationResult {
   const sink = new IssueSink();
   if (!isPlainObject(input)) {
     sink.add('SCENE_NOT_OBJECT', '', 'scene must be an object');
@@ -208,5 +243,6 @@ export function validateScene(input: unknown): SceneValidationResult {
   checkRefList(sink, input, 'items');
   checkRefList(sink, input, 'dialogue_refs');
   checkRoleSlots(sink, input);
+  checkAvailability(sink, input, options.knownFlags === undefined ? undefined : new Set(options.knownFlags));
   return createValidationResult(sink.issues);
 }

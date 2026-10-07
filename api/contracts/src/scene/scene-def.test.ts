@@ -1,7 +1,9 @@
 // api/contracts/src/scene/scene-def.test.ts
 // SC-301a: SceneDef core contract — round-trip, stable bytes, strictness.
 
+import { and, flag, not, TRUE } from '../condition/expression.js';
 import {
+  createSceneDef,
   SCENE_SCHEMA_VERSION,
   SCENE_TIMES,
   InvalidSceneDefError,
@@ -25,6 +27,7 @@ function makeScene(overrides: Partial<SceneDef> = {}): SceneDef {
     items: ['umbrella'],
     dialogue_refs: ['dialogue_b', 'dialogue_a'],
     role_slots: [{ slot_id: 'host', cast: 'valentina_quan', position: 'center' }],
+    availability: TRUE,
     priority: 0,
     ...overrides,
   };
@@ -84,62 +87,94 @@ describe('SceneDef contract (SC-301a)', () => {
     expect(json.weather).toBeNull();
     expect(json.time).toBeNull();
   });
+});
 
-  describe('fromJSON strictness', () => {
-    const wire = () => sceneDefToJSON(makeScene()) as Record<string, unknown>;
-
-    test.each([
-      ['null', null],
-      ['a string', 'scene'],
-      ['an array', []],
-    ])('rejects %s', (_name, value) => {
-      expect(() => sceneDefFromJSON(value)).toThrow(InvalidSceneDefError);
+describe('SceneDef availability (SC-310)', () => {
+  test('createSceneDef defaults availability to TRUE and the optional fields to empty', () => {
+    const scene = createSceneDef({
+      id: 'c3000000-0000-4000-8000-000000000009',
+      slug: 'minimal',
+      title: 't',
+      description: 'd',
+      location: LOCATION_ID,
     });
-
-    test('rejects an unknown top-level key', () => {
-      expect(() => sceneDefFromJSON({ ...wire(), mood: 'tense' })).toThrow(/unknown field 'mood'/);
+    expect(scene).toMatchObject({
+      availability: { type: 'true' },
+      time: null,
+      weather: null,
+      items: [],
+      dialogue_refs: [],
+      role_slots: [],
+      priority: 0,
     });
+    expect(sceneDefFromJSON(sceneDefToJSON(scene))).toEqual(scene);
+  });
 
-    test('rejects a missing key', () => {
-      const w = wire();
-      delete w.title;
-      expect(() => sceneDefFromJSON(w)).toThrow(/title/);
-    });
+  test('a compound condition round-trips through the existing condition serializer', () => {
+    const scene = makeScene({ availability: and([flag('a', true), not(flag('b', false))]) });
+    expect(sceneDefFromJSON(JSON.parse(stringifySceneDef(scene)))).toEqual(scene);
+  });
 
-    test('rejects a schema_version mismatch', () => {
-      expect(() => sceneDefFromJSON({ ...wire(), schema_version: SCENE_SCHEMA_VERSION + 1 })).toThrow(
-        /schema_version/,
-      );
-    });
+  test('rejects an invalid condition', () => {
+    const w = sceneDefToJSON(makeScene()) as Record<string, unknown>;
+    expect(() => sceneDefFromJSON({ ...w, availability: { type: 'maybe' } })).toThrow(/availability/);
+  });
+});
 
-    test('rejects an invalid time', () => {
-      expect(() => sceneDefFromJSON({ ...wire(), time: 'dawn' })).toThrow(/time/);
-    });
+describe('sceneDefFromJSON strictness', () => {
+  const wire = () => sceneDefToJSON(makeScene()) as Record<string, unknown>;
 
-    test('rejects an invalid weather tag', () => {
-      expect(() => sceneDefFromJSON({ ...wire(), weather: 'hail' })).toThrow(/weather/);
-    });
+  test.each([
+    ['null', null],
+    ['a string', 'scene'],
+    ['an array', []],
+  ])('rejects %s', (_name, value) => {
+    expect(() => sceneDefFromJSON(value)).toThrow(InvalidSceneDefError);
+  });
 
-    test('rejects undefined where null is required', () => {
-      const w = wire();
-      w.weather = undefined;
-      expect(() => sceneDefFromJSON(w)).toThrow(/weather/);
-    });
+  test('rejects an unknown top-level key', () => {
+    expect(() => sceneDefFromJSON({ ...wire(), mood: 'tense' })).toThrow(/unknown field 'mood'/);
+  });
 
-    test('rejects a non-integer priority', () => {
-      expect(() => sceneDefFromJSON({ ...wire(), priority: 1.5 })).toThrow(/priority/);
-    });
+  test('rejects a missing key', () => {
+    const w = wire();
+    delete w.title;
+    expect(() => sceneDefFromJSON(w)).toThrow(/title/);
+  });
 
-    test('rejects a non-string array member', () => {
-      expect(() => sceneDefFromJSON({ ...wire(), items: ['ok', 3] })).toThrow(/items/);
-    });
+  test('rejects a schema_version mismatch', () => {
+    expect(() => sceneDefFromJSON({ ...wire(), schema_version: SCENE_SCHEMA_VERSION + 1 })).toThrow(
+      /schema_version/,
+    );
+  });
 
-    test('rejects an invalid slug', () => {
-      expect(() => sceneDefFromJSON({ ...wire(), slug: 'has space' })).toThrow(/slug/);
-    });
+  test('rejects an invalid time', () => {
+    expect(() => sceneDefFromJSON({ ...wire(), time: 'dawn' })).toThrow(/time/);
+  });
 
-    test('rejects a non-UUID location', () => {
-      expect(() => sceneDefFromJSON({ ...wire(), location: 'central_plaza' })).toThrow(/location/);
-    });
+  test('rejects an invalid weather tag', () => {
+    expect(() => sceneDefFromJSON({ ...wire(), weather: 'hail' })).toThrow(/weather/);
+  });
+
+  test('rejects undefined where null is required', () => {
+    const w = wire();
+    w.weather = undefined;
+    expect(() => sceneDefFromJSON(w)).toThrow(/weather/);
+  });
+
+  test('rejects a non-integer priority', () => {
+    expect(() => sceneDefFromJSON({ ...wire(), priority: 1.5 })).toThrow(/priority/);
+  });
+
+  test('rejects a non-string array member', () => {
+    expect(() => sceneDefFromJSON({ ...wire(), items: ['ok', 3] })).toThrow(/items/);
+  });
+
+  test('rejects an invalid slug', () => {
+    expect(() => sceneDefFromJSON({ ...wire(), slug: 'has space' })).toThrow(/slug/);
+  });
+
+  test('rejects a non-UUID location', () => {
+    expect(() => sceneDefFromJSON({ ...wire(), location: 'central_plaza' })).toThrow(/location/);
   });
 });

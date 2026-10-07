@@ -22,6 +22,7 @@ export function isSceneTime(value: unknown): value is SceneTime {
 
 /** Every key of the serialized form, in the sorted order `toJSON` emits them. */
 export const SCENE_JSON_KEYS = [
+  'availability',
   'description',
   'dialogue_refs',
   'id',

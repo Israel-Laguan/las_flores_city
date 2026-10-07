@@ -1,6 +1,7 @@
 // api/contracts/src/scene/validate.test.ts
 // SC-301b: validateScene — one table-driven case per issue code, plus one-pass collection.
 
+import { flag, TRUE } from '../condition/expression.js';
 import { SCENE_ISSUE_CODES, validateScene } from './validate.js';
 import { InvalidSceneDefError, sceneDefFromJSON, sceneDefToJSON, type SceneDef } from './scene-def.js';
 
@@ -16,6 +17,7 @@ const valid = (): Record<string, unknown> =>
     items: ['umbrella'],
     dialogue_refs: ['dialogue_a'],
     role_slots: [{ slot_id: 'valentina', cast: 'valentina_quan', position: 'left' }],
+    availability: flag('vq_gave_space', true),
     priority: 0,
   } satisfies SceneDef);
 
@@ -25,7 +27,13 @@ const mutate = (fn: (o: Record<string, any>) => void) => () => {
   return o;
 };
 
-type Case = [code: string, path: string, severity: 'error' | 'warning' | 'hint', input: () => unknown];
+type Case = [
+  code: string,
+  path: string,
+  severity: 'error' | 'warning' | 'hint',
+  input: () => unknown,
+  options?: { knownFlags: readonly string[] },
+];
 
 const CASES: Case[] = [
   ['SCENE_NOT_OBJECT', '', 'error', () => 'scene'],
@@ -55,6 +63,21 @@ const CASES: Case[] = [
   ],
   ['SCENE_SLOT_CAST_INVALID', 'role_slots[0].cast', 'error', mutate((o) => (o.role_slots[0].cast = 'no good'))],
   ['SCENE_SLOT_POSITION_INVALID', 'role_slots[0].position', 'error', mutate((o) => (o.role_slots[0].position = 'top'))],
+  ['SCENE_FIELD_MISSING', 'availability', 'error', mutate((o) => delete o.availability)],
+  ['SCENE_AVAILABILITY_INVALID', 'availability', 'error', mutate((o) => (o.availability = { type: 'maybe' }))],
+  [
+    'SCENE_AVAILABILITY_INVALID',
+    'availability',
+    'error',
+    mutate((o) => (o.availability = { type: 'flag', flag: 'has key', expected: true })),
+  ],
+  [
+    'SCENE_AVAILABILITY_UNKNOWN_FLAG',
+    'availability',
+    'warning',
+    mutate((o) => (o.availability = { type: 'flag', flag: 'vq_typo', expected: true })),
+    { knownFlags: ['vq_gave_space'] },
+  ],
 ];
 
 describe('validateScene (SC-301b)', () => {
@@ -62,8 +85,10 @@ describe('validateScene (SC-301b)', () => {
     expect(validateScene(valid())).toEqual({ valid: true, issues: [] });
   });
 
-  test.each(CASES)('%s at %p (%s)', (code, path, severity, input) => {
-    const { issues, valid: ok } = validateScene(input());
+  // Rest args: jest-each reads a 5th named parameter as a `done` callback when rows have 4 entries.
+  test.each(CASES)('%s at %p (%s)', (...row: Case) => {
+    const [code, path, severity, input, options] = row;
+    const { issues, valid: ok } = validateScene(input(), options);
     expect(issues).toContainEqual(expect.objectContaining({ code, path, severity }));
     const hit = issues.find((i) => i.code === code && i.path === path);
     expect(typeof hit?.message).toBe('string');
@@ -82,6 +107,19 @@ describe('validateScene (SC-301b)', () => {
     for (const [key, code] of Object.entries(SCENE_ISSUE_CODES)) {
       expect(code).toBe(key);
     }
+  });
+
+  test('unknown-flag warning is opt-in and never fires for known flags or without a registry', () => {
+    const input = valid();
+    expect(validateScene(input).issues).toEqual([]);
+    expect(validateScene(input, { knownFlags: ['vq_gave_space'] }).issues).toEqual([]);
+    expect(validateScene(input, { knownFlags: new Set(['other']) }).issues.map((i) => i.code)).toEqual([
+      'SCENE_AVAILABILITY_UNKNOWN_FLAG',
+    ]);
+  });
+
+  test('TRUE availability references no flags', () => {
+    expect(validateScene(sceneDefToJSON({ ...(sceneDefFromJSON(valid())), availability: TRUE }), { knownFlags: [] }).issues).toEqual([]);
   });
 
   test('collects all issues in one pass (no first-error exit)', () => {

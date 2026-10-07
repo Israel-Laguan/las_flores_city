@@ -11,6 +11,8 @@
 // Runtime responsibility (SC-S13): `availability` (SC-310) is evaluated per player at
 // runtime with the shared `evaluate`; overlay ordering/conflicts are settled at compile.
 
+import type { ConditionExpr } from '../condition/expression.js';
+import { TRUE, fromJSON as conditionFromJSON, toJSON as conditionToJSON } from '../condition/expression.js';
 import type { WeatherTag } from '../weather/weather-tag.js';
 import type { ValidationIssue } from '../validation/issue.js';
 import { roleSlotToJSON, type RoleSlot } from './role-slot.js';
@@ -47,8 +49,35 @@ export interface SceneDef {
   dialogue_refs: string[];
   /** Cast positions (SC-302). `slot_id` is unique within the scene. */
   role_slots: RoleSlot[];
+  /**
+   * Gate on per-player flag state (SC-310), in the SAME grammar as dialogue and
+   * missions — no second grammar. `TRUE` = always available. Evaluated at runtime.
+   */
+  availability: ConditionExpr;
   /** Overlay precedence; base scenes use 0. */
   priority: number;
+}
+
+/** Input to `createSceneDef`: only identity, text and location are required. */
+export type SceneDefInput = Pick<SceneDef, 'id' | 'slug' | 'title' | 'description' | 'location'> &
+  Partial<Omit<SceneDef, 'id' | 'slug' | 'title' | 'description' | 'location'>>;
+
+/** Builds a SceneDef, defaulting the optional fields (availability = TRUE, priority = 0). */
+export function createSceneDef(input: SceneDefInput): SceneDef {
+  return {
+    id: input.id,
+    slug: input.slug,
+    title: input.title,
+    description: input.description,
+    location: input.location,
+    time: input.time ?? null,
+    weather: input.weather ?? null,
+    items: input.items ?? [],
+    dialogue_refs: input.dialogue_refs ?? [],
+    role_slots: input.role_slots ?? [],
+    availability: input.availability ?? TRUE,
+    priority: input.priority ?? 0,
+  };
 }
 
 /** Thrown by `sceneDefFromJSON`; `issues` holds every error found (see `validateScene`). */
@@ -68,6 +97,7 @@ export class InvalidSceneDefError extends Error {
  */
 export function sceneDefToJSON(scene: SceneDef): Record<string, unknown> {
   return {
+    availability: conditionToJSON(scene.availability),
     description: scene.description,
     dialogue_refs: [...scene.dialogue_refs],
     id: scene.id,
@@ -112,6 +142,7 @@ export function sceneDefFromJSON(value: unknown): SceneDef {
     items: [...obj.items],
     dialogue_refs: [...obj.dialogue_refs],
     role_slots: obj.role_slots.map((s: RoleSlot) => ({ slot_id: s.slot_id, cast: s.cast, position: s.position })),
+    availability: conditionFromJSON(obj.availability),
     priority: obj.priority,
   };
 }
