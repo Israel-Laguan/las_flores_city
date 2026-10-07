@@ -271,7 +271,7 @@ characterData.birth_year != null) {
   if (!characterData.physical_description) missingFields.push('physical_description');
   if (!characterData.psychological_description) missingFields.push('psychological_description');
   if (!characterData.background_and_role?.length) missingFields.push('background_and_role');
-if (characterData.birth_year == null) missingFields.push('birth_year');
+  if (characterData.birth_year == null) missingFields.push('birth_year');
   if (missingFields.length > 0) {
     console.log(`  📝 Needs enrichment (missing: ${missingFields.join(', ')}): ${characterData.name}`);
   }
@@ -316,7 +316,7 @@ if (characterData.birth_year == null) missingFields.push('birth_year');
     // Update character data with enrichment, PRESERVING existing values
     const enrichedData = {
       ...characterData,
-physical_description: characterData.physical_description || enrichment.physical_description || undefined,
+      physical_description: characterData.physical_description || enrichment.physical_description || undefined,
       psychological_description: characterData.psychological_description || enrichment.psychological_description || undefined,
       background_and_role: characterData.background_and_role?.length
         ? characterData.background_and_role
@@ -331,7 +331,6 @@ physical_description: characterData.physical_description || enrichment.physical_
       console.error(`  ❌ Enriched data failed schema validation for ${characterData.name}: ${detail}`);
       return { success: false, character: characterData.name, folder: characterFolder, error: `Schema validation failed: ${detail}` };
     }
-}
     // Write back to YAML file
     const writeSuccess = writeYamlFile(yamlPath, enrichedData);
     
