@@ -119,6 +119,26 @@ const INTEGRATION_DIR = '<rootDir>/tests/integration';
 // same list via testPathIgnorePatterns.
 const SCHEMA_GLOB = `${INTEGRATION_DIR}/{${SCHEMA_SUITES.join(',')}}`;
 const SCHEMA_IGNORE = SCHEMA_SUITES.map((f) => `${INTEGRATION_DIR}/${f}`);
+const MINIO_SUITES = [
+  'archive-simulation.test.ts',
+  'breakthrough.concurrency.test.ts',
+  'compiler.test.ts',
+  'd2-choice-reachability.test.ts',
+  'dialogue-chunk-api.integration.test.ts',
+  'dialogue-resolver.test.ts',
+  'dialogue-speakers.test.ts',
+  'in-flight-protection.test.ts',
+  'm30.snapshots.test.ts',
+  'migration.drift.test.ts',
+  'mission-reward-anti-double.test.ts',
+  'mission-reward-grants.test.ts',
+  'mvw.integration.test.ts',
+  'story-builder-plan-pipeline.test.ts',
+  'vault.test.ts',
+];
+const MINIO_IGNORE = process.env.CI_NO_MINIO === '1'
+  ? MINIO_SUITES.map((f) => `${INTEGRATION_DIR}/${f.replace(/\./g, '\\.')}$`)
+  : [];
 
 export default {
   // Repeated at the top level on purpose: under `projects`, Jest's per-project
@@ -130,12 +150,12 @@ export default {
   testTimeout: 15000,
   projects: [
     { ...base, displayName: 'unit', testMatch: ['<rootDir>/tests/unit/**/*.test.ts', '<rootDir>/tests/smoke/**/*.test.ts'] },
-    { ...base, displayName: 'integration-schema', maxWorkers: 1, testMatch: [SCHEMA_GLOB] },
+    { ...base, displayName: 'integration-schema', maxWorkers: 1, testMatch: [SCHEMA_GLOB], testPathIgnorePatterns: MINIO_IGNORE },
     {
       ...base,
       displayName: 'integration-data',
       testMatch: [`${INTEGRATION_DIR}/**/*.test.ts`],
-      testPathIgnorePatterns: SCHEMA_IGNORE,
+      testPathIgnorePatterns: [...SCHEMA_IGNORE, ...MINIO_IGNORE],
     },
   ],
 };

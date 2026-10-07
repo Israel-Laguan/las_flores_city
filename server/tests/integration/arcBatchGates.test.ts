@@ -1,6 +1,7 @@
 import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 import { queryOLTP, closeConnections, closeRedis } from '@las-flores/infra';
 import { filterChoices } from '../../src/routes/dialogue-helpers';
+import { ensureCharacterStubs, removeCharacterStubs } from '../helpers/characterStubs';
 import fs from 'fs';
 import path from 'path';
 import * as yaml from 'js-yaml';
@@ -30,6 +31,9 @@ const LIN_XIU_ID = '33333333-4444-4555-8666-777777770001';
 
 const SOFIA_ID = 'c3d4e5f6-a7b8-4012-8def-123456789012';
 const VANCE_ID = '3b2b8000-e29b-41d4-a716-446655440001';
+
+// Stub rows created by this suite (CI has no content-migrated characters); removed in afterAll.
+let createdCharacterIds: string[] = [];
 
 const CONTENT_DIR = path.resolve(process.cwd(), '..', 'content');
 
@@ -63,6 +67,7 @@ async function seedRelationship(
 }
 
 beforeAll(async () => {
+  createdCharacterIds = await ensureCharacterStubs([CAMILA_ID, ANA_ID, LIN_XIU_ID, SOFIA_ID, VANCE_ID]);
   await queryOLTP(
     `INSERT INTO users (id, email, username, display_name)
      VALUES ($1, 'arc_gates_test@test.com', 'arc_gates_player', 'Arc Gates Player')
@@ -82,6 +87,7 @@ afterAll(async () => {
   await queryOLTP('DELETE FROM user_relationships WHERE user_id = $1', [TEST_USER_ID]);
   await queryOLTP('DELETE FROM player_states WHERE user_id = $1', [TEST_USER_ID]);
   await queryOLTP('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);
+  await removeCharacterStubs(createdCharacterIds);
   await closeConnections();
   await closeRedis();
 });

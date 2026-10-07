@@ -6,6 +6,7 @@ import {
   derivePosture,
 } from '@las-flores/shared';
 import { filterChoices } from '../../src/routes/dialogue-helpers';
+import { ensureCharacterStubs, removeCharacterStubs } from '../helpers/characterStubs';
 import fs from 'fs';
 import path from 'path';
 import * as yaml from 'js-yaml';
@@ -32,6 +33,9 @@ import * as yaml from 'js-yaml';
 // Dedicated test user UUID — private to this test file (M48).
 const TEST_USER_ID = 'e4800000-0000-4000-8000-000000048001';
 const VQ_CHARACTER_ID = '670eea6f-3983-4d5a-8195-b08be6c81661';
+
+// Stub row created by this suite (CI has no content-migrated characters); removed in afterAll.
+let createdCharacterIds: string[] = [];
 
 const CONTENT_DIR = path.resolve(process.cwd(), '..', 'content');
 
@@ -122,6 +126,7 @@ function choiceById(tree: any, nodeId: string, choiceId: string): any {
 }
 
 beforeAll(async () => {
+  createdCharacterIds = await ensureCharacterStubs([VQ_CHARACTER_ID]);
   await queryOLTP(
     `INSERT INTO users (id, email, username, display_name)
      VALUES ($1, 'vq_gates_test@test.com', 'vq_gates_player', 'VQ Gates Player')
@@ -141,6 +146,7 @@ afterAll(async () => {
   await queryOLTP('DELETE FROM user_relationships WHERE user_id = $1', [TEST_USER_ID]);
   await queryOLTP('DELETE FROM player_states WHERE user_id = $1', [TEST_USER_ID]);
   await queryOLTP('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);
+  await removeCharacterStubs(createdCharacterIds);
   await closeConnections();
   await closeRedis();
 });

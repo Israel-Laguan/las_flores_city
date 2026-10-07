@@ -3,25 +3,51 @@ import { sanitizeText } from './validate-xss.js';
 import { normalizeUuid } from './uuid-utils.js';
 import { publishDialogueTree } from '../services/ContentPublishService.js';
 
-export async function upsertCharacter(data: any): Promise<string> {
-  const result = await queryOLTP(
-    `INSERT INTO characters (id, name, title, description, avatar_url, portrait_urls, atlas_url, available_dialogues, metadata)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-      ON CONFLICT (id) DO UPDATE SET
-        name = EXCLUDED.name,
-        title = EXCLUDED.title,
-        description = EXCLUDED.description,
-        avatar_url = EXCLUDED.avatar_url,
-        portrait_urls = EXCLUDED.portrait_urls,
-        atlas_url = EXCLUDED.atlas_url,
-        available_dialogues = EXCLUDED.available_dialogues,
-        metadata = EXCLUDED.metadata,
-        updated_at = NOW()
-      RETURNING id`,
-    [data.id, data.name, data.title || null, sanitizeText(data.description), data.avatar_url || null, JSON.stringify(data.portrait_urls || []), data.atlas_url || null,
-     data.available_dialogues?.length > 0 ? `{${data.available_dialogues.join(',')}}` : '{}', JSON.stringify(data.metadata || {})]
-  );
-  return result.rows[0].id;
+export async function upsertCharacter(data: any, slug?: string): Promise<string> {
+  try {
+    const result = await queryOLTP(
+      `INSERT INTO characters (id, name, title, description, physical_description, psychological_description, background_and_role, birth_year, avatar_url, portrait_urls, atlas_url, available_dialogues, metadata, slug)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+        ON CONFLICT (id) DO UPDATE SET
+          name = EXCLUDED.name,
+          title = EXCLUDED.title,
+          description = EXCLUDED.description,
+          physical_description = EXCLUDED.physical_description,
+          psychological_description = EXCLUDED.psychological_description,
+          background_and_role = EXCLUDED.background_and_role,
+          birth_year = EXCLUDED.birth_year,
+          avatar_url = EXCLUDED.avatar_url,
+          portrait_urls = EXCLUDED.portrait_urls,
+          atlas_url = EXCLUDED.atlas_url,
+          available_dialogues = EXCLUDED.available_dialogues,
+          metadata = EXCLUDED.metadata,
+          slug = COALESCE(EXCLUDED.slug, characters.slug),
+          updated_at = NOW()
+        RETURNING id`,
+      [
+        data.id,
+        data.name,
+        data.title || null,
+        sanitizeText(data.description),
+        data.physical_description ? sanitizeText(data.physical_description) : null,
+        data.psychological_description ? sanitizeText(data.psychological_description) : null,
+        data.background_and_role?.length > 0 ? data.background_and_role : null,
+        data.birth_year ?? null,
+        data.avatar_url || null,
+        JSON.stringify(data.portrait_urls || []),
+        data.atlas_url || null,
+        data.available_dialogues?.length > 0 ? `{${data.available_dialogues.join(',')}}` : '{}',
+        JSON.stringify(data.metadata || {}),
+        slug || null
+      ]
+    );
+    return result.rows[0].id;
+  } catch (error: any) {
+    if (error?.code === '23505') {
+      throw new Error(`Duplicate character slug "${slug}"`);
+    }
+    throw error;
+  }
 }
 
 export async function upsertDialogueTree(data: any): Promise<string> {

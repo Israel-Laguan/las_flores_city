@@ -1,0 +1,99 @@
+{
+  "name": "exclusive_conflict_and_near_miss",
+  "description": "SC-313 golden 2 (SC-304 / SC-S13): two equal-priority overlays setting weather. With independent flags they can both apply, so compile fails with SCENE_EXCLUSIVE_CONFLICT; the near-miss narrows one condition (gave_space AND NOT pushed_away) so they never co-apply and compile passes.",
+  "district_weather": "overcast",
+  "base": {
+    "availability": { "type": "true" },
+    "description": "The public concourse at the airport gate.",
+    "dialogue_refs": ["dialogue_vq_endings"],
+    "id": "c3000000-0000-4000-8000-0000000000f2",
+    "items": [],
+    "location": "f007b9f2-7e50-48ee-9133-4ba2cb27af12",
+    "priority": 0,
+    "role_slots": [],
+    "schema_version": 1,
+    "slug": "vq_airport_gate",
+    "time": null,
+    "title": "Airport gate",
+    "weather": null
+  },
+  "cases": [
+    {
+      "name": "conflict",
+      "overlays": [
+        {
+          "availability": { "type": "flag", "flag": "vq_gave_space", "expected": true },
+          "base_scene_slug": "vq_airport_gate",
+          "ops": [{ "op": "set_weather", "weather": "clear" }],
+          "priority": 10,
+          "schema_version": 1,
+          "slug": "vq_gave_space_clear"
+        },
+        {
+          "availability": { "type": "flag", "flag": "vq_pushed_away", "expected": true },
+          "base_scene_slug": "vq_airport_gate",
+          "ops": [{ "op": "set_weather", "weather": "rain" }],
+          "priority": 10,
+          "schema_version": 1,
+          "slug": "vq_pushed_away_rain"
+        }
+      ],
+      "expect": {
+        "error_codes": ["SCENE_EXCLUSIVE_CONFLICT"],
+        "report": {
+          "conflicts": [
+            {
+              "code": "SCENE_EXCLUSIVE_CONFLICT",
+              "overlays": ["vq_gave_space_clear", "vq_pushed_away_rain"],
+              "priority": 10,
+              "property": "weather",
+              "severity": "error",
+              "values": ["clear", "rain"],
+              "witness": ["vq_gave_space", "vq_pushed_away"]
+            }
+          ],
+          "scene_slug": "vq_airport_gate",
+          "status": "failed"
+        }
+      }
+    },
+    {
+      "name": "near_miss",
+      "overlays": [
+        {
+          "availability": {
+            "type": "and",
+            "exprs": [
+              { "type": "flag", "flag": "vq_gave_space", "expected": true },
+              { "type": "not", "expr": { "type": "flag", "flag": "vq_pushed_away", "expected": true } }
+            ]
+          },
+          "base_scene_slug": "vq_airport_gate",
+          "ops": [{ "op": "set_weather", "weather": "clear" }],
+          "priority": 10,
+          "schema_version": 1,
+          "slug": "vq_gave_space_clear"
+        },
+        {
+          "availability": { "type": "flag", "flag": "vq_pushed_away", "expected": true },
+          "base_scene_slug": "vq_airport_gate",
+          "ops": [{ "op": "set_weather", "weather": "rain" }],
+          "priority": 10,
+          "schema_version": 1,
+          "slug": "vq_pushed_away_rain"
+        }
+      ],
+      "expect": {
+        "error_codes": [],
+        "report": { "conflicts": [], "scene_slug": "vq_airport_gate", "status": "ok" },
+        "layers": ["vq_gave_space_clear", "vq_pushed_away_rain"],
+        "flags": ["vq_gave_space", "vq_pushed_away"],
+        "players": [
+          { "flags": ["vq_gave_space"], "active_layers": ["vq_gave_space_clear"], "weather": { "weather": "clear", "source": "overlay:vq_gave_space_clear" } },
+          { "flags": ["vq_gave_space", "vq_pushed_away"], "active_layers": ["vq_pushed_away_rain"], "weather": { "weather": "rain", "source": "overlay:vq_pushed_away_rain" } },
+          { "flags": [], "active_layers": [], "weather": { "weather": "overcast", "source": "district" } }
+        ]
+      }
+    }
+  ]
+}

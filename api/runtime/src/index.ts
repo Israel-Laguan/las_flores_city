@@ -50,3 +50,8 @@ export {
 
 // Legacy placeholder
 export const runtimeReady = true as const;
+
+// Scene resolution (SC-312): select + apply a compiled scene's active layers per player.
+export type { ComposedScene, ConditionalLayer, PlayerScene, ResolvedScene } from '@las-flores/api-contracts';
+export { resolveSceneForPlayer, selectActiveOverlays } from '@las-flores/api-contracts';
+export { resolvePlayerScene } from './resolve/scene.js';

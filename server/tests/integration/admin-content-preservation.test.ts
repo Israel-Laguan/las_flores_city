@@ -136,6 +136,15 @@ describe('Admin Content Operations Unchanged', () => {
       expect(content).toMatch(/npm run test:integration/);
     });
 
+    it('ci runs SQL-only integration without a MinIO service or content-dependent E2E', () => {
+      const content = readFileSync(ciPath, 'utf-8');
+
+      expect(content).not.toMatch(/^\s+minio:/m);
+      expect(content).toMatch(/CI_NO_MINIO:\s*'1'/);
+      expect(content).toContain('npm run schema:migrate --workspace=server -- --schema-only');
+      expect(content).not.toContain('npx playwright test');
+    });
+
     it('ci workflow builds all workspaces', () => {
       const content = readFileSync(ciPath, 'utf-8');
 

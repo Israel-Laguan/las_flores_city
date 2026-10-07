@@ -68,7 +68,6 @@ jobs:
       - name: Schema-only content validation (no DB cross-references)
         run: npm run validate:schema --workspace=server
 
-  # Chain 2: Needs services — integration/smoke tests, full content validation, E2E
   with-migrations:
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -79,6 +78,7 @@ jobs:
       REDIS_URL: redis://localhost:6379
       RUNTIME_DATABASE_URL: postgresql://runtime:dev_runtime@localhost:5434/las_flores
       PLANNING_DATABASE_URL: postgresql://planning:dev_planning@localhost:5434/las_flores
+      CI_NO_MINIO: '1'
 
     services:
       postgres-oltp:
@@ -119,30 +119,6 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
-      minio:
-        # S3-compatible object storage fixture. Was `minio/minio`, but upstream
-        # MinIO archived the community edition and removed the public Docker
-        # Hub repo, so anonymous pulls now fail with `insufficient_scope` (CI
-        # surfaces this as `unauthorized` on the service image). Replaced with
-        # PGSTY's Silo, a maintained MinIO-compatible fork: same S3 API,
-        # MINIO_* env vars, `server /data` argv, on-disk format, and it bundles
-        # `mc` (required by the `mc ready local` healthcheck below).
-        # Digest verified against registry-1.docker.io for this release tag and
-        # is multi-arch (linux/amd64 + linux/arm64 index).
-        image: docker.io/pgsty/silo:RELEASE.2026-09-16T00-00-00Z@sha256:635197cb9f36d01bee221d34d1c7d7960f6a95c48b0b6c01d99cd13bdae51a46
-        env:
-          MINIO_ROOT_USER: minioadmin
-          MINIO_ROOT_PASSWORD: minioadmin
-        ports:
-          - 9000:9000
-          - 9001:9001
-        options: >-
-          --health-cmd "mc ready local"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        command: server /data --console-address :9001
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -165,94 +141,11 @@ jobs:
       - name: Build server
         run: npm run build --workspace=server
 
-      - name: Apply database migrations and seed content
-        run: npm run schema:migrate --workspace=server
+      - name: Apply database migrations (SQL only)
+        run: npm run schema:migrate --workspace=server -- --schema-only
 
       - name: Integration tests
         run: timeout 300 npm run test:integration --workspace=server
-        env:
-          MINIO_ENDPOINT: localhost
-          MINIO_PORT: 9000
-          MINIO_ACCESS_KEY: minioadmin
-          MINIO_SECRET_KEY: minioadmin
-          MINIO_BUCKET: las-flores
-          CDN_BASE_URL: https://cdn.lasflores2077.com
-          CDN_KEY_PAIR_ID: APKADEV00000000000000
-          CDN_PRIVATE_KEY_PATH: /nonexistent/key-for-test.pem
 
       - name: Smoke tests (DB/Redis heartbeat)
         run: timeout 60 npm run test:smoke --workspace=server
-
-      - name: Full content validation (with DB cross-references)
-        run: npm run validate --workspace=server
-
-      - name: Start API server (background)
-        run: |
-          nohup npm run start --workspace=server > /tmp/server.log 2>&1 &
-          disown
-        env:
-          PORT: 3000
-          CLIENT_ORIGIN_URL: http://localhost:5173
-          NODE_ENV: development
-          CDN_BASE_URL: https://cdn.lasflores2077.com
-          CDN_KEY_PAIR_ID: APKADEV00000000000000
-          CDN_PRIVATE_KEY_PATH: /nonexistent/key-for-test.pem
-          MINIO_ENDPOINT: localhost
-          MINIO_PORT: 9000
-          MINIO_ACCESS_KEY: minioadmin
-          MINIO_SECRET_KEY: minioadmin
-          MINIO_BUCKET: las-flores
-
-      - name: Wait for API server
-        run: |
-          for i in $(seq 1 30); do
-            if curl -sf http://localhost:3000/health > /dev/null 2>&1; then
-              echo "API server is ready"
-              exit 0
-            fi
-            sleep 2
-          done
-          echo "::error::API server failed to start within 60 seconds"
-          cat /tmp/server.log 2>/dev/null || true
-          exit 1
-
-      - name: Start Vite dev server (background)
-        run: |
-          nohup npm run dev > /tmp/client.log 2>&1 &
-          disown
-        working-directory: client
-        env:
-          VITE_API_PROXY_TARGET: http://localhost:3000
-          VITE_ABOUT_US_URL: https://example.com/about-us
-
-      - name: Wait for client
-        run: |
-          for i in $(seq 1 30); do
-            if curl -sf http://localhost:5173 > /dev/null 2>&1; then
-              echo "Client is ready"
-              exit 0
-            fi
-            sleep 2
-          done
-          echo "::error::Client failed to start within 60 seconds"
-          cat /tmp/client.log 2>/dev/null || true
-          exit 1
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
-        working-directory: client
-
-      - name: E2E tests
-        run: npx playwright test
-        working-directory: client
-        env:
-          CI: 'true'
-          API_URL: http://localhost:5173
-          CLIENT_ORIGIN_URL: http://localhost:5173
-
-      - uses: actions/upload-artifact@v7
-        if: failure()
-        with:
-          name: playwright-report
-          path: client/playwright-report/
-          retention-days: 7

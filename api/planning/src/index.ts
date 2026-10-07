@@ -61,6 +61,43 @@ export {
   sceneDefContentHash,
 } from './canon/scene-def-repository.js';
 
+// Scene composition (SC-303b)
+export type {
+  ComposedScene,
+  ConditionalLayer,
+  Provenance,
+  ResolvedScene,
+  SceneOverlay,
+  SceneOverlayOp,
+} from '@las-flores/api-contracts';
+export type { ComposeSceneOptions, ComposeSceneResult } from './scene/compose-scene.js';
+export { composeScene, sortOverlays } from './scene/compose-scene.js';
+// Runtime selection (SC-312) — same engine runtime uses, re-exported for compile-side checks.
+export type { PlayerScene } from '@las-flores/api-contracts';
+export { resolveSceneForPlayer, selectActiveOverlays } from '@las-flores/api-contracts';
+
+// Weather resolution (SC-305)
+export type { ResolvedWeather, WeatherInput, WeatherSource } from './scene/resolve-weather.js';
+export { resolveWeather } from './scene/resolve-weather.js';
+
+// Composition golden fixtures (SC-313) — data in api/planning/test-fixtures/scene-composition
+export type {
+  GoldenCase,
+  GoldenCaseExpectation,
+  GoldenFixture,
+  GoldenPlayerExpectation,
+} from './scene/golden-fixtures.js';
+export { InvalidGoldenFixtureError, parseGoldenFixture } from './scene/golden-fixtures.js';
+
+// Overlay conflict detection (SC-304)
+export type { ConflictReport, SceneConflict, SceneConflictCode } from './scene/conflicts.js';
+export {
+  conflictsToIssues,
+  detectConflicts,
+  formatConflictReport,
+  stringifyConflictReport,
+} from './scene/conflicts.js';
+
 // Threshold events (SC-206)
 export type { ThresholdResult, StatValue, Threshold } from './canon/threshold-events.js';
 export {

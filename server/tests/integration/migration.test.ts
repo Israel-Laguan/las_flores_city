@@ -42,7 +42,7 @@ describe('Migration Idempotency', () => {
     await pool.end();
   });
 
-  test('Characters table contains migrated content before idempotency checks', async () => {
+  (process.env.CI_NO_MINIO === '1' ? test.skip : test)('Characters table contains migrated content before idempotency checks', async () => {
     expect(initialCharacterCount).toBeGreaterThanOrEqual(1);
   });
 

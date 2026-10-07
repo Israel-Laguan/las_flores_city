@@ -62,7 +62,12 @@ export interface SceneDef {
 export type SceneDefInput = Pick<SceneDef, 'id' | 'slug' | 'title' | 'description' | 'location'> &
   Partial<Omit<SceneDef, 'id' | 'slug' | 'title' | 'description' | 'location'>>;
 
-/** Builds a SceneDef, defaulting the optional fields (availability = TRUE, priority = 0). */
+/**
+ * Builds a SceneDef, defaulting optional fields (availability = TRUE, priority = 0).
+ *
+ * @param input - Partial scene definition; only `id`, `slug`, `title`, `description`, and `location` are required
+ * @returns A fully formed SceneDef with defaults applied
+ */
 export function createSceneDef(input: SceneDefInput): SceneDef {
   return {
     id: input.id,
@@ -119,10 +124,16 @@ export function stringifySceneDef(scene: SceneDef): string {
 }
 
 /**
- * Deserializes a JSON-compatible object to a SceneDef. Same strictness as the
- * condition grammar's `fromJSON`: anything invalid — unknown or missing keys, wrong
- * types, `undefined`, a schema_version mismatch — throws `InvalidSceneDefError`
- * carrying every error issue from `validateScene` (warnings do not throw).
+ * Deserializes a JSON-compatible object to a SceneDef.
+ *
+ * Same strictness as the condition grammar's `fromJSON`: anything invalid —
+ * unknown or missing keys, wrong types, `undefined`, a schema_version mismatch —
+ * throws `InvalidSceneDefError` carrying every error issue from `validateScene`
+ * (warnings do not throw).
+ *
+ * @param value - Untrusted JSON value to deserialize
+ * @returns A validated SceneDef
+ * @throws InvalidSceneDefError if error issues are found
  */
 export function sceneDefFromJSON(value: unknown): SceneDef {
   const { issues } = validateScene(value);

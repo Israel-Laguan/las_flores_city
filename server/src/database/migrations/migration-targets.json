@@ -88,7 +88,9 @@
     "098_districts_weather.sql",
     "099_migration_log_district.sql",
     "100_migration_log_district_validate.sql",
-    "101_planning_scene_defs.sql"
+    "101_planning_scene_defs.sql",
+    "102_characters_slug.sql",
+    "103_characters_rich_fields.sql"
   ],
   "nontransactional": {
     "075_job_runs_run_token_backfill.sql": "las_flores",

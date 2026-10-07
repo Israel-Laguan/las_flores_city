@@ -25,6 +25,39 @@ function authHeaders() {
   return { Authorization: `Bearer ${generateToken(TEST_USER_ID)}` };
 }
 
+async function ensureSleepFixtures(p: pg.Pool, ap: pg.Pool): Promise<void> {
+  await p.query(
+    `INSERT INTO districts (id, name, slug, description, x, y)
+     VALUES ($1, $2, $3, $4, 0, 0)
+     ON CONFLICT (id) DO NOTHING`,
+    [DISTRICT_ID, 'Sleep Test District', 'sleep-test-district', 'District for sleep test']
+  );
+  await p.query(
+    `INSERT INTO scenes (id, name, description, district_id, metadata)
+     VALUES ($1, $2, $3, $4, '{"type": "starting_location", "accessible": true, "is_sleep_location": true}'::jsonb)
+     ON CONFLICT (id) DO NOTHING`,
+    [APARTMENT_ID, 'The Apartment', 'Test apartment location', DISTRICT_ID]
+  );
+  await p.query(
+    `INSERT INTO scenes (id, name, description, district_id, metadata)
+     VALUES ($1, $2, $3, $4, '{"type": "location", "accessible": true}'::jsonb)
+     ON CONFLICT (id) DO NOTHING`,
+    [CAFE_ID, 'The Cafe', 'Test cafe location', DISTRICT_ID]
+  );
+  await p.query(
+    `INSERT INTO users (id, email, username, display_name)
+     VALUES ($1, $2, $3, $4)
+     ON CONFLICT (id) DO UPDATE SET email = EXCLUDED.email, username = EXCLUDED.username, updated_at = NOW()`,
+    [TEST_USER_ID, 'sleep-test@example.com', 'sleep_test', 'Sleep Test']
+  );
+  await p.query(
+    `INSERT INTO player_states (user_id, current_location_id, time_blocks, credits, gold_credits, current_day, story_beat, flags, alignment)
+     VALUES ($1, $2, 48, 100, 0, 1, 'prologue', '{}'::jsonb, 'neutral')
+     ON CONFLICT (user_id) DO UPDATE SET time_blocks = 48, credits = 100, current_location_id = $2, current_day = 1, updated_at = NOW()`,
+    [TEST_USER_ID, APARTMENT_ID]
+  );
+}
+
 beforeAll(async () => {
   pool = new Pool({
     connectionString: process.env.DATABASE_URL || 'postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores',
@@ -36,49 +69,7 @@ beforeAll(async () => {
     connectionTimeoutMillis: 5000,
   });
 
-  // Ensure the district exists for the scenes
-  await pool.query(
-    `INSERT INTO districts (id, name, slug, description, x, y)
-     VALUES ($1, $2, $3, $4, 0, 0)
-     ON CONFLICT (id) DO NOTHING`,
-    [DISTRICT_ID, 'Sleep Test District', 'sleep-test-district', 'District for sleep test']
-  );
-
-  // Ensure the apartment and cafe scenes exist for the foreign key reference
-  await pool.query(
-    `INSERT INTO scenes (id, name, description, district_id, metadata)
-     VALUES ($1, $2, $3, $4, '{"type": "starting_location", "accessible": true, "is_sleep_location": true}'::jsonb)
-     ON CONFLICT (id) DO NOTHING`,
-    [APARTMENT_ID, 'The Apartment', 'Test apartment location', DISTRICT_ID]
-  );
-  await pool.query(
-    `INSERT INTO scenes (id, name, description, district_id, metadata)
-     VALUES ($1, $2, $3, $4, '{"type": "location", "accessible": true}'::jsonb)
-     ON CONFLICT (id) DO NOTHING`,
-    [CAFE_ID, 'The Cafe', 'Test cafe location', DISTRICT_ID]
-  );
-
-  await pool.query(
-    `INSERT INTO users (id, email, username, display_name)
-     VALUES ($1, $2, $3, $4)
-     ON CONFLICT (id) DO UPDATE SET
-       email = EXCLUDED.email,
-       username = EXCLUDED.username,
-       updated_at = NOW()`,
-    [TEST_USER_ID, 'sleep-test@example.com', 'sleep_test', 'Sleep Test']
-  );
-  await pool.query(
-    `INSERT INTO player_states (user_id, current_location_id, time_blocks, credits, gold_credits, current_day, story_beat, flags, alignment)
-     VALUES ($1, $2, 48, 100, 0, 1, 'prologue', '{}'::jsonb, 'neutral')
-     ON CONFLICT (user_id) DO UPDATE SET
-       time_blocks = 48,
-       credits = 100,
-       current_location_id = $2,
-       current_day = 1,
-       updated_at = NOW()`,
-    [TEST_USER_ID, APARTMENT_ID]
-  );
-
+  await ensureSleepFixtures(pool, analyticsPool);
   await new Promise<void>((resolve) => {
     server = app.listen(0, () => resolve());
   });
@@ -103,6 +94,7 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
+  await ensureSleepFixtures(pool, analyticsPool);
   await pool.query(
     `UPDATE player_states SET time_blocks = 48, credits = 100, current_location_id = $1, current_day = 1, current_node_id = NULL WHERE user_id = $2`,
     [APARTMENT_ID, TEST_USER_ID]

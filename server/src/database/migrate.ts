@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import { oltpPool, olapPool } from '@las-flores/infra';
 import type { PoolClient } from 'pg';
 import { migrateContent } from '../content/migrate.js';
-import { hashText, parseVersion, stripFileLevelTransactionControl, splitStatements } from './migrateUtils.js';
+import { hashText, parseVersion, schemaOnlyRequested, stripFileLevelTransactionControl, splitStatements } from './migrateUtils.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const MIGRATIONS_DIR = path.resolve(__dirname, 'migrations');
@@ -260,10 +260,12 @@ async function applySQLMigrations(): Promise<void> {
   }
 }
 
-export async function runAllMigrations(): Promise<void> {
+export async function runAllMigrations(schemaOnly = false): Promise<void> {
   console.log('[migrate] Running database schema migrations...');
   await applySQLMigrations();
   console.log('[migrate] Database schema migrations complete');
+
+  if (schemaOnly) return;
 
   console.log('[migrate] Running content migration...');
   const result = await migrateContent(CONTENT_DIR);
@@ -282,7 +284,7 @@ const isCli = process.argv[1]
   : false;
 
 if (isCli) {
-  runAllMigrations()
+  runAllMigrations(schemaOnlyRequested(process.argv))
     .then(() => { console.log('[migrate] All migrations complete'); process.exit(0); })
     .catch(err => { console.error('[migrate] Migration failed:', err); process.exit(1); });
 }
