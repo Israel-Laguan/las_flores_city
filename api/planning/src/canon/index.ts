@@ -14,3 +14,16 @@ export {
   applyThresholdCrossingSimple,
   FixtureFlagState,
 } from './threshold-events.js';
+
+export type {
+  ListSceneDefsOptions,
+  SceneDefRecord,
+  SceneDefRepository,
+  UpsertResult,
+  UpsertStatus,
+} from './scene-def-repository.js';
+export {
+  InMemorySceneDefRepository,
+  SceneDefRetiredError,
+  sceneDefContentHash,
+} from './scene-def-repository.js';
