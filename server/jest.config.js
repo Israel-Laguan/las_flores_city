@@ -96,6 +96,7 @@ const SCHEMA_SUITES = [
   'mvw.integration.test.ts',
   'paypal-webhook.test.ts',
   'plan-cli-lifecycle.integration.test.ts',
+  'planning-scene-defs.test.ts',
   'revision-rollback.test.ts',
   'shop.test.ts',
   'story-beat-pipeline.integration.test.ts',
