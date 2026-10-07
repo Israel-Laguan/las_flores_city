@@ -67,3 +67,6 @@ export type {
   SceneOverlayIssue,
   SceneOverlayValidationResult,
 } from './overlay-validate.js';
+
+export type { PlayerScene } from './select.js';
+export { resolveSceneForPlayer, selectActiveOverlays } from './select.js';

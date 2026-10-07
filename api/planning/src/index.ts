@@ -72,6 +72,9 @@ export type {
 } from '@las-flores/api-contracts';
 export type { ComposeSceneOptions, ComposeSceneResult } from './scene/compose-scene.js';
 export { composeScene, sortOverlays } from './scene/compose-scene.js';
+// Runtime selection (SC-312) — same engine runtime uses, re-exported for compile-side checks.
+export type { PlayerScene } from '@las-flores/api-contracts';
+export { resolveSceneForPlayer, selectActiveOverlays } from '@las-flores/api-contracts';
 
 // Weather resolution (SC-305)
 export type { ResolvedWeather, WeatherInput, WeatherSource } from './scene/resolve-weather.js';

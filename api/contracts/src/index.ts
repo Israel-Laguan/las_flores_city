@@ -123,6 +123,8 @@ export type {
   SceneComposeIssueCode,
 } from './scene/index.js';
 export { SCENE_COMPOSE_ISSUE_CODES, applyOverlayOps, toComposedScene } from './scene/index.js';
+export type { PlayerScene } from './scene/index.js';
+export { resolveSceneForPlayer, selectActiveOverlays } from './scene/index.js';
 
 // Validation (shared issue format)
 export type { IssueSeverity, ValidationIssue, ValidationResult } from './validation/index.js';
