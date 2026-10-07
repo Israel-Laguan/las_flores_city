@@ -1,8 +1,15 @@
 id: c2000009-e29b-41d4-a716-44665544000e
 name: Anneliese Jansen
 title: Companion for Hire - Las Flores Port District
+birth_year: 2050
 description: |
   Anneliese Jansen is a 27-year-old woman of Dutch and French descent who grew up near the bustling port area of Las Flores. Her Dutch father left when she was young, leaving emotional scars that shaped her approach to men and intimacy. Conscious of her appearance and fitness, she styles her long flowing hair elegantly and favors smart, edgy fashion that commands attention. Her expressive eyes shift between confidence and vulnerability. Bold yet manipulative, she navigates relationships with older men through charm and wit, offering a "girlfriend experience" to sugar daddies while maintaining emotional distance. She has a soft spot for needy middle-aged men she meets in bars, yet feels betrayed when they leave upon discovering her work. Juggling multiple arrangements, Anneliese now questions whether there is room in her life for genuine love outside the transactional world.
+physical_description: "Dutch-French woman of 27 with long honey blonde hair in loose curls, expressive gray-blue eyes, a slender toned build, fair skin with a light tan and a small compass rose tattoo behind her left ear; wears a fitted black blazer with gold jewelry."
+psychological_description: "Bold, charming and manipulative on the surface, with expressive eyes that shift between confidence and vulnerability; keeps emotional distance because of her father's abandonment while secretly yearning for genuine love."
+background_and_role:
+  - "Companion for hire in the Las Flores port district"
+  - "Grew up near the port after her Dutch father left"
+  - "Seeks financial stability through arrangements with older men"
 metadata:
   type: human
   role: npc

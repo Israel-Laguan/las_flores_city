@@ -4,7 +4,7 @@
 **Title (short):** María Suárez, Senior Reporter & Columnist
 
 **Description (full):**
-**Age:** Unknown
+**Age:** ~58 (2077)
 **Origin:** Las Flores urban sprawl
 **Occupation:** Senior Reporter & Columnist
 

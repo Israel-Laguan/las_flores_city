@@ -9,12 +9,21 @@
  *
  * Run: node --test scripts/check-story-builder-writer-guard.test.mjs
  */
-import { test, describe } from 'node:test';
+import { test, describe, beforeEach, afterEach, mock } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { stripComments, runGuard, REGISTRY } from './check-story-builder-writer-guard.mjs';
+
+// Fixture stubs deliberately omit the writer import, which makes the guard emit
+// "registry entry can be retired" notes; silence them so test output stays clean.
+beforeEach(() => {
+  mock.method(console, 'warn', () => {});
+});
+afterEach(() => {
+  mock.restoreAll();
+});
 
 function makeFakeRepo() {
   const root = mkdtempSync(join(tmpdir(), 'writer-guard-'));

@@ -14,14 +14,7 @@
 - Eyes: Hazel, a blend of her Chinese mother and Dutch father, sharp and determined
 - Build: Average height, strong and poised from years in mining operations
 - Skin: Light olive, smooth with subtle signs of outdoor work
-- Distinguishing features: Practical jewelry, tailored business attire, confident authoritative bearing, no-nonsense demeanor
-
-## Physical Description
-- Hair: Dark brown with occasional gray strands, worn in a professional low bun
-- Eyes: Pale blue from her father, with the warmth of her mother's dark brown irises
-- Build: Tall and athletic, strong and poised
-- Skin: Fair with warm undertone, a blend of her dual heritage
-- Distinguishing features: Minimalist silver jewelry, tailored suits, confident measured smile, always carries a leather portfolio
+- Distinguishing features: Practical jewelry, tailored business attire, confident authoritative bearing, no-nonsense demeanor, always carries a leather portfolio
 
 ## Overview
 

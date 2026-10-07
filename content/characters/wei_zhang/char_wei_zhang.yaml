@@ -1,7 +1,14 @@
 id: c1000006-e29b-41d4-a716-446655440006
 name: Dr. Wei Zhang
 title: Reclusive Chemist & Phytoremediation Expert
+birth_year: 2009
 description: "Brilliant reclusive chemist specializing in environmental chemistry and phytoremediation. Driven by a formative trauma—the ruination of his ancestral village or silencing of a mentor—he has dedicated his life to sustainable purification methods. After collaborating with Evelyn Ruthenberg and Yara Rossi on the phytoremediation restoration plan, Yara's assassination prompted a strategic recalculation: he publicly aligned with the city council and Minera Estrella as a shield, while covertly continuing to collaborate with Evelyn. His public compliance became a performance—the 'ghost in the machine'—channeling data and subtly modifying techniques to plant seeds of genuine restoration within the compromised project. Quiet, introspective, and methodical, he transformed from a withdrawn researcher into a reluctant strategist, proving that even under duress, environmental healing can proceed through clandestine pathways."
+physical_description: "A slender, slightly hunched Chinese man in his late 50s with thinning gray-black hair, deep-set dark brown eyes and round wire-rimmed glasses. He wears a worn brown cardigan and has ink-stained fingers."
+psychological_description: "A quiet, introspective and methodical man who turned from a withdrawn researcher into a reluctant strategist, driven by a formative trauma."
+background_and_role:
+  - "Reclusive chemist and phytoremediation expert"
+  - "Collaborated with Evelyn Ruthenberg and Yara Rossi on a restoration plan"
+  - "Publicly aligned with the city council and Minera Estrella while covertly aiding Evelyn"
 metadata:
   type: human
   role: npc

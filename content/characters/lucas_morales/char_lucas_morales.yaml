@@ -1,8 +1,15 @@
 id: b161b2dd-224c-4a51-9b25-51c0c710239c
 name: Lucas Morales
 title: First-Year Engineering Student, Aspiring Marine Biologist
+birth_year: 2059
 description: |
   18-year-old from Playa de los Vientos fishing town. Grew up helping father on fishing boats, developed ocean connection. Now studying engineering at Universidad Nacional but struggling with coursework. Pressured by family to stick with engineering vs. true passion for marine biology. Homesick and uncertain about career path. Wearing casual attire, shows determination but hides insecurities. Fears disappointing family if he switches majors.
+physical_description: 18-year-old broad-built Latino man with dark expressive eyes, dark hair, a warm half-smile and casual practical clothing.
+psychological_description: Friendly, optimistic and funny but insecure; homesick and torn between family pressure and his own passion, keeping his worries private.
+background_and_role:
+  - First-year engineering student at Universidad Nacional
+  - From the fishing town of Playa de los Vientos; grew up on his father's boats
+  - Aspiring marine biologist
 metadata:
   type: human
   role: npc

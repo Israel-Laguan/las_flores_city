@@ -1,8 +1,15 @@
 id: 3b403235-8df0-4681-b3b6-9fc41a7a266c
 name: Lucas van der Meer
 title: Youngest Son of the van der Meer Family
+birth_year: 2046
 description: |
   Lucas van der Meer, 31, younger son of the van der Meer lithium mining dynasty. Raised with siblings Peter and Anna, he struggled with inadequacy and turned to drugs. Embezzled from family business (2065), arrested, forced into rehab. Later diagnosed with schizoaffective disorder (2077), committed to psychiatric institution (2081). He seeks sobriety and reconciliation with his family.
+physical_description: Thin, gaunt Dutch man in his early 30s with sandy blond hair, pale bloodshot haunted blue eyes, a pallid sallow complexion and trembling hands.
+psychological_description: Troubled and vulnerable, overshadowed by his siblings and prone to erratic behavior, with moments of guilt-ridden clarity and a wish for sobriety and reconciliation.
+background_and_role:
+  - Youngest son of the van der Meer family; siblings Peter and Anna
+  - Embezzled from the family business in 2065 and was forced into rehab
+  - Diagnosed with schizoaffective disorder
 metadata:
   type: human
   role: npc

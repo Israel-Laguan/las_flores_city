@@ -1,8 +1,15 @@
 id: a0000001-0000-4000-8000-000000000008
 name: Sofia Rodriguez Krol
 title: Socialite, Philanthropist, Businesswoman
+birth_year: 2048
 description: |
   Sofia Rodriguez Krol is a socialite, philanthropist, and businesswoman born in Las Flores. She is the spouse of Liam van der Meer and sister-in-law of Xiu Li van der Meer.
+physical_description: "A slender, poised woman in her late 20s with sleek dark brown hair, dark brown eyes and light brown skin. She is always camera-ready in designer clothing and subtle gold jewelry, with a warm but measured smile."
+psychological_description: "A polished and confident socialite who carries herself with practiced grace and strategic social awareness."
+background_and_role:
+  - "Socialite, philanthropist and businesswoman"
+  - "Wife of Liam van der Meer (married 2068)"
+  - "Sister-in-law of Xiu Li van der Meer"
 metadata:
   type: human
   role: npc

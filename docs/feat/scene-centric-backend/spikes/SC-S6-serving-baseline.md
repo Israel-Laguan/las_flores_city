@@ -3,10 +3,9 @@
 **Box:** 1 day · **Actual:** ~2 hours · **Date:** 2026-09-08
 **Feeds:** SC-508, R13, SC-M3
 
-> ⚠️ **NOT REPRODUCIBLE.** The harness that produced the numbers in this document is not
-> committed. `server/scripts/spike_sc_s6_serving_baseline.ts` exits non-zero by design and
-> measures nothing. The numbers below are a historical record only — see "Reproducibility"
-> under "What was run".
+> **Reproducible (BF-305).** `npm run spike:serving-baseline --workspace=server` seeds, measures and
+> cleans up; a re-run is recorded under "Re-run" below. The "Raw results" section is the
+> original 2026-09-08 run from an earlier uncommitted harness, kept for provenance.
 
 ## Question
 
@@ -19,9 +18,8 @@ asserting it.
 
 ## What was run
 
-Script: an earlier **uncommitted** harness (not the committed skeleton
-`server/scripts/spike_sc_s6_serving_baseline.ts`, which measures nothing — see
-"Reproducibility" below). Treat the numbers below as a **legacy preliminary baseline** for
+Script: `server/scripts/spikes/serving-baseline.ts` (the original run used an earlier
+uncommitted harness with the same method). Treat the numbers below as a **legacy preliminary baseline** for
 `GET /dialogue/active` only — not as the SC-M3/SC-508 scene-resolution + artifact-fetch
 measurement. Against the already-running local docker-compose stack (`las-flores-server` on
 `:3000`, `las-flores-postgres-oltp` on `:5434`, `las-flores-minio` on `:9000`) — no code
@@ -47,8 +45,10 @@ reported):
    ANY($1::uuid[])`), run directly via `queryOLTP`, to separate the `SELECT` from the
    presigning step within `resolveChunkSpeakers`.
 
-Presigning-only cost and "rest of `/dialogue/active`" cost are derived **per iteration**
-from paired timings — each iteration records all three measurements with the same
+Presigning-only cost and "rest of `/dialogue/active`" cost are **estimates** derived **per
+iteration** from paired timings. The three measurements are separate calls, not stages of one
+request, and `resolveChunkSpeakers_i − bulkSelect_i` also includes speaker collection, so
+read "presigning" as "non-SELECT resolver cost, dominated by presigning". Each iteration records all three measurements with the same
 iteration index, then the per-iteration differences (`presigning_i = resolveChunkSpeakers_i
 − bulkSelect_i`; `rest_i = endpoint_i − resolveChunkSpeakers_i`) are computed, and
 `p50`/`p95`/shares are calculated from those difference distributions. This avoids the
@@ -56,12 +56,15 @@ bias of subtracting aggregate percentiles (`p50(total) − p50(select)` is not `
 difference)`). The blackbox HTTP overhead (~1-2ms fetch) remains as a stated
 approximation within each `rest_i`, not removed by aggregate math.
 
-**Reproducibility:** **Not reproducible from the committed script.** The harness skeleton is
-committed at `server/scripts/spike_sc_s6_serving_baseline.ts`, but its `main()` performs no
-seeding, no measurements, and no paired differencing — it prints a placeholder notice and
-exits. The raw results below were captured from an earlier, uncommitted harness and cannot
-be re-derived until the seeding/measurement/reporting/cleanup steps are implemented in that
-file. Until then, treat the numbers here as a historical record, not a reproducible baseline.
+**Reproducibility:** `npm run spike:serving-baseline --workspace=server` (needs postgres-oltp, redis and
+minio up and content migrated; no game-server needed). It seeds one synthetic 3-node tree
+(real speakers: the character with the most `portrait_urls`, plus two with exactly one),
+publishes it through `ContentPublishService`, points a synthetic player's cursor at it, runs
+3 warmup + 30 timed iterations of the three measurements with a shared iteration index,
+computes the per-iteration paired differences, and removes every synthetic row in `finally`.
+One difference from the original run: the HTTP leg hits an in-process express app mounting
+the real `dialogueRouter` + `authMiddleware` over loopback, not the dockerised server on
+`:3000` — same DB/Redis/MinIO connections, no container hop.
 
 ## Raw results
 
@@ -96,6 +99,28 @@ presigning only (resolveChunkSpeakers - bulk SELECT):        p50=7.08ms  p95=14.
 rest of /dialogue/active (endpoint - resolveChunkSpeakers):  p50=17.18ms p95=19.05ms
 resolveChunkSpeakers share of endpoint: p50=30.1% p95=44.6%
 ```
+
+## Re-run (BF-305)
+
+Commit `1c96b1f9` (working tree with BF-305), 2026-10-06, local podman stack. Sample response:
+3 speakers, 44 presigned `portrait_urls` — identical shape to the original runs.
+
+```
+full endpoint GET /dialogue/active (HTTP):   n=30 min=12.09ms p50=21.01ms p95=28.07ms max=28.61ms
+resolveChunkSpeakers (SELECT + presign):     n=30 min=4.67ms  p50=6.33ms  p95=9.03ms  max=14.80ms
+bulk SELECT only:                            n=30 min=0.52ms  p50=1.02ms  p95=2.57ms  max=2.60ms
+
+presigning only (paired):                    p50=5.45ms  p95=8.14ms
+rest of /dialogue/active (paired):           p50=14.91ms p95=20.30ms
+resolveChunkSpeakers share of endpoint:      p50=31.9%   p95=50.9%
+```
+
+**Versus the historical numbers:** endpoint p50 21.0 vs 24.6-26.1ms and `resolveChunkSpeakers`
+p50 6.3 vs 7.4-7.6ms are within 2×. The bulk SELECT p50 is 1.0 vs 0.3-0.6ms — up to ~3× in
+ratio, but a sub-millisecond absolute difference (run-to-run noise at this scale), so it is
+reported here rather than silently replacing the original. The conclusion is unchanged:
+`resolveChunkSpeakers` is a minority (~30-50%) of the endpoint, the SELECT is negligible,
+presigning is the real cost within it. The "Answer" below still reflects the original run.
 
 ## Answer
 

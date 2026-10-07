@@ -1,7 +1,14 @@
 id: ead71912-cc40-4ca5-b77f-f17d29f663e1
 name: Marco Rossi
 title: 22-year-old Business Student
+birth_year: 2055
 description: 22-year-old business administration student at Universidad Nacional in Las Flores. Son of Italian sailor and Argentine woman, raised celebrating both cultures. Strikingly handsome with wavy dark hair, chiseled face, expressive green eyes, charismatic smile. Trendy, laid-back style with fitted shirts and stylish sneakers. Ambitious, dreams of running his own company but struggles with tuition. Studies business administration, aspiring to finance or marketing. Charming, sociable, enjoys center of attention with magnetic personality. Playful, loves engaging others, flirtatious, enjoys multiple girlfriends despite drama. Previously worked as waiter but grew bored. Seeks flexible work for money and social time. Avid social media user, documents adventures, cultivates fashionable image. Enjoys beach outings, Andean hikes, dining, nightlife. Dreams of financial stability and career success while balancing academics and relationships.
+physical_description: 22-year-old man of Italian and Argentine heritage, strikingly handsome with wavy dark hair, a chiseled face, expressive green eyes and a charismatic smile; wears fitted shirts and stylish sneakers.
+psychological_description: Charming, sociable and ambitious, a shrewd flirt who enjoys being the center of attention and curates his image on social media.
+background_and_role:
+  - Business administration student at Universidad Nacional in Las Flores
+  - Son of an Italian sailor and an Argentine mother
+  - Seeking flexible work to cover tuition
 metadata:
   type: human
   role: npc

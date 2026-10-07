@@ -1,7 +1,14 @@
 id: d7e8f9a0-b1c2-4a3b-8c5d-6e7f8a9b0c1d
 name: Mariana De La Cruz
 title: Bureau Chief, La Prensa (Las Flores)
+birth_year: 2033
 description: Oversees La Prensa's operations in Las Flores. Pivotal in building the newspaper's presence and credibility in the city through insightful local coverage.
+physical_description: "Latina woman in her 40s with an athletic-compact, poised build; angular face, high cheekbones, wavy dark chin-length hair and a small mole near her lower lip, dressed in professional attire with press credentials."
+psychological_description: "Sharp and commanding, with a focused, editorial bearing."
+background_and_role:
+  - "Bureau Chief of La Prensa in Las Flores"
+  - "Oversees the newspaper's local operations"
+  - "Built its presence and credibility in the city through local coverage"
 metadata:
   type: human
   role: npc

@@ -65,7 +65,7 @@ Touched by Alex's sacrifice and Evelyn's unyielding resolve, the buried conscien
 
 ## Related Lore
 
-- [Alex Garcia](alex.md)
-- [Evelyn Ruthenberg](evelyn_ruthenberg.md)
-- [The Retirement Complex Murders](../stories/retirement_complex_murders.md)
-- [Alex & Evelyn: The 2077 Endgame](../stories/alex_and_evelyn_2077.md)
+- [Alex Garcia](../alex_garcia/alex_garcia.md)
+- [Evelyn Ruthenberg](../evelyn_ruthenberg/evelyn_ruthenberg.md)
+- [The Retirement Complex Murders](../../lore/stories/retirement_complex_murders/retirement_complex_murders.md)
+- [Alex & Evelyn: The 2077 Endgame](../../lore/stories/alex_and_evelyn_2077/alex_and_evelyn_2077.md)

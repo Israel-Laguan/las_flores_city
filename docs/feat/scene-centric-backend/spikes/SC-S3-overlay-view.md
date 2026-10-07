@@ -16,17 +16,17 @@ and specifically whether `jsonb` merge alone is sufficient for `MODIFY`, per ope
 
 ## What was run
 
-Script: `server/scripts/spikes/sc-s3-overlay.mjs`, built on `spike_sc_s1.entity_edges` (must be
+Script: `server/scripts/spikes/overlay-view.mjs`, built on `spike_sc_s1.entity_edges` (must be
 rebuilt first — SC-S1's script drops/recreates it every run). **Now committed** — see
-`server/scripts/spikes/sc-s3-overlay.mjs`. The script handles ADD and MODIFY deltas,
+`server/scripts/spikes/overlay-view.mjs`. The script handles ADD and MODIFY deltas,
 builds the overlay per plan-graph-in-postgres.md §3.3, and runs SC-S2's reachability query
 against canon alone vs. overlay.
 
 ```bash
 DATABASE_URL="postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores" \
-  node server/scripts/spike_sc_s1_project_entity_edges.mjs   # rebuild canon edge table
+  node server/scripts/spikes/entity-edges-projection.mjs   # rebuild canon edge table
 
-DATABASE_URL=... node server/scripts/spikes/sc-s3-overlay.mjs  # this spike
+DATABASE_URL=... node server/scripts/spikes/overlay-view.mjs  # this spike
 ```
 
 ### Setup

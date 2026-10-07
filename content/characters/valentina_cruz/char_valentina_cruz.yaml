@@ -1,7 +1,14 @@
 id: e5f6a7b8-c9d0-4234-af01-345678901234
 name: Valentina Cruz
 title: Campus Provocateur
+birth_year: 2056
 description: A lean student with neon-green streaks in her dark hair and cybernetic ocular implants that flicker with data streams, Valentina Cruz moves through the university halls like a ghost in the system—spreading rumors and sabotaging competitors with methodical precision. Her rivalry knows no bounds, whether it's academic sabotage or corporate espionage, making her a dangerous peer to those who cross her path in the neon-soaked corridors of power.
+physical_description: "A lean student with neon-green streaks in her dark hair and cybernetic ocular implants that flicker with data streams."
+psychological_description: "A calculating rival who sabotages competitors with methodical precision, using rumors and sabotage with no limit to her rivalry."
+background_and_role:
+  - "Campus provocateur at the university"
+  - "Spreads rumors and sabotages academic and corporate rivals"
+  - "From the Las Flores urban sprawl"
 metadata:
   type: human
   role: npc

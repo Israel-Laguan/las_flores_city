@@ -1,7 +1,14 @@
 id: b8c9d0e1-f2a3-4b4c-9d6e-7f8a9b0c1d2e
 name: Sebastian van der Meer
 title: CEO, Van der Meer Industries
+birth_year: 2032
 description: Ambitious CEO of Van der Meer Industries. Together with his cousin Liam, he has driven exponential growth through strategic decisions and identifying profitable investment opportunities.
+physical_description: "Dutch man in his 40s with an athletic-compact build, angular face, strong jaw, straight blonde hair threaded with gray and a small scar near the left brow; wears CEO business attire with a company pin."
+psychological_description: "Ambitious executive focused on growth and profitable investment."
+background_and_role:
+  - "CEO of Van der Meer Industries"
+  - "Drove growth together with his cousin Liam"
+  - "Identifies profitable investment opportunities"
 metadata:
   type: human
   role: npc

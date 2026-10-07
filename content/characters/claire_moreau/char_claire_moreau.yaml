@@ -1,8 +1,15 @@
 id: 58829bad-2255-4ae0-af20-ba2c607de59f
 name: Claire Moreau
 title: Spiritual Yogini and Hostess by the Port
+birth_year: 2032
 description: |
   Claire Moreau is a captivating 45-year-old French woman with a deep love for the ocean and spirituality. Raised in an artistic coastal household, she transformed profound loss—the death of her French captain husband in a storm—into a life of freedom and connection, supported by life insurance he left behind. Openly bisexual, she draws university students and young professionals into her orbit, valuing meaningful bonds while exploring flirtatious and adventurous relationships. Deeply spiritual, she practices daily meditation and hosts dawn yoga sessions, often followed by lavish bohemian gatherings at her seaside home near the port. Charismatic and empathetic, Claire creates a welcoming space for people to explore their free spirits.
+physical_description: "French woman of 45 with long flowing chestnut hair, striking green eyes, fair skin with a light tan and a physique shaped by years of yoga; wears a flowing bohemian dress in muted tones with a jade pendant."
+psychological_description: "Charismatic, warm-hearted and deeply spiritual; empathetic and welcoming, valuing meaningful bonds alongside flirtatious adventure."
+background_and_role:
+  - "French spiritual yogini and hostess near the port"
+  - "Widow of a French captain lost in a storm, supported by his life insurance"
+  - "Hosts dawn yoga sessions and bohemian gatherings"
 metadata:
   type: human
   role: npc

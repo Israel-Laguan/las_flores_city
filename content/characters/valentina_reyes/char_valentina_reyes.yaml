@@ -1,7 +1,14 @@
 id: c51348ce-c575-4895-b17b-811af6869903
 name: Valentina Reyes
 title: University Student & Social Work Aspirant
+birth_year: 2059
 description: Val is an 18-year-old university student from a small town near Río de las Flores. With dark hair in a loose ponytail and sun-kissed bronze skin from years outdoors, she's navigating the overwhelming transition to Central City. Despite feeling isolated by language barriers and cultural differences, she's determined to become a social worker to help others like her bridge two worlds.
+physical_description: "An 18-year-old woman of medium height with dark hair in a loose ponytail, sun-kissed bronze skin and a solid build, in practical clothing. She has dark expressive eyes and a calm, determined expression."
+psychological_description: "A determined and caring newcomer who feels isolated by language and cultural differences yet is resolved to bridge two worlds as a social worker."
+background_and_role:
+  - "First-semester social work student at Universidad del Valle"
+  - "From a small town near the Rio de las Flores"
+  - "Daughter of Francisco Reyes, a fisherman and police officer"
 metadata:
   type: human
   role: npc

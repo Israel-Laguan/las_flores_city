@@ -1,7 +1,14 @@
 id: 26131f07-05de-4f2c-b1f4-4e0f8209a863
 name: Nadia Delgado
 title: Seafood Stall Operator at Bahía de las Olas
+birth_year: 2052
 description: Nadia grew up in Bahía de las Olas, surrounded by the rich marine life and vibrant tourism that define the town. Coming from a family of fishermen, she developed a strong affinity for the ocean and learned the ins and outs of seafood preparation from a young age. Bubbly and lively, she has a magnetic personality that draws tourists to her stall.
+physical_description: "Slender, energetic Latina woman in her mid-20s with a warm tan, bright warm brown eyes, long curly dark brown hair with sun-bleached highlights and a wide infectious smile."
+psychological_description: "Bubbly, lively and flirtatious, with a magnetic personality that draws tourists to her stall."
+background_and_role:
+  - "Seafood stall operator at Bahía de las Olas"
+  - "Grew up in a family of fishermen"
+  - "Learned seafood preparation from a young age"
 metadata:
   type: human
   role: npc

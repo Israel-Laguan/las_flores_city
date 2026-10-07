@@ -1,10 +1,17 @@
 id: c3000011-e29b-41d4-a716-446655440011
 name: Elisabeth van der Meer
 title: Socialite, Art Collector, and Philanthropist
+birth_year: 1995
 description: |
   Born into the prominent van der Meer family in Europe in the 1990s as the daughter of Pieter and Marleen van der Meer, Elisabeth married Carlos Alberto Hernandez in 2038 after meeting him at a society event when she was in her early 40s. When her father Pieter expanded family mining interests into Las Flores, the entire van der Meer clan relocated to the region.
 
   Elisabeth quickly became a pillar of Las Flores high society, hosting lavish parties at her riverbank estate and building one of the region's most extensive collections of Shipibo-Konibo art. She serves on boards of education, healthcare, and women's empowerment organizations, using her influence to advocate for marginalized communities. Despite public scrutiny surrounding her ex-husband's business dealings, she remains devoted to raising her daughter Sophia and supporting causes that improve residents' lives.
+physical_description: Dutch woman in her early 80s, tall and slender with graceful posture, fair skin, silver-blonde hair in an elegant updo and pale blue discerning eyes; wears a pearl necklace, diamond stud earrings, signature red lipstick and a tailored gown.
+psychological_description: An elegant, gracious philanthropist; charming and passionate about art and causes, wary of scandal touching her family.
+background_and_role:
+  - Daughter of Pieter and Marleen van der Meer; relocated to Las Flores with the family mining interests
+  - Art collector focused on Shipibo-Konibo paintings
+  - Serves on education, healthcare and women's empowerment boards; mother of Sophia
 metadata:
   type: human
   role: npc

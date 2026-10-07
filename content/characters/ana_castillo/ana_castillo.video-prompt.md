@@ -1,12 +1,12 @@
 ---
-name: Sofia Castillo
+name: Sofia Ana Castillo
 type: video-loop
 model: Seedance 1.5 Pro
 source: content/characters/ana_castillo/ana_castillo.prompt.md
 target: content/characters/ana_castillo/assets/
 ---
 
-# Video Prompts: Sofia Castillo
+# Video Prompts: Sofia Ana Castillo
 
 Generate seamless looping portrait videos from each expression variant PNG. Use the corresponding `ana_castillo__<expression>.png` as the input image for each prompt. The woman on the reference image is the character described in the source prompt file.
 

@@ -3,7 +3,7 @@
 > Tags: `#figure` `#whistleblower` `#lw_group` `#lithium` `#evidence`
 > 
 > **Role:** Whistleblower, Former LW Group Employee
-> **Status:** Deceased (Murdered 2055)
+> **Status:** Deceased (Murdered August 2059)
 
 ## Physical Description
 - Hair: Black, shoulder-length, usually pulled back in a neat clip
@@ -12,22 +12,15 @@
 - Skin: Fair, unlined
 - Distinguishing features: Small rectangular glasses, always carries a leather portfolio, nervous habit of checking over her shoulder, simple pearl stud earrings
 
-## Physical Description
-- Hair: Jet black, cut in a sensible shoulder-length bob
-- Eyes: Dark brown, intelligent and cautious
-- Build: Average height, slim and precise in movements
-- Skin: Fair, unblemished
-- Distinguishing features: Wire-rimmed glasses, small jade stud earrings, always carried a slim leather portfolio, neat professional appearance
-
 ## Overview
-Liu Fang was a whistleblower from within the LW Group who provided damning evidence of bribery and corruption to local officials. She was brutally murdered in an alleyway in 2055 under mysterious circumstances, just days before she was set to testify at the Minera Estrella trial. 
+Liu Fang was a whistleblower from within the LW Group who provided damning evidence of bribery and corruption to local officials. She was brutally murdered in an alleyway in August 2059 under mysterious circumstances, just days before she was set to testify at the Minera Estrella trial. 
 
 In her final moments, she managed to pass her memory card of evidence to a passing student. As she bled out, a young nurse, Cecilia Rodríguez, attempted to save her life. However, a corporate "cleaner" posing as a doctor, Viktor Reyes, displaced the nurse and ensured Liu Fang did not survive.
 ## Evidence Collected
 Liu Fang gathered extensive evidence including:
 - Proof that container facilities before 2052 were structurally weak
 - Footage of the night of the pipe explosion, showing no rain in the zone
-- Cecilia Perez and other auditors' original reports about problems with the containers
+- Cecilia Perez's and other auditors' original reports about problems with the containers (Cecilia's audit data passed to Liu Fang after Cecilia's murder in 2049)
 - Plans for new container facilities (built in 2055) due to danger of the original containers
 
 ## Posthumous Impact

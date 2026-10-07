@@ -1,5 +1,5 @@
 ---
-name: Sofia Castillo
+name: Sofia Ana Castillo
 type: portrait
 size: 1024x1024
 source: content/characters/ana_castillo/ana_castillo.md
@@ -8,7 +8,7 @@ consumer: portrait
 aspect_ratio: 3:4
 ---
 
-# Prompt: Sofia Castillo
+# Prompt: Sofia Ana Castillo
 
 ## Prompt (Draft)
 

@@ -1,7 +1,14 @@
 id: a1b2c3d4-e5f6-7890-abcd-ef1234567895
 name: María Suárez
 title: Senior Reporter & Columnist
+birth_year: 2019
 description: Stringer and senior reporter at El Informador de Las Flores; one of the paper's most prominent voices. Determined and passionate journalist uncovering corruption and social inequality while mentoring the next generation of reporters. Inquisitive with natural curiosity about the world, empathetic and deeply cares about others affected by social issues, assertive and unafraid to speak mind about justice issues, and enjoys mentoring young journalists.
+physical_description: "Latina woman in her late 50s with a sturdy, slight frame, sharp analytical dark brown eyes and dark brown hair, dressed in a professional blazer."
+psychological_description: "Inquisitive, empathetic and assertive, she cares deeply about people affected by social issues and enjoys mentoring young reporters."
+background_and_role:
+  - "Senior reporter and columnist at El Informador de Las Flores"
+  - "Uncovers corruption and social inequality"
+  - "Mentors the next generation of journalists"
 metadata:
   type: human
   role: npc

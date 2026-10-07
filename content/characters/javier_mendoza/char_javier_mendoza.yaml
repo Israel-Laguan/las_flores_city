@@ -1,12 +1,19 @@
 id: c1000010-e29b-41d4-a716-446655440010
 name: Javier Mendoza
 title: Farm Owner, Agricultural Valley
+birth_year: 2030
 description: |
   Javier Mendoza is a resilient 47-year-old farm owner in the Agricultural Valley. Standing at 5'10" with tanned, weathered skin and a strong build from outdoor work, he has short dark hair peppered with gray and a neatly trimmed beard. His warm brown eyes reflect kindness and determination.
 
   Javier believes in hard work and perseverance, values instilled by his foreign-born mother who built a thriving farm from scratch. Facing challenges from automated farms dominating the market, he adapted after a corporate scam by selling directly to restaurants and hotels, seeking better prices and trustworthy relationships.
 
   Despite tolls and road insecurity from roving gangs, Javier remains undeterred. His determination borders on stubbornness—he struggles to ask for help and often bears burdens alone. Yet his sense of responsibility to family, employees, and community drives him forward. He dreams of expanding operations and showcasing Agricultural Valley produce quality.
+physical_description: "Latino farmer of 47, about 5'10\" with tanned, weathered skin, a solid muscular frame, short dark hair peppered with gray, a neatly trimmed beard and warm brown eyes; dresses in a sturdy cotton work shirt with rolled sleeves."
+psychological_description: "Determined and hardworking to the point of stubbornness; he struggles to ask for help and bears burdens alone out of responsibility to his family, employees and community."
+background_and_role:
+  - Farm owner in the Agricultural Valley
+  - Son of a foreign-born mother who built the farm from scratch
+  - Sells directly to restaurants and hotels after a corporate scam
 metadata:
   type: human
   role: npc

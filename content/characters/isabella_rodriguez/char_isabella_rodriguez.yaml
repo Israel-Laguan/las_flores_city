@@ -1,12 +1,19 @@
 id: a1b2c3d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d
 name: Isabella Rodriguez
 title: Humanity First Community Organizer and Environmental Activist
+birth_year: 2054
 description: |
   Isabella "Izzy" Rodriguez is a 23-year-old environmental activist and community organizer born in Las Flores' City District. Completing her final year at Universidad Nacional in Environmental Science and Sustainable Development, she leads the university's Humanity First chapter and has interned with local conservation organizations.
 
   As a key Humanity First organizer in the City District, Izzy spearheads initiatives on environmental sustainability, social justice, and community well-being. She educates through workshops on sustainable living and advocates for equitable policies. She balances academic demands with activism, navigates bureaucratic resistance with persistence, and wrestles with self-doubt while forging her own path beyond her parents' legacy.
 
   She plans to graduate with distinction, launch a community garden in her neighborhood, and build a career in sustainable development—driven by the belief that persistent, collective action creates meaningful change.
+physical_description: "Latina woman of 23, about 5'6\" with an athletic build, dark hair tied back in a practical ponytail or bun, warm brown eyes and a friendly open smile; wears casual eco-friendly clothing with a Humanity First pin."
+psychological_description: "Passionate, inquisitive and empathetic; persistent in her activism while wrestling with self-doubt and the weight of her parents' legacy."
+background_and_role:
+  - Leader of the Humanity First chapter at Universidad Nacional
+  - Environmental science student and community organizer
+  - "Born and raised in Las Flores' City District"
 metadata:
   type: human
   role: npc

@@ -1,7 +1,14 @@
 id: e6f7a8b9-c0d1-4e2f-ba4b-5c6d7e8f9a0b
 name: Laura Silva
 title: Investigative Journalist
+birth_year: 2038
 description: Wrote 'How the Business Elite Manipulate Local Politics,' exposing the Business Coalition's shadow government, campaign finance manipulation, and corporate control of Las Flores politics.
+physical_description: "Lean, wiry Latina woman in her late 30s to early 40s with warm-brown skin, straight dark hair pulled back, an oval face with strong jaw, keen wide-set eyes and a faint scar on her left brow."
+psychological_description: "Tenacious and watchful investigative reporter with a sharp, tireless presence."
+background_and_role:
+  - Investigative journalist
+  - "Exposed the Business Coalition's shadow government"
+  - Author of a piece on elite manipulation of local politics
 metadata:
   type: human
   role: npc

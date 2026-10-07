@@ -1,8 +1,16 @@
 id: f47ac10b-58cc-4372-a567-0e02b2c3d479
 name: Ricardo Tan
 title: Popular TV Host, Canal 15
+birth_year: 2034
 description: |
   A charismatic and witty TV host on Canal 15, known for his infectious energy and the catchphrase "Taaaaaan!". While he presents himself as the vibrant "Ricardo Tan," he was born Ricardo Chen, a fact he carefully manages to avoid accusations of nepotism related to a powerful senator of the same name. Beneath his public persona is a sensitive man driven by a desire to elevate the voices of his lower-income community.
+physical_description: "Lean, sturdy Chinese man in his early 40s with styled black hair and dark brown, lively eyes that light up when he speaks; wears a warm, knowing half-smile."
+psychological_description: "Charismatic and witty in public but sensitive underneath; driven to elevate the voices of his lower-income community and be judged on his own merits."
+background_and_role:
+  - "Popular TV host on Canal 15"
+  - "Born Ricardo Chen into a lower-income family"
+  - "Keeps distance from Senator Chen to avoid accusations of nepotism"
+  - "Known for the catchphrase \"Taaaaaan!\""
 metadata:
   type: human
   role: npc

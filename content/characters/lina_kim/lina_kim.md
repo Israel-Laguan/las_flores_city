@@ -3,13 +3,13 @@
 > Tags: `#figure` `#journalist` `#la_prensa` `#investigation` `#lithium`
 > 
 > **Role:** Investigative Journalist at La Prensa
-> **Status:** Active (as of 2065)
+> **Status:** Active (2077)
 
 ## Overview
 Lina Kim is an investigative journalist for La Prensa who led the coverage of the Great Lithium Leak. Her reporting uncovered the extent of environmental damage and the cover-up, bringing international attention to Las Flores.
 
 ## Investigation (September 2052)
-Lina Kim started her investigation into the environmental damage following the spill on September 17, 2052, revealing early evidence of cover-up and negligence.
+The Great Lithium Leak occurred on August 15, 2052. Lina Kim began her investigation into the resulting environmental damage on September 17, 2052, revealing early evidence of cover-up and negligence.
 **Description (full):**
 
 Lina Kim is a tenacious and fearless investigative journalist who has dedicated her career to uncovering truth and seeking justice. Born in 2025 to Korean immigrants in the National Country, she grew up in a multicultural environment that fostered her curiosity about the world. Her parents instilled in her a strong work ethic and a passion for truth—values that have driven her journalistic pursuits throughout her illustrious career.

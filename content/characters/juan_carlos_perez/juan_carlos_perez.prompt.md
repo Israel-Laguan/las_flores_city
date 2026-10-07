@@ -3,7 +3,7 @@ name: Juan Carlos Pérez
 type: portrait
 size: 1024x1024
 source: content/characters/juan_carlos_perez/juan_carlos_perez.md
-target: `portrait_urls[].url` in `content/characters/char_juan_carlos_p_rez.yaml`
+target: `portrait_urls[].url` in `content/characters/juan_carlos_perez/char_juan_carlos_perez.yaml`
 consumer: portrait
 aspect_ratio: 3:4
 ---

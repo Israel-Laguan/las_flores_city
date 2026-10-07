@@ -2,7 +2,7 @@
 
 > Tags: `#figure` `#politics` `#integrity`
 >
-> **Born:** ~2020s (Las Flores)
+> **Born:** ~2045 (Las Flores)
 > **Role:** District official, whistleblower
 > **Status:** Active
 

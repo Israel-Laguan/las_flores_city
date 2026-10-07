@@ -1,7 +1,14 @@
 id: d5e6f7a8-b9c0-4d1e-af3a-4b5c6d7e8f9a
 name: Juan Pablo Hernandez
 title: Activist & Blogger
+birth_year: 2045
 description: Wrote 'Why are Police More Present in Rich Neighborhoods? And Who's Protecting the Poor?' exposing policing disparities and Business Coalition influence over Las Flores politics.
+physical_description: "Lean, wiry Latino man in his early 30s with warm-brown skin, straight untamed dark hair, a long face with prominent jaw, bright watchful round eyes and a slightly asymmetric smile; wears a plain tee under an open overshirt with a laptop bag."
+psychological_description: "Restless and engaged grassroots activist with sharp, alert energy."
+background_and_role:
+  - Activist and blogger
+  - Author of an article on policing disparities between rich and poor neighborhoods
+  - Exposes Business Coalition influence over Las Flores politics
 metadata:
   type: human
   role: npc

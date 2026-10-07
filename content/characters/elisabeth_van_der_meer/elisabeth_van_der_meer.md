@@ -13,13 +13,6 @@
 - Skin: Fair, carefully maintained with subtle cosmetic enhancements
 - Distinguishing features: Pearl necklace, diamond stud earrings, manicured nails in neutral tones, signature red lipstick
 
-## Physical Description
-- Hair: Silver-blonde, styled in an elegant updo, always immaculate
-- Eyes: Pale blue, refined and discerning
-- Build: Tall and graceful, maintains excellent posture
-- Skin: Fair, carefully maintained with subtle signs of aging
-- Distinguishing features: Pearl necklace, diamond stud earrings, elegant tailored gowns, always impeccably groomed
-
 ## Overview
 Elisabeth van der Meer, daughter of Pieter and Marleen van der Meer and a member of the prominent Dutch Van der Meer family, is known throughout Las Flores as an elegant tastemaker, art collector, and philanthropist. She married Carlos Alberto Hernandez in 2038 in a union intended to cement alliances between the Dutch and local political interests. The marriage was a turning point for both families — and for Las Flores politics.
 

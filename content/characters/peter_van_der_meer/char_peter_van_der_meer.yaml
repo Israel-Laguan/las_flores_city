@@ -1,8 +1,15 @@
 id: b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e
 name: Peter van der Meer
 title: Van der Meer Industries Executive, LGBTQ+ Rights Advocate
+birth_year: 2043
 age: 34
 description: Peter van der Meer is the second child of Jan and Maria van der Meer, born into the privilege and expectation of Old Las Flores society. In his mid-level mine administration role, Peter proved himself as a capable and empathetic leader within Van der Meer Industries. His journey has been marked by personal evolution, from questioning his predetermined path to becoming a trailblazer for LGBTQ+ rights in the conservative society of Las Flores.
+physical_description: "Tall, athletic 34-year-old Dutch man with sandy blond hair, pale blue warm eyes, fair skin and a small scar on his chin, in designer suits with a warm smile."
+psychological_description: "Capable, empathetic and courageous, with a warm, approachable demeanor."
+background_and_role:
+  - "Second child of Jan and Maria van der Meer"
+  - "Mine administration executive at Van der Meer Industries"
+  - "LGBTQ+ rights advocate who came out as gay in 2065"
 metadata:
   type: human
   role: npc
@@ -12,7 +19,7 @@ metadata:
   interests: business leadership, LGBTQ+ advocacy, family legacy, environmental innovation
   goals: modernize Van der Meer Industries, honor father's legacy, advance LGBTQ+ rights, develop environmentally-conscious refinery
   relationships: Jan van der Meer (father, deceased 2060), Maria van der Meer (mother), Anna van der Meer (sister), Rafaela (ex-wife), Peter van der Meer Jr. (son), Jan Jr. (husband)
-  notable_events: Married Rafaela in early 20s, came out as gay in 2065, married Jan Jr. at charity gala, father passed in 2060, co-manages mother's care with Anna, oversees cutting-edge refinery development
+  notable_events: Married Rafaela young (c.2062, at about 19-20), came out as gay in 2065, married Jan Jr. at charity gala, father passed in 2060, co-manages mother's care with Anna, oversees cutting-edge refinery development
 lore_path: peter_van_der_meer.md
 asset_paths:
   portrait: peter_van_der_meer__default.png

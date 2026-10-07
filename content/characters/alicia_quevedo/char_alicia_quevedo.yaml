@@ -1,7 +1,14 @@
 id: c3000016-e29b-41d4-a716-446655440016
 name: Alicia Quevedo
 title: Governor of Las Flores
+birth_year: 2015
 description: Became Governor after Juan Pablo Ramos completed his two terms. Governed during the buildup to the Great Lithium Leak and faced the challenge of managing foreign mining interests while maintaining the city's economic boom.
+physical_description: "Latina woman in her early 60s, slender and poised with shoulder-length dark chestnut hair in a professional blowout and warm hazel eyes; light brown skin, an oval face, pearl stud earrings and a small beauty mark above the left corner of her mouth, in a navy blazer with a governor's pin."
+psychological_description: "Sharp, attentive and consolidating, focused on keeping power and the economic boom intact."
+background_and_role:
+  - "Second Governor of Las Flores, succeeding Juan Pablo Ramos in 2041"
+  - "Governed during the buildup to the Great Lithium Leak"
+  - "Managed foreign mining interests while sustaining the city's economic boom"
 metadata:
   type: human
   role: npc

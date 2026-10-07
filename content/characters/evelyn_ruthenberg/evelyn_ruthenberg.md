@@ -11,14 +11,7 @@
 - Eyes: Steel blue, cold and calculating, rarely blinks
 - Build: Lean and wiry, moves with predatory efficiency
 - Skin: Fair, weathered and lined beyond her years, small scars on hands
-- Distinguishing features: Thin white scar along left jawline from the gang attack, worn leather jacket always within reach, no jewelry except a plain silver watch, carries herself like a coiled spring
-
-## Physical Description
-- Hair: Dark brown, streaked with gray, cut short and practical
-- Eyes: Gray-blue, cold and calculating, with deep-set dark circles
-- Build: Lean and wiry, moves with controlled precision
-- Skin: Fair, pale from years of operating in shadows, lined around mouth and eyes
-- Distinguishing features: Thin scar along left jawline from the gang attack, dark circles under eyes, always dressed in dark practical clothing, carries a small flashlight clipped to her belt
+- Distinguishing features: Thin white scar along left jawline from the gang attack, worn leather jacket always within reach, no jewelry except a plain silver watch, carries herself like a coiled spring, dark circles under eyes, small flashlight clipped to her belt
 
 ## Overview
 
@@ -34,11 +27,11 @@ A catastrophic failure of high-pressure pipes at Minera Estrella's processing fa
 
 ## The Karla Encounter (February 2053)
 
-Evelyn's life changed forever when she stumbled into a dark alleyway and witnessed the murder of **Karla**, an internal employee at Minera Estrella who knew Cecilia Pérez. Karla was brutally attacked by [Li Wei's](../organizations/companies/li_wei.md) corporate enforcers because she was trying to leak the truth. Before Karla died, she pressed a small green pouch into Evelyn's hands. Inside was a key, a note for her missing sister Nubia, and the ultimate proof: **Carinata seeds** and a study conducted by biologist **Cecilia Pérez**. The study demonstrated that the plants had shown lithium resistance **a full year before** the public disaster, proving pre-leak contamination had been documented and ignored.
+Evelyn's life changed forever when she stumbled into a dark alleyway and witnessed the murder of **Karla**, a farmer and agronomist who had worked with Cecilia Pérez on her Carinata research. Karla was brutally attacked by [Li Wei's](../organizations/companies/li_wei.md) corporate enforcers because her research threatened the cover-up. Before Karla died, she pressed a small green pouch into Evelyn's hands. Inside was a key, a note for her missing sister Nubia, and the ultimate proof: **Carinata seeds** and the research of biologist **Cecilia Pérez**. Cecilia's study demonstrated that the plants resisted lithium **three years before** the public disaster, and Karla's own field notes confirmed it.
 
 ## The Apartment Discovery (September 2053)
 
-Evelyn found Karla and Nubia's apartment. Inside, a small wooden box contained: a copy of Cecilia Pérez's suppressed study, internal emails between Minera Estrella executives discussing dam structural issues, a handful of **Carinata seeds**, and a note in Karla's handwriting: *"Busca tras el detergente, tengo la plata de las primas, te quiero."* The evidence was irrefutable—corporate negligence, cover-up, and silencing of witnesses.
+Evelyn found Karla and Nubia's apartment. Inside, a small wooden box contained: the original preprint of Cecilia Pérez's Carinata study, Karla's full field notes confirming it on her own plantation, a handful of **Carinata seeds**, and a note in Karla's handwriting: *"Busca tras el detergente, tengo la plata de las primas, te quiero."* The science was irrefutable, but without the audit context it could not yet prove the cover-up; the audit reports only reached her in 2059, through Liu Fang and the university student.
 
 In October 2053, Evelyn investigated but chose not to come forward, fearing for her life.
 
@@ -114,7 +107,7 @@ Evelyn Ruthenberg is the silent architect of Las Flores' liberation. What began 
 - Internal emails between Minera Estrella executives discussing structural issues before the leak
 - Documents showing bribes paid to city council members
 - **Cecilia Pérez's original Carinata phytoremediation study** (pre-leak contamination proof)
-- **Carinata seeds** recovered from Karla and Nubia's apartment
+- **Carinata seeds** and **Karla's full field notes** recovered from Karla and Nubia's apartment
 - Testimony from whistleblowers within Minera Estrella
 - A copy of Liu Fang's memory card evidence
 - Intelligence files on corrupt officials, judges, and enforcers

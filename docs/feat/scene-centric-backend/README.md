@@ -5,8 +5,9 @@ around the **scene** as the unit of composition rather than the character. Built
 `api/` tree alongside the existing `server/`, `scripts/`, and `content/`, which keep
 working until each old component's kill condition is met.
 
-**Status:** SC-M1 complete; SC-M2 in progress — flags & conditions (SC-201–SC-206) are Done and
-SC-301–SC-303 (scene entity, role slots, base+overlay composition) are In Progress. Everything
+**Status:** SC-M1 complete; SC-M2 in progress — flags & conditions: SC-201–SC-206 are Done
+(SC-202 includes its DB adapter, `PgFlagRegistry`, and migration 097).
+SC-301–SC-303 (scene entity, role slots, base+overlay composition) are Ready, not started. Everything
 past SC-M2 is provisional and revised at retro. Per-story states: [backlog.md](backlog.md).
 
 ---
@@ -23,6 +24,7 @@ Read these to know what is being built, in what order.
 | [backlog.md](backlog.md) | Product backlog — 9 epics, ~60 stories with blockers and sizes, 6 spikes, 2 defects |
 | [sprint-01.md](sprint-01.md) | **FIRM.** Foundation and spikes: module tree, boundary lint rule, schemas and roles, the two live defect fixes, six spikes |
 | [sprint-02.md](sprint-02.md) | **COMPLETED.** Flags and conditions — the head of the critical path. SC-201–SC-206 are Done |
+| [sprint-03.md](sprint-03.md) · [sprint-03/](sprint-03/README.md) | **PLANNED.** Scene model & composition + hygiene/bugfixes + spikes — 32 tasks / 91 mechanical sub-tasks, P0/P1/P2 |
 | [spikes/](spikes/) | Spike write-ups, with the template and index |
 
 ## Reference and technical documents

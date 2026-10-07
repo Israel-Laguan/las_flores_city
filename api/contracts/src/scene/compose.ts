@@ -33,7 +33,7 @@ export const SCENE_COMPOSE_ISSUE_CODES = {
   SCENE_SLOT_MISSING: 'SCENE_SLOT_MISSING',
   SCENE_OVERLAY_BASE_MISMATCH: 'SCENE_OVERLAY_BASE_MISMATCH',
   SCENE_OVERLAY_NEVER_APPLIES: 'SCENE_OVERLAY_NEVER_APPLIES',
-  /** SC-304: co-satisfiable overlays at equal priority write the same weather/time. */
+/** SC-304: co-satisfiable overlays at equal priority write the same weather/time. */
   SCENE_EXCLUSIVE_CONFLICT: 'SCENE_EXCLUSIVE_CONFLICT',
   /** SC-304: co-satisfiable overlays at equal priority cast one slot to different characters. */
   SCENE_SLOT_CAST_CONFLICT: 'SCENE_SLOT_CAST_CONFLICT',

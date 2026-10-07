@@ -1,8 +1,15 @@
 id: d848a4a6-e764-45c0-96ce-0bfe36d6762f
 name: Li Wei
 title: Founding Investor & Former CEO, LW Group
+birth_year: 1986
 description: |
   The architect of LW Group's dominance in Las Flores and a former CEO who bridged Chinese state interests with local power. While he projected an image of a benevolent patriarch, he is the man who approved the 2052 Great Lithium Leak cover-up and orchestrated the murder of whistleblower Cecilia Perez. Now in his 90s, he serves as an advisor and "emperor in the shadows," wielding immense influence through a network of secrets and debts. He is a study in contradiction: a cultured, soft-spoken elder whose legacy is built on cold calculus and the erasure of those who stood in the way of his strategic vision.
+physical_description: Medium-height Chinese man of 91 with a solid frame, dark expressive eyes, a straight nose and a defined jaw, composed and steady in bearing.
+psychological_description: Cultured, soft-spoken elder statesman with a cold strategic calculus; projects a benevolent patriarch's image while guarding the city's most dangerous secrets.
+background_and_role:
+  - Founding investor and former CEO of LW Group
+  - Bridged Chinese state interests with local power
+  - Now an advisor and "emperor in the shadows" steering the conglomerate through debts and loyalties
 metadata:
   type: human
   role: npc

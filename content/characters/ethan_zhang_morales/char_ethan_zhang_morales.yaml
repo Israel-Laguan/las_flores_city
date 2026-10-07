@@ -1,10 +1,17 @@
 id: 307ce7e1-71b8-4baf-9217-8184e4b46cde
 name: Ethan Zhang-Morales
 title: Mechanical Engineering Student, Anime Enthusiast, and Aspiring Technician
+birth_year: 2056
 description: |
   Ethan Zhang-Morales is a charmingly goofy and prideful 21-year-old mixed Chinese and Latino student hailing from a multicultural neighborhood near the port area in Las Flores. Growing up in a family that values hard work, he developed a fascination with machines and engineering from a young age. His parents encourage him to pursue a degree in engineering to build a stable future.
 
   Ethan is somewhat chubby, with a rounded face and a noticeable double chin. He has short, messy black hair and round glasses that often slip down his nose. His casual attire consists of oversized graphic t-shirts featuring anime characters, paired with comfortable pants or shorts. His expressive brown eyes twinkle with mischief, and he's known for his goofy smile.
+physical_description: Somewhat chubby 21-year-old mixed Chinese-Latino man with a rounded face, double chin, short messy black hair and round glasses that slip down his nose; has mischievous brown eyes, a goofy lopsided smile, and wears oversized anime graphic tees.
+psychological_description: Goofy, proud and ambitious; masks his insecurities with humor and sarcasm while chasing a stable future.
+background_and_role:
+  - Mechanical Engineering student focused on machine repair and maintenance
+  - Raised in a multicultural neighborhood near the port
+  - Aspiring technician encouraged by his parents toward engineering
 metadata:
   type: human
   role: npc

@@ -1,7 +1,14 @@
 id: b5c6d7e8-f9a0-4a1b-ac3d-4e5f6a7b8c9d
 name: Alejandro Ruiz
 title: Senior Investigative Reporter, La Prensa
+birth_year: 2032
 description: Investigative reporter with a track record of uncovering corporate misconduct and government corruption. His investigations have led to significant legal reforms and high-profile resignations.
+physical_description: "Latino man in his 40s with a lean, wiry build and weathered brown skin; wavy dark hair threaded with gray, thick brows with a faint scar, deep-set watchful eyes, a healed crooked nose, and a rumpled jacket over an open collar."
+psychological_description: "Relentless and watchful, driven to expose wrongdoing."
+background_and_role:
+  - "Senior investigative reporter at La Prensa"
+  - "Track record of uncovering corporate misconduct and government corruption"
+  - "His investigations led to legal reforms and high-profile resignations"
 metadata:
   type: human
   role: npc

@@ -1,7 +1,14 @@
 id: 65b4b4b1-5e0e-49cf-b04b-27df9ac98cce
 name: Sofia Delgado
 title: charismatic young woman who represents t
+birth_year: 2055
 description: "- 22 - Sofia grew up in Bahía de las Olas, surrounded by the rich marine life and vibrant tourism that define the town. Coming from a family of fishermen, she developed a strong affinity for the ocean and learned the ins and outs of seafood preparation from a young age. Her family's fishing business inspired her to carve out her own niche by selling fresh seafood directly on the beach. - \\ 22 - \\ Sofia grew up in Bahía de las Olas, surrounded by the rich marine life and vibrant tourism that define the town."
+physical_description: "Latina woman in her early 20s with an athletic-compact build, heart-shaped face, round warm brown eyes, sun-freckled skin and wavy sun-lightened dark hair; wears a practical seafood apron."
+psychological_description: "Shrewd and charismatic, with a strong affinity for the ocean and an entrepreneurial streak."
+background_and_role:
+  - "Beach seafood vendor from Bahia de las Olas"
+  - "Comes from a family of fishermen"
+  - "Sells fresh seafood directly on the beach"
 metadata:
   type: human
   role: npc

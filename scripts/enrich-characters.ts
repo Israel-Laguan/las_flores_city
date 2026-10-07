@@ -261,7 +261,7 @@ async function enrichCharacter(characterFolder: string, index: number): Promise<
   // Skip if already fully enriched with all 4 fields
   if (characterData.physical_description && characterData.psychological_description && 
       characterData.background_and_role?.length > 0 && 
-      characterData.birth_year != null) {
+characterData.birth_year != null) {
     console.log(`  ✅ Already fully enriched: ${characterData.name}`);
     return { success: true, character: characterData.name, folder: characterFolder };
   }
@@ -331,7 +331,6 @@ async function enrichCharacter(characterFolder: string, index: number): Promise<
       console.error(`  ❌ Enriched data failed schema validation for ${characterData.name}: ${detail}`);
       return { success: false, character: characterData.name, folder: characterFolder, error: `Schema validation failed: ${detail}` };
     }
-
     // Write back to YAML file
     const writeSuccess = writeYamlFile(yamlPath, enrichedData);
     
@@ -383,7 +382,7 @@ async function main() {
         const testResponse = await fetch(url, {
           method: 'GET',
           headers: { 'Authorization': `Bearer ${LLM_CONFIG.apiKey}` },
-          signal: AbortSignal.timeout(5000),
+signal: AbortSignal.timeout(5000),
         });
         if (testResponse.ok) {
           isHealthy = true;

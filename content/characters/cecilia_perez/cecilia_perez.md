@@ -24,7 +24,7 @@ Her findings were suppressed by LW Group leadership, who chose to ignore the war
 
 ### Phase 2: Independent Research (2049)
 
-Rather than abandon her work, Cecilia pivoted to independent research. She obtained a **university research grant** by framing her proposal in neutral, scientific language: *"a comparative study of native and introduced plant species and their influence on the local ecosystem."* The grant description deliberately avoided any mention of lithium contamination — she knew that referencing the cover-up would doom her application. Half genuine scientific curiosity, half calculated deception, the grant gave her institutional cover and access to Minera Estrella property to set up experimental fields.
+Rather than abandon her work, Cecilia pivoted to independent research. She obtained a **university research grant** by framing her proposal in neutral, scientific language: *"a comparative study of native and introduced plant species and their influence on the local ecosystem."* The grant description deliberately avoided any mention of lithium contamination — she knew that referencing the cover-up would doom her application. Half genuine scientific curiosity, half calculated deception, the grant gave her institutional cover and access to Minera Estrella property to set up experimental fields. She also brought in **Karla**, a local agronomist who grew Carinata, to compare how the plant behaved in a working plantation. Cecilia deposited a preprint of her Carinata findings at the university — scientific in tone, with none of the audit context.
 
 Her true objective was to investigate a puzzling observation she had made during her audits: certain plants thriving in areas that should have been heavily contaminated by lithium runoff. She suspected these plants were tolerating — or even remediating — the contamination.
 
@@ -36,11 +36,11 @@ In her experimental field on the outskirts of Minera Estrella's controlled area,
 2. The plant species **Carinata** demonstrated remarkable phytoremediation capacity for lithium-contaminated soil.
 3. The leakage patterns correlated with specific structural failures that had been documented in her original audit reports — the same reports now locked away by LW Group.
 
-Weeks from publishing a paper that would have exposed years of corporate negligence, Cecilia was found stabbed in a City District alley. The official ruling was a random robbery, but her roommate Nubia and those who knew her work suspected assassination. The timing — just before her breakthrough paper was to be submitted — made the coincidence impossible to ignore.
+Weeks from publishing a paper that would have exposed years of corporate negligence, Cecilia was found stabbed in a City District alley. The official ruling was a random robbery, but Karla, a farmer and agronomist who had been working with her on the Carinata study, and others who knew her work suspected assassination. The timing — just before her breakthrough paper was to be submitted — made the coincidence impossible to ignore.
 
 ## Legacy
 
-Cecilia's evidence — including data from her phytoremediation experiments and copies of her original suppressed audit reports — was later collected by **Liu Fang** and passed to **Evelyn Ruthenberg**. Her dual contribution — both as an auditor who first documented the structural problems and as a researcher who proved the pre-leak contamination — made her one of the most important whistleblowers in the case against Minera Estrella.
+Cecilia's work survived along two separate threads. After her murder, the data from her safety audits and copies of her original suppressed audit reports passed to **Liu Fang**, who carried them until she was killed in 2059 and passed them to a university student and, through that student, to **Evelyn Ruthenberg**. Her Carinata preprint, meanwhile, was found at the university by **Karla**, who continued the study on her own plantation; the original preprint and Karla's full notes reached Evelyn in 2053 from **Nubia and Karla's apartment**. Her dual contribution — both as an auditor who first documented the structural problems and as a researcher who proved the pre-leak contamination — made her one of the most important whistleblowers in the case against Minera Estrella.
 
 The plant species **Carinata** she identified later became central to the phytoremediation restoration plan devised by Evelyn Ruthenberg and Dr. Wei Zhang in 2058.
 

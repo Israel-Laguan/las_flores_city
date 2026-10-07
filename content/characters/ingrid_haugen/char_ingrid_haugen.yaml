@@ -1,8 +1,15 @@
 id: 550e8400-e29b-41d4-a716-446655440004
 name: Ingrid Haugen
 title: Field Liaison, N&M LTD
+birth_year: 2038
 description: |
   A corporate liaison from Nakamura & Morgan LTD. She speaks in clipped, efficient sentences and always seems to know more than she lets on. She is professionally empathetic—she knows how to make subjects feel heard without actually caring.
+physical_description: Scandinavian woman in her late 30s, tall and sharp-featured with unnervingly perfect posture, fair skin, severely pulled-back blonde hair and cold pale blue eyes; wears immaculate professional attire and carries a company-issued tablet.
+psychological_description: Professionally compartmentalized; speaks in clipped, efficient sentences and uses emotional intelligence for control rather than empathy.
+background_and_role:
+  - Field Liaison for Nakamura & Morgan LTD
+  - Norwegian-born, relocated to Las Flores for her placement
+  - Client-facing handler and first human contact for new arrivals
 metadata:
   type: human
   role: quest_giver

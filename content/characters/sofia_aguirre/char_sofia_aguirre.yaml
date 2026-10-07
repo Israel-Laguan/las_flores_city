@@ -1,7 +1,14 @@
 id: a1b2c3d4-e5f6-7890-abcd-ef1234567893
 name: Sofia Aguirre
 title: Nursing Student & Healthcare Aspirant
+birth_year: 2045
 description: A 32-year-old nursing student from San Pedro de los Pescadores who moved to Las Flores for professional growth. She aims to secure an administrative healthcare position in her hometown or Old Las Flores to improve local services. Her bubbly personality and motherly nature make her a natural mentor to younger peers, while her playful romantic side adds complexity.
+physical_description: "Woman with warm, rich brown skin and long curly hair styled in loose waves; favors colorful professional outfits."
+psychological_description: "Bubbly, nurturing and motherly, a natural mentor with a playful romantic side."
+background_and_role:
+  - "Nursing student from San Pedro de los Pescadores"
+  - "Moved to Las Flores for professional growth"
+  - "Aims for an administrative healthcare role in her hometown or Old Las Flores"
 metadata:
   type: human
   role: npc

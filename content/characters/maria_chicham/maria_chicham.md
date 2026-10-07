@@ -7,14 +7,7 @@
 - Eyes: Dark brown, bright and confident
 - Build: Slender and graceful, moves with poise
 - Skin: Warm brown, smooth and radiant
-- Distinguishing features: Traditional beaded jewelry, radiant smile, often wears Shipibo-patterned clothing, confident posture
-
-**Physical Description:**
-- Hair: Jet black, long and straight with traditional beads woven into braids
-- Eyes: Dark brown, bright and confident
-- Build: Slender and graceful, moves with poise
-- Skin: Warm brown complexion, smooth and radiant
-- Distinguishing features: High cheekbones, bright smile, traditional Shipibo embroidered clothing, gold nose stud, always carries a beaded medicine bag
+- Distinguishing features: Traditional beaded jewelry, radiant smile, often wears Shipibo-patterned clothing, confident posture, high cheekbones, gold nose stud, always carries a beaded medicine bag
 
 **Description (full):**
 

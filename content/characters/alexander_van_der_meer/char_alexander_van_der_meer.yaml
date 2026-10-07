@@ -1,7 +1,14 @@
 id: c1000003-e29b-41d4-a716-446655440003
 name: Alexander van der Meer
 title: Former Executive at Global Lithium Corp
+birth_year: 1992
 description: Born into privilege as eldest child of Pieter and Marleen van der Meer. Moved to Las Flores in his early 20s (~2015) for his father's GLC role. Married Wang Mei Li and had two children of the marriage (Xiu Li and Dong); his infidelity also produced an illegitimate son, Liam. Engaged in numerous affairs; in 2045 a scandal involving a young employee forced his resignation from GLC. Wang Mei Li divorced him and retained custody. By 2059, Alexander spiraled into alcoholism and depression. In 2077, a public incident forced him into rehabilitation. Now in his mid-80s, attempting to rebuild his life.
+physical_description: "Elderly Dutch man, tall and lean with steel-gray hair combed back in a precise side part, pale blue eyes and a sharp angular jaw; fair, age-spotted skin, wire-rimmed reading glasses on a gold chain, and a gold signet ring."
+psychological_description: "Fallen aristocrat marked by alcoholism and depression, now attempting to rebuild his life."
+background_and_role:
+  - "Eldest child of Pieter and Marleen van der Meer"
+  - "Former executive at Global Lithium Corp, forced to resign in 2045 after a scandal"
+  - "Divorced from Wang Mei Li; entered rehabilitation after a public incident in 2077"
 metadata:
   type: human
   role: npc
@@ -12,7 +19,7 @@ metadata:
   background:
     - born into privilege
     - traveled between Africa and Europe
-    - moved to Las Flores in his early 20s (~2015)
+    - moved to Las Flores in his early 20s (~2015) as GLC's advance liaison; the family followed in 2030
   relationships:
     - married Wang Mei Li
     - "two children of the marriage: Xiu Li (eldest) and Dong; illegitimate son Liam"

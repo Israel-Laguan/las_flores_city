@@ -1,12 +1,19 @@
 id: c1000006-e29b-41d4-a716-44665544000e
 name: Alberto Santiago
 title: El Pescador - Coastal Seafood Vendor
+birth_year: 2027
 description: |
   Alberto Santiago, known as 'El Pescador,' is a sturdy, sun-weathered seafood vendor who brings fresh Pacific Coast catch to Las Flores restaurants daily. Standing about 5'10" with thick black hair streaked with silver and a calm, knowing smile, he carries the dignified bearing of a man who has spent five decades mastering his trade. His practical work clothes are sun-faded, though he dresses finer when making special deliveries or visiting the bakeries where someone he admires might be working.
 
   At 50, he balances gravitas with charm. Lively and outgoing, Alberto charms others with dry humor and warm optimism. He grew up in a fishing family along the Pacific Coast, learning the trade from his father before establishing his own seafood vending business. Each morning he delivers fresh catch to local restaurants.
 
   After deliveries he indulges his sweet tooth at local bakeries, flirting playfully, and dreams of growing his business to spread joy through coastal flavors.
+physical_description: "50-year-old Latino seafood vendor with a sturdy, sun-weathered build, dark brown eyes crinkled at the corners and thick black hair streaked with silver; sun-faded work shirt and worn trousers."
+psychological_description: "Outgoing and charming, with dry humor and warm optimism; balances dignified gravitas with a playful, flirtatious streak."
+background_and_role:
+  - "Pacific Coast seafood vendor known as El Pescador"
+  - "Delivers fresh catch to Las Flores restaurants each morning"
+  - "Raised in a family of fishermen with five decades in the trade"
 metadata:
   type: human
   role: npc

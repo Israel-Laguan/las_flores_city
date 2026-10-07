@@ -1,12 +1,19 @@
 id: 12d45902-c579-4520-b341-96bee23a5fda
 name: Ana Ramirez
 title: Environmental Activist, Indigenous Rights Advocate, CJS Founder
+birth_year: 2045
 description: |
   Ana Ramirez is a 32-year-old indigenous political leader who heads La Coalición por la Justicia Social (CJS). Born into a family of activists in Las Flores' rural outskirts, she witnessed mining's impact on native communities and ancestral lands firsthand. Inspired, she earned a degree in environmental science to protect both the environment and indigenous rights.
 
   As CJS founder, she crafts advocacy strategies, works with progressive politicians, and supports Yara Rossi's restoration efforts to mitigate mining damage and foster sustainable development. Her commitment drives bold stances against powerful interests, centering indigenous experiences.
 
   Her leadership prioritizes the voices of native communities. She speaks on environmental justice and indigenous rights intersectionality, prefers nonviolent direct action and grassroots organizing, and incorporates traditional practices into CJS's advocacy work.
+physical_description: "32-year-old indigenous woman, athletic and strong with thick dark brown hair with copper highlights in a long braid, deep amber eyes and warm copper-brown skin; high cheekbones, a strong jaw, a small chin scar, and a woven bracelet on her left wrist."
+psychological_description: "Passionate, intelligent and humble, committed to nonviolent grassroots action and to centering native voices."
+background_and_role:
+  - "Founder and head of La Coalición por la Justicia Social (CJS)"
+  - "Environmental science graduate from a family of indigenous activists"
+  - "Supports Yara Rossi's restoration efforts and builds advocacy strategies"
 metadata:
   type: human
   role: npc

@@ -32,7 +32,7 @@ He seeks to mentor the next generation of journalists, knowing he won't live for
 
 ## Alliances
 
-Juan maintains a network of allies across Las Flores' marginalized communities. His closest ties include his sister **Cecilia Rodríguez**, a nurse who runs a clinic in San Miguel del Monte and often tips him off to health crises the government ignores; **Father Mateo**, a liberation theology priest who shelters journalists and sources in his church; and **Lupita "La Chispa,"** a retired gang leader turned community organizer who provides security for reporters in dangerous neighborhoods.
+Juan maintains a network of allies across Las Flores' marginalized communities. His closest ties include his much younger half-sister **Cecilia Rodríguez**, a nurse who runs a clinic in San Miguel del Monte and often tips him off to health crises the government ignores; **Father Mateo**, a liberation theology priest who shelters journalists and sources in his church; and **Lupita "La Chispa,"** a retired gang leader turned community organizer who provides security for reporters in dangerous neighborhoods.
 
 He has a complex relationship with the city's other media outlets. **Oscar Mendoza**, editor of the pro-corporate *El Diario de Las Flores*, is his longtime rival, though they share a grudging mutual respect. The Valdez Cartel has offered Juan "protection money" 17 times over the years; he's refused every time, though the cartels still plant stories in rival papers to discredit *El Informador*.
 

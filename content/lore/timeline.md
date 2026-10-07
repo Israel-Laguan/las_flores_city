@@ -160,7 +160,7 @@ An anonymous whistleblower sends Yara Liu Fang's evidence: container weakness do
 Yara Rossi is assassinated returning from an investor meeting. Her murder remains unsolved. The evidence memory card is taken from her body. Dr. Wei Zhang is pressured by Chinese investors to switch allegiances; his family in China faces threats. Mayor Vega appoints him as the new head of the restoration project. The Movement begins to crumble under false accusations of embezzlement. Evelyn Ruthenberg vows to continue gathering evidence on her own, maintaining a low profile. Dr. Wei Zhang publicly aligns with the city council and Minera Estrella, continuing his work covertly alongside Evelyn through a clandestine channel.
 
 ### 2059 — The Student USB Flashback (August)
-During a massive anti-mining protest at Estación Central, an assassin working for Li Wei stabs a friend of Cecilia Perez who had held onto backup data. A university student witnesses the murder and receives the USB from the dying woman. The student escapes the assassin (posing as a doctor) in a cinematic confrontation.
+During a massive anti-mining protest at Estación Central, an assassin working for Li Wei stabs **Liu Fang**, who had inherited Cecilia Perez's audit data. A university student witnesses the murder and receives the USB from the dying woman. The student escapes the assassin (posing as a doctor) in a cinematic confrontation.
 
 ### 2059 — The Underground Handoff (September)
 The student attempts to deliver the USB to the mainstream press, but they ignore it due to corporate pressure. Frustrated, the student posts an encrypted sample on the underground network *El Grito Estudiantil*. Evelyn Ruthenberg intercepts the post, tracks down the student, and secures the drive, obtaining the exact target list she needs for her vigilante campaign.
@@ -190,7 +190,7 @@ Rafaela, ex-wife of Peter van der Meer, gives a bombshell interview revealing th
 Chang's administration sought new foreign investment, deepening ties with the Chinese business community.
 
 ### 2075 — LGBTQ+ Anti-Discrimination Law
-Las Flores passes landmark legislation outlawing discrimination based on sexual orientation and gender identity — a historic milestone influenced heavily by the van der Meer family's advocacy and Peter Jr.'s "Amor Verdadero" organization.
+Las Flores passes landmark legislation outlawing discrimination based on sexual orientation and gender identity — a historic milestone influenced heavily by the van der Meer family's advocacy and the Amor Verdadero organization (later fronted by Peter Jr.).
 
 ### 2077 — The Endgame (Alex's Movement)
 Alex, a resident whose mother died from lithium contamination, discovers the truth of the cover-up. After initially clashing with Evelyn Ruthenberg, Alex joins forces with her and builds a grassroots movement to take down the LW Group.

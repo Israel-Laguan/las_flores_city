@@ -1,7 +1,7 @@
 # Sprint 03 — Scene Model and Composition
 
 **Milestone:** SC-M2 (Scene model + compile) · **Dates:** TBD (after Sprint 02 completion)
-· **Status:** READY (unblocked by SC-204 landing)
+· **Status:** PLANNED — expanded task plan in [`sprint-03/`](sprint-03/README.md) (32 tasks: P0 commit, P1 forecast)
 
 **Sprint goal:** The scene entity exists as a first-class authored object with base + overlay
 composition, providing the stable input the compile step needs. This is the foundation for
@@ -17,6 +17,12 @@ depends on F7) which is in turn a prerequisite for runtime resolution (F5).
 **Capacity.** ~6 days planned across 10 calendar days, matching the Sprint 02 cadence.
 
 ---
+
+> **Scope expansion.** The four tickets below are the *core*; the sprint also carries
+> hygiene/bugfixes, spikes (SC-S12/S13 new, S8–S11 pulled forward), SC-304, SC-305 and
+> server integration. The authoritative list, priorities, cut order and DoD are in
+> [`sprint-03/README.md`](sprint-03/README.md). SC-309 is split into SC-309a/b/c.
+> Sprint 4 is chosen at this sprint's retro.
 
 ## 1. Committed tickets
 
@@ -63,14 +69,19 @@ change participant casts, or modify properties.
     case is **out of scope for SC-303** and deferred to SC-304, which owns failing the compile
     (see the "Equal-priority conflict on an exclusive property fails the compile" row in §4's
     exit-criteria table).
-- Overlay is applied at compile time, not at runtime — the compiled artifact is the resolved
-  result.
+- Overlay *ordering, conflicts and validity* are resolved at compile time. Overlays with a
+  constant `availability` are folded into the base at compile; flag-gated overlays are kept as
+  ordered conditional layers in the artifact and selected per player at runtime with the shared
+  `evaluate` (SC-S13: `spikes/SC-S13-flag-gated-overlays.md`). The compiled artifact is
+  base + validated layers, not a single player's result.
 
 ### SC-309 · `districts.weather` column + seed defaults · S · `planning`
 
 The district-level weather default that SC-301's scene-over-district resolution inherits from.
 Small scope, and a commitment rather than stretch because SC-301's acceptance criteria cannot be
 met without the weather source it reads.
+
+> **Status: Done (merged).** See `sprint-03/group-c-district-weather.md`.
 
 **Acceptance**
 - Migration adds a `weather` column to `districts`, seeded with a default per district.
@@ -128,9 +139,8 @@ scene entity lands.)
 ## 5. Open questions (to be resolved during sprint)
 
 None identified at sprint planning. SC-S1 through SC-S5 spike answers are now committed and
-reproducible, providing the necessary datastore assumptions. SC-S6 is the exception: its
-committed harness is a stub, so its numbers remain a historical record — see
-`spikes/SC-S6-serving-baseline.md`.
+reproducible, providing the necessary datastore assumptions. SC-S6's harness is now runnable
+(BF-305) — see `spikes/SC-S6-serving-baseline.md`.
 
 ---
 
@@ -144,9 +154,8 @@ SC-S6) inform the shape of these tickets. Specifically:
 - SC-S3 proves array-aware merge is needed for MODIFY deltas
 - SC-S4 provides the pg_trgm alias detection baseline
 - SC-S5 resolves weather source (scene overrides district)
-- SC-S6 provides serving baseline numbers (historical only — the committed harness is a stub,
+- SC-S6 provides serving baseline numbers (re-runnable: `npm run spike:serving-baseline --workspace=server`,
   see `spikes/SC-S6-serving-baseline.md`)
 
-All of these answers are now committed, and SC-S1 through SC-S5 are reproducible from their
-committed harnesses, unblocking SC-M2. SC-S6's numbers are uncommitted historical results and
-must not be treated as a re-runnable baseline.
+All of these answers are now committed, and SC-S1 through SC-S6 are reproducible from their
+committed harnesses, unblocking SC-M2.

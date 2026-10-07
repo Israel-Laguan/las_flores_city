@@ -1,10 +1,17 @@
 id: 377c810b-9c70-41ee-ad3d-9941766bf5b1
 name: Amina Patel
 title: CLM Finance Manager
+birth_year: 2042
 description: |
   Amina Patel is a South Asian Indian finance manager in her mid 30s at China Lithium & Metals. Born and raised in Mumbai, she came to Las Flores eight years ago for better work opportunities after earning her finance degree from the Indian Institute of Management Ahmedabad. Intelligent, meticulous, and private, she excels at analyzing complex financial data while avoiding attention.
 
   In CLM's male and Chinese-dominated corporate environment, Amina faces subtle discrimination that limits her promotion prospects despite her competence. She has noticed signs of bribery and money laundering inside the company, but lacks hard evidence and stays silent out of fear for her job and safety. She lives in a gated community outside the city center with other Indian expatriates and keeps upgrading her skills through online courses.
+physical_description: "South Asian Indian woman in her mid-30s, petite and compact with jet black hair in a neat bun, dark observant eyes and deep brown skin; a small gold nose stud, round wire-rimmed glasses, a silver bangle, and a white blouse with a navy blazer."
+psychological_description: "Intelligent, meticulous and private; avoids attention and stays silent out of fear for her job and safety."
+background_and_role:
+  - "Finance manager at China Lithium & Metals"
+  - "Born in Mumbai; trained at the Indian Institute of Management Ahmedabad"
+  - "Has noticed signs of bribery and money laundering but lacks hard evidence"
 metadata:
   type: human
   role: npc

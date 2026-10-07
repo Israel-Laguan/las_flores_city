@@ -1,7 +1,14 @@
 id: c1000001-e29b-41d4-a716-446655440001
 name: Evelyn Ruthenberg
 title: Whistleblower, Shadow Investigator, Architect of the 2077 Liberation
+birth_year: 2029
 description: Former Luz del Rio engineer who discovered the Great Lithium Leak cover-up in 2053 after meeting activist Karla. She recovered key evidence from Karla's apartment but was assaulted by Minera Estrella enforcers and forced into hiding. After the 2057 acquittal destroyed her faith in legal justice, she allied with Yara Rossi and Dr. Wei Zhang on a phytoremediation plan while covertly building an intelligence network. When Yara was assassinated in 2059, Evelyn began a two-decade vigilante campaign, systematically killing eight architects of the cover-up. In 2077, she allied with Alex Garcia, providing tactical support for the grassroots movement. After the raid on Mayor Vega's estate, she surrendered to Chief Inspector Adeyemi and insisted he take credit. Her trial exposed the full cover-up; she was convicted of manslaughter, sentenced to fifteen years, and served four.
+physical_description: Caucasian woman in her late 40s, lean and wiry, with fair weathered skin, dark brown hair with premature gray streaks in a practical ponytail and steel-blue eyes with dark circles; has a thin white scar along the left jawline and wears a plain silver watch and a dark practical jacket.
+psychological_description: A shadow investigator; quick, efficient and severe, trusting selectively and carrying survivor's guilt and the moral weight of her actions.
+background_and_role:
+  - Former engineer at the Luz del Río energy plant
+  - Whistleblower who uncovered the Great Lithium Leak cover-up in 2053
+  - Spent two decades building an intelligence network against those responsible
 metadata:
   type: human
   role: npc

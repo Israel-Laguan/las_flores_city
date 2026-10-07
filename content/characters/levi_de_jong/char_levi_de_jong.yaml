@@ -1,8 +1,15 @@
 id: 5f4d9c7a-8e2b-4a6c-9b3e-12d8a2f9c341
 name: Levi de Jong
 title: Ambitious Socialite and Aspiring Influencer
+birth_year: 2053
 description: |
   Levi de Jong, 24, charismatic Dutch socialite in Las Flores. Born to prestigious Dutch family relocated for lithium industry. Lives in city center apartment, navigates elite social circles with charm. Targets wealthy older men for benefactors. Fascinated with high-end fashion, nightlife, and social media curation. Balances corruption-blackmail accusations with socialite living.
+physical_description: Athletic Dutch man of 24 with a sleek, polished look, stylishly cut dark hair and piercing blue eyes, dressed in the latest fashionable trends.
+psychological_description: Charismatic, ambitious and manipulative, with an anxious undercurrent; cultivates elite connections and a curated social media image.
+background_and_role:
+  - Dutch socialite from a family relocated for the lithium industry
+  - Aspiring influencer in Las Flores' elite and nightlife circles
+  - Seeks wealthy benefactors; faces blackmail and corruption accusations
 metadata:
   type: human
   role: npc

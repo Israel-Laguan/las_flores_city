@@ -1,7 +1,14 @@
 id: 291eece2-4ed7-4f19-8c00-283ab3dfcd50
 name: Carlos Lopez
 title: Community Verifier, Humanity First
+birth_year: 2032
 description: A small business owner who serves as a vital verifier for Humanity First's projects. His practical skepticism and keen eye are essential for ensuring funds are used transparently.
+physical_description: "Stocky, broad-shouldered Latino man in his mid-40s with weathered olive-brown skin, thick wavy dark hair graying at the temples, wide-set deep brown eyes and a strong jawline; wears a collared shirt with rolled sleeves and carries a weathered clipboard."
+psychological_description: "Practical and skeptical, with a calm, focused bearing and a keen eye for whether funds are used transparently."
+background_and_role:
+  - "Small business owner"
+  - "Community verifier for Humanity First's projects"
+  - "Ensures funds are used transparently"
 metadata:
   type: human
   role: npc

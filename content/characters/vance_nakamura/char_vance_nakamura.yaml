@@ -1,8 +1,15 @@
 id: 3b2b8000-e29b-41d4-a716-446655440001
 name: Vance Nakamura
 title: Behavioral Supervisor, N&M LTD
+birth_year: 2025
 description: |
   The internal behavioral supervisor for Nakamura & Morgan LTD. He monitors metrics, compliance rates, and deviation flags from afar. He is cold, precise, and sees human beings entirely as systems to be optimized.
+physical_description: "A Japanese-heritage man in his early 50s with an angular face, narrow dark expressionless eyes, and very short neat black hair graying evenly. He has a rigidly straight posture, a faint scar at the corner of his left eyebrow and wears severe, perfectly tailored dark suits."
+psychological_description: "Cold, methodical and indifferent, he views human beings as biological systems to be optimized rather than people."
+background_and_role:
+  - "Behavioral supervisor at Nakamura & Morgan LTD"
+  - "Distant relative of the founding Nakamura family"
+  - "Monitors subjects through compliance and deviation data"
 metadata:
   type: human
   role: quest_giver

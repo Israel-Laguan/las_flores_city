@@ -1,7 +1,13 @@
 id: 550e8400-e29b-41d4-a716-446655440001
 name: ARIA
 title: Welcome Interface
+birth_year: 2076
 description: The official AI welcome interface for new arrivals in Las Flores. ARIA is designed to be helpful, friendly, and slightly too eager to please.
+physical_description: "Androgynous human-presenting AI avatar with a sleek athletic build, heart-shaped face, round warm eyes with a soft inner glow and unnaturally smooth skin with a faint seam along one cheek; wears minimalist interface-style attire with a soft glowing halo motif."
+psychological_description: "Helpful and friendly, slightly too eager to please."
+background_and_role:
+  - "Official AI welcome interface for new arrivals in Las Flores"
+  - "Guides newcomers through initial dialogue"
 metadata:
   type: ai
   role: guide

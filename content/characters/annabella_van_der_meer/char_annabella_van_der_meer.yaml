@@ -1,7 +1,15 @@
 id: c3000012-e29b-41d4-a716-446655440012
 name: Annabella van der Meer
 title: Geologist, Global Lithium Corp
+birth_year: 1995
 description: The Dutch geologist who discovered the massive lithium vein near Las Flores in 2029 by testing poisoned mine water. Her discovery launched Dutch involvement in the region and shaped the Van der Meer family philosophy of community respect. She married Pieter van der Meer and became step-mother to his children Alexander and Elisabeth from his first marriage, and later gave birth to their youngest child, Jan.
+physical_description: "Tall, sturdy Dutch woman in her early 80s, slightly stooped from decades of fieldwork, with a silver-white bob, bright pale blue-green eyes, fair freckled weathered skin and capable hands; wears a rugged field jacket with reading glasses on her head."
+psychological_description: "Principled and scholarly; bright with curiosity, still examining the world with a scientist's eye and a commitment to community respect."
+background_and_role:
+  - "Dutch geologist who discovered the Las Flores lithium vein in 2029"
+  - "Second wife of Pieter van der Meer"
+  - "Step-mother of Alexander and Elisabeth, mother of Jan"
+  - "Shaped the family's philosophy of community respect"
 metadata:
   type: human
   role: npc

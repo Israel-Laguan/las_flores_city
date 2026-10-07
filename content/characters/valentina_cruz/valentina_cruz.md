@@ -4,7 +4,7 @@
 **Title (short):** Valentina Cruz, Campus Provocateur
 
 **Description (full):**
-**Age:** Unknown
+**Age:** ~21 (b. ~2056)
 **Origin:** Las Flores urban sprawl
 **Occupation:** Campus Provocateur
 

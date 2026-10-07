@@ -61,6 +61,7 @@ export type {
   SceneComposeIssueCode,
 } from './compose.js';
 export { SCENE_COMPOSE_ISSUE_CODES, applyOverlayOps, toComposedScene } from './compose.js';
+
 export type {
   ValidateSceneOverlayOptions,
   SceneOverlayIssueCode,

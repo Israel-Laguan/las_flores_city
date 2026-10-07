@@ -1,7 +1,14 @@
 id: 8d410b88-6694-45d4-81c6-12751e938498
 name: Xiao Chen
 title: CEO of LW Group
+birth_year: 2025
 description: Appointed in 2065, she is the first woman to lead the LW Group conglomerate. Known for her forward-thinking approach, diplomatic persuasion, and emphasis on sustainable tech and social responsibility.
+physical_description: "A Chinese woman in her early 50s with an oval face, almond eyes, a straight dark elegant bob threaded with gray and a tiny mole near her lower lip. She has an athletic-compact build and wears CEO executive attire with a small sport earbud."
+psychological_description: "A visionary diplomat with a forward-thinking, persuasive approach who emphasizes sustainable tech and social responsibility."
+background_and_role:
+  - "CEO of LW Group, appointed in 2065"
+  - "First woman to lead the LW Group conglomerate"
+  - "Champions sustainable technology and social responsibility"
 metadata:
   type: human
   role: npc

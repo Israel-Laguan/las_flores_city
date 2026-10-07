@@ -1,7 +1,14 @@
 id: 50a37ec0-60af-41c1-b8e7-42f9fe604b6b
 name: Wang Mei Li
 title: Founder, Dragon Phoenix Trading
+birth_year: 2005
 description: Born in ~2005 to wealthy Shanghai immigrants, Mei Li grew up with strong entrepreneurial values. After divorcing Alexander van der Meer in ~2046, she founded Dragon Phoenix Trading ~2048-50. She is a resilient businesswoman dedicated to her children, her team, and building her legacy in the region.
+physical_description: "A slender Chinese woman in her early 70s with jet-black hair in a sleek professional bob, sharp dark brown eyes and fair skin. She wears minimalist gold jewelry and tailored business attire, and has a composed, commanding presence."
+psychological_description: "A resilient, composed and entrepreneurial businesswoman dedicated to her children, her team and her legacy."
+background_and_role:
+  - "Founder of Dragon Phoenix Trading (c. 2048-50)"
+  - "Eldest child of wealthy Shanghai immigrants Wang Wei and Chen Yu"
+  - "Divorced Alexander van der Meer around 2046"
 metadata:
   type: human
   role: npc

@@ -1,10 +1,18 @@
 id: c3000013-e29b-41d4-a716-446655440013
 name: Pieter van der Meer
 title: Global Lithium Corp Executive, Mining Industry Leader
-age: 85
+birth_year: 1960
 description: Pieter Van der Meer was a formidable figure in the international mining industry, born into a family of Dutch diplomats and businesspeople. With a towering presence and strategic mind, he built a distinguished career spanning continents, from African mining operations to establishing Global Lithium Corp's presence in Las Flores. After the death of his first wife Marleen, he married geologist Annabella, who became step-mother to his children Alexander and Elisabeth and later gave birth to their youngest child Jan. His life was marked by ambition, innovation, and a commitment to responsible resource development that balanced economic growth with environmental stewardship and community benefit.
+physical_description: "Tall, imposing Dutch man with silver-white swept-back hair, pale blue sharp eyes and weathered fair skin; wears a tailored tweed jacket, gold signet ring and wire-rimmed glasses."
+psychological_description: "Strategic pragmatist with a calculating, commanding presence; ambitious yet committed to responsible resource development."
+background_and_role:
+  - "Dutch mining executive and family patriarch"
+  - "Led the consortium that found the lithium vein near Las Flores in 2029"
+  - "Global Lithium Corp representative in Las Flores"
+  - "Deceased in 2045"
 metadata:
   type: human
+  age_at_death: 85
   role: npc
   faction: dutch_interest
   personality: strategic_pragmatist

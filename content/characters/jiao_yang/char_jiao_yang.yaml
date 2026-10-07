@@ -1,8 +1,15 @@
 id: 5849e7bd-8d79-492d-8a0c-36a41526efa4
 name: Jiao Yang
 title: Community Advocate and Aspiring Graphic Designer
+birth_year: 2049
 description: |
   Jiao Yang is a second-generation Chinese-American born and raised in Las Flores' Chinatown neighborhood. She graduated from a local university with a Business Administration degree and works as an office assistant at a multinational corporation in the financial district. Despite her corporate role, she maintains Chinese heritage through traditional dance and community volunteering. Active in bridging Chinese-Western lifestyles through food exploration and graphic design hobbies. Balances office work with community service while saving for her first apartment.
+physical_description: "Petite Chinese woman, graceful and sturdy, with bright warm dark brown eyes, long jet black hair and a subtle knowing half-smile; wears minimalist practical work clothing."
+psychological_description: "Outgoing, community-oriented and ambitious; seeks personal stability while preserving her cultural identity and serving her community."
+background_and_role:
+  - "Second-generation Chinese-American from Las Flores' Chinatown"
+  - Office assistant at a multinational corporation
+  - Community volunteer, traditional dancer and aspiring graphic designer
 metadata:
   type: human
   role: npc

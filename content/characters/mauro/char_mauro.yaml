@@ -1,7 +1,14 @@
 id: c3000019-e29b-41d4-a716-446655440019
 name: Mauro (Kusi)
 title: Bus Driver, La Diabla
+birth_year: 2019
 description: A Quechua elder who lost his mining job during the Chinese expansion and became a bus driver. After accidentally striking a child with his bus, he turned down the music permanently and became the most vigilant driver in Old Las Flores.
+physical_description: "Stocky Quechua elder in his late 50s, bent slightly from years of mining labor, with a deeply lined, sun-worn face, tired but kind dark brown eyes, short gray thinning hair and a traditional woven cap."
+psychological_description: "Quietly melancholic yet determined, redeemed by guilt into the most vigilant driver in Old Las Flores."
+background_and_role:
+  - "Quechua elder and former miner"
+  - "Lost his mining job during the Chinese expansion"
+  - "Drives the bus La Diabla in Old Las Flores"
 metadata:
   type: human
   role: npc

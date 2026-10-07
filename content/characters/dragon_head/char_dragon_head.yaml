@@ -1,7 +1,15 @@
 id: d1e2f3a4-b5c6-4d7e-8f9a-0b1c2d3e4f5a
 name: Dragon Head
 title: Chinese Mafia Leader
+birth_year: 2000
 description: Also known as Hong Kou. Leader of Las Flores' most formidable Chinese mafia group. Acts as a middleman between Chinese state-owned enterprises and local criminal groups. Maintains an uneasy alliance with El Caimán.
+physical_description: Elderly Chinese man, tall and lean, with silver-white hair in a close military-style cut, cold penetrating heavy-lidded dark brown eyes and pale, weathered skin; wears thin gold-rimmed spectacles, a jade ring on his right pinky and an immaculate tailored suit.
+psychological_description: A shadowy boss; controlled, precise and enigmatic, moving with silent grace.
+background_and_role:
+  - Also known as Hong Kou
+  - Leader of Las Flores' most formidable Chinese mafia group
+  - Middleman between Chinese state-owned enterprises and local criminal groups
+  - Maintains an uneasy alliance with El Caimán
 metadata:
   type: human
   role: npc

@@ -1,12 +1,19 @@
 id: 66856547-525f-4d5d-8b3c-6a264134d868
 name: Camila Santander
 title: Tourism Company Owner, Outdoor Adventure Guide
+birth_year: 2045
 description: |
   Camila Santander is a 32-year-old tourism entrepreneur and outdoor adventure guide based in Las Flores. Her athletic build, sun-kissed skin, and long dark hair reflect her Hispanic heritage and active lifestyle. She runs a tourism company offering one-day and multi-day trips to the mountains, Agricultural Valley, river, and beach.
 
   While outwardly charismatic and exceptionally good at charming clients—a true Gemini—Camila is secretly misanthropic. She prefers the solitude of the mountains to human company and views her clients primarily as walking wallets. Her charming exterior is a carefully cultivated tool to maximize profit and fund her dream: building an exclusive, high-end rural lodge where she can be left alone.
 
   Her current major struggle is a fierce rivalry with a large-scale land developer planning a massive resort on her prime hiking trails. Her greed and hidden disdain for others complicate her relationships.
+physical_description: "Hispanic woman of 32 with an athletic, toned build, sun-kissed freckled skin, long wavy dark hair and warm brown eyes; dresses in practical outdoor clothing and has a warm, infectious smile."
+psychological_description: "Outwardly charismatic and expert at charming clients, but secretly misanthropic and profit-minded; prefers the solitude of the mountains to people."
+background_and_role:
+  - "Owner of a tourism company running mountain, valley, river and beach trips"
+  - "Outdoor adventure guide based in Las Flores"
+  - "Building an exclusive rural lodge and defending her land from rival hotel developers"
 metadata:
   type: human
   role: npc

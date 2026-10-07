@@ -1,7 +1,14 @@
 id: d0e1f2a3-b4c5-4d6e-bf8a-9b0c1d2e3f4a
 name: Jan van Dijk
 title: CEO, Global Lithium Corp (GLC)
+birth_year: 2025
 description: Dutch businessman and CEO of Global Lithium Corp. Launched the 'Futuro Brillante' scholarship program to support students from Old Las Flores and combat gang violence through education.
+physical_description: "Dutch man in his early 50s with a broad, heavy, prosperous build, thin receding gray-blonde hair, a square face, shrewd almond eyes and a small mole on his left cheek; wears a tailored suit with a GLC lapel pin."
+psychological_description: "Corporate philanthropist with shrewd, watchful composure and an air of measured authority."
+background_and_role:
+  - CEO of Global Lithium Corp (GLC)
+  - Launched the Futuro Brillante scholarship program
+  - Supports Old Las Flores students to counter gang violence
 metadata:
   type: human
   role: npc

@@ -51,8 +51,8 @@ platforms:
         
       - id: "linkpulse_post_2"
         author: "User456"
-        content: "Shout out to Peter Jr. for being such a douchebag today at the club! You'd think he'd have more class, considering his family's 'status'. #VanDerMeer #Entitled"
-        tags: ["#VanDerMeer", "#Entitled", "#PeterJr"]
+        content: "Shout out to Liam van der Meer for being such a douchebag today at the club! You'd think he'd have more class, considering his family's 'status'. #VanDerMeer #Entitled"
+        tags: ["#VanDerMeer", "#Entitled", "#LiamVanDerMeer"]
         sentiment: "negative"
         engagement: "high"
         
@@ -105,8 +105,8 @@ platforms:
     posts:
       - id: "voxstream_post_1"
         author: "ArtReview Magazine"
-        content: "Peter van der Meer Jr.: A Rising Star in the Art World. The son of a prominent business family, Peter van der Meer Jr., is making waves with his bold and innovative artwork. His latest exhibition, 'Disruption,' showcases his unique perspective on contemporary society."
-        tags: ["#PeterVanDerMeerJr", "#art", "#exhibition"]
+        content: "Natalia van der Meer: A Rising Star in the Art World. A member of a prominent business family, Natalia van der Meer is making waves with her bold and innovative artwork. Her latest exhibition, 'Disruption,' showcases her unique perspective on contemporary society."
+        tags: ["#NataliaVanDerMeer", "#art", "#exhibition"]
         sentiment: "positive"
         engagement: "high"
         

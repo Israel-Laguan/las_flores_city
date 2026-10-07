@@ -1,7 +1,14 @@
 id: 841c485c-1daf-43a6-8fec-eb908adddc30
 name: Isabella Quispe
 title: High School Student "Chabela", San Pedro de los Pescadores
+birth_year: 2060
 description: A 17-year-old who has chosen to stay in the riverside fishing village of San Pedro de los Pescadores when almost everyone her age dreams of leaving for the city. Known to family and friends as Chabela. After her aunt left for Las Flores and met tragedy, Isabella refuses to abandon her home. The high sun, the Río de las Flores, and the tight-knit community have shaped her; she works to make staying a viable, proud choice for others.
+physical_description: "Seventeen-year-old mestiza girl with sun-weathered copper-brown skin, high cheekbones, deep brown eyes and straight dark wind-tousled hair; practical build from river work, in a faded school blouse and river sandals with a woven bracelet and river-stone pendant."
+psychological_description: "Steadfast and rooted in her home village; fears watching her community empty out and refuses to be pitied for choosing to stay."
+background_and_role:
+  - High school student in San Pedro de los Pescadores
+  - Member of a riverside fishing family
+  - Works to make staying in the village a proud, viable choice
 metadata:
   type: human
   role: npc

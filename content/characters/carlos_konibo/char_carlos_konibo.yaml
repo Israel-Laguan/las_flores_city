@@ -1,12 +1,19 @@
 id: 463d6b83-62c0-4e37-ab09-8d3e804a5150
 name: Carlos Konibo
 title: Shipibo-Konibo Artisan and Cultural Entrepreneur
+birth_year: 2039
 description: |
   Carlos Konibo is a proud Shipibo-Konibo artisan and entrepreneur in his late 30s. Born along Rio Las Flores, he learned traditional Shipibo art techniques from his community—mastering the intricate patterns, vibrant colors, and sacred geometry passed down through generations.
 
   Witnessing globalization's impact on his people, Carlos developed a passion for sharing Shipibo heritage globally while preserving cultural integrity. He creates stunning textiles, pottery, and jewelry, selling through a cooperative to customers worldwide.
 
   Currently in Central City negotiating with an international online store, Carlos seeks a partnership that could expand his business while ensuring fair compensation for artisans and protecting traditional craft integrity.
+physical_description: "Broad-shouldered Shipibo-Konibo man in his late 30s with thick black hair silvering at the temples, warm observant brown eyes, weathered warm brown skin, a geometric tattoo on his right forearm and dye-stained fingers; wears a cream woven tunic."
+psychological_description: "Culturally proud and determined; speaks with quiet pride, deliberate in business and protective of his community's heritage."
+background_and_role:
+  - "Shipibo-Konibo artisan born along Rio Las Flores"
+  - "Runs Shipibo Artesanias selling textiles, pottery and jewelry through a cooperative"
+  - "Negotiating a fair partnership with an international online store"
 metadata:
   type: human
   role: npc

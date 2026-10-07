@@ -1,7 +1,14 @@
 id: c2000010-e29b-41d4-a716-446655440010
 name: Carlos Mendoza
 title: Retired Minera Estrella Engineer
+birth_year: 2009
 description: A retired engineer who worked at Minera Estrella during the 2052 lithium leak, Carlos Mendoza quietly provided crucial technical information to the 2077 investigators about the structural failures at the processing facility. He was not among the building owners at Residencial Las Estrellas, but his knowledge of the pipe systems and containment failures helped prove the cover-up. He lived in fear of retaliation for decades, and only came forward when it became clear the movement had the strength to protect him.
+physical_description: "Elderly, lean and wiry Latino man of about 68 with a long face, thin gray-white receding hair, weathered skin, a deep worry line between the brows and a slight tremor in his hands; wears old engineer's clothes with spectacles on a chain."
+psychological_description: "Cautious and principled; lived in fear of retaliation for decades and came forward only once the movement could protect him."
+background_and_role:
+  - "Retired Minera Estrella engineer"
+  - "Worked there during the 2052 lithium leak"
+  - "Quietly provided technical information to the 2077 investigators"
 metadata:
   type: human
   role: npc

@@ -1,12 +1,19 @@
 id: f8a9b0c1-d2e3-4f4a-9b6c-7d8e9f0a1b2c
 name: Emilio Navarro
 title: Cultural Journalist, La Prensa
+birth_year: 2028
 description: |
   Emilio Navarro is a 49-year-old cultural journalist at La Prensa, born and raised in Las Flores's multicultural neighborhoods. Educator parents nurtured his storytelling instincts and love of his city. At 25, his immersive coverage of local cultures and grassroots movements made him a rising star.
 
   Warm and endlessly curious, Emilio connects with people from all walks of life. He dresses casually in colorful button-down shirts, has warm smile, and carries a camera to document cultures and hidden corners. On weekends he cycles through neighborhoods discovering new stories.
 
   By 31, his coverage of Las Flores's emerging art scene brought national attention to local artists. At 49, he mentors younger journalists in narrative craft and the importance of giving voice to the voiceless, continuing to celebrate the diversity and resilience of Las Flores through participatory journalism.
+physical_description: Approachable 49-year-old Latino man with messy brown hair and a warm smile; wears jeans and colorful button-down shirts, with a camera around his neck.
+psychological_description: Warm, endlessly curious and empathetic; immerses himself in the communities he covers and gives voice to the voiceless.
+background_and_role:
+  - Cultural journalist at La Prensa, raised in Las Flores' multicultural neighborhoods
+  - Raised by educator parents who nurtured his storytelling
+  - Mentors younger journalists in narrative craft
 metadata:
   type: human
   role: npc

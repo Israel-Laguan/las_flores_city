@@ -1,7 +1,14 @@
 id: 6fd8ccc7-840a-40a2-9c7c-8b23a297c1b1
 name: Sofia Alvarez
 title: Chair, Humanity First
+birth_year: 2042
 description: Once the energetic leader of the Humanity First Youth Council, she has risen to become the current Chair of the movement, representing a new generation of leadership in Las Flores.
+physical_description: "Latina woman in her 30s with an athletic-compact build, oval face, pronounced cheekbones, voluminous curly dark hair and a small mole on the right cheek."
+psychological_description: "Inspiring and confident, a leader of her generation."
+background_and_role:
+  - "Chair of Humanity First"
+  - "Former leader of the Humanity First Youth Council"
+  - "Represents a new generation of leadership in Las Flores"
 metadata:
   type: human
   role: npc

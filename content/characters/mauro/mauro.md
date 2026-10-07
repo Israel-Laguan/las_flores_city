@@ -2,7 +2,7 @@
 
 > Tags: `#figure` `#indigenous` `#transportation` `#guilt`
 >
-> **Born:** ~1970s (Andean region)
+> **Born:** ~2019 (Andean region)
 > **Role:** Bus driver, "La Diabla"
 > **Status:** Active
 

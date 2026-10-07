@@ -29,7 +29,7 @@ export const YAMLCharacterSchema = z.object({
   physical_description: z.string().optional(),
   psychological_description: z.string().optional(),
   background_and_role: z.array(z.string()).optional(),
-  birth_year: z.number().int().optional(),
+birth_year: z.number().int().optional(),
   relationships: z.array(RelationshipSchema).optional(),
   avatar_url: z.string().url().optional(),
   portrait_urls: z.array(AssetEntrySchema).optional(),

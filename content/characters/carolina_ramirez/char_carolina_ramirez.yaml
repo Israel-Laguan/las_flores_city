@@ -1,7 +1,14 @@
 id: c3000017-e29b-41d4-a716-446655440017
 name: Carolina Ramirez
 title: District Official
+birth_year: 2045
 description: The young Pacific District official who first noticed discrepancies in Manuel Rodriguez's travel expenses. Her investigation exposed his corruption, and she withstood his retaliatory smear campaign with unwavering integrity.
+physical_description: "Petite, slender Latina woman in her early 30s with thick wavy dark brown hair in a low ponytail, warm alert brown eyes, light brown skin and a small mole below her right eye; wears a professional blouse and blazer with a thin gold chain."
+psychological_description: "Principled and unwavering in her integrity, even under a retaliatory smear campaign."
+background_and_role:
+  - "Young Pacific District official"
+  - "First noticed discrepancies in Manuel Rodriguez's travel expenses"
+  - "Her investigation exposed his corruption"
 metadata:
   type: human
   role: npc

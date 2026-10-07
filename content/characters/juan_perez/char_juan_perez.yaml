@@ -1,7 +1,14 @@
 id: ca5d5579-c7e2-470b-9f38-292e983dc82b
 name: Juan Pérez
 title: Star Journalist, The Chronicle
+birth_year: 2045
 description: Star reporter at The Las Flores Chronicle — ambitious exposer of elite scandals whose bylines Isabella Vasquez greenlights, delays, or kills. Sharp wit; hungry for the next secret; kept almost-famous on purpose.
+physical_description: "Athletic-compact Latino man in his early 30s with warm-brown skin, wavy dark hair styled back with a little shine, an angular face, sharp hooded eyes, a chipped front tooth and one brow slightly lower than the other."
+psychological_description: "Ambitious and quick-witted, hungry for the next secret, with a self-assured, faintly roguish bearing."
+background_and_role:
+  - Star journalist at The Las Flores Chronicle
+  - Exposer of elite scandals
+  - Bylines are greenlit, delayed or killed by Isabella Vasquez
 metadata:
   type: human
   role: npc
