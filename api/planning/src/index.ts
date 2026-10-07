@@ -94,7 +94,6 @@ export { InvalidGoldenFixtureError, parseGoldenFixture } from './scene/golden-fi
 // Weather resolution (SC-305)
 export type { ResolvedWeather, WeatherInput, WeatherSource } from './scene/resolve-weather.js';
 export { resolveWeather } from './scene/resolve-weather.js';
-
 // Overlay conflict detection (SC-304)
 export type { ConflictReport, SceneConflict, SceneConflictCode } from './scene/conflicts.js';
 export {
