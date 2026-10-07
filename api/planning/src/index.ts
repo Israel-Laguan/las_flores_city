@@ -90,13 +90,6 @@ export type {
 export { InvalidGoldenFixtureError, parseGoldenFixture } from './scene/golden-fixtures.js';
 
 // Overlay conflict detection (SC-304)
-export type { ConflictReport, SceneConflict, SceneConflictCode } from './scene/conflicts.js';
-export {
-  conflictsToIssues,
-  detectConflicts,
-  formatConflictReport,
-  stringifyConflictReport,
-} from './scene/conflicts.js';
 
 // Weather resolution (SC-305)
 export type { ResolvedWeather, WeatherInput, WeatherSource } from './scene/resolve-weather.js';
