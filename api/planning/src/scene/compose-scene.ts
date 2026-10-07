@@ -59,13 +59,6 @@ export interface ComposeSceneResult {
 
 const NO_FLAGS: FlagSet = new Set<string>();
 
-const compareSlug = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
-
-/** Copy of `overlays` sorted `(priority asc, slug asc)` — the one compose order. */
-export function sortOverlays<T extends Pick<SceneOverlay, 'priority' | 'slug'>>(overlays: ReadonlyArray<T>): T[] {
-  return [...overlays].sort((a, b) => a.priority - b.priority || compareSlug(a.slug, b.slug));
-}
-
 const isFlagGated = (o: SceneOverlay): boolean => extractFlagSlugs(o.availability).length > 0;
 
 function toLayer(o: SceneOverlay): ConditionalLayer {
