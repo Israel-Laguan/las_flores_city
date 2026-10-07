@@ -11,6 +11,7 @@ export const RelationshipSchema = z.object({
 
 export const CharacterSchema = z.object({
   id: zodUuid(),
+  slug: z.string().optional(),
   name: z.string().min(1).max(100),
   title: z.string().max(100).optional(),
   birth_year: z.number().optional(),

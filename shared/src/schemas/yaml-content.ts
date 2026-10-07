@@ -22,6 +22,7 @@ export type AssetEntry = z.infer<typeof AssetEntrySchema>;
 
 export const YAMLCharacterSchema = z.object({
   id: zodUuid(),
+  slug: z.string().optional(),
   name: z.string().min(1).max(100),
   title: z.string().max(100).optional(),
   description: z.string().max(1000),
