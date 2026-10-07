@@ -16,4 +16,8 @@ ALTER TABLE characters ADD COLUMN IF NOT EXISTS slug TEXT;
 CREATE UNIQUE INDEX IF NOT EXISTS idx_characters_slug_unique
   ON characters (slug) WHERE slug IS NOT NULL;
 
-
+-- Partial unique index: only non-NULL slugs must be unique. This lets the
+-- column be nullable during the backfill window while still enforcing
+-- uniqueness for any slug that IS written.
+CREATE UNIQUE INDEX IF NOT EXISTS idx_characters_slug_unique
+  ON characters (slug) WHERE slug IS NOT NULL;

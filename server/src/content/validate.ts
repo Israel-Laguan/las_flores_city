@@ -239,7 +239,19 @@ export async function validateYAMLFile(filePath: string, schemaOnly: boolean = f
     if (!schemaOnly) {
       const hasSchemaErrors = validationResult.errors.some(e => e.severity === 'error');
       if (!hasSchemaErrors) {
-        if (contentType === 'dialogue') {
+if (contentType === 'character') {
+          const folderName = path.basename(path.dirname(filePath));
+          const expectedFileName = `char_${folderName}.yaml`;
+          const actualFileName = path.basename(filePath);
+          
+          if (actualFileName !== expectedFileName) {
+            errors.push({ 
+              file: filePath, 
+              message: `Character file name mismatch: expected "${expectedFileName}" based on folder name "${folderName}", but got "${actualFileName}"`, 
+              severity: 'error' 
+            });
+          }
+        } else if (contentType === 'dialogue') {
           await validateDialogueBeatSlugs(filePath, data, errors);
           await validateDialogueTreeBeatSlugs(filePath, data, errors);
           validateRelationshipGates(filePath, data, warnings);
