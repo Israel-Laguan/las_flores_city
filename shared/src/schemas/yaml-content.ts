@@ -155,6 +155,22 @@ export const YAMLSceneSchema = z.object({
 
 export type YAMLScene = z.infer<typeof YAMLSceneSchema>;
 
+/**
+ * SC-309c: district metadata file (content/districts/<slug>/district_<slug>.yaml).
+ * Districts are created by migrations (034/035); this file only carries
+ * authorable fields onto the existing row, matched by `slug`. `weather` is a
+ * WeatherTag (api/contracts) — checked by the server validator, which can import
+ * the contracts vocabulary; shared deliberately stays dependency-free.
+ */
+export const YAMLDistrictSchema = z.object({
+  type: z.literal('district'),
+  slug: z.string().regex(/^[a-z0-9_-]+$/).max(50),
+  name: z.string().min(1).max(50).optional(),
+  weather: z.string().nullable().optional(),
+});
+
+export type YAMLDistrict = z.infer<typeof YAMLDistrictSchema>;
+
 export const YAMLLocationSchema = z.object({
   id: zodUuid(),
   type: z.literal('location'),

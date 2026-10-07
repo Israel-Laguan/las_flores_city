@@ -5,6 +5,7 @@ import {
   YAMLSceneSchema,
   YAMLMissionSchema,
   YAMLLocationSchema,
+  YAMLDistrictSchema,
   VaultFileSchema,
   ShopItemFileSchema,
   GigFileSchema,
@@ -12,6 +13,7 @@ import {
   YAMLStoryArcFileSchema,
   ContentType,
 } from '@las-flores/shared';
+import { validateWeatherTag } from '@las-flores/api-contracts';
 import type { ValidationResult, ValidationError } from './validate.js';
 
 export function getContentTypeFromPath(filePath: string): ContentType | null {
@@ -46,6 +48,9 @@ export function getContentTypeFromPath(filePath: string): ContentType | null {
   }
   if (normalizedPath.includes('/locations/') || normalizedPath.includes('\\locations\\')) {
     return 'location';
+  }
+  if (/[/\\]districts[/\\][^/\\]+[/\\][^/\\]+\.ya?ml$/.test(normalizedPath)) {
+    return 'district';
   }
 
   if (normalizedPath.endsWith('story_beats.yaml') || normalizedPath.includes('/story_beats/') || normalizedPath.includes('\\story_beats\\')) {
@@ -102,6 +107,14 @@ export function validateContentByType(type: ContentType, data: any): ValidationR
         break;
       case 'location':
         YAMLLocationSchema.parse(data);
+        break;
+      case 'district':
+        YAMLDistrictSchema.parse(data);
+        try {
+          validateWeatherTag(data.weather);
+        } catch (e: any) {
+          errors.push({ message: `weather: ${e.message}`, severity: 'error' });
+        }
         break;
       case 'story_beat':
         if (data.beats) {

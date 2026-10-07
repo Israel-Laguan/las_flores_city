@@ -2,9 +2,9 @@
 // SC-S2 spike runner: EXPLAIN ANALYZE + wall-clock timing for the
 // recursive-CTE reachability query, against spike_sc_s1.entity_edges at
 // whatever volume currently sits in that table (run once at 1x, once after
-// duplicating rows for 10x — see sc-s2-duplicate.mjs).
+// duplicating rows for 10x — see reachability-duplicate.mjs).
 //
-// Usage: DATABASE_URL=... node server/scripts/spikes/sc-s2-run.mjs
+// Usage: DATABASE_URL=... node server/scripts/spikes/reachability-run.mjs
 
 import fs from "node:fs";
 import path from "node:path";
@@ -18,7 +18,7 @@ const DATABASE_URL =
   "postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores";
 
 const sql = fs.readFileSync(
-  path.join(__dirname, "sc-s2-reachability.sql"),
+  path.join(__dirname, "reachability.sql"),
   "utf8",
 );
 

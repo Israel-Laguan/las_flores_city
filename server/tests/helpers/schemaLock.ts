@@ -126,3 +126,55 @@ export async function withSchemaLock<T>(fn: (client: pg.PoolClient) => Promise<T
 export async function withOlapSchemaLock<T>(fn: (client: pg.PoolClient) => Promise<T>): Promise<T> {
   return withPoolSchemaLock(olapPool, fn);
 }
+
+
+/**
+ * Re-apply the canonical HEAD `migration_log_content_type_check` (099 adds it
+ * NOT VALID, 100 validates it). Single source of truth for tests that need to put
+ * the constraint back after deliberately mangling it. Call with the locked client.
+ */
+export async function restoreMigrationLogConstraint(client: pg.PoolClient): Promise<void> {
+  const fs = await import('fs');
+  const path = await import('path');
+  const dir = path.resolve(process.cwd(), 'src/database/migrations');
+  await client.query(fs.readFileSync(path.join(dir, '099_migration_log_district.sql'), 'utf-8'));
+  await client.query(fs.readFileSync(path.join(dir, '100_migration_log_district_validate.sql'), 'utf-8'));
+}
+
+/**
+ * Run `fn` (which replays a HISTORICAL migration that re-adds
+ * `migration_log_content_type_check` with an older whitelist) against a database
+ * that is already at HEAD.
+ *
+ * Replaying e.g. 044/046 re-adds the constraint WITH validation, which fails when
+ * `migration_log` already holds rows of a content type added later (`district`,
+ * 099). To keep these replays working, rows of such later types are parked under
+ * 'dialogue' for the duration of `fn`, then the HEAD constraint (099 +
+ * 100) is re-applied and the rows are restored. Must be called with the locked
+ * client from `withSchemaLock`.
+ */
+export async function replayHistoricalMigration(
+  client: pg.PoolClient,
+  fn: () => Promise<void>,
+): Promise<void> {
+  const { rows } = await client.query<{ id: string }>(
+    `SELECT id FROM migration_log WHERE content_type = 'district'`,
+  );
+  const ids = rows.map((r) => r.id);
+  // Park under 'dialogue', which every historical whitelist allows. The existing
+  // constraint is deliberately left alone: some suites install a legacy one on
+  // purpose before replaying.
+  if (ids.length) {
+    await client.query(`UPDATE migration_log SET content_type = 'dialogue' WHERE id = ANY($1::uuid[])`, [ids]);
+  }
+  try {
+    await fn();
+  } finally {
+    // Restore the HEAD constraint first (it allows 'district'), then the rows.
+    await client.query(`ROLLBACK`).catch(() => undefined);
+    await restoreMigrationLogConstraint(client);
+    if (ids.length) {
+      await client.query(`UPDATE migration_log SET content_type = 'district' WHERE id = ANY($1::uuid[])`, [ids]);
+    }
+  }
+}

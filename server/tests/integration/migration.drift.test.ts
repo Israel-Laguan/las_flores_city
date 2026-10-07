@@ -1,7 +1,7 @@
 /* eslint-disable max-lines-per-function */
 import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 import path from 'path';
-import { withSchemaLock } from '../helpers/schemaLock.js';
+import { withSchemaLock, replayHistoricalMigration, restoreMigrationLogConstraint } from '../helpers/schemaLock.js';
 import pg from 'pg';
 import { migrateContent, extractContentIds } from '../../src/content/migrate.js';
 import { closeRedis } from '@las-flores/infra';
@@ -45,7 +45,7 @@ async function applyMigration(filename: string): Promise<void> {
   // (which alters the shared migration_log table) is serialized too. Doing the
   // fallback outside the lock would reintroduce exactly the concurrent-DDL
   // deadlock this helper exists to prevent.
-  await withSchemaLock(async (client) => {
+  await withSchemaLock(async (client) => replayHistoricalMigration(client, async () => {
     try {
       await client.query(sql);
     } catch (error: any) {
@@ -68,7 +68,7 @@ async function applyMigration(filename: string): Promise<void> {
         throw error;
       }
     }
-  });
+  }));
 }
 
 describe('Migration drift guard', () => {
@@ -267,14 +267,7 @@ describe('Migration drift guard', () => {
         // reject it and leave the constraint dropped for every sibling suite.
         // afterAll removes this row too, but it runs after this finally.
         await client.query(`DELETE FROM migration_log WHERE file_path = $1`, [legacyFile]);
-        await client.query(`
-          ALTER TABLE migration_log DROP CONSTRAINT IF EXISTS migration_log_content_type_check;
-          ALTER TABLE migration_log ADD CONSTRAINT migration_log_content_type_check
-            CHECK (content_type IN (
-              'character', 'dialogue', 'overlay', 'scene', 'gig', 'vault',
-              'mission', 'story', 'shop_item', 'location', 'map_tile', 'story_beat'
-            ));
-        `);
+        await restoreMigrationLogConstraint(client);
       });
     }
   });

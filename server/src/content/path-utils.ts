@@ -15,6 +15,9 @@ export function extractContentIds(contentType: ContentType, data: Record<string,
       return ((data.gigs as Array<{ id: string }>) || [data as { id: string }]).map((item) => item.id);
     case 'shop_item':
       return ((data.shop_items as Array<{ id: string }>) || []).map((item) => item.id);
+    case 'district':
+      // district rows are matched by slug (created by migrations 034/035)
+      return (data as { slug?: string }).slug ? [(data as { slug: string }).slug] : [];
     case 'story_beat':
       // story_beat uses slug as PK — return slugs instead of UUIDs
       if (data.beats) {
@@ -51,6 +54,9 @@ export function getContentTypeFromPath(filePath: string): ContentType | null {
   if (normalizedPath.includes('/locations/') || normalizedPath.includes('\\locations\\')) {
     return 'location';
   }
+  if (/[/\\]districts[/\\][^/\\]+[/\\][^/\\]+\.ya?ml$/.test(normalizedPath)) {
+    return 'district';
+  }
   if (normalizedPath.includes('/vault/') || normalizedPath.includes('\\vault\\')) {
     return 'vault';
   }
@@ -79,7 +85,7 @@ export function getContentTypeFromPath(filePath: string): ContentType | null {
 }
 
 export function getProcessingOrder(files: string[]): string[] {
-  const order: ContentType[] = ['story_beat', 'character', 'scene', 'location', 'mission', 'vault', 'dialogue', 'overlay', 'gig', 'shop_item', 'map_tile', 'story'];
+  const order: ContentType[] = ['story_beat', 'character', 'scene', 'district', 'location', 'mission', 'vault', 'dialogue', 'overlay', 'gig', 'shop_item', 'map_tile', 'story'];
 
   return files.sort((a, b) => {
     const typeA = getContentTypeFromPath(a);

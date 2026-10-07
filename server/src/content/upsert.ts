@@ -1,7 +1,7 @@
 import * as yaml from 'js-yaml';
 import fs from 'fs/promises';
 import path from 'path';
-import { VaultFileSchema, YAMLMissionSchema, ShopItemFileSchema } from '@las-flores/shared';
+import { YAMLDistrictSchema, VaultFileSchema, YAMLMissionSchema, ShopItemFileSchema } from '@las-flores/shared';
 import { queryOLTP } from '@las-flores/infra';
 import { setCache, deleteCache } from '@las-flores/infra';
 import { sanitizeText } from './validate-xss.js';
@@ -128,6 +128,22 @@ async function processLocationData(data: any): Promise<string> {
   return upsertScene(sceneData);
 }
 
+async function processDistrictData(data: any): Promise<string> {
+  const { validateWeatherTag } = await import('@las-flores/api-contracts');
+  const parsed = YAMLDistrictSchema.parse(data);
+  const weather = validateWeatherTag(parsed.weather);
+  // Districts are created by migrations; this only updates authorable fields.
+  // A missing `weather:` leaves the existing value (column default 'clear').
+  const result = await queryOLTP(
+    `UPDATE districts SET weather = COALESCE($2, weather), name = COALESCE($3, name) WHERE slug = $1`,
+    [parsed.slug, weather, parsed.name ?? null]
+  );
+  if (result.rowCount === 0) {
+    throw new Error(`District "${parsed.slug}" not found. Districts are created by migrations, not content.`);
+  }
+  return parsed.slug;
+}
+
 async function processMapTileData(data: any): Promise<string> {
   const { MapTileFileSchema } = await import('@las-flores/shared');
   MapTileFileSchema.parse(data);
@@ -216,6 +232,7 @@ export async function processContentFile(filePath: string): Promise<AppliedMigra
     case 'story': contentId = await processStoryData(data); break;
     case 'shop_item': contentId = await processShopItemData(data); break;
     case 'location': contentId = await processLocationData(data); break;
+    case 'district': contentId = await processDistrictData(data); break;
     case 'map_tile': contentId = await processMapTileData(data); break;
     case 'story_beat': contentId = await processStoryBeatData(data); break;
     default: throw new Error(`Unsupported content type: ${contentType}`);

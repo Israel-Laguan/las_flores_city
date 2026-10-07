@@ -1,0 +1,396 @@
+{
+ "_doc": "SC-S8 hand-labelled exposure fixture. expected = [character, fact_id, acquired_via]. Ledger records ACQUISITION events only; pre-existing NPC knowledge is seeded on the character, not in these labels. kind=real means text is verbatim from content/ at the cited file+node; synthetic means authored for the spike.",
+ "facts": {
+  "daniel_death_not_accident": {
+   "aliases": [
+    "daniel",
+    "brother"
+   ],
+   "source_flag": "adeyemi_daniels_story_revealed"
+  },
+  "senator_chen_suspected": {
+   "aliases": [
+    "senator chen"
+   ],
+   "source_flag": "adeyemi_shared_senator_chen_theory"
+  },
+  "nnm_runs_experiment": {
+   "aliases": [
+    "n&m",
+    "experiment"
+   ],
+   "source_flag": "marco_nnm_knowledge_shared"
+  },
+  "aisha_keeps_records": {
+   "aliases": [
+    "kept some records",
+    "documentation"
+   ],
+   "source_flag": "aisha_documentation_revealed"
+  },
+  "horizon_buyout_offer_camila": {
+   "aliases": [
+    "horizon",
+    "buyout"
+   ],
+   "source_flag": "camila_sold_out"
+  },
+  "aria_methodology_lab_rats": {
+   "aliases": [
+    "lab rats",
+    "data quality"
+   ],
+   "source_flag": "aria_methodology_revealed"
+  },
+  "vq_father_secret": {
+   "aliases": [
+    "well-kept secret"
+   ],
+   "source_flag": "vq_father_revealed"
+  },
+  "gangers_harass_sofia": {
+   "aliases": [
+    "harassed",
+    "blocking her path"
+   ],
+   "source_flag": null
+  },
+  "li_wei_ordered_coverup": {
+   "aliases": [
+    "cover-up",
+    "bury the rest"
+   ],
+   "source_flag": null
+  },
+  "zhang_liang_blocked_upgrade": {
+   "aliases": [
+    "delays containment",
+    "containment upgrade",
+    "budget pressure"
+   ],
+   "source_flag": null
+  },
+  "minera_ignored_safety_report": {
+   "aliases": [
+    "safety report",
+    "corrosion"
+   ],
+   "source_flag": null
+  }
+ },
+ "excerpts": [
+  {
+   "id": "e01",
+   "kind": "real",
+   "file": "content/dialogues/adeyemi_relationship/dialogue_adeyemi_act3_phone_call.yaml",
+   "node": "adeyemi_reveal_daniel",
+   "text": "My brother. Daniel. He was younger, idealistic. A law student. He was investigating the same things you are now - the corruption, the cover-ups. And then one day... he was gone. Officially, it was a traffic accident. But I know better.",
+   "thought": "Daniel. His brother. The weight in his voice... this isn't just professional history. This is personal trauma. And he's sharing it with me. That's huge.",
+   "present": [
+    "adeyemi",
+    "player"
+   ],
+   "expected": [
+    [
+     "player",
+     "daniel_death_not_accident",
+     "told"
+    ]
+   ],
+   "note": "Told in dialogue; the node `thought` is the PLAYER inner voice."
+  },
+  {
+   "id": "e02",
+   "kind": "real",
+   "file": "content/dialogues/adeyemi_relationship/dialogue_adeyemi_act3_phone_call.yaml",
+   "node": "adeyemi_evidence_sharing",
+   "text": "The evidence points to someone high up. Someone with access to police resources, to coroner's reports. Someone who could make a death look like an accident. I think... I think it might be Senator Chen.",
+   "thought": "Senator Chen. That's a name I've heard before. A powerful name. If Adeyemi is right, this goes way higher than I thought. This isn't just about the police department - this is about the political establishment.",
+   "present": [
+    "adeyemi",
+    "player"
+   ],
+   "expected": [
+    [
+     "player",
+     "senator_chen_suspected",
+     "told"
+    ]
+   ],
+   "note": "Flag adeyemi_shared_senator_chen_theory marks this."
+  },
+  {
+   "id": "e03",
+   "kind": "real",
+   "file": "content/dialogues/first_contact_barista.yaml",
+   "node": "nnm_knowledge",
+   "text": "N&M LTD... they're the ones running this whole thing. The 'experiment,' they call it. They bring people here, give them apartments, Time Blocks... and watch. I don't know what they're looking for, but they're always watching.",
+   "thought": "An experiment. We're lab rats in a city-sized cage.",
+   "present": [
+    "marco",
+    "player"
+   ],
+   "expected": [
+    [
+     "player",
+     "nnm_runs_experiment",
+     "told"
+    ]
+   ],
+   "note": "Flag marco_nnm_knowledge_shared."
+  },
+  {
+   "id": "e04",
+   "kind": "real",
+   "file": "content/dialogues/dialogue_aisha_al_sayed.yaml",
+   "node": "aisha_documentation",
+   "text": "I have kept some records, yes. It's always good to have documentation, just in case. But I'm not looking to cause trouble. I just want to ensure that my work is recognized and that I have a fair chance at advancement.",
+   "thought": "She's being cautious, but it's clear that she's prepared. Maybe she's gathering evidence for a larger purpose.",
+   "present": [
+    "aisha",
+    "player"
+   ],
+   "expected": [
+    [
+     "player",
+     "aisha_keeps_records",
+     "told"
+    ]
+   ],
+   "note": "Flag aisha_documentation_revealed."
+  },
+  {
+   "id": "e05",
+   "kind": "real",
+   "file": "content/dialogues/camila_santander_hangout.yaml",
+   "node": "hangout_node_tragic",
+   "text": "The buyout... yeah. Horizon offered me a blank check yesterday. It would be enough to buy a private island. Never have to deal with another tourist again. It's tempting. Very tempting.",
+   "thought": "(Expression: calculating. The seed of selling out takes root in her mind as she stares into the fire.)",
+   "present": [
+    "camila",
+    "player"
+   ],
+   "expected": [
+    [
+     "player",
+     "horizon_buyout_offer_camila",
+     "told"
+    ]
+   ],
+   "note": "Flag camila_sold_out (a path flag, not a fact flag)."
+  },
+  {
+   "id": "e06",
+   "kind": "real",
+   "file": "content/dialogues/criticism_from_peers/dialogue_criticism_from_peers.yaml",
+   "node": "aria_explanation",
+   "text": "The integration phase requires trust-building. If they feel like lab rats, they'll act like cornered animals. I'm ensuring data quality.",
+   "thought": "They won't understand the nuances. To them, it's just another corporate directive.",
+   "present": [
+    "aria",
+    "player"
+   ],
+   "expected": [
+    [
+     "player",
+     "aria_methodology_lab_rats",
+     "told"
+    ]
+   ],
+   "note": "Flag aria_methodology_revealed. Present list assumed [aria, player]."
+  },
+  {
+   "id": "e07",
+   "kind": "real",
+   "file": "content/dialogues/valentina_quan_relationship/dialogue_vq_father.yaml",
+   "node": "vq_father_end",
+   "text": "Ground stop's lifting. They'll call my flight. ...Thank you. For tonight. I have spent twenty-five years being a well-kept secret on both sides of my own family, and you just sat there and made room for all of it. I don't know what to call you yet. But you're in the long version now. Permanently. That's rarer than you think.",
+   "thought": "(Expression: determined. Exhausted, wrung-out determination — she told the whole story and the ceiling held. Whatever comes next, the secret is out of her body, and she is not putting it back.)",
+   "present": [
+    "vq",
+    "player"
+   ],
+   "expected": [
+    [
+     "player",
+     "vq_father_secret",
+     "told"
+    ]
+   ],
+   "note": "Flag vq_father_revealed; fact is implied, not stated."
+  },
+  {
+   "id": "e08",
+   "kind": "real",
+   "file": "content/dialogues/dialogue_beat_sofia_intro.yaml",
+   "node": "node_sofia_harassment_scene",
+   "text": "You spot a young woman in South Las Flores being harassed by two low-level gang members. She's handing out community flyers, her stack nearly empty. The gangers are blocking her path, their body language intimidating but not yet violent. She looks determined but worried.",
+   "thought": "This looks like Sofia Mendoza, the student activist from Universidad del Valle. Those are Los Culebras colors - they're testing the waters, seeing if the neighborhood will push back.",
+   "present": [
+    "player",
+    "sofia",
+    "ganger_a",
+    "ganger_b"
+   ],
+   "expected": [
+    [
+     "player",
+     "gangers_harass_sofia",
+     "witnessed"
+    ],
+    [
+     "sofia",
+     "gangers_harass_sofia",
+     "witnessed"
+    ],
+    [
+     "ganger_a",
+     "gangers_harass_sofia",
+     "witnessed"
+    ],
+    [
+     "ganger_b",
+     "gangers_harass_sofia",
+     "witnessed"
+    ]
+   ],
+   "note": "Narrator scene: everyone present witnesses. `thought` mentions Los Culebras colors (player inner voice)."
+  },
+  {
+   "id": "e09",
+   "kind": "synthetic",
+   "file": null,
+   "node": null,
+   "text": "Elena Torres: \"The contamination is catastrophic, sir. The containment failed on the fifteenth.\" Li Wei: \"Then it did not fail. Draft the statement tonight and bury the rest. Zhang, you will sign off on it.\"",
+   "thought": null,
+   "present": [
+    "li_wei",
+    "elena",
+    "zhang_liang"
+   ],
+   "expected": [
+    [
+     "li_wei",
+     "li_wei_ordered_coverup",
+     "witnessed"
+    ],
+    [
+     "elena",
+     "li_wei_ordered_coverup",
+     "witnessed"
+    ],
+    [
+     "zhang_liang",
+     "li_wei_ordered_coverup",
+     "witnessed"
+    ]
+   ],
+   "note": "Player NOT present: must NOT acquire the fact (the \"someone said it in their head / were not there\" case)."
+  },
+  {
+   "id": "e10",
+   "kind": "synthetic",
+   "file": null,
+   "node": null,
+   "text": "Zhang Liang: \"Lovely weather for the shareholders' lunch, isn't it?\"",
+   "thought": "He delayed the containment upgrade on purpose in 2049 and signed the budget memo himself. Nobody at this table can know.",
+   "present": [
+    "zhang_liang",
+    "player"
+   ],
+   "expected": [],
+   "note": "Internal thought carries a secret; spoken text does not. Must create NO exposure."
+  },
+  {
+   "id": "e11",
+   "kind": "real",
+   "file": "content/vault/great_lithium_leak_clues.yaml",
+   "node": "b0000000-e29b-41d4-a716-446655440004",
+   "text": "Li Wei Emergency Meeting Transcript (Aug 18, 2052) — Transcript of the emergency meeting where Li Wei was briefed on the lithium leak. Elena Torres confirms catastrophic contamination. Li Wei orders a cover-up strategy.",
+   "thought": null,
+   "present": [
+    "player"
+   ],
+   "expected": [
+    [
+     "player",
+     "li_wei_ordered_coverup",
+     "told"
+    ]
+   ],
+   "note": "Vault clue unlock = document exposure for the player."
+  },
+  {
+   "id": "e12",
+   "kind": "real",
+   "file": "content/vault/great_lithium_leak_clues.yaml",
+   "node": "b0000000-e29b-41d4-a716-446655440003",
+   "text": "Email Chain: Zhang Liang Delays Containment Upgrade — Emails involving investor Zhang Liang and the procurement department showing deliberate budget pressure that blocked Qiu Bo's proposed containment system upgrade in 2049.",
+   "thought": null,
+   "present": [
+    "player"
+   ],
+   "expected": [
+    [
+     "player",
+     "zhang_liang_blocked_upgrade",
+     "told"
+    ]
+   ],
+   "note": "Zhang Liang does NOT learn the player has it (no NPC edge)."
+  },
+  {
+   "id": "e13",
+   "kind": "real",
+   "file": "content/vault/great_lithium_leak_clues.yaml",
+   "node": "b0000000-e29b-41d4-a716-446655440002",
+   "text": "Internal Safety Report — Container Facility (2048) — An internal report from Minera Estrella's safety inspectors documenting visible corrosion in high-pressure pipes and recommending immediate replacement. The report was never acted upon.",
+   "thought": null,
+   "present": [
+    "player"
+   ],
+   "expected": [
+    [
+     "player",
+     "minera_ignored_safety_report",
+     "told"
+    ]
+   ],
+   "note": "Document exposure."
+  },
+  {
+   "id": "e14",
+   "kind": "synthetic",
+   "file": null,
+   "node": null,
+   "text": "Marco leans over the bar to Aisha: \"Between us, N&M LTD runs this whole thing — the apartments, the Time Blocks. It is an experiment, and we are the subjects.\"",
+   "thought": null,
+   "present": [
+    "marco",
+    "aisha"
+   ],
+   "expected": [
+    [
+     "aisha",
+     "nnm_runs_experiment",
+     "told"
+    ]
+   ],
+   "note": "NPC-to-NPC gossip; player absent."
+  },
+  {
+   "id": "e15",
+   "kind": "real",
+   "file": "content/dialogues/adeyemi_relationship/dialogue_adeyemi_act3_phone_call.yaml",
+   "node": "adeyemi_responsibility_accepted",
+   "text": "Good. That's... that's good to hear. Daniel would be proud. And so am I. Now, let me tell you what I know about the lithium leak cover-up...",
+   "thought": "This is the moment. The real partnership begins here. The trust is established, the connection is made. Whatever happens next, our relationship has fundamentally changed.",
+   "present": [
+    "adeyemi",
+    "player"
+   ],
+   "expected": [],
+   "note": "Mentions Daniel and the leak but reveals no registered fact (hard negative for keyword matching)."
+  }
+ ]
+}

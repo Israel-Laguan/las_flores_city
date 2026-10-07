@@ -21,7 +21,7 @@
 // longer chains or richer interconnection that genuinely new content might
 // introduce. See the write-up for why that gap matters.
 //
-// Usage: DATABASE_URL=... node server/scripts/spikes/sc-s2-duplicate.mjs
+// Usage: DATABASE_URL=... node server/scripts/spikes/reachability-duplicate.mjs
 
 import pg from "pg";
 
@@ -35,7 +35,7 @@ await client.connect();
 // This script is NOT idempotent by design (each generation must be inserted from
 // the *original* rows only), so guard against a second run: re-running would
 // append another 9 generations on top of the existing ones and the subsequent
-// sc-s2-run.mjs measurement would silently label a different volume "10x".
+// reachability-run.mjs measurement would silently label a different volume "10x".
 //
 // The guard and the inserts must be one atomic unit. Checking first and inserting
 // after (two autocommit statements) let two concurrent runs both observe zero ::gen
@@ -58,7 +58,7 @@ try {
     await client.end();
     console.error(
       `spike_sc_s1.entity_edges already contains ${existingGenRows[0].n} ::gen rows. ` +
-        'Rebuild the table with spike_sc_s1_project_entity_edges.mjs before re-duplicating.',
+        'Rebuild the table with server/scripts/spikes/entity-edges-projection.mjs before re-duplicating.',
     );
     process.exit(1);
   }

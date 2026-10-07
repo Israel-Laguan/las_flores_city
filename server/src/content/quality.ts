@@ -73,6 +73,7 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
   if (p.includes('/scenes/') || p.includes('\\scenes\\')) return 'scene';
   if (p.includes('/gigs/') || p.includes('\\gigs\\') || p.includes('gigs.yaml')) return 'gig';
   if (p.includes('/locations/') || p.includes('\\locations\\')) return 'location';
+  if (/[/\\]districts[/\\][^/\\]+[/\\][^/\\]+\.ya?ml$/.test(p)) return 'district';
   if (p.includes('/vault/') || p.includes('\\vault\\')) return 'vault';
   if (p.includes('/missions/') || p.includes('\\missions\\') || p.includes('/mysteries/') || p.includes('\\mysteries\\')) return 'mission';
   if (p.includes('/stories/') || p.includes('\\stories\\')) return 'story';

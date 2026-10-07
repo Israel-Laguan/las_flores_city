@@ -10,7 +10,7 @@
     "start": "node dist/server/src/index.js",
     "start:intake": "node dist/server/src/intake.js",
     "schema:migrate": "tsx src/database/migrate.ts",
-    "spike:sc-s6": "tsx scripts/spike_sc_s6_serving_baseline.ts",
+    "spike:serving-baseline": "tsx scripts/spikes/serving-baseline.ts",
     "migrate": "tsx src/content/cli.ts ../content",
     "validate": "tsx src/content/validate-cli.ts ../content",
     "validate:schema": "tsx src/content/validate-cli.ts ../content --schema-only",

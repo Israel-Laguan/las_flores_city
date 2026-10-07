@@ -14,6 +14,17 @@ export {
   isFlagDefinition,
 } from './flags/flag-definition.js';
 
+// Weather
+export type { WeatherTag } from './weather/index.js';
+export {
+  WEATHER_TAGS,
+  DEFAULT_WEATHER_TAG,
+  TIME_OF_DAY_VARIANT_TAGS,
+  InvalidWeatherTagError,
+  isWeatherTag,
+  validateWeatherTag,
+} from './weather/index.js';
+
 // Condition
 export type {
   ConditionExpr,
