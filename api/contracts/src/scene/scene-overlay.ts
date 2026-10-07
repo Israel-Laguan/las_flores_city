@@ -61,6 +61,7 @@ export type SceneOverlayInput = Pick<SceneOverlay, 'slug' | 'base_scene_slug'> &
  * @returns A fully formed SceneOverlay
  */
 export function createSceneOverlay(input: SceneOverlayInput): SceneOverlay {
+export function createSceneOverlay(input: SceneOverlayInput): SceneOverlay {
   return {
     slug: input.slug,
     base_scene_slug: input.base_scene_slug,
