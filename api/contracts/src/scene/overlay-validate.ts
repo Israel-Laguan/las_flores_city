@@ -247,7 +247,17 @@ export interface ValidateSceneOverlayOptions {
   knownFlags?: ReadonlySet<string> | readonly string[];
 }
 
-/** Validates an untrusted value as a SceneOverlay (tier 1, shape only). Never throws. */
+/**
+ * Validates an untrusted value as a SceneOverlay (tier 1, shape only).
+ *
+ * Never throws. Collects every issue in one pass. Within a single
+ * overlay it rejects ops that contradict each other (two `set_weather`,
+ * two `cast_slot` on one slot, two `add_role_slot` with one `slot_id`).
+ *
+ * @param input - Untrusted value to validate
+ * @param options - Optional `knownFlags` registry for availability-flag warnings
+ * @returns Validation result with all issues found
+ */
 export function validateSceneOverlay(
   input: unknown,
   options: ValidateSceneOverlayOptions = {},

@@ -103,7 +103,16 @@ function pairConflict(a: Claim, b: Claim): SceneConflict | null {
   };
 }
 
-/** All conflicts among `overlays` (assumed to share one base scene), sorted. */
+/**
+ * Detects all conflicts among overlays targeting the same base scene.
+ *
+ * Groups claims by property; within each group checks every pair for
+ * co-satisfiable availability. Different-priority exclusive/cast pairs
+ * are never conflicts (runtime applies the highest priority last).
+ *
+ * @param overlays - Overlays to check (assumed to share one base scene)
+ * @returns Sorted conflict list
+ */
 export function detectConflicts(overlays: ReadonlyArray<SceneOverlay>): SceneConflict[] {
   const groups = new Map<string, Claim[]>();
   for (const overlay of sortOverlays(overlays)) {
@@ -131,7 +140,14 @@ export function detectConflicts(overlays: ReadonlyArray<SceneOverlay>): SceneCon
   );
 }
 
-/** Conflicts as standard validation issues (path = property). */
+/**
+ * Converts conflict entries into standard validation issues.
+ *
+ * Path equals the property key; severity mirrors the conflict severity.
+ *
+ * @param conflicts - Conflicts to convert
+ * @returns Validation issues in the same order
+ */
 export function conflictsToIssues(conflicts: ReadonlyArray<SceneConflict>): ValidationIssue<SceneConflictCode>[] {
   return conflicts.map((c) => ({
     code: c.code,
@@ -151,7 +167,13 @@ export interface ConflictReport {
   status: 'ok' | 'failed';
 }
 
-/** Machine-readable report with sorted keys (stable bytes). */
+/**
+ * Builds a machine-readable conflict report with sorted keys.
+ *
+ * @param sceneSlug - The base scene slug
+ * @param conflicts - Conflicts to include
+ * @returns ConflictReport with status 'failed' if any conflict is an error
+ */
 export function formatConflictReport(sceneSlug: string, conflicts: ReadonlyArray<SceneConflict>): ConflictReport {
   return {
     conflicts: conflicts.map((c) => ({
@@ -168,6 +190,12 @@ export function formatConflictReport(sceneSlug: string, conflicts: ReadonlyArray
   };
 }
 
+/**
+ * Serializes a ConflictReport to a formatted JSON string.
+ *
+ * @param report - Report to serialize
+ * @returns Pretty-printed JSON
+ */
 export function stringifyConflictReport(report: ConflictReport): string {
   return JSON.stringify(report, null, 2);
 }

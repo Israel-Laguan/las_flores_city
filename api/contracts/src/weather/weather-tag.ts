@@ -37,14 +37,26 @@ export class InvalidWeatherTagError extends Error {
   }
 }
 
+/**
+ * Type guard for a weather tag value.
+ *
+ * @param value - Value to test
+ * @returns true if `value` is a valid WeatherTag
+ */
 export function isWeatherTag(value: unknown): value is WeatherTag {
   return typeof value === 'string' && (WEATHER_TAGS as readonly string[]).includes(value);
 }
 
 /**
- * Validates a weather tag. `null` (or `undefined`) means "inherit from the
- * district" and is returned as `null`. Anything else must be an exact member of
- * WEATHER_TAGS (case-sensitive, matching the lowercase variant filenames).
+ * Validates a weather tag value.
+ *
+ * `null` or `undefined` means "inherit from the district" and is
+ * returned as `null`. Anything else must be an exact member of
+ * WEATHER_TAGS (case-sensitive, matching lowercase variant filenames).
+ *
+ * @param tag - Value to validate
+ * @returns The validated WeatherTag, or null for inherit
+ * @throws InvalidWeatherTagError if the tag is not a valid WeatherTag
  */
 export function validateWeatherTag(tag: unknown): WeatherTag | null {
   if (tag === null || tag === undefined) {

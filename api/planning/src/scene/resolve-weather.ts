@@ -20,6 +20,16 @@ export interface WeatherInput {
   provenance: Partial<ComposedScene['provenance']>;
 }
 
+/**
+ * Resolves the final weather for a composed scene.
+ *
+ * Scene/overlay value wins; otherwise the district default.
+ * `null` and `undefined` both mean "inherit".
+ *
+ * @param composed - Composed scene weather and provenance
+ * @param districtWeather - District default weather snapshot
+ * @returns Resolved weather with source provenance
+ */
 export function resolveWeather(composed: WeatherInput, districtWeather: WeatherTag): ResolvedWeather {
   if (composed.weather === null || composed.weather === undefined) {
     return { weather: districtWeather, source: 'district' };

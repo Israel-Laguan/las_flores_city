@@ -74,7 +74,16 @@ function parseCase(raw: unknown, i: number): GoldenCase {
   };
 }
 
-/** Parses and validates one fixture file's JSON. Throws on any malformed part. */
+/**
+ * Parses and validates one fixture file's JSON.
+ *
+ * Throws `InvalidGoldenFixtureError` on any malformed part (uses strict
+ * contract readers `sceneDefFromJSON` / `sceneOverlayFromJSON`).
+ *
+ * @param json - Parsed JSON from a fixture file
+ * @returns Validated GoldenFixture
+ * @throws InvalidGoldenFixtureError if any part is malformed
+ */
 export function parseGoldenFixture(json: unknown): GoldenFixture {
   if (!isRecord(json)) throw new InvalidGoldenFixtureError('root must be an object');
   if (typeof json.name !== 'string' || typeof json.description !== 'string') {

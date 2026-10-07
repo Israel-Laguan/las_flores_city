@@ -230,7 +230,15 @@ export interface ValidateSceneOptions {
 }
 
 /**
- * Validates an untrusted value as a SceneDef (tier 1, shape only). Never throws.
+ * Validates an untrusted value as a SceneDef (tier 1, shape only).
+ *
+ * Never throws; collects every issue in one pass. Tier 1 checks field presence,
+ * types, enums, slug/uuid format, and in-scene uniqueness. Reference checks
+ * (whether `location` exists, refs resolve, flags are registered) are tier 2.
+ *
+ * @param input - Untrusted value to validate
+ * @param options - Optional `knownFlags` registry for availability-flag warnings
+ * @returns Validation result with all issues found
  */
 export function validateScene(input: unknown, options: ValidateSceneOptions = {}): SceneValidationResult {
   const sink = new IssueSink();

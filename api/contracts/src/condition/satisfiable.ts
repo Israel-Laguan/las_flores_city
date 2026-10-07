@@ -30,6 +30,30 @@ export interface CoSatisfiableOptions {
   maxVars?: number;
 }
 
+/**
+ * Determines whether two conditions can be true simultaneously.
+ *
+ * Decision procedure (SC-S13): truth table over `vars = extractFlagSlugs(a) ∪
+ * extractFlagSlugs(b)`; the pair is co-satisfiable iff some assignment makes both
+ * `evaluate` true. Assignments are enumerated in a fixed order (bit i of the counter =
+ * the i-th sorted var), so the witness is deterministic.
+ *
+ * Known limits, by design:
+ * - Flags are treated as INDEPENDENT booleans. Flags that canon never sets separately
+ *   are still assumed independently settable, so this may over-report co-satisfiability
+ *   — it never under-reports. Authors narrow conditions (e.g. `a AND NOT b`) instead.
+ * - More than `maxVars` (default MAX_SAT_VARS = 16) variables → `'unknown'`. Callers
+ *   must treat unknown as co-satisfiable (conservative) and say so in a `hint`.
+ *
+ * Pure, total, never throws.
+ *
+ * @param a - First condition expression
+ * @param b - Second condition expression
+ * @param options - Optional maxVars override (default MAX_SAT_VARS = 16)
+ * @returns CoSatisfiableResult: `{result: true, witness}` if both can be true,
+ *   `{result: false, witness: null}` if they always conflict, or
+ *   `{result: 'unknown', vars}` when the variable count exceeds the limit
+ */
 export function coSatisfiable(a: ConditionExpr, b: ConditionExpr, options: CoSatisfiableOptions = {}): CoSatisfiableResult {
   const maxVars = options.maxVars ?? MAX_SAT_VARS;
   const vars = [...new Set([...extractFlagSlugs(a), ...extractFlagSlugs(b)])].sort();

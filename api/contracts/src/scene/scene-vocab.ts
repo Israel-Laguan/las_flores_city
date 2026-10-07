@@ -16,6 +16,12 @@ export const SCENE_SCHEMA_VERSION = 1 as const;
 export const SCENE_TIMES = ['day', 'sunset', 'night'] as const;
 export type SceneTime = (typeof SCENE_TIMES)[number];
 
+/**
+ * Type guard for a scene time value.
+ *
+ * @param value - Value to test
+ * @returns true if `value` is 'day', 'sunset', or 'night'
+ */
 export function isSceneTime(value: unknown): value is SceneTime {
   return typeof value === 'string' && (SCENE_TIMES as readonly string[]).includes(value);
 }

@@ -54,7 +54,12 @@ export interface SceneOverlay {
 export type SceneOverlayInput = Pick<SceneOverlay, 'slug' | 'base_scene_slug'> &
   Partial<Omit<SceneOverlay, 'slug' | 'base_scene_slug'>>;
 
-/** Builds a SceneOverlay, defaulting availability = TRUE, priority = 0, ops = []. */
+/**
+ * Builds a SceneOverlay with defaults for optional fields.
+ *
+ * @param input - Partial overlay input; availability defaults to TRUE, priority to 0, ops to []
+ * @returns A fully formed SceneOverlay
+ */
 export function createSceneOverlay(input: SceneOverlayInput): SceneOverlay {
   return {
     slug: input.slug,
@@ -132,9 +137,15 @@ function opFromJSON(raw: Record<string, any>): SceneOverlayOp {
 }
 
 /**
- * Strict deserialization: any error issue from `validateSceneOverlay` throws
- * `InvalidSceneOverlayError` (warnings do not throw). The result shares no references
- * with the input.
+ * Strict deserialization of a SceneOverlay from untrusted JSON.
+ *
+ * Validates the input via `validateSceneOverlay`; any error-severity issues
+ * throw `InvalidSceneOverlayError` (warnings are silently accepted). The
+ * result shares no references with the input.
+ *
+ * @param value - Untrusted JSON value to deserialize
+ * @returns A validated SceneOverlay
+ * @throws InvalidSceneOverlayError if error issues are found
  */
 export function sceneOverlayFromJSON(value: unknown): SceneOverlay {
   const { issues } = validateSceneOverlay(value);

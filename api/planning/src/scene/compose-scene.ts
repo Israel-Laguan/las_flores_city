@@ -111,6 +111,19 @@ function checkLayerSlots(base: ComposedScene, layers: ReadonlyArray<ConditionalL
   return issues;
 }
 
+/**
+ * Composes a base SceneDef with its overlays into a ResolvedScene.
+ *
+ * In compile mode (no `flags`), constant-TRUE overlays fold into the base
+ * and flag-gated overlays become `layers`. In player mode (`flags` given),
+ * only overlays whose availability holds are applied directly.
+ * Runs SC-304 conflict detection; an error fail the compile.
+ *
+ * @param base - The base scene definition
+ * @param overlays - Overlays targeting this base scene
+ * @param options - Optional player flags for player-mode composition
+ * @returns Composed scene with base, layers, flags, and issues
+ */
 export function composeScene(
   base: SceneDef,
   overlays: ReadonlyArray<SceneOverlay>,

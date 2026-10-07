@@ -10,6 +10,16 @@ import { evaluate, type FlagSet } from '../condition/evaluate.js';
 import { applyOverlayOps, type ComposedScene, type ConditionalLayer, type ResolvedScene, type SceneComposeIssue } from './compose.js';
 
 /** Layers active for `flags`, in their stored order. */
+/**
+ * Selects the conditional layers active for the given flag set.
+ *
+ * Keeps layers whose `availability` evaluates to true, preserving their
+ * stored order (no re-sorting, no conflict detection — both settled at compile).
+ *
+ * @param layers - Conditional layers to filter
+ * @param flags - The player's active flag set
+ * @returns Layers whose availability holds for `flags`
+ */
 export function selectActiveOverlays<T extends Pick<ConditionalLayer, 'availability'>>(
   layers: ReadonlyArray<T>,
   flags: FlagSet,
@@ -26,6 +36,16 @@ export interface PlayerScene {
   issues: SceneComposeIssue[];
 }
 
+/**
+ * Resolves the full player-visible scene from a compiled artifact.
+ *
+ * Selects the layers active for `flags` and applies them to the base scene
+ * with the shared overlay engine.
+ *
+ * @param resolved - The compiled scene artifact (base + conditional layers)
+ * @param flags - The player's active flag set
+ * @returns The composed scene, list of active layer slugs, and any engine issues
+ */
 export function resolveSceneForPlayer(resolved: ResolvedScene, flags: FlagSet): PlayerScene {
   const active = selectActiveOverlays(resolved.layers, flags);
   const { scene, issues } = applyOverlayOps(resolved.base, active);

@@ -36,6 +36,12 @@ export type SceneOverlayOpKind = (typeof SCENE_OVERLAY_OPS)[SceneOverlayOpName][
 
 export const SCENE_OVERLAY_OP_NAMES = Object.keys(SCENE_OVERLAY_OPS) as SceneOverlayOpName[];
 
+/**
+ * Checks whether `value` is a valid SceneOverlayOpName.
+ *
+ * @param value - Value to test
+ * @returns true if `value` is a known op name string
+ */
 export function isSceneOverlayOpName(value: unknown): value is SceneOverlayOpName {
   return typeof value === 'string' && Object.prototype.hasOwnProperty.call(SCENE_OVERLAY_OPS, value);
 }

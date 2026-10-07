@@ -168,17 +168,15 @@ export class DatabaseFlagStateRepository implements FlagStateRepository {
 }
 
 /**
- * Convenience function to get flag state for a player.
+ * Gets the flag state for a player.
  *
- * `repository` is deliberately required: defaulting it to a fresh empty
- * InMemoryFlagStateRepository made a forgotten argument silently answer
- * "every flag is cleared" with no error, so conditions would evaluate against
- * an empty state instead of failing loudly. Use createFlagStateRepository() to
- * build one.
+ * Returns undefined if no state exists for this player.
+ * The `trueFlags` set is derived from the same snapshot to avoid
+ * straddling updates.
  *
- * `trueFlags` is derived from the snapshot `getPlayerState` returned rather than
- * from a second `getTrueFlags` call: two reads can straddle an update and return a
- * flag set that never existed at any single instant.
+ * @param playerId - Player to look up
+ * @param repository - Flag state repository
+ * @returns Player flag state and true-flag set, or undefined
  */
 export async function getPlayerFlagState(
   playerId: string,
@@ -195,7 +193,12 @@ export async function getPlayerFlagState(
 }
 
 /**
- * Convenience function to check if a specific flag is set for a player.
+ * Checks whether a specific flag is set for a player.
+ *
+ * @param playerId - Player to check
+ * @param flagSlug - Flag slug to look up
+ * @param repository - Flag state repository
+ * @returns true if the flag is set
  */
 export async function isPlayerFlagSet(
   playerId: string,
@@ -206,9 +209,11 @@ export async function isPlayerFlagSet(
 }
 
 /**
- * Factory function to create a flag state repository.
- * In production, this would create a DatabaseFlagStateRepository.
- * In tests, this can create an InMemoryFlagStateRepository.
+ * Creates a flag state repository.
+ *
+ * @param inMemory - true for an in-memory implementation (default: false,
+ *   which returns a DatabaseFlagStateRepository placeholder)
+ * @returns A FlagStateRepository implementation
  */
 export function createFlagStateRepository(
   inMemory = false,

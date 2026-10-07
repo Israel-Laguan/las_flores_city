@@ -13,6 +13,12 @@
 export const SLOT_POSITIONS = ['left', 'center', 'right'] as const;
 export type SlotPosition = (typeof SLOT_POSITIONS)[number];
 
+/**
+ * Type guard for a slot position value.
+ *
+ * @param value - Value to test
+ * @returns true if `value` is 'left', 'center', or 'right'
+ */
 export function isSlotPosition(value: unknown): value is SlotPosition {
   return typeof value === 'string' && (SLOT_POSITIONS as readonly string[]).includes(value);
 }
@@ -29,6 +35,12 @@ export interface RoleSlot {
 export const ROLE_SLOT_JSON_KEYS = ['cast', 'position', 'slot_id'] as const;
 
 /** `slot_id`s that appear more than once, each once, sorted. */
+/**
+ * Finds duplicate slot_ids in a role slot array.
+ *
+ * @param slots - Role slots to scan
+ * @returns Sorted list of slot_ids that appear more than once
+ */
 export function findDuplicateSlotIds(slots: ReadonlyArray<RoleSlot>): string[] {
   const seen = new Set<string>();
   const dupes = new Set<string>();
@@ -39,6 +51,12 @@ export function findDuplicateSlotIds(slots: ReadonlyArray<RoleSlot>): string[] {
   return [...dupes].sort();
 }
 
+/**
+ * Serializes a RoleSlot to its JSON form with sorted keys.
+ *
+ * @param slot - Role slot to serialize
+ * @returns JSON-compatible object
+ */
 export function roleSlotToJSON(slot: RoleSlot): Record<string, unknown> {
   return { cast: slot.cast ?? null, position: slot.position, slot_id: slot.slot_id };
 }

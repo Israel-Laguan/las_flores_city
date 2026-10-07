@@ -143,8 +143,16 @@ function appendByIdentity(list: string[], entries: readonly string[], key: strin
 }
 
 /**
- * Applies `layers` to `scene` in the given order. Pure: inputs are never mutated and
- * the result shares no arrays with them.
+ * Ordered overlay application engine shared by compile and runtime.
+ *
+ * Applies `layers` to `scene` in the given order without mutating inputs.
+ * Additive ops merge by identity (first occurrence keeps position); exclusive
+ * ops (set_weather/set_time) let the last layer win; cast_slot and add_role_slot
+ * report issues on conflicts rather than throwing.
+ *
+ * @param scene - The base composed scene to apply layers onto
+ * @param layers - Ordered overlay layers to apply
+ * @returns The composed scene with per-field provenance and any issues encountered
  */
 export function applyOverlayOps(scene: ComposedScene, layers: ReadonlyArray<OverlayLayer>): ApplyResult {
   const out: ComposedScene = { ...cloneDef(scene), provenance: { ...scene.provenance } };
