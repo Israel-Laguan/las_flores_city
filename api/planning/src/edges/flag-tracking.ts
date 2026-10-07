@@ -3,7 +3,7 @@
 // Uses SC-203's static flag-slug list (not a second parser)
 // Shape consumable by later entity_edges projection
 
-import type { ConditionExpr } from '@las-flores/api-contracts';
+import type { ConditionExpr, SceneDef } from '@las-flores/api-contracts';
 import { extractFlagSlugs, isConditionExpr } from '@las-flores/api-contracts';
 
 /**
@@ -136,11 +136,37 @@ export interface FlagEdge {
 }
 
 /**
- * Extracts flag usage from an entity payload.
+ * Entity type stamped on edges from a SceneDef. Deliberately NOT `scene`: in the
+ * plan-intake/graph code a bare "scene" means a legacy location row (SC-S12), so the
+ * new entity gets its own kind.
+ */
+export const SCENE_DEF_ENTITY_TYPE = 'scene_def';
+
+/** A SceneDef is told apart from an EntityPayload by having a `slug` and no `type`. */
+function isSceneDef(input: EntityPayload | SceneDef): input is SceneDef {
+  return 'slug' in input && !('type' in input);
+}
+
+/**
+ * Adapts a SceneDef to the payload walked by the extractor (SC-310). Its only flag
+ * reads are in `availability`; it carries no effects yet, so `sets` is always empty —
+ * when scenes gain effects, set them here so the extraction below picks them up.
+ */
+function sceneDefToPayload(scene: SceneDef): EntityPayload {
+  return { id: scene.slug, type: SCENE_DEF_ENTITY_TYPE, conditions: scene.availability };
+}
+
+function toEntityPayload(input: EntityPayload | SceneDef): EntityPayload {
+  return isSceneDef(input) ? sceneDefToPayload(input) : input;
+}
+
+/**
+ * Extracts flag usage from an entity payload (or a SceneDef — SC-310).
  * Walks conditions and effects to find all flag references.
  * Uses extractFlagSlugs from SC-203 (not a second parser).
  */
-export function extractFlagUsage(payload: EntityPayload): FlagUsage {
+export function extractFlagUsage(input: EntityPayload | SceneDef): FlagUsage {
+  const payload = toEntityPayload(input);
   const sets = new Set<string>();
   const writes: FlagWrite[] = [];
   const reads: FlagRead[] = [];
@@ -333,9 +359,10 @@ export function flagUsageToEdges(
  * This is the main entry point for SC-S1 integration.
  */
 export function createFlagEdges(
-  payload: EntityPayload,
+  input: EntityPayload | SceneDef,
   choiceId?: string,
 ): FlagEdge[] {
+  const payload = toEntityPayload(input);
   const usage = extractFlagUsage(payload);
   return flagUsageToEdges(
     usage,
@@ -350,7 +377,7 @@ export function createFlagEdges(
  * This would be used during content compilation to catch typos.
  */
 export function validateFlagReferences(
-  payload: EntityPayload,
+  payload: EntityPayload | SceneDef,
   knownFlagSlugs: Set<string> | string[],
 ): { valid: boolean; missing: string[] } {
   const knownSlugs = new Set(knownFlagSlugs);

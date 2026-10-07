@@ -1,0 +1,38 @@
+// api/contracts/src/scene/scene-vocab.ts
+// Constants shared by scene-def.ts (type + serialization) and validate.ts. Kept in a
+// leaf file so the two can depend on it without importing each other.
+
+/**
+ * Version of the serialized SceneDef shape. Stamped into every `toJSON` output (and
+ * therefore into content hashes) and checked on read. Bump on any shape change that
+ * old payloads cannot satisfy.
+ */
+export const SCENE_SCHEMA_VERSION = 1 as const;
+
+/**
+ * Time-of-day tags a scene can pin. Matches `client/src/utils/time.ts`
+ * (`day` / `sunset`-for-dusk / `night`). `null` = not time-constrained.
+ */
+export const SCENE_TIMES = ['day', 'sunset', 'night'] as const;
+export type SceneTime = (typeof SCENE_TIMES)[number];
+
+export function isSceneTime(value: unknown): value is SceneTime {
+  return typeof value === 'string' && (SCENE_TIMES as readonly string[]).includes(value);
+}
+
+/** Every key of the serialized form, in the sorted order `toJSON` emits them. */
+export const SCENE_JSON_KEYS = [
+  'availability',
+  'description',
+  'dialogue_refs',
+  'id',
+  'items',
+  'location',
+  'priority',
+  'role_slots',
+  'schema_version',
+  'slug',
+  'time',
+  'title',
+  'weather',
+] as const;

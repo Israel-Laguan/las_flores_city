@@ -47,6 +47,20 @@ export {
   createFlagRegistry,
 } from './canon/flag-registry.js';
 
+// Scene def repository (SC-311)
+export type {
+  ListSceneDefsOptions,
+  SceneDefRecord,
+  SceneDefRepository,
+  UpsertResult,
+  UpsertStatus,
+} from './canon/scene-def-repository.js';
+export {
+  InMemorySceneDefRepository,
+  SceneDefRetiredError,
+  sceneDefContentHash,
+} from './canon/scene-def-repository.js';
+
 // Threshold events (SC-206)
 export type { ThresholdResult, StatValue, Threshold } from './canon/threshold-events.js';
 export {
@@ -67,6 +81,7 @@ export type {
   FlagWrite,
 } from './edges/flag-tracking.js';
 export {
+  SCENE_DEF_ENTITY_TYPE,
   extractFlagUsage,
   extractFlagReadsFromCondition,
   extractFlagSetsFromEffects,

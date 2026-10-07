@@ -3,6 +3,7 @@
 
 export type { EntityPayload, EntityEffects, FlagSetEffect, FlagUsage, FlagEdge, FlagRead, FlagWrite } from './flag-tracking.js';
 export {
+  SCENE_DEF_ENTITY_TYPE,
   extractFlagUsage,
   extractFlagReadsFromCondition,
   extractFlagSetsFromEffects,

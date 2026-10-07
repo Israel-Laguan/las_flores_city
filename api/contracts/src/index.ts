@@ -54,6 +54,31 @@ export {
   flagObjectFromSet,
 } from './condition/index.js';
 
+// Scene (SC-301)
+export type { SceneDef, SceneDefInput, SceneTime, RoleSlot, SlotPosition, ValidateSceneOptions } from './scene/index.js';
+export {
+  SCENE_SCHEMA_VERSION,
+  SCENE_TIMES,
+  InvalidSceneDefError,
+  createSceneDef,
+  isSceneTime,
+  sceneDefToJSON,
+  sceneDefFromJSON,
+  stringifySceneDef,
+  isValidSlug,
+  isUuid,
+  SLOT_POSITIONS,
+  isSlotPosition,
+  findDuplicateSlotIds,
+  SCENE_ISSUE_CODES,
+  validateScene,
+} from './scene/index.js';
+export type { SceneIssueCode, SceneIssue, SceneValidationResult } from './scene/index.js';
+
+// Validation (shared issue format)
+export type { IssueSeverity, ValidationIssue, ValidationResult } from './validation/index.js';
+export { ISSUE_SEVERITIES, createValidationResult, issuePath } from './validation/index.js';
+
 // Artifact
 export type {
   Artifact,
