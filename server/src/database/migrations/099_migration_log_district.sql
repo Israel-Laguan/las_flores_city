@@ -9,6 +9,8 @@
 --   "migration_log_content_type_check"
 --
 -- Same drop-recreate pattern as 036_add_location_content_type.sql.
+-- Added NOT VALID (skips the existing-row scan at DDL time); validated by
+-- 100_migration_log_district_validate.sql once this migration has committed.
 -- Transactional and idempotent.
 
 ALTER TABLE migration_log
@@ -30,4 +32,4 @@ ALTER TABLE migration_log
         'map_tile',
         'story_beat',
         'district'
-    ));
+    )) NOT VALID;

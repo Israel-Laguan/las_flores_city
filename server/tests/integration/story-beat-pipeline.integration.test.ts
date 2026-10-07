@@ -32,7 +32,7 @@ jest.mock('@las-flores/infra', () => {
 import * as yaml from 'js-yaml';
 import crypto from 'crypto';
 import { processContentFile } from '../../src/content/upsert.js';
-import { withSchemaLock } from '../helpers/schemaLock.js';
+import { withSchemaLock, replayHistoricalMigration } from '../helpers/schemaLock.js';
 
 const { Pool } = pg;
 
@@ -76,7 +76,9 @@ describe('Story Beat Pipeline Integration', () => {
     await withSchemaLock(async (client) => {
       const migrationPath = path.resolve(process.cwd(), 'src/database/migrations/044_story_beats.sql');
       const migrationSql = await fs.readFile(migrationPath, 'utf-8');
-      await client.query(migrationSql);
+      await replayHistoricalMigration(client, async () => {
+        await client.query(migrationSql);
+      });
     });
   });
 

@@ -106,7 +106,8 @@ if (process.argv.includes('--llm')) {
     const r = await callCheapModel(sys, JSON.stringify({ present: e.present, text: e.text, thought: e.thought, registry: Object.fromEntries(Object.entries(fx.facts).map(([k, v]) => [k, v.aliases.join(', ')])) }));
     if (!r.ok) { console.log(`cheap-model run aborted: ${r.reason}`); process.exit(0); }
     tokens += r.usage?.total_tokens ?? 0;
-    try { const j = JSON.parse(r.text.replace(/^```json\s*|```$/g, '').trim()); for (const l of j.learned ?? []) pred.push(key([e.id, l.character, l.fact_id])); } catch { malformed++; }
+    try { const j = JSON.parse(r.text.replace(/^```json\s*|```$/g, '').trim()); const ok = Array.isArray(j.learned) && j.learned.every((l) => l && typeof l.character === 'string' && typeof l.fact_id === 'string');
+      if (!ok) malformed++; else for (const l of j.learned) pred.push(key([e.id, l.character, l.fact_id])); } catch { malformed++; }
   }
   score(pred, `cheap model ${MODEL}`);
   console.log(`malformed responses: ${malformed}/${fx.excerpts.length}; total tokens: ${tokens}`);
