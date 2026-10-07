@@ -32,3 +32,6 @@ export {
   flagSetFromObject,
   flagObjectFromSet,
 } from './evaluate.js';
+
+export type { CoSatisfiableResult, CoSatisfiableOptions } from './satisfiable.js';
+export { MAX_SAT_VARS, coSatisfiable } from './satisfiable.js';

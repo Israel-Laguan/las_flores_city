@@ -73,6 +73,15 @@ export type {
 export type { ComposeSceneOptions, ComposeSceneResult } from './scene/compose-scene.js';
 export { composeScene, sortOverlays } from './scene/compose-scene.js';
 
+// Overlay conflict detection (SC-304)
+export type { ConflictReport, SceneConflict, SceneConflictCode } from './scene/conflicts.js';
+export {
+  conflictsToIssues,
+  detectConflicts,
+  formatConflictReport,
+  stringifyConflictReport,
+} from './scene/conflicts.js';
+
 // Threshold events (SC-206)
 export type { ThresholdResult, StatValue, Threshold } from './canon/threshold-events.js';
 export {

@@ -53,6 +53,8 @@ export {
   flagSetFromObject,
   flagObjectFromSet,
 } from './condition/index.js';
+export type { CoSatisfiableResult, CoSatisfiableOptions } from './condition/index.js';
+export { MAX_SAT_VARS, coSatisfiable } from './condition/index.js';
 
 // Scene (SC-301)
 export type { SceneDef, SceneDefInput, SceneTime, RoleSlot, SlotPosition, ValidateSceneOptions } from './scene/index.js';

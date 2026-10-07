@@ -16,6 +16,8 @@
 //    order": a static overlay sorting after a layer must still be able to override it;
 //  - layered `cast_slot`/`add_role_slot` are checked against the folded base so a
 //    dangling target is reported at compile, not discovered by players.
+// Both modes run SC-304 conflict detection over every overlay for this base (folded or
+// layered): an `error` there fails the compile.
 // Player mode (`flags` given, SC-312): overlays whose availability is false for `flags`
 // are skipped and the rest are all applied; `layers` is empty.
 
@@ -33,6 +35,10 @@ import {
   type SceneOverlay,
   type ValidationIssue,
 } from '@las-flores/api-contracts';
+import { conflictsToIssues, detectConflicts } from './conflicts.js';
+import { compareSlug, sortOverlays } from './order.js';
+
+export { sortOverlays };
 
 export interface ComposeSceneOptions {
   /** Per-player flag state. Omitted = compile mode (keep flag-gated overlays as layers). */
@@ -46,13 +52,6 @@ export interface ComposeSceneResult {
 }
 
 const NO_FLAGS: FlagSet = new Set<string>();
-
-const compareSlug = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
-
-/** Copy of `overlays` sorted `(priority asc, slug asc)` — the one compose order. */
-export function sortOverlays<T extends Pick<SceneOverlay, 'priority' | 'slug'>>(overlays: ReadonlyArray<T>): T[] {
-  return [...overlays].sort((a, b) => a.priority - b.priority || compareSlug(a.slug, b.slug));
-}
 
 const isFlagGated = (o: SceneOverlay): boolean => extractFlagSlugs(o.availability).length > 0;
 
@@ -126,6 +125,7 @@ export function composeScene(
 
   const applied = applyOverlayOps(toComposedScene(base), folded);
   issues.push(...applied.issues, ...checkLayerSlots(applied.scene, layers));
+  issues.push(...conflictsToIssues(detectConflicts(own)));
 
   return {
     scene: {
