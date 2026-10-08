@@ -153,7 +153,7 @@ nodes:
             axes:
               trust: 8
               familiarity: 6
-              intimacy: 10
+            romance: 10
           state_set:
             last_pjr_encounter_at: NOW
       - id: pjr3_exploit
@@ -272,7 +272,7 @@ nodes:
           relationship_effect:
             axes:
               trust: 8
-              intimacy: 8
+            romance: 8
           state_set:
             last_pjr_encounter_at: NOW
 
@@ -298,8 +298,8 @@ nodes:
         axes:
           trust: 8
           familiarity: 6
-          intimacy: 12
 
+        romance: 12
   pjr3_exploit_response:
     id: pjr3_exploit_response
     type: character

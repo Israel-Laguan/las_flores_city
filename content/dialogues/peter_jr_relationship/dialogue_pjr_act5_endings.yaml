@@ -36,7 +36,7 @@ nodes:
           axes:
             trust: "gte:75"
             familiarity: "gte:70"
-            intimacy: "gte:60"
+          romance: "gte:60"
         hidden_if:
           pjr_rival_path: true
           pjr_act4_deflected: true
@@ -55,7 +55,7 @@ nodes:
           axes:
             trust: "gte:50"
             familiarity: "gte:60"
-            intimacy: "gte:40"
+          romance: "gte:40"
       # RIVAL: leaked, mocked, or used his confession. Takes precedence over everything.
       - id: pjr5_branch_rival
         text: "[He has not forgotten what you did]"
@@ -443,7 +443,7 @@ nodes:
           relationship_effect:
             axes:
               trust: 8
-              intimacy: 10
+            romance: 10
           state_set:
             last_pjr_encounter_at: NOW
 
@@ -469,9 +469,9 @@ nodes:
       relationship_effect:
         axes:
           trust: 10
-          intimacy: 15
           alignment: 8
 
+        romance: 15
   # ============================================
   # ENDING: FAILED LOVER
   # ============================================
@@ -529,9 +529,9 @@ nodes:
       relationship_effect:
         axes:
           trust: 5
-          intimacy: 4
           tension: 2
 
+        romance: 4
   # ============================================
   # ENDING: ENEMY
   # ============================================

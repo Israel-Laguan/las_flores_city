@@ -316,7 +316,7 @@ nodes:
           relationship_effect:
             axes:
               trust: 10
-              intimacy: 12
+            romance: 12
           flag_set:
             pjr_pin_removed: true
           state_set:
@@ -355,8 +355,8 @@ nodes:
         axes:
           trust: 12
           familiarity: 8
-          intimacy: 10
 
+        romance: 10
   pjr4_escapade_friend:
     id: pjr4_escapade_friend
     type: character
