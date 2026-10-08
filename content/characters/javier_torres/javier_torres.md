@@ -23,7 +23,7 @@ A dedicated environmental activist and Vice-Chair of the Humanity First council.
 - **A young environmental activist** worried about mining pollution; one of Daniel's three first allies (June 2035). *(birth year revised to ~2012, so he is about 23 then)*
 - **February 2037:** leads the river cleanup near the mining runoff, the movement's first high-profile project; the mining companies begin to view HF with suspicion. **December 2037:** mentors the locals' recycling program, the first project they initiate themselves.
 - **August 2039:** formally elected Vice-Chair beside [Elena Ramirez](../elena_ramirez/elena_ramirez.md) (the overview lists him as Vice-Chair "2037+"). **June 2039:** notices, with Elena, the inconsistencies in Diego Salazar and Carla Ruiz's reports.
-- **February 2052:** with [Sofia Alvarez](../sofia_alvarez/sofia_alvarez.md), organizes the volunteer response to the Great Lithium Leakage; the Environmental Justice Committee follows.
+- **August 2052:** with [Sofia Alvarez](../sofia_alvarez/sofia_alvarez.md), organizes the volunteer response to the Great Lithium Leakage; the Environmental Justice Committee follows.
 - **2052–2055:** the **Red Sun Collective**, young radicals who think peaceful protest has failed, is expelled in 2055 after clashes with the council; it is close to his own cause. *(that it is personal to him is invented)*
 
 Timeline sources: [Founding Era](../../lore/organizations/movements/humanity_first/timeline_founding/timeline_founding.md), [Influence Era](../../lore/organizations/movements/humanity_first/timeline_influence/timeline_influence.md).

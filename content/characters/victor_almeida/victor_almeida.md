@@ -52,4 +52,3 @@ The paper's conscience: a reliable-information NPC and the person who approves o
 ## Known inconsistencies
 
 - District "Las Flores" vs a main office outside the city.
-- Lina Kim's own file has her mentoring at the main office in 2077, while the outlet file lists her under the Las Flores office.

@@ -22,7 +22,7 @@ Once the energetic leader of the Humanity First Youth Council, she has risen to 
 
 - **Born 2018.** At 20 (November 2038) she leads the new Youth Council: film screenings and art workshops focused on movement values, which quickly attract students. In August 2039 she is formally head of the Youth Council.
 - **October 2045:** leads workshops on leadership, activism and sustainable development; the Youth Council works with schools.
-- **February 2052:** the lore has her organizing the volunteer response to the Great Lithium Leakage with [Javier Torres](../javier_torres/javier_torres.md), calling her "Chair" though she is not elected until later (see inconsistencies): barriers, warning signs, an emergency relief fund, expert collaboration.
+- **August 2052:** the lore has her organizing the volunteer response to the Great Lithium Leakage with [Javier Torres](../javier_torres/javier_torres.md), as head of the Youth Council: barriers, warning signs, an emergency relief fund, expert collaboration.
 - **November 2057:** elected Chair at 39. Her first year overlaps the **Tomas Herrera scandal** (2057–2058): a contractor who inflated costs and hired relatives; it becomes public in late 2058 and leads to mandatory third-party audits and anti-nepotism rules.
 - **2077:** still Chair, 59, representing "a new generation of leadership".
 
@@ -54,4 +54,3 @@ The movement's public face and the contact for civil-society scenes. She is **no
 ## Known inconsistencies
 
 - **Age:** the data gave b. 2042 (35 in 2077), but the lore has her at 20 in 2038. Revised to 2018 (59). Her portrait shows a woman in her 30s and may need updating.
-- **February 2052 "Chair"** vs elected November 2057.

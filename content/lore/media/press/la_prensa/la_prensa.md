@@ -62,13 +62,13 @@ Her work prompted national and international media to pick up the story, elevati
 2. **Soledad Ortega** — Managing Editor: Driving force behind the integration of multimedia content. Her background in digital media has been crucial in navigating the transition to a multi-platform news organization.
 3. **Alejandro Ruiz** — Senior Investigative Reporter: With a penchant for uncovering corporate misconduct and government corruption, his investigations have led to significant legal reforms and the resignation of several high-profile figures.
 4. **Clara Torres** — Technology and Innovation Editor: Leads a team focused on reporting the latest in technology, science, and their societal impacts. Instrumental in engaging younger audiences through cutting-edge digital storytelling techniques.
+5. **Lina Kim** — Investigative Journalist (2077: mentoring at the main office): Led the Great Lithium Leak investigation, bringing international attention to the disaster and cover-up.
 
 ### Las Flores Office
 1. **Mariana De La Cruz** — Bureau Chief: Tasked with overseeing La Prensa's operations in Las Flores, pivotal in building the newspaper's presence and credibility in the city.
 2. **Pedro Escobar** — City Editor: Responsible for coordinating coverage of local news, from politics to cultural events, ensuring La Prensa reflects the diverse fabric of the city.
-3. **Lina Kim** — Investigative Journalist: Led the Great Lithium Leak investigation, bringing international attention to the disaster and cover-up.
-4. **Sofia Cortez** — Environment Correspondent: Reporting focuses on environmental issues affecting Las Flores, including the aftermath of the Great Lithium Leak.
-5. **Emilio Navarro** — Community and Culture Reporter: Specializes in stories highlighting the cultural richness and social issues of Las Flores, featuring grassroots movements and local artists.
+3. **Sofia Cortez** — Environment Correspondent: Reporting focuses on environmental issues affecting Las Flores, including the aftermath of the Great Lithium Leak.
+4. **Emilio Navarro** — Community and Culture Reporter: Specializes in stories highlighting the cultural richness and social issues of Las Flores, featuring grassroots movements and local artists.
 
 ---
 
@@ -81,7 +81,6 @@ Her work prompted national and international media to pick up the story, elevati
 - **Beats:** [Alejandro Ruiz](../../../../characters/alejandro_ruiz/alejandro_ruiz.md) and [Laura Silva](../../../../characters/laura_silva/laura_silva.md) (corruption and political money, a territorial overlap), [Sofia Cortez](../../../../characters/sofia_cortez/sofia_cortez.md) (the river), [Emilio Navarro](../../../../characters/emilio_navarro/emilio_navarro.md) (culture), [Pedro Escobar](../../../../characters/pedro_escobar/pedro_escobar.md) (city desk).
 - **The star:** [Lina Kim](../../../../characters/lina_kim/lina_kim.md); the bureau lives in the shadow of her 2052 series.
 - **Rivals:** [El Informador](../el_informador/el_informador.md) for local scoops; the [Chronicle](../las_flores_chronicle/las_flores_chronicle.md) for elite stories ([Juan Pérez](../../../../characters/juan_perez/juan_perez.md)).
-- **Open inconsistency:** the lore places the main office "outside Las Flores", but several main-office staff have district "Las Flores" in their data, and Lina Kim's own file puts her at the main office in 2077 while this file lists her in the Las Flores office.
 
 ---
 

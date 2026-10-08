@@ -19,8 +19,8 @@
 
 ## 2052: The Great Lithium Leakage
 
-### February 2052 — Immediate Response
-- **Sofia Alvarez** (Chair) and **Javier Torres** (Vice-Chair) organize volunteer response
+### August 2052 — Immediate Response
+- **Sofia Alvarez** (Youth Council head) and **Javier Torres** (Vice-Chair) organize volunteer response
 - Makeshift barriers and warning signs around contaminated areas
 - Public safety prioritized
 
@@ -76,12 +76,12 @@
 
 ---
 
-## 2055: The Trial and Aftermath
+## 2055–2057: The Trial and Aftermath
 
 ### The Trial Against Minera Estrella
-- Years of pressure lead to trial for the lithium spill
+- Years of pressure lead to a trial for the lithium spill (January 2055 – March 2057)
 - Environmental Justice Committee provides evidence including Citizen Monitoring data and resident testimonies
-- **Result:** Minera Estrella receives only a **minimal fine** — legal loopholes and powerful political influence
+- **Result:** Minera Estrella is **acquitted** (March 2057) — legal loopholes and powerful political influence
 
 ### Public Outrage
 - Large-scale protests condemning the decision

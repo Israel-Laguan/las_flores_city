@@ -21,7 +21,7 @@ A former local teacher passionate about education reform who became the first lo
 ## Background
 
 - **A local teacher** passionate about education reform; one of Daniel's three first allies (June 2035).
-- **January 2036:** appointed first Chair of the first Community Council. She is formally elected in August 2039, and the overview credits her with the Chair from 2039 to 2057 (see inconsistencies).
+- **January 2036:** appointed first Chair of the first Community Council. She is formally elected in August 2039, and the overview credits her with the Chair until 2057.
 - **September 2036:** the Mateo Rodriguez fundraising fraud is caught by [Carlos Lopez](../carlos_lopez/carlos_lopez.md); stricter verification follows. **2037:** the council refuses bribes for community-center permits and wins through public pressure; in October she organizes digital-literacy, sustainable-living and leadership workshops whose graduates join the council. **January 2039:** the Community Center opens, with a library and classrooms.
 - **June 2039:** she and Javier notice inconsistencies in Diego Salazar and Carla Ruiz's reports, which leads to their expulsion in December 2040.
 - **November 2057:** hands the Chair to [Sofia Alvarez](../sofia_alvarez/sofia_alvarez.md) in the "generational shift", at 45.
@@ -52,7 +52,3 @@ Timeline sources: [Founding Era](../../lore/organizations/movements/humanity_fir
 
 An elder NPC: the movement's memory and a source on its history, especially the rogue incidents. She is **not** part of the 2077 main plot.
 
-## Known inconsistencies
-
-- First Chair appointed January 2036 vs the overview's "2039–2057"; both appear in the lore.
-- In February 2052 the lore calls Sofia Alvarez "Chair", though Sofia is elected in November 2057; Elena is the Chair on every other count.

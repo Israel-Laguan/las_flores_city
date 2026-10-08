@@ -3,7 +3,7 @@
 **Title:** Managing Editor, La Prensa
 
 **Physical Description:**
-- A Latina woman in her early 40s with a square face, prominent jaw, almond eyes and a straight dark sharp bob. She has an athletic-compact build, a small scar on her left brow and a sport earbud clipped to her earlobe, and dresses in modern editor attire with a tablet.
+- A Latina woman in her early 40s with a square face, prominent jaw, almond eyes and a straight dark sharp bob. She has an athletic-compact build, a small silver stud in her left nostril and a sport earbud clipped to her earlobe, and dresses in modern editor attire with a tablet.
 
 **Description (full):**
 
@@ -33,7 +33,7 @@ La Prensa moved from print to a "multi-platform news provider" with podcasts, vi
 
 ## Habits and Contradictions
 
-- Keeps a sport earbud clipped to her ear and a tablet in hand during meetings; the small scar on her left brow comes from an old accident. *(origin invented)*
+- Keeps a sport earbud clipped to her ear and a tablet in hand during meetings; the small silver nostril stud is a keepsake from her student years. *(origin invented)*
 - A digital native who insists on verified sources more than her editor assumes. *(invented)*
 
 ## Relationships (with cost)

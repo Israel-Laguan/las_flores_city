@@ -3,7 +3,7 @@
 **Title:** Senior Investigative Reporter, La Prensa
 
 **Physical Description:**
-- Latino man in his 40s with a lean, wiry build and weathered brown skin; wavy dark hair threaded with gray, thick brows with a faint scar, deep-set watchful eyes, a healed crooked nose, and a rumpled jacket over an open collar.
+- Latino man in his 40s with a lean, wiry build and weathered brown skin; wavy dark hair threaded with gray, thick brows and a faint pale scar along the jaw, deep-set watchful eyes, a prominent hawk nose, and a rumpled jacket over an open collar.
 
 **Description (full):**
 
@@ -33,7 +33,7 @@ La Prensa credits Alejandro with uncovering "corporate misconduct and government
 
 ## Habits and Contradictions
 
-- The "healed crooked nose" and the faint scar through his brow are from a confrontation with a subject's security man. *(origin invented)*
+- The faint scar along his jaw is from a confrontation with a subject's security man. *(origin invented)*
 - Rumpled jacket, open collar, and a watchful way of choosing the seat facing the door.
 - Cautious with sources and reckless with his own safety.
 
