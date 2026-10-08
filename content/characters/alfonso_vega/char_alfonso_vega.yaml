@@ -2,12 +2,12 @@ id: a2b3c4d5-e6f7-4a8b-9c0d-1e2f3a4b5c6d
 name: Alfonso Vega
 title: Mayor of Las Flores
 birth_year: 2019
-description: Mayor of Las Flores who lauded Chief Inspector Adeyemi's Secure Neighborhoods program. Publicly addresses city challenges including the environmental crisis and rising insecurity. A significant figure in the political landscape of Las Flores, served as the city's mayor during one of its most tumultuous periods. His tenure, marked by the catastrophic tailings dam failure in 2052, showcased his ability to navigate complex situations, albeit under a cloud of controversy.
+description: Mayor of Las Flores who lauded Chief Inspector Adeyemi's Secure Neighborhoods program. Publicly addresses city challenges including the environmental crisis and rising insecurity. A significant figure in the political landscape of Las Flores, served as the city's mayor during one of its most tumultuous periods. His tenure, marked by the catastrophic pipe failure of the 2052 Great Lithium Leak, showcased his ability to navigate complex situations, albeit under a cloud of controversy.
 physical_description: "Latino man in his late 50s with a stocky, broad-shouldered build, thick silver-gray wavy hair swept back, heavy-lidded dark brown eyes and deeply lined medium-brown skin; a neatly trimmed mustache, gold watch and a tailored suit slightly strained at the waist."
 psychological_description: "A practiced public figure with a politician's warmth, navigating crises under a cloud of controversy."
 background_and_role:
   - "Mayor of Las Flores"
-  - "Governed through the 2052 tailings dam failure"
+  - "Governed through the 2052 Great Lithium Leak (pipe failure)"
   - "Publicly praised the Secure Neighborhoods program and addressed the environmental crisis and rising insecurity"
 metadata:
   type: human

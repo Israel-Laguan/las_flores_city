@@ -14,13 +14,13 @@
 
 ## Overview
 
-Alfonso Vega is a significant figure in the political landscape of Las Flores, having served as the city's mayor during one of its most tumultuous periods. His tenure, marked by the catastrophic tailings dam failure in 2052, showcased his ability to navigate complex situations, albeit under a cloud of controversy.
+Alfonso Vega is a significant figure in the political landscape of Las Flores, having served as the city's mayor during one of its most tumultuous periods. His tenure, marked by the catastrophic pipe failure of the 2052 Great Lithium Leak, showcased his ability to navigate complex situations, albeit under a cloud of controversy.
 
 ## Early Years
 
 Before the disaster, Vega was known for his ambitious initiatives aimed at propelling Las Flores onto the international stage, particularly through the lithium mining industry. His early career was marked by promises of economic expansion and prosperity, which he delivered, albeit at a grave environmental cost.
 
-## The Tailings Dam Failure and Its Aftermath
+## The Pipe Failure and Its Aftermath
 
 Following the disaster, Vega, alongside Governor Rivas and Minería Estrella officials, found himself at the center of public outrage. His initial responses downplayed the catastrophe's severity, focusing on containment and swift cleanup efforts.
 

@@ -43,7 +43,7 @@ Timeline sources: [Founding Era](../../lore/organizations/movements/humanity_fir
 ## Relationships (with cost)
 
 - **[Elena Ramirez](../elena_ramirez/elena_ramirez.md).** Her predecessor as Chair. *(the mentor relationship is invented; the lore only has Elena handing her the Chair)*
-- **[Javier Torres](../javier_torres/javier_torres.md).** Her Vice-Chair; they led the 2052 response together.
+- **[Javier Torres](../javier_torres/javier_torres.md).** A close ally in the youth movement; they worked together on the 2052 response (she became Chair only in 2057).
 - **[Daniel Carter](../daniel_carter/daniel_carter.md).** The founder who stepped back as she came up.
 - **[Isabella Rodriguez](../isabella_rodriguez/isabella_rodriguez.md).** The current generation's campus organizer, a spiritual heir to the Youth Council. *(link invented)*
 

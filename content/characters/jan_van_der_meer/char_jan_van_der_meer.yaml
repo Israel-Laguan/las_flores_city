@@ -1,12 +1,12 @@
 id: c51cf464-6020-40c2-87f5-0ef12636fcfa
 name: Jan van der Meer
-title: CEO of GLC, Head of van der Meer Lithium Mining Dynasty
+title: Former CEO of GLC (d. 2060), Head of van der Meer Lithium Mining Dynasty
 birth_year: 2019
 description: Jan van der Meer, born 2019, was the youngest child of Pieter and Annabella van der Meer. He moved to Las Flores in 2030 at age 11, attending exclusive private school. More reserved than his older half-brother Alexander, Jan focused on studies and local culture. In 2040 at 21, he married Maria Martinez; they had Anna, Peter, and Lucas. In 2045, as his father retired from GLC (Pieter died that year), Jan took over aged about 26, guiding the company toward sustainable practices and community investment, earning widespread respect. His eldest child Anna joined the business and married a Dutch cousin. Son Lucas battled drug addiction and mental health issues, kept hidden to protect family reputation. On January 15th, 2060, Jan died suddenly at 41 from a heart attack on a business trip. Maria, devastated, developed dementia. Peter and Anna took over family business and their mother's care.
 physical_description: "Tall, lean Dutch man in his early 40s (deceased 2060 at 41; depicted shortly before his death, no 2077 version), slightly stooped, with sandy blond wavy hair, pale blue thoughtful eyes and a gentle half-smile; wears a tailored tweed blazer and a simple wedding band."
 psychological_description: "Reserved and thoughtful, he prefers observation to participation and is a dedicated family man committed to sustainable leadership."
 background_and_role:
-  - CEO of GLC and head of the van der Meer lithium dynasty
+  - Former CEO of GLC and head of the van der Meer lithium dynasty (until his death in 2060)
   - Youngest child of Pieter and Annabella van der Meer
   - Married to Maria Martinez; father of Anna, Peter and Lucas
 metadata:
@@ -19,7 +19,7 @@ metadata:
   gender: Male
   ethnicity: Dutch
   nationality: Dutch
-  occupation: CEO of GLC
+  occupation: Former CEO of GLC (deceased 2060)
   background: born in 2019 to Pieter and Annabella van der Meer, moved to Las Flores in 2030 at age 11, attended exclusive private school, took over GLC from his father, married Maria Martinez in 2040
   education: exclusive private school education in Las Flores
   residence: van der Meer family estate, Las Flores

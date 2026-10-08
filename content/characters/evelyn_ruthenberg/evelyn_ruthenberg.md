@@ -41,7 +41,7 @@ In January 2055, the trial of Minera Estrella executives began. Evelyn attempted
 
 ## The Verdict (March 2057)
 
-On January 10, 2057, despite overwhelming evidence, Minera Estrella was acquitted on technicalities. Luz del Rio was scapegoated and sued. Evelyn watched the live broadcast from her mother's house. She had sent her evidence anonymously to Luz del Rio's defense team, but it was never used. The realization that the system was rigged—and that her own mother was dying from lithium complications with no justice in sight—radicalized her. She stopped waiting for legal vindication and began planning to operate outside the rules.
+On March 15, 2057, despite overwhelming evidence, Minera Estrella was acquitted on technicalities. Luz del Rio was scapegoated and sued. Evelyn watched the live broadcast from her mother's house. She had sent her evidence anonymously to Luz del Rio's defense team, but it was never used. The realization that the system was rigged—and that her own mother was dying from lithium complications with no justice in sight—radicalized her. She stopped waiting for legal vindication and began planning to operate outside the rules.
 
 ## Return to the City (January–February 2058)
 

@@ -54,7 +54,7 @@ Her work has taken her across the globe, investigating stories ranging from corp
 
 ### The Great Lithium Leak - 2052
 
-At age 28, Lina Kim was already making waves in investigative journalism. Her most notable early work was the exposé on the Great Lithium Leak, a story that would establish her as one of the leading journalists of her generation.
+At age 27, Lina Kim was already making waves in investigative journalism. Her most notable early work was the exposé on the Great Lithium Leak, a story that would establish her as one of the leading journalists of her generation.
 
 Based in Las Flores for a couple of months in 2052, Lina worked tirelessly to uncover the truth behind the environmental disaster. The official narratives were inconsistent and evasive. Companies and government officials were more interested in containing the story than addressing the crisis. Through persistent investigation, confidential sources, and meticulous documentation, Lina revealed the extent of the cover-up and the corporate negligence that had led to the disaster.
 

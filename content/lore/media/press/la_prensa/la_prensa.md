@@ -42,14 +42,14 @@ The newspaper's independence from local political and economic interests made it
 
 ## Coverage of the Lithium Leak
 
-Journalist Lina Kim led an investigative team that uncovered the extent of environmental damage caused by the tailings dam failure. Her reporting brought international pressure on Las Flores authorities to hold Minera Estrella accountable.
+Journalist Lina Kim led an investigative team that uncovered the extent of environmental damage caused by the high-pressure pipe failure at its processing facility. Her reporting brought international pressure on Las Flores authorities to hold Minera Estrella accountable.
 
 ## Challenges
 
 La Prensa faced restrictions on independent reporting and investigation of the incident. The LW Group exerted influence over local media outlets through advertising revenue, direct payments, and personal connections.
 
 ### Lina Kim and The Great Lithium Leak Exposé
-Lina Kim, a tenacious journalist at La Prensa's Las Flores office, exploited her outsider status to her advantage. Being unencumbered by local biases and loyalties, she delved into the story of the Great Lithium Leak, a catastrophe that local media hesitated to scrutinize due to its potential economic implications.
+Lina Kim, a tenacious journalist at La Prensa (main office), exploited her outsider status to her advantage. Being unencumbered by local biases and loyalties, she delved into the story of the Great Lithium Leak, a catastrophe that local media hesitated to scrutinize due to its potential economic implications.
 
 Her exhaustive investigation revealed the depth of negligence and corruption behind the leak, outraging the public and leading to widespread demands for justice. Kim's exposé was published in a series of damning articles that illuminated the environmental devastation, the ensuing public health crisis, and the initial attempts to cover up the incident.
 

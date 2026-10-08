@@ -7,7 +7,7 @@
 **Born:** ~2041  
 **Age:** 36 in 2077 (game present)  
 **Family:** Daughter of Jan and Maria van der Meer; sister of Peter; wife of Han Jr. (not Peter's husband Jan Jr.); no children  
-**Role:** Chair of the Board / Executive Director of Van der Meer Industries (the CEO post is held by her cousin Sebastian van der Meer), social advocate, later Las Flores City Council member  
+**Role:** Chair of the Board / Executive Director of Van der Meer Industries (the CEO post is held by her second cousin Sebastian van der Meer), social advocate, later Las Flores City Council member  
 **Faction:** `van_der_meer`  
 **Personality:** `empathetic_pragmatic_reformer`
 
@@ -47,7 +47,7 @@ Anna's advocacy for LGBTQ+ rights intensified after her brother Peter came out a
 
 ## Van der Meer Industries
 
-After completing her education and gaining experience, Anna took an active role at the top of Van der Meer Industries as Chair of the board and executive director, setting direction and values while her cousin Sebastian van der Meer runs day-to-day corporate strategy as CEO. She was determined to honor her father's legacy while modernizing the company for a changing world. Her tenure included bold initiatives to reduce environmental impact, improve worker conditions, and push the company toward a more responsible public posture. Some board members resisted, citing profit concerns, but Anna's conviction and family influence carried the day.
+After completing her education and gaining experience, Anna took an active role at the top of Van der Meer Industries as Chair of the board and executive director, setting direction and values while her second cousin Sebastian van der Meer runs day-to-day corporate strategy as CEO. She was determined to honor her father's legacy while modernizing the company for a changing world. Her tenure included bold initiatives to reduce environmental impact, improve worker conditions, and push the company toward a more responsible public posture. Some board members resisted, citing profit concerns, but Anna's conviction and family influence carried the day.
 
 ---
 
@@ -59,7 +59,7 @@ As Maria's dementia worsened after 2071, Anna struggled to balance her work as C
 
 ## Political Career
 
-Anna entered politics and won a seat on the Las Flores City Council in 2078. She used the platform to advocate for environmental protection, expanded civil rights, education, community investment, and responsible development. Conservative council members opposed her often, but Anna remained an unapologetic progressive voice.
+Anna entered politics and, in 2078 (just after the 2077 present), won a seat on the Las Flores City Council. She used the platform to advocate for environmental protection, expanded civil rights, education, community investment, and responsible development. Conservative council members opposed her often, but Anna remained an unapologetic progressive voice.
 
 ---
 
