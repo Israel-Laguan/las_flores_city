@@ -233,3 +233,38 @@ beats:
     label: "Peter Jr. Ending — His Own Schedule"
     order: 615
     description: "Player helps Peter Jr. question who his public life is for; he takes his schedule back."
+
+  - slug: pjr_act1_hostile_met
+    label: "Peter Jr. Act 1 — Hostile First Meeting"
+    order: 604
+    description: "Player's opening with Peter Jr. turns hostile; he files them as a threat."
+
+  - slug: pjr_act3_romantic_start
+    label: "Peter Jr. Act 3 — Romantic Thread Begins"
+    order: 605
+    description: "The notebook exchange takes a romantic turn between the player and Peter Jr."
+
+  - slug: pjr_act3_exploited
+    label: "Peter Jr. Act 3 — Exploitation"
+    order: 606
+    description: "Player exploits Peter Jr.'s trust; he recognizes it and distances himself."
+
+  - slug: pjr_act4_escapade
+    label: "Peter Jr. Act 4 — The Escapade"
+    order: 607
+    description: "Player joins Peter Jr.'s rally-adjacent escapade, cementing or complicating the bond."
+
+  - slug: act5_pjr_lover_ending
+    label: "Peter Jr. Ending — Lover"
+    order: 616
+    description: "Player and Peter Jr. end the arc as lovers."
+
+  - slug: act5_pjr_failed_lover_ending
+    label: "Peter Jr. Ending — Failed Lover"
+    order: 617
+    description: "The romance with Peter Jr. collapses before the arc's end."
+
+  - slug: act5_pjr_enemy_ending
+    label: "Peter Jr. Ending — Enemy"
+    order: 618
+    description: "Player becomes Peter Jr.'s open enemy by the arc's end."
