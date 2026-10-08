@@ -7,7 +7,7 @@
 > **Status:** Active
 
 ## Physical Description
-- Hair: Black, thick and straight, worn long and tied back with a leather cord
+- Hair: Black, thick and straight, kept short and neat with a side part; trimmed moustache
 - Eyes: Deep brown, gentle and humble
 - Build: Short and stocky, strong from manual labor
 - Skin: Deep brown, weathered and lined from sun exposure

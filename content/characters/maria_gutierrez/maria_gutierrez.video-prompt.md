@@ -6,43 +6,40 @@ source: content/characters/maria_gutierrez/maria_gutierrez.prompt.md
 target: content/characters/maria_gutierrez/assets/
 ---
 
-Game year **2077**: María is **~32**. Loops must match the fierce leftist portrait assets — vivid violet-magenta hair, piercings, press badge / patched layers — not a clean undyed corporate look.
-
-
 # Video Prompts: María Gutiérrez
 
-Generate seamless looping portrait videos from each expression variant PNG. The woman on the reference image is María Gutiérrez at ~32: vivid dyed hair, piercings, fierce leftist journalist.
+NOTE: current PNG is a landscape frame with a detailed street backdrop, legible wall lettering, a street sign and a lettered badge; regenerate as a portrait on a plain flat light-grey background with a blank badge.
+
+Generate seamless looping portrait videos from each expression variant PNG. Use the corresponding `maria_gutierrez__<expression>.png` as the input image for each prompt. The woman on the reference image is the character described in the source prompt file.
 
 ## Base Loop (Default)
 
 **Input**: `assets/maria_gutierrez__default.png`
 
-Create a seamless looping video. Fierce resting defiance, vivid violet-magenta asymmetrical hair, septum and ear piercings visible. Subtle idle animation: gentle breathing, micro weight shift, natural blink cycle. Hair and jacket respond to faint ambient breeze. Press badge and earbud stay put. Background static. Perfect loop. No camera move.
+Create a seamless looping video. The woman on the reference image shows a neutral composed resting expression, looking at the camera with steady presence. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Latina woman of 32, lean wiry build, fierce dark brown eyes, warm medium-brown skin, short asymmetrical violet-magenta hair with shaved sides, septum ring and stacked ear piercings, black earbud, patched denim jacket over a black tee, blank press badge. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
-
-Generate each loop from its corresponding expression PNG.
 
 ### `__calculating` loop
 
 **Input**: `assets/maria_gutierrez__calculating.png`
 
-Absorbed piecing a story; eyes narrowed in thought; slow controlled breathing; focused blink cycle. Same hair/piercings/attire. Perfect loop.
+Create a seamless looping video. The woman on the reference image shows cool appraisal with narrowed eyes and a lowered chin. Subtle idle animation only: measured breathing, a slow narrowing and release of the eyes, a deliberate blink cycle. Latina woman of 32, lean wiry build, fierce dark brown eyes, warm medium-brown skin, short asymmetrical violet-magenta hair with shaved sides, septum ring and stacked ear piercings, black earbud, patched denim jacket over a black tee, blank press badge. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__angry` loop
 
 **Input**: `assets/maria_gutierrez__angry.png`
 
-Cold righteous anger; micro-tension in jaw; sharper blink; faint draft on hair. Perfect loop.
+Create a seamless looping video. The woman on the reference image shows sharp anger with narrowed eyes, low brows and tight lips. Subtle idle animation only: tight breathing with visible rise and fall in the chest, a micro-clench in the jaw, a curt blink cycle. Latina woman of 32, lean wiry build, fierce dark brown eyes, warm medium-brown skin, short asymmetrical violet-magenta hair with shaved sides, septum ring and stacked ear piercings, black earbud, patched denim jacket over a black tee, blank press badge. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__determined` loop
 
 **Input**: `assets/maria_gutierrez__determined.png`
 
-Steady unyielding resolve; measured breathing; firm gaze micro-shifts. Perfect loop.
+Create a seamless looping video. The woman on the reference image shows a resolved, firm expression with steady unflinching eyes and a set mouth. Subtle idle animation only: deep controlled breathing in the chest and shoulders, a slight firming of the jaw, a slow unwavering blink cycle. Latina woman of 32, lean wiry build, fierce dark brown eyes, warm medium-brown skin, short asymmetrical violet-magenta hair with shaved sides, septum ring and stacked ear piercings, black earbud, patched denim jacket over a black tee, blank press badge. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__sad` loop
 
 **Input**: `assets/maria_gutierrez__sad.png`
 
-Weary burdened pause; slower breath; softer blink; hair drifts lightly. Perfect loop.
+Create a seamless looping video. The woman on the reference image shows a heavy quiet sadness with lowered glistening eyes and a downturned mouth. Subtle idle animation only: slow heavy breathing, a slight sinking of the shoulders, a slow blink with a faint lip tremor. Latina woman of 32, lean wiry build, fierce dark brown eyes, warm medium-brown skin, short asymmetrical violet-magenta hair with shaved sides, septum ring and stacked ear piercings, black earbud, patched denim jacket over a black tee, blank press badge. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

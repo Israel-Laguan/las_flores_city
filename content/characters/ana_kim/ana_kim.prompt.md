@@ -2,64 +2,66 @@
 name: Ana Kim
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/ana_kim/ana_kim.md
 target: `asset_paths.portrait` in `content/characters/ana_kim/char_ana_kim.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Ana Kim
 
+NOTE: the current PNG is set in front of detailed library shelves with unreadable book spines and a faint smile; regenerate against a plain flat grey backdrop with a neutral mouth. The lore cardigan is staged as an outfit variant.
+
 ## Prompt (Draft)
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 25-year-old Korean female. Neat straight black bob, soft dark brown eyes, delicate features, light clear skin, petite neat build, simple white button-down shirt, cardigan over shoulders, small silver stud earrings, holding a borrowed library book, university library backdrop, no East Asian features
+Korean woman of 25, petite neat build, light clear skin, delicate features, soft dark brown eyes, straight glossy black bob with blunt fringe, small silver stud earrings, crisp white button-down shirt under a black blazer, plain flat grey background, neutral relaxed expression, mouth closed, eyes to camera, front-facing, level shoulders, arms relaxed at sides, premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 25-year-old Korean university library worker and former investigator. Neat, straight black bob cut at the jawline. Soft dark brown eyes, honest and direct — the kind that ask uncomfortable questions without raising their voice. Delicate nose, soft rounded jaw, a gentle brow. Light, clear complexion. Petite, neat build with a posture that is precise without being rigid. She wears a simple white button-down shirt, a navy cardigan draped over her shoulders, small silver stud earrings. A borrowed library book is held loosely in her hands. Her expression is honest and straightforward, warmth sitting just beneath the surface of someone who knows the value of accuracy. The backdrop is a sunlit university library. Oak bookshelves, a reading lamp, a half-empty mug of tea on a wooden desk. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Korean woman of 25. Petite, neat build with an upright frame. Light clear skin, delicate features, a small straight nose and soft lips. Soft dark brown eyes under thin, gently arched brows. Straight glossy black bob that sits at the jaw with a blunt fringe across the forehead. Small silver stud earrings. Crisp white button-down shirt with the collar open under a black blazer. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no European features, no Latin American features, no East Asian features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, Northern European features, Latino features
 
 ## Variations
 
-- **University Library Workstation**: Ana at her library workstation, surrounded by open reference books, a newspaper clipping spread before her. She sits at a wooden desk with a reading lamp casting warm light. Wearing her simple white button-down shirt with navy cardigan draped over shoulders, small silver stud earrings catching the light. Expression is focused and analytical, the posture of someone meticulously cross-referencing information. University library backdrop with oak bookshelves and scattered research materials. Art style consistent: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait.
-
-- **Quiet Reflection at Library Steps**: Ana sitting on a library step, head tilted in thought, the honesty of someone who has reached a limit. She holds a borrowed library book in her lap, fingers tracing the spine. Wearing white button-down shirt and navy cardigan, black bob slightly tousled. Expression is contemplative with a touch of weariness, eyes looking off into middle distance. Library steps backdrop with stone architecture and distant bookshelves. Same art style as base portrait.
-
-- **City Hall Corridor - After the Archive Break-in**: Ana in a corridor at City Hall, one hand on a wall for support, bruised and swollen eye just visible beneath her bob. Wearing white button-down shirt with cardigan pulled close, protective posture. Expression shows pain held back, determination not to show weakness. Dim institutional lighting, shadowed corridor. Same art style: clean confident linework, painterly soft shading, muted natural palette.
-
-- **Home Study - Evening Research**: Ana at a small apartment desk, laptop open with research documents, a cup of tea steaming beside her. Wearing a soft gray sweater instead of the cardigan, hair slightly down from the day's work. Expression is focused and slightly tired, the quiet persistence of someone working late. Warm desk lamp light, cozy apartment backdrop with bookshelf and plants. Same art style as base portrait.
-
-- **Performance - Public Speaking at Community Meeting**: Ana standing at a podium, addressing a small community gathering about library resources. Wearing white button-down shirt buttoned up, cardigan over shoulders, more formal posture. Expression is calm and authoritative, hands resting lightly on the podium. Community center backdrop with attentive audience in soft focus. Same art style: premium contemporary graphic novel realism.
-
-- **Group Scene - Collaborative Investigation**: Ana in a small meeting room with Alex Garcia and another colleague, papers spread across a table. Wearing white button-down shirt with cardigan, sitting forward with engaged posture. Expression is alert and collaborative, leaning slightly toward her colleagues. Meeting room backdrop with whiteboard and case files. Same art style as base portrait.
+- [ ] Shelving books at a quiet reading-room table, a small stack beside her
+- [ ] Carrying a paper bag of food into a cramped planning room, glancing around
+- [ ] Standing at a tall window with a coat over her arm, deciding to leave
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral honest expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__focused.png`**: Use the base portrait as reference. Sharp concentration, looking directly at the camera, 3/4 take. Eyes narrowed in focused thought, brow furrowed, mouth pressed in quiet analysis. Keep the same art style as reference, same cardigan and earrings. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral relaxed resting expression, mouth closed and relaxed, brows unfurrowed, looking at the camera, 3/4 take. Shoulders level, arms hanging relaxed at her sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__determined.png`**: Use the base portrait as reference. Resolved, firm expression, looking unflinchingly at the camera, 3/4 take. Eyes steady with quiet resolve, jaw squared. Keep the same art style as reference, same cardigan and earrings. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__focused.png`**: Use the base portrait as reference. Head bowed, eyes lowered on an open book, brows drawn slightly together, lips pressed, looking at the camera, 3/4 take. Shoulders curled forward, an open book held in both hands at chest height, one fingertip marking the line. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__vulnerable.png`**: Use the base portrait as reference. Quietly vulnerable expression, looking gently at the camera, 3/4 take. Eyes open and honest, the brave exhaustion of someone who has given more than she has. Keep the same art style as reference, same white shirt and earrings. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__determined.png`**: Use the base portrait as reference. Eyes level on the camera, brows low and straight, jaw set, lips firm, looking at the camera, 3/4 take. Shoulders squared, chin lifted, one hand closed in a fist pressed to her chest, the other arm straight at her side. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__smirk.png`**: Use the base portrait as reference. Faint, knowing half-smile, looking at the camera, 3/4 take. Eyes glinting with private amusement, one corner of the mouth pulled up. Keep the same art style as reference, same cardigan and earrings. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__vulnerable.png`**: Use the base portrait as reference. Eyes wide and a little glossy, inner brows lifted, lips slightly parted, looking at the camera, 3/4 take. Shoulders drawn in, one hand holding the opposite upper arm, head tilted down slightly. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__happy.png`**: Use the base portrait as reference. Warm, genuine smile, looking at the camera, 3/4 take. Eyes crinkled with joy, mouth open in a soft laugh. Keep the same art style as reference. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__smirk.png`**: Use the base portrait as reference. One corner of the mouth raised, one brow lifted, eyes sharp and amused, looking at the camera, 3/4 take. Head tilted to one side, weight on one hip, arms folded loosely across her chest. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__tender.png`**: Use the base portrait as reference. Soft, gentle expression, looking at the camera, 3/4 take. Eyes warm and kind, mouth slightly open as if about to speak comforting words. Keep the same art style as reference. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__happy.png`**: Use the base portrait as reference. Bright open smile, eyes crescent-shaped and crinkled, brows lifted, looking at the camera, 3/4 take. Shoulders relaxed and slightly raised, both hands clasped together at chest height. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__afraid.png`**: Use the base portrait as reference. Fearful, wide-eyed expression, looking at the camera, 3/4 take. Eyes wide and alert, mouth slightly open, brows raised. Keep the same art style as reference. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__tender.png`**: Use the base portrait as reference. Soft eyes, a small warm closed-mouth smile, brows relaxed, looking at the camera, 3/4 take. Head tilted gently, one hand held out palm-up offering a small wrapped paper parcel, the other hand over her collar. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__sad.png`**: Use the base portrait as reference. Sorrowful expression, looking down and away from the camera, 3/4 take. Eyes glistening with unshed tears, mouth pressed into a thin line. Keep the same art style as reference. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__afraid.png`**: Use the base portrait as reference. Eyes wide and fixed, brows pulled up and together, lips pressed tight, looking at the camera, 3/4 take. Shoulders hunched up, both hands clutching the lapels of her blazer, body leaning slightly back. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__shocked.png`**: Use the base portrait as reference. Stunned expression, looking at the camera, 3/4 take. Eyes wide open, mouth slightly agape, brows raised high. Keep the same art style as reference. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__sad.png`**: Use the base portrait as reference. Eyes downcast and glossy, inner brows tilted up, mouth turned down, looking at the camera, 3/4 take. Head bowed, shoulders slumped, hands clasped loosely in front of her at the waist. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__angry.png`**: Use the base portrait as reference. Sharp, angry expression, looking at the camera, 3/4 take. Eyes narrowed and intense, mouth set in a firm line, brows furrowed deeply. Keep the same art style as reference. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__shocked.png`**: Use the base portrait as reference. Eyes very wide, brows jumping high, mouth open, looking at the camera, 3/4 take. Body snapping upright, one hand clamped over her mouth, the other hand frozen halfway to her chest. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__calculating.png`**: Use the base portrait as reference. Thoughtful, assessing expression, looking at the camera, 3/4 take. Eyes scanning and analyzing, mouth pressed into a thin line, brows slightly furrowed. Keep the same art style as reference. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__angry.png`**: Use the base portrait as reference. Eyes narrowed and hard, brows low, lips tight, jaw tense, looking at the camera, 3/4 take. Shoulders squared and rigid, one hand pressed flat in front of her as if on a table, the other fist at her side. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__surprised.png`**: Use the base portrait as reference. Genuinely surprised expression, looking at the camera, 3/4 take. Eyes wide with wonder, mouth open in a small 'o', brows raised. Keep the same art style as reference. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__calculating.png`**: Use the base portrait as reference. Eyes narrowed and cool, a slight sideways glance, lips closed, looking at the camera, 3/4 take. Chin lowered, head angled down, fingertips resting against her lips, the other arm folded across her waist. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__surprised.png`**: Use the base portrait as reference. Brows raised, eyes widened, mouth slightly open, looking at the camera, 3/4 take. Head drawn back a little, both hands lifted open at chest height, palms forward. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Lore wardrobe staged as outfit variants of the base portrait: `assets/<slug>__outfit-<name>.png`. Same face, hair and build as the base. -->
+
+- **`__outfit-cardigan.png`**: Use the base portrait as reference. Same woman, same bob, now wearing a crisp white button-down shirt with a soft grey cardigan draped over her shoulders, small silver stud earrings visible, hands hanging relaxed at her sides. Neutral relaxed expression, shoulders level, looking at the camera, 3/4 take. Keep the same face, hair, build and art style as reference, plain flat neutral light-grey backdrop. Clean confident linework, painterly soft shading, muted natural palette.

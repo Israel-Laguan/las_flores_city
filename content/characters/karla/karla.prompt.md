@@ -2,38 +2,50 @@
 name: Karla
 type: portrait
 size: 1024x1024
-source: content/characters/karla/karla.md
-target: `portrait_urls[].url` in `content/characters/char_karla.yaml`
-consumer: portrait
 aspect_ratio: 3:4
+source: content/characters/karla/karla.md
+target: `asset_paths.portrait` in `content/characters/karla/char_karla.yaml`
+consumer: portrait
 ---
 
 # Prompt: Karla
 
+NOTE: depicts her as the 28-year-old she was at her death (earlier era); YAML birth_year 2025 would make her 52 in the present era, so no second-era set is created. Braids match lore; the yellow dress is covered in Wardrobe Variants.
+
 ## Prompt (Draft)
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height Latin Photorealistic portrait of Karla. Her frame is solid and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark expressive eyes, a straight nose, and a defined jaw. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her dark hair hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless practical clothi. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...
+
+Slim Latina woman of 28, smooth olive skin, dark brown eyes, very long dark hair in neat braids, plain light crew-neck t-shirt, plain flat grey background. Neutral relaxed expression, mouth closed, eyes to camera, front-facing, arms relaxed. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height Latina woman. Her frame is solid and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark expressive eyes, a straight nose, and a defined jaw. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her dark hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears minimalist, pocketless practical clothing suited to her environment, with personal items reflecting her role. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a slim Latina woman of 28. Smooth olive skin, large dark brown eyes under strong dark brows, a straight nose, a defined jaw, and very long dark brown hair in neat braids falling over both shoulders. Plain light grey-white crew-neck t-shirt. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
---no neon, no androids, no clean backgrounds, no modern clothing
+
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Northern European features, older
 
 ## Variations
 
-- [ ] Karla surveying the scene, A young activist and farmer, approximately 28 years old, murdered i...
-- [ ] Karla in a tense moment, 
-- [ ] Karla caught in a pivotal scene, A young activist and farmer, approximately 28 years old, murdered i...
+- [ ] Kneeling in a green crop field at sunrise, running a leaf between her fingers
+- [ ] Sitting at a small kitchen table, writing a note by lamplight
+- [ ] Standing in front of a building entrance, holding up a blank cardboard sign
 
 ## Expression Variants
 
-- **`karla__default.png`**: Use the base portrait as reference. Calm determined resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`karla__determined.png`**: Use the base portrait as reference. Steady professional resolve, looking directly at the camera, 3/4 take. Eyes fixed and sharp, defined jaw set, mouth firm. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders relaxed and level, arms hanging loosely at her sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`karla__focused.png`**: Use the base portrait as reference. Absorbed in a task, looking at the camera, 3/4 take. Eyes intent, brows drawn slightly, lips set in concentration. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__determined.png`**: Use the base portrait as reference. Eyes steady, brows drawn slightly together, lips pressed in a firm line, chin lifted a little, looking at the camera, 3/4 take. Squared shoulders, chin lifted, one hand curled into a tight fist at chest height. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`karla__contemplative.png`**: Use the base portrait as reference. A thoughtful pause, looking at the camera, 3/4 take. Eyes softening into the middle distance, lips relaxed, head tilted. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__focused.png`**: Use the base portrait as reference. Brows slightly knit, lips relaxed, expression absorbed, eyes lowered to a small cloth pouch held in both hands, 3/4 take. Head bowed, shoulders slightly forward, studying a small leaf held up between two fingers. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`karla__happy.png`**: Use the base portrait as reference. A warm, genuine smile, looking at the camera, 3/4 take. Eyes brightening, lips curving up, composition warming. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__contemplative.png`**: Use the base portrait as reference. Brows soft, lips relaxed and slightly parted, expression quiet and inward, gaze drifting off-camera into the middle distance, 3/4 take. Head tilted, one hand pressed lightly to her collarbone, the other arm hugging her waist. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
+- **`__happy.png`**: Use the base portrait as reference. Genuine warm smile, eyes crinkling, brows relaxed and lifted, looking at the camera, 3/4 take. Shoulders loosened, a bright open smile, both hands clasped near her chest. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Same face, hair and build as the base portrait; only the outfit changes. -->
+
+- **`__outfit-yellow-dress.png`**: Use the base portrait as reference. Same face, hair and build as the base. Vibrant yellow sleeveless dress, clean and unstained, the same neat braids falling over both shoulders. Neutral relaxed resting expression, front-facing, arms relaxed at the sides. Keep the same art style as reference and the backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.

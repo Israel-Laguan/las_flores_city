@@ -2,38 +2,44 @@
 name: Yang Chen
 type: portrait
 size: 1024x1024
-source: content/characters/yang_chen/yang_chen.md
-target: `portrait_urls[].url` in `content/characters/char_yang_chen.yaml`
-consumer: portrait
 aspect_ratio: 3:4
+source: content/characters/yang_chen/yang_chen.md
+target: `asset_paths.portrait` in `content/characters/yang_chen/char_yang_chen.yaml`
+consumer: portrait
 ---
 
 # Prompt: Yang Chen
 
+NOTE: existing PNG contradicts canon: hair is solid black (lore: thin gray) and the face reads feminine/androgynous for a man. Prompt follows lore; regenerate (medium-high priority). Lore says he died in 2069 at roughly 74; portrait depicts him alive in old age.
+
 ## Prompt (Draft)
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Slight 74-year-old chinese Photorealistic portrait of Yang Chen. Her frame is slight, sturdy, and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, warm distant. Her expression is warm, as she offers a subtle, knowing half-smile. Her gray thin hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless practical work clothing. The backdrop is a weathered. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality,...
+
+Slight, stooped elderly Chinese man of about 75, narrow lined face, warm distant dark brown eyes, thin neatly combed gray hair, lined fair skin, plain pale cotton collared shirt, small notebook in the chest pocket. Plain flat grey background. Neutral relaxed expression, mouth closed, eyes straight at camera, facing front, arms relaxed at sides. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a slight 74-year-old Chinese woman. Her frame is slight and sturdy, un-sculpted and natural. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes and dark brown, warm and distant eyes. Her expression is warm, as she offers a subtle, knowing half-smile. Her thin gray hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears minimalist, pocketless practical work clothing. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a slight, stooped elderly Chinese man of about 75. Narrow, deeply lined fair skin weathered by age and sun, warm distant dark brown eyes, a prominent nose bridge, thin lips, and a hollowed jaw. Thin gray hair kept neat but unpretentious. Narrow sloping shoulders. A plain pale cotton collared shirt with a small notebook in the chest pocket. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
---no neon, no androids, no clean backgrounds, no modern clothing
+
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, Latino features, European features, African features
 
 ## Variations
 
-- [ ] Yang Chen reviewing the situation, CLM's master storyteller who framed the Las Flores partnership as a...
-- [ ] Yang Chen in a alert moment, 
-- [ ] Yang Chen caught in a pivotal scene, CLM's master storyteller who framed the Las Flores partnership as a...
+- [ ] Sitting on a stool in a cramped shop doorway, notebook open on his knee
+- [ ] Arranging plastic goods on a shelf with careful slow hands
+- [ ] Walking a sunlit street in worn sandals, one hand behind his back
 
 ## Expression Variants
 
-- **`yang_chen__default.png`**: Use the base portrait as reference. Warm resting expression with a subtle knowing half-smile, looking at the camera, 3/4 take. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`yang_chen__happy.png`**: Use the base portrait as reference. A gentle, warm smile, looking at the camera, 3/4 take. Eyes crinkling with warmth, lips curving up softly, the knowing half-smile widening. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders relaxed and level, arms hanging loosely at his sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`yang_chen__contemplative.png`**: Use the base portrait as reference. A distant, reflective pause, looking at the camera, 3/4 take. Eyes softening into the middle distance, lips relaxed, head bowed slightly. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__happy.png`**: Use the base portrait as reference. Gentle warm smile with eyes crinkling, looking at the camera, 3/4 take. Head tilted, hands clasped lightly in front of his chest. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`yang_chen__sad.png`**: Use the base portrait as reference. A quiet, contained sorrow, looking slightly down, 3/4 take. Eyes dimmed and soft, brows drawn, lips pressed gently. The distance in her gaze surfacing. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__contemplative.png`**: Use the base portrait as reference. Warm distant gaze drifting off to one side, looking at the camera, 3/4 take. One hand holding the small notebook against his chest, the other thumb resting at his chin. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`yang_chen__surprised.png`**: Use the base portrait as reference. A quiet, controlled startle, looking at the camera, 3/4 take. Eyes widened, brows lifted, lips parting. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__sad.png`**: Use the base portrait as reference. Eyes lowered and moist, mouth gently turned down, looking at the camera, 3/4 take. Shoulders more stooped, head bowed, hands folded limp at his waist. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
+- **`__surprised.png`**: Use the base portrait as reference. Brows lifting, eyes widening, lips parting, looking at the camera, 3/4 take. Head drawn back, one hand lifted with the palm out, the other still holding the notebook. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.

@@ -2,40 +2,42 @@
 name: Diego Ruiz
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/diego_ruiz/diego_ruiz.md
 target: `asset_paths.portrait` in `content/characters/diego_ruiz/char_diego_ruiz.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Diego Ruiz
 
 ## Prompt (Draft)
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 26-year-old Latino male. Fit build, medium-length carefully styled dark hair, expressive warm brown eyes, neat casual appearance, clean button-down shirt over a plain tee, slim notebook of pickup techniques in jacket pocket, airport terminal backdrop at dusk, no European features
+Fit Latino man of about 26, medium-length dark hair swept back, warm brown eyes, tan skin, light stubble, steel-blue button-up shirt with a chest pocket. neutral relaxed expression, mouth closed, brows unfurrowed, eyes to camera, front-facing, arms relaxed. plain flat grey background. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 26-year-old airport cleaner and aspiring social climber at the international airport. Fit build, kept in shape. Medium-length dark hair, carefully styled even after a shift. Warm brown eyes, expressive and hopeful. Light olive skin, a faint five-o'clock shadow. He wears a neat casual button-down shirt over a plain tee, clean dark trousers — the off-duty uniform of someone trying very hard to look like he belongs somewhere better. A slim black notebook of pickup techniques peeks from his jacket pocket. His expression is optimistic charm — the practiced confidence of a man who has read every self-help book and still cannot believe this is working. The backdrop is the airport terminal at dusk. Floor-to-ceiling windows, departures board, empty gate seats. Cool blue twilight mixed with warm amber overheads. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man of about 26. Fit, athletic build with defined shoulders. Warm brown eyes under neat dark brows, a straight nose, full lips, tan skin and light stubble along the jaw. Medium-length dark hair carefully styled and swept back, one lock falling behind the ear. Steel-blue button-up shirt with a chest pocket and the collar open. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no European features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Northern European features
 
 ## Variations
 
-- [ ] Diego at the airport terminal after his shift, leaning on a window, phone in hand, swiping through a dating app
-- [ ] Diego at a bar near the airport, notebook open on the counter, practicing a line he read in a book
-- [ ] Diego walking through arrivals, head high, projecting confidence he has not yet earned
+- [ ] Pushing a cleaning cart through a bright terminal hall at dawn
+- [ ] Leaning on a bar, mid-pitch, one hand gesturing to a stranger
+- [ ] Alone in a cramped apartment, flipping through a worn self-help book and a small notebook
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral optimistic expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__happy.png`**: Use the base portrait as reference. A bright, hopeful grin, looking at the camera, 3/4 take. Eyes alight with optimism, mouth wide with charm. Keep the same art style as reference, same button-down shirt. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders relaxed and level, arms hanging loosely at his sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__calculating.png`**: Use the base portrait as reference. A shrewd, assessing look, looking at the camera, 3/4 take. Eyes narrowed with practiced technique, evaluating the viewer. Keep the same art style as reference, same dark trousers. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__happy.png`**: Use the base portrait as reference. Easy bright smile, eyes crinkling, brows lifted, looking at the camera, 3/4 take. Shoulders loose, one hand lifted in a smooth greeting wave, the other thumb hooked at the belt. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__vulnerable.png`**: Use the base portrait as reference. A quietly lonely expression, looking gently at the camera, 3/4 take. Eyes open and searching, charm faltering. Keep the same art style as reference, same jacket pocket notebook. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__calculating.png`**: Use the base portrait as reference. Eyes narrowed and appraising, one brow lowered, lips pressed, looking at the camera, 3/4 take. Chin lowered, one hand rubbing the stubble at the jaw, the other holding a small notebook close to the chest. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__smirk.png`**: Use the base portrait as reference. A practiced, knowing half-smile, looking at the camera, 3/4 take. Eyes glinting with confidence, one corner of the mouth pulled up. Keep the same art style as reference, same neat casual shirt. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__vulnerable.png`**: Use the base portrait as reference. Soft unguarded eyes, brows lifted at the inner ends, lips slightly parted, looking at the camera, 3/4 take. Shoulders drawn in, head tilted down, one hand gripping the opposite upper arm. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__smirk.png`**: Use the base portrait as reference. Practiced lopsided smirk, one brow arched, eyes half-lidded, looking at the camera, 3/4 take. One shoulder dropped in a loose lean, one hand smoothing the front of the shirt, the other in a pocket. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.

@@ -14,30 +14,30 @@ Generate seamless looping portrait videos from each expression variant PNG. Use 
 
 **Input**: `assets/carlos_medina__default.png`
 
-Create a seamless looping video. The man on the reference image holds a neutral earnest resting expression with a slight furrow between his brows as if weighing evidence. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, and a barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. Unruly black hair shifts faintly as he pushes it from his eyes, and the heavy canvas jacket with the Electricians' Guild patch on the shoulder shifts subtly in the draft. The small sport earbud clipped to his earlobe remains still. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a neutral composed resting expression, looking at the camera with steady presence. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Latino man of about 23, slender wiry build, long face, hooded dark-brown eyes, light-brown skin, unruly black hair, light stubble, grey button-up work shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
 
-### `__calculating` loop
+### `__focused` loop
 
-**Input**: `assets/carlos_medina__calculating.png`
+**Input**: `assets/carlos_medina__focused.png`
 
-Create a seamless looping video. The man on the reference image displays focused problem-solving with eyes narrowing as he runs a circuit in his head and one brow habitually raised. Subtle idle animation: measured, deliberate breathing motion, a subtle eye-narrowing cycle as he concentrates, minimal micro-tension in the jaw, and a slow, controlled blink cycle. Hair and clothing respond to a faint ambient breeze. A few dark curls flutter against his brow, and the collar and canvas jacket shift subtly against his frame. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows absorbed concentration with a lowered brow and fixed eyes. Subtle idle animation only: slow measured breathing, a tiny tilt of the head, the hands making a small adjusting movement, a slow steady blink. Latino man of about 23, slender wiry build, long face, hooded dark-brown eyes, light-brown skin, unruly black hair, light stubble, grey button-up work shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__surprised` loop
 
 **Input**: `assets/carlos_medina__surprised.png`
 
-Create a seamless looping video. The man on the reference image shows sudden realization with eyes widening and the raised brow jumping higher. Subtle idle animation: shallow, rapid micro-breathing in the chest, a subtle startle micro-movement in the brows and eyes, and a quick, sharp blink cycle. Hair and clothing respond to a faint ambient breeze. Unruly black hair shifts lightly in the draft, and the heavy canvas jacket fabric stirs subtly against his shoulders. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows raised brows and widened eyes with lips slightly parted. Subtle idle animation only: a quick intake of breath, a small lift of the shoulders, a slow wide blink. Latino man of about 23, slender wiry build, long face, hooded dark-brown eyes, light-brown skin, unruly black hair, light stubble, grey button-up work shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__afraid` loop
 
 **Input**: `assets/carlos_medina__afraid.png`
 
-Create a seamless looping video. The man on the reference image shows a flicker of fear with eyes darting wide and wary and the raised brow anxious. Subtle idle animation: shallow, held breathing motion in the upper chest, subtle micro-tremor in the lifted shoulders and parted lips, and an infrequent, startled blink cycle. Hair and clothing respond to a faint ambient breeze. Dark hair strands flutter lightly in the air, and the canvas jacket collar quivers subtly with shallow breaths. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows guarded fear with widened eyes and tense features. Subtle idle animation only: quick shallow breathing, a slight tremor in the shoulders, a flinching blink cycle. Latino man of about 23, slender wiry build, long face, hooded dark-brown eyes, light-brown skin, unruly black hair, light stubble, grey button-up work shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__determined` loop
 
 **Input**: `assets/carlos_medina__determined.png`
 
-Create a seamless looping video. The man on the reference image shows quiet conviction with eyes steady and set and the raised brow firm. Subtle idle animation: controlled, steady breathing motion in the chest, shoulders squaring slightly in a quiet micro-shift of weight, and an infrequent, deliberate blink cycle holding focus. Hair and clothing respond to a faint ambient breeze. Wisps of messy dark hair stir gently in the draft, and the collar of the canvas jacket and the earbud shift slightly against his frame. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a resolved, firm expression with steady unflinching eyes and a set mouth. Subtle idle animation only: deep controlled breathing in the chest and shoulders, a slight firming of the jaw, a slow unwavering blink cycle. Latino man of about 23, slender wiry build, long face, hooded dark-brown eyes, light-brown skin, unruly black hair, light stubble, grey button-up work shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

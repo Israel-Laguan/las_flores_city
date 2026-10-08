@@ -14,7 +14,7 @@ Generate seamless looping portrait videos from each expression variant PNG. Use 
 
 **Input**: `assets/clara_torres__default.png`
 
-Create a seamless looping video. The woman on the reference image holds a neutral composed resting expression with a small mole near the left eye and the right brow sitting higher. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, and a barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. Straight dark hair in a sleek bob shifts minimally, and the modern smart-casual journalist attire with the tablet or holographic reader and the small sport earbud clipped to her earlobe move gently in the draft. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a neutral composed resting expression, looking at the camera with steady presence. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Latina woman of about 35, lean build, angular face with high cheekbones, brown eyes, small mole near one eye, long straight black hair, charcoal-grey fitted raglan top. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
 
@@ -22,22 +22,22 @@ Create a seamless looping video. The woman on the reference image holds a neutra
 
 **Input**: `assets/clara_torres__calculating.png`
 
-Create a seamless looping video. The woman on the reference image shows sharp editorial analysis with eyes narrowing appraisingly and brows drawing together, the higher right brow more pronounced. Subtle idle animation: slow, controlled breathing in the chest and shoulders, a subtle eye-narrowing cycle as she evaluates, and a calm, deliberate blink cycle. Hair and clothing respond to a faint ambient breeze. Straight dark hair shifts subtly against her neck, and the journalist attire shifts faintly in the ambient air. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a cool calculating expression with a lowered chin and narrowed, weighing eyes. Subtle idle animation only: slow even breathing, a faint tightening at the corner of the mouth, a small shift of the gaze as if weighing something, a slow deliberate blink. Latina woman of about 35, lean build, angular face with high cheekbones, brown eyes, small mole near one eye, long straight black hair, charcoal-grey fitted raglan top. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__happy` loop
 
 **Input**: `assets/clara_torres__happy.png`
 
-Create a seamless looping video. The woman on the reference image shows a quick, genuine grin with eyes brightening and brows lifting. Subtle idle animation: light, buoyant breathing motion lifting her chest and shoulders, a gentle relaxed blink cycle with joyful crinkles around the eyes, and a subtle micro-softening in her warm smile. Hair and clothing respond to a faint ambient breeze. Dark bob shifts gently around her face, and the journalist attire fabric shifts softly with her breath. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a warm genuine smile with brightening eyes and lifted cheeks. Subtle idle animation only: buoyant breathing lifting the chest and shoulders, a soft crinkling around the eyes, a warm natural blink cycle. Latina woman of about 35, lean build, angular face with high cheekbones, brown eyes, small mole near one eye, long straight black hair, charcoal-grey fitted raglan top. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__determined` loop
 
 **Input**: `assets/clara_torres__determined.png`
 
-Create a seamless looping video. The woman on the reference image shows focused pursuit of a story with eyes steady and driven and brows firm. Subtle idle animation: steady, controlled breathing motion in the chest and shoulders, a slight firming micro-motion along the jawline, and a resolute, slow blink cycle. Hair and clothing respond to a faint ambient breeze. The sleek bob holds firm with minimal subtle shifting, and the journalist attire shifts tautly against her frame. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a resolved, firm expression with steady unflinching eyes and a set mouth. Subtle idle animation only: deep controlled breathing in the chest and shoulders, a slight firming of the jaw, a slow unwavering blink cycle. Latina woman of about 35, lean build, angular face with high cheekbones, brown eyes, small mole near one eye, long straight black hair, charcoal-grey fitted raglan top. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__surprised` loop
 
 **Input**: `assets/clara_torres__surprised.png`
 
-Create a seamless looping video. The woman on the reference image experiences a sudden, telling discovery with eyes widening and brows jumping high. Subtle idle animation: a momentary catch in breath followed by gentle chest motion, a sudden quick blink cycle that settles back into startled alertness, and micro-tension across the collarbone. Hair and clothing respond to a faint ambient breeze. Dark hair strands lift faintly in the air, and the journalist attire shifts subtly in the ambient air. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows raised brows and widened eyes with lips slightly parted. Subtle idle animation only: a quick intake of breath, a small lift of the shoulders, a slow wide blink. Latina woman of about 35, lean build, angular face with high cheekbones, brown eyes, small mole near one eye, long straight black hair, charcoal-grey fitted raglan top. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

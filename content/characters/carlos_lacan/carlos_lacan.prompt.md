@@ -2,40 +2,44 @@
 name: Carlos Lacan
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/carlos_lacan/carlos_lacan.md
 target: `asset_paths.portrait` in `content/characters/carlos_lacan/char_carlos_lacan.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Carlos Lacan
 
+NOTE: current PNG depicts a young woman; portrait/variants/videos need regeneration as a slight man of about 24 (see YAML physical_description)
+
 ## Prompt (Draft)
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 24-year-old European/French-Caribbean male. Slightly built quick precise hands, dark wavy hair, warm kind brown eyes, round soft face, small warm smile, faint stubble, worn work shirt with tool belt slung low, Northern Edge electronics workshop backdrop, no European features
+Mixed European and French-Caribbean man of about 24, slight build, round soft face, warm brown eyes, dark wavy slightly tousled hair, faint stubble, light tan skin, quick precise hands, worn work shirt with sleeves rolled, tool belt slung low at the hips. neutral relaxed expression, mouth closed, brows unfurrowed, eyes to camera, front-facing, arms relaxed. plain flat grey background. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 24-year-old electrical engineering student and technical expert of European/French-Caribbean descent — the emotional heart of Alex's investigation group. Slightly built, quick hands that moved with precision when working. Dark wavy hair, slightly tousled. Warm, kind brown eyes that made people feel they were not a problem or an inconvenience. Round, soft face with an open, approachable expression. A small warm smile — the kind that says yes before you finish asking. Faint stubble on his jaw. He wears a faded work shirt, sleeves rolled, a tool belt slung low at his hips. His expression is loyal, easy warmth — someone who would run technical commentary to make you feel included, who found decline harder than the thing being declined. The backdrop is a Northern Edge electronics repair workshop. Circuit boards, tools spread on a workbench, warm orange light from desk lamps, the city's edge visible through a window. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a mixed European and French-Caribbean man of about 24. Slight build with narrow shoulders and quick, precise hands. Round soft face with warm brown eyes and soft features, faint stubble along the jaw, light tan skin. Dark wavy hair worn slightly tousled. Faded, worn work shirt with the sleeves rolled to the forearm and a leather tool belt slung low at the hips. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no Latin American features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, South Asian features
 
 ## Variations
 
-- [ ] Carlos at the rooftop workbench at night, flashlight between his teeth, soldering a surveillance circuit, city lights below
-- [ ] Carlos in the workshop, hands full of tools, grinning while explaining the HVAC sabotage to the group
-- [ ] Carlos at the Residencial Las Estrellas, crouched by a condenser unit, notebook in hand, sunlight behind him
+- [ ] Crouched on a rooftop at night with a flashlight between his teeth, soldering a small circuit board
+- [ ] At a cluttered workbench, hands full of tools, grinning while explaining a wiring fault to friends
+- [ ] Kneeling beside an outdoor condenser unit with a notebook in hand under bright midday sun
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral warm open expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__happy.png`**: Use the base portrait as reference. Broad, genuine grin, looking at the camera, 3/4 take. Eyes crinkled with delight, round face lit up, small warm smile widening. Keep the same art style as reference, same work shirt and tool belt. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders relaxed and level, arms hanging loosely at his sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__focused.png`**: Use the base portrait as reference. Sharp technical concentration, looking directly at the camera, 3/4 take. Eyes narrowed in focus, round face serious, mouth pressed in thought. Keep the same art style as reference, same work shirt. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__happy.png`**: Use the base portrait as reference. Broad genuine grin, eyes crinkled, round face lit up, brows lifted, looking at the camera, 3/4 take. Shoulders loose and slightly raised, one hand lifted holding a small screwdriver like a baton, the other thumb hooked on the tool belt. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__determined.png`**: Use the base portrait as reference. Resolved, firm expression, looking unflinchingly at the camera, 3/4 take. Eyes steady with loyalty, round jaw squared. Keep the same art style as reference, same work shirt and tool belt. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__focused.png`**: Use the base portrait as reference. Brows drawn together in technical concentration, lips pressed, looking out from under a lowered brow, looking at the camera, 3/4 take. Head bowed slightly, both hands holding a small circuit board close to the chest as if inspecting it, elbows tucked in. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__vulnerable.png`**: Use the base portrait as reference. Quietly uncertain expression, looking gently at the camera, 3/4 take. Eyes open and searching, round face soft, small warm smile faltering. Keep the same art style as reference, same work shirt. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__determined.png`**: Use the base portrait as reference. Steady firm eyes, jaw squared, lips set in a line, looking at the camera, 3/4 take. Shoulders squared and chest open, one hand closed around the strap of the tool belt, the other curled into a loose fist at chest height. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__vulnerable.png`**: Use the base portrait as reference. Uncertain open eyes, brows pinched up in the middle, lips slightly parted, a smile faltering, looking at the camera, 3/4 take. Shoulders drawn in, head tilted a little, one hand rubbing the back of the opposite arm, the other tucked into the belt. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.

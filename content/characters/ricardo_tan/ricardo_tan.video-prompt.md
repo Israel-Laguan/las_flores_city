@@ -8,13 +8,15 @@ target: content/characters/ricardo_tan/assets/
 
 # Video Prompts: Ricardo Tan
 
+NOTE: PNG is caught mid-speech with the mouth open; regenerate the base with the neutral clause (low priority, everything else matches).
+
 Generate seamless looping portrait videos from each expression variant PNG. Use the corresponding `ricardo_tan__<expression>.png` as the input image for each prompt. The man on the reference image is the character described in the source prompt file.
 
 ## Base Loop (Default)
 
 **Input**: `assets/ricardo_tan__default.png`
 
-Create a seamless looping video. The man on the reference image holds a warm resting expression with a subtle knowing half-smile and black hair in simple, un-styled flowing shapes. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, and a barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. Black hair shifts subtly, and the minimalist, pocketless practical work clothing shifts gently in the draft. The small sport earbud clipped firmly to his earlobe remains still. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a neutral composed resting expression, looking at the camera with steady presence. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Chinese man in his early 40s, lean sturdy build, fair skin, high cheekbones, lively dark brown eyes, styled black side-swept hair, charcoal jacket over a light gray open-collar shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
 
@@ -22,22 +24,30 @@ Create a seamless looping video. The man on the reference image holds a warm res
 
 **Input**: `assets/ricardo_tan__happy.png`
 
-Create a seamless looping video. The man on the reference image shows a bright, genuine smile with eyes lighting up with warmth and cheeks lifting and lips parting in a lively grin. Subtle idle animation: warm, buoyant breathing motion lifting his chest and shoulders, a soft pulsing ease in the crinkles around his eyes, and an easy, natural blink cycle. Hair and clothing respond to a faint ambient breeze. Black hair strands flutter playfully around his face, and the practical work clothing shifts softly with his buoyant breathing. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a warm genuine smile with brightening eyes and lifted cheeks. Subtle idle animation only: buoyant breathing lifting the chest and shoulders, a soft crinkling around the eyes, a warm natural blink cycle. Chinese man in his early 40s, lean sturdy build, fair skin, high cheekbones, lively dark brown eyes, styled black side-swept hair, charcoal jacket over a light gray open-collar shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__contemplative` loop
 
 **Input**: `assets/ricardo_tan__contemplative.png`
 
-Create a seamless looping video. The man on the reference image shows a thoughtful pause with eyes softening into the middle distance and lips relaxed. Subtle idle animation: slow, measured breathing motion rising and falling gently in the chest, a quiet softening of gaze into the distance, and a slow, reflective blink cycle. Hair and clothing respond to a faint ambient breeze. Strands of black hair drift delicately across his forehead, the practical work clothing shifts gently with his breath, and the earbud remains still. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a reflective pause with eyes drifting into the middle distance and relaxed lips. Subtle idle animation only: soft easy breathing, a gentle settling of the shoulders, a slow measured blink. Chinese man in his early 40s, lean sturdy build, fair skin, high cheekbones, lively dark brown eyes, styled black side-swept hair, charcoal jacket over a light gray open-collar shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__surprised` loop
 
 **Input**: `assets/ricardo_tan__surprised.png`
 
-Create a seamless looping video. The man on the reference image shows a bright, controlled startle with eyes widened and brows lifted and lips parting. Subtle idle animation: a momentary catch in breath followed by gentle chest motion, a sudden quick blink cycle that settles back into composed alertness, and micro-tension across the collarbone. Hair and clothing respond to a faint ambient breeze. Black hair strands lift faintly in the air, and the practical work clothing shifts subtly in the ambient air. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows raised brows, widened eyes and slightly parted lips. Subtle idle animation only: a quick intake of breath, a small lift of the brows that slowly eases, a startled blink. Chinese man in his early 40s, lean sturdy build, fair skin, high cheekbones, lively dark brown eyes, styled black side-swept hair, charcoal jacket over a light gray open-collar shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__determined` loop
 
 **Input**: `assets/ricardo_tan__determined.png`
 
-Create a seamless looping video. The man on the reference image shows steady resolve with eyes fixed and sharp and jaw set. Subtle idle animation: steady, controlled breathing motion in the chest and shoulders, a slight firming micro-motion in the jawline, and a resolute, slow blink cycle. Hair and clothing respond to a faint ambient breeze. The practical work clothing shifts crisply in the draft, and the earbud remains still. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a resolved, firm expression with steady unflinching eyes and a set mouth. Subtle idle animation only: deep controlled breathing in the chest and shoulders, a slight firming of the jaw, a slow unwavering blink cycle. Chinese man in his early 40s, lean sturdy build, fair skin, high cheekbones, lively dark brown eyes, styled black side-swept hair, charcoal jacket over a light gray open-collar shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+
+## Wardrobe Loops
+
+### `__outfit-studio` loop
+
+**Input**: `assets/ricardo_tan__outfit-studio.png`
+
+Create a seamless looping video. The man on the reference image shows a neutral composed resting expression, looking at the camera with steady presence. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Chinese man in his early 40s, lean sturdy build, fair skin, lively dark brown eyes, styled black hair, sharp slate-gray suit with a narrow dark tie and a tiny clip-on lapel microphone. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

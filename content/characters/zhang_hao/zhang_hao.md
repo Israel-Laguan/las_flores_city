@@ -4,11 +4,11 @@
 >
 > **Born:** ~2030
 > **Role:** Customs Officer, Port of Las Flores
-> **Status:** Active (as of 2065)
+> **Status:** Active (as of 2077)
 
 ## Overview
 
-Zhang Hao is a 45-year-old customs officer stationed at the busy Port of Las Flores. A robust man with a slightly graying crew cut and a rugged face that reveals years of hard work, he cuts an imposing figure in his standard customs uniform—distinguished by an old watch and several rings that add an incongruous flash of flair. His posture is confident, his gaze calculating.
+Zhang Hao is a 47-year-old customs officer stationed at the busy Port of Las Flores. A robust man with a slightly graying crew cut and a rugged face that reveals years of hard work, he cuts an imposing figure in his standard customs uniform—distinguished by an old watch and several rings that add an incongruous flash of flair. His posture is confident, his gaze calculating.
 
 ## Background
 

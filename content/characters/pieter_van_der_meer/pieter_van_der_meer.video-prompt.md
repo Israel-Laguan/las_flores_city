@@ -8,13 +8,15 @@ target: content/characters/pieter_van_der_meer/assets/
 
 # Video Prompts: Pieter van der Meer
 
+NOTE: PNG is a semi-photoreal render on a dark grey gradient, wearing a black formal jacket and bow tie (lore: tweed jacket). Style and backdrop need regeneration (medium priority). Lore has him born 1960 and deceased 2045, so he only appears in flashback; prompt sets him in his early 70s (Free City era).
+
 Generate seamless looping portrait videos from each expression variant PNG. Use the corresponding `pieter_van_der_meer__<expression>.png` as the input image for each prompt. The man on the reference image is the character described in the source prompt file.
 
 ## Base Loop (Default)
 
 **Input**: `assets/pieter_van_der_meer__default.png`
 
-Create a seamless looping video. The man on the reference image holds a calculating resting expression with silver-white hair swept back in distinguished style. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, and a barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. Silver-white hair shifts minimally, and the tailored tweed jacket with a simple gold signet ring shifts gently in the draft. The weathered fair skin with deep lines remains still. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a neutral composed resting expression, looking at the camera with steady presence. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Dutch man in his early 70s, tall imposing slightly stooped frame, weathered fair skin, pale blue eyes behind thin wire-rimmed round glasses, silver-white hair swept back, light gray stubble, black formal jacket over a white shirt with a black bow tie. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
 
@@ -22,22 +24,30 @@ Create a seamless looping video. The man on the reference image holds a calculat
 
 **Input**: `assets/pieter_van_der_meer__calculating.png`
 
-Create a seamless looping video. The man on the reference image shows quiet strategic intent with eyes narrowed in calculation and brows drawn and jaw set. Subtle idle animation: measured, deliberate breathing motion in the chest, a subtle eye-narrowing cycle as he evaluates, and a slow, controlled blink cycle. Hair and clothing respond to a faint ambient breeze. Silver-white hair stirs faintly in the room draft, and the tweed jacket fabric holds subtle movement from low steady breathing. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows narrowed assessing eyes and a closed, measured mouth. Subtle idle animation only: slow measured breathing, a subtle narrowing of the eyes, an infrequent deliberate blink. Dutch man in his early 70s, tall imposing slightly stooped frame, weathered fair skin, pale blue eyes behind thin wire-rimmed round glasses, silver-white hair swept back, light gray stubble, black formal jacket over a white shirt with a black bow tie. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__contemplative` loop
 
 **Input**: `assets/pieter_van_der_meer__contemplative.png`
 
-Create a seamless looping video. The man on the reference image shows a reflective pause with eyes softening into the middle distance and lips relaxed. Subtle idle animation: slow, tranquil breathing with a gentle ebb and flow in the shoulders, a quiet softening of gaze into the distance, relaxed facial muscles, and a slow, meditative blink cycle. Hair and clothing respond to a faint ambient breeze. Soft silver-white hair drifts gently in the ambient air, the tweed jacket folds drape and shift softly with each breath, and the gold signet ring shifts slightly. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a reflective pause with eyes drifting into the middle distance and relaxed lips. Subtle idle animation only: soft easy breathing, a gentle settling of the shoulders, a slow measured blink. Dutch man in his early 70s, tall imposing slightly stooped frame, weathered fair skin, pale blue eyes behind thin wire-rimmed round glasses, silver-white hair swept back, light gray stubble, black formal jacket over a white shirt with a black bow tie. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__happy` loop
 
 **Input**: `assets/pieter_van_der_meer__happy.png`
 
-Create a seamless looping video. The man on the reference image shows a rare, controlled smile with eyes crinkling with guarded warmth and lips curving up slightly. Subtle idle animation: warm, rhythmic breathing motion lifting his chest and shoulders, a soft pulsing ease in the crinkles around his eyes, and a warm, natural blink cycle. Hair and clothing respond to a faint ambient breeze. Silver-white hair shifts gently in the draft, and the tweed jacket fabric moves softly with his buoyant breathing. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a warm genuine smile with brightening eyes and lifted cheeks. Subtle idle animation only: buoyant breathing lifting the chest and shoulders, a soft crinkling around the eyes, a warm natural blink cycle. Dutch man in his early 70s, tall imposing slightly stooped frame, weathered fair skin, pale blue eyes behind thin wire-rimmed round glasses, silver-white hair swept back, light gray stubble, black formal jacket over a white shirt with a black bow tie. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__surprised` loop
 
 **Input**: `assets/pieter_van_der_meer__surprised.png`
 
-Create a seamless looping video. The man on the reference image shows a sharp, controlled startle with eyes widened and brows lifted and lips parting. Subtle idle animation: a momentary catch in breath followed by gentle chest motion, a sudden quick blink cycle that settles back into composed alertness, and micro-tension across the collarbone. Hair and clothing respond to a faint ambient breeze. Silver-white hair strands lift faintly in the air, and the tweed jacket shifts subtly in the ambient air. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows raised brows, widened eyes and slightly parted lips. Subtle idle animation only: a quick intake of breath, a small lift of the brows that slowly eases, a startled blink. Dutch man in his early 70s, tall imposing slightly stooped frame, weathered fair skin, pale blue eyes behind thin wire-rimmed round glasses, silver-white hair swept back, light gray stubble, black formal jacket over a white shirt with a black bow tie. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+
+## Wardrobe Loops
+
+### `__outfit-tweed` loop
+
+**Input**: `assets/pieter_van_der_meer__outfit-tweed.png`
+
+Create a seamless looping video. The man on the reference image shows a neutral composed resting expression, looking at the camera with steady presence. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Dutch man in his early 70s, tall slightly stooped frame, weathered fair skin, pale blue eyes behind thin wire-rimmed glasses, silver-white swept-back hair, tailored tweed jacket over a wool waistcoat, gold signet ring, silver pocket-watch chain. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

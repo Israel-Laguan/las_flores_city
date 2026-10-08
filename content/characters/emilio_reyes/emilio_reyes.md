@@ -6,6 +6,7 @@
 > **Status:** Unknown
 
 ## Physical Description
+- Age (2077): 72 (born 2005); shown younger in trial-era flashbacks
 - Hair: Dark brown, thinning, combed carefully to cover
 - Eyes: Dark brown, shifty and evasive
 - Build: Medium height, slightly overweight, soft hands

@@ -1,39 +1,51 @@
 ---
-name: Xue
+name: Xue Lihua
 type: portrait
 size: 1024x1024
-source: content/characters/xue/xue.md
-target: `portrait_urls[].url` in `content/characters/char_xue.yaml`
-consumer: portrait
 aspect_ratio: 3:4
+source: content/characters/xue/xue.md
+target: `asset_paths.portrait` in `content/characters/xue/char_xue.yaml`
+consumer: portrait
 ---
 
-# Prompt: Xue
+# Prompt: Xue Lihua
+
+NOTE: woman in her late 70s (birth_year 2000); hair is silver-white in a practical bun per lore (existing PNG shows short black hair and needs regeneration). Left-cheekbone scar and apron are in lore; apron is in the wardrobe variant.
 
 ## Prompt (Draft)
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a compact Chinese woman in her late 50s. Compact and wiry build, dark brown, sharp and watchful eyes, weathered expression, a steady, weathered composure. Hair black with silver streaks in a practical bun, practical work clothing, small sport earbud clipped to earlobe. Weathered urban Latin American building under harsh tropical sun backdrop.
+
+Compact, wiry Chinese woman of about 77, deeply lined fair skin, sharp dark brown eyes, silver-white hair pulled back into a practical bun, grey button-up collared shirt. Plain flat grey background. Neutral relaxed expression, mouth closed, eyes straight at camera, facing front, arms relaxed at sides. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a compact Chinese woman in her late 50s. Compact and wiry build, dark brown, sharp and watchful eyes. Weathered expression, a steady, weathered composure. Hair black with silver streaks in a practical bun, practical work clothing, small sport earbud clipped to earlobe. The backdrop is a weathered urban Latin American building under harsh tropical sun. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a compact, wiry Chinese woman of about 77. Deeply lined fair skin, sharp dark brown eyes under lowered brows, a small straight nose, thin lips, and a small scar on the left cheekbone. Silver-white hair pulled back from the forehead into a practical bun. A plain grey button-up collared shirt. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
---no neon, no androids, no clean backgrounds, no modern clothing
+
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, Latino features, European features, African features
 
 ## Variations
 
-- [ ] Xue serving customers with warm hospitality in a busy restaurant
-- [ ] Xue taking a moment to rest between tasks, showing satisfaction in their work
-- [ ] Xue with restaurant staff during a busy service, working as a team
+- [ ] Behind a small counter at dawn, chopping vegetables with quick precise strokes
+- [ ] Sitting alone at the last table with a pot of tea, watching the door
+- [ ] Wiping her calloused hands on a towel at the kitchen pass
 
 ## Expression Variants
 
-- **`xue__default.png`**: Use the base portrait as reference. Weathered steady resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`xue__happy.png`**: Use the base portrait as reference. Warm hospitality in a genuine smile, looking at the camera, 3/4 take. Eyes brightening, cheeks lifting, the weathered composure warming into real welcome. Keep the same art style as reference, same earbud and work clothing, restaurant bustle behind her. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders relaxed and level, arms hanging loosely at her sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`xue__focused.png`**: Use the base portrait as reference. Absorbed in the task at hand, looking at the camera, 3/4 take. Eyes intent and sharp, brows knit, lips set in concentration. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__happy.png`**: Use the base portrait as reference. Rare warm smile, deep lines folding at the eyes, looking at the camera, 3/4 take. Shoulders softened, one calloused hand lifted to her chest, the other resting at her side. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`xue__contemplative.png`**: Use the base portrait as reference. A brief, satisfied pause, looking at the camera, 3/4 take. Eyes softening, lips relaxed, quiet satisfaction in a moment of rest. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__focused.png`**: Use the base portrait as reference. Eyes down and sharp, brows lowered, lips pressed, looking at the camera, 3/4 take. Head bowed, a small paring knife in one hand and a peeled root in the other. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`xue__surprised.png`**: Use the base portrait as reference. A sharp, controlled startle, looking at the camera, 3/4 take. Eyes widened, brows lifted, lips parting. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__contemplative.png`**: Use the base portrait as reference. Gaze drifting into the middle distance, lips relaxed, looking at the camera, 3/4 take. Head tilted, arms folded loosely across her waist, one thumb rubbing her fingertips. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
+- **`__surprised.png`**: Use the base portrait as reference. Eyes widening, brows rising, lips parting, looking at the camera, 3/4 take. Head pulled back, one calloused hand lifted at shoulder height with the palm out. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Same face, hair and build as the base portrait; only the outfit changes. Plain flat backgrounds, neutral expression. -->
+
+- **`__outfit-apron.png`**: Use the base portrait as reference. Same face, hair and build, now wearing a plain cotton apron over a plain shirt, silver-white hair in the same practical bun, calloused hands visible. Neutral relaxed expression, looking at the camera, 3/4 take, arms relaxed. Keep the same art style as reference, plain flat neutral light-grey backdrop. Clean confident linework, painterly soft shading, muted natural palette.

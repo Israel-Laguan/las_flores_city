@@ -1,21 +1,43 @@
-# Willem van der Meer — Image Prompt
+---
+name: Willem van der Meer
+type: portrait
+size: 1024x1024
+aspect_ratio: 3:4
+source: content/characters/willem_van_der_meer/willem_van_der_meer.md
+target: `asset_paths.portrait` in `content/characters/willem_van_der_meer/char_willem_van_der_meer.yaml`
+consumer: portrait
+---
+
+# Prompt: Willem van der Meer
+
+## Prompt (Draft)
+
+Dutch man in his early 60s, tall broad-shouldered, square strong-jawed face, weathered fair skin, deep-set pale blue eyes, straight nose, deep lines around eyes and mouth. Gray hair swept back and close-cropped at the sides, dark tailored suit, light blue stand-collar shirt, small earbud, plain flat grey background. neutral relaxed expression, front-facing, arms relaxed. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch man in his early 60s. Tall, broad-shouldered frame with an upright executive's posture. Square, strong-jawed face with weathered fair skin, deep-set pale blue eyes carrying a steady, watchful calm, and a straight nose. Gray hair swept back from a high forehead and close-cropped at the sides, with deep lines around the eyes and mouth. He wears an impeccably tailored dark business suit with a crisp white shirt and a muted silk tie; a small sport non-in-ear earbud is clipped to his earlobe. His expression is composed and businesslike, meeting the viewer with measured confidence. The backdrop is a grand corporate office with floor-to-ceiling windows and warm low light falling across a polished desk. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch man in his early 60s. Tall, broad-shouldered frame. Square, strong-jawed face with weathered fair skin, deep-set pale blue eyes, and a straight nose. Gray hair swept back from a high forehead and close-cropped at the sides, with deep lines around the eyes and mouth. Impeccably tailored dark suit over a light blue stand-collar shirt. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
-cartoon, anime, deformed, blurry, low quality
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, Latino features, East Asian features, African features
+
+## Variations
+
+- [ ] At a polished desk reviewing figures
+- [ ] Standing at a window with hands clasped behind his back
+- [ ] Listening across a table, expression unreadable
 
 ## Expression Variants
 
-- **`willem_van_der_meer__default.png`**: Use the base portrait as reference. Composed businesslike resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`willem_van_der_meer__calculating.png`**: Use the base portrait as reference. Sharp, strategic focus, looking intensely at the camera, 3/4 take. Eyes narrowed in calculation, brows drawn, jaw set. The executive weighing a move. Keep the same art style as reference, same suit and tie, corporate office light. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Composed businesslike resting expression, looking at the camera, 3/4 take. Shoulders squared, hands clasped loosely in front of him. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`willem_van_der_meer__contemplative.png`**: Use the base portrait as reference. A composed, reflective pause, looking at the camera, 3/4 take. Eyes softening into the middle distance, lips relaxed, the watchful calm settling. Keep the same art style as reference, same suit and tie, corporate office light. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__calculating.png`**: Use the base portrait as reference. Sharp strategic focus, eyes narrowed, brows drawn, jaw set, looking at the camera, 3/4 take. Chin lowered, one hand rising to stroke his jaw with two fingers. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`willem_van_der_meer__happy.png`**: Use the base portrait as reference. A rare, measured smile, looking at the camera, 3/4 take. Eyes crinkling with guarded warmth, lips curving up slightly, the deep lines around his eyes easing. Keep the same art style as reference, same suit and tie, corporate office light. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__contemplative.png`**: Use the base portrait as reference. Reflective pause, eyes softening into the middle distance, lips relaxed, looking at the camera, 3/4 take. Head tilted a little, hands resting together at his waist, shoulders easing. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`willem_van_der_meer__surprised.png`**: Use the base portrait as reference. A sharp, controlled startle, looking at the camera, 3/4 take. Eyes widened, brows lifted, lips parting. Composure intact. Keep the same art style as reference, same suit and tie, corporate office light. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__happy.png`**: Use the base portrait as reference. Rare measured smile, eyes crinkling, deep lines around the eyes easing, looking at the camera, 3/4 take. Shoulders loosening, one hand opening slightly at his side. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__surprised.png`**: Use the base portrait as reference. Sharp controlled startle, eyes widened, brows lifted, lips parting; composure intact, looking at the camera, 3/4 take. Body stiffening upright, one hand lifting an inch from his side. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.

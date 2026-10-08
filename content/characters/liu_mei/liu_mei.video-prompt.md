@@ -14,7 +14,7 @@ Generate seamless looping portrait videos from each expression variant PNG. Use 
 
 **Input**: `assets/liu_mei__default.png`
 
-Create a seamless looping video. The woman on the reference image holds a neutral resting expression with straight dark hair drawn back in a practical low bun and a tiny mole on her left cheek. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, and a barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. Straight dark hair in a practical low bun shifts minimally, and the professional tailored political attire with a structured blazer over a modest blouse and understated jewelry shifts gently in the draft. The small sport earbud clipped to her earlobe remains still. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a neutral composed resting expression, looking at the camera with steady presence. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Chinese woman of 44, round face, almond dark eyes, small mole on the left cheek, short black side-swept hair, black collared shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
 
@@ -22,22 +22,30 @@ Create a seamless looping video. The woman on the reference image holds a neutra
 
 **Input**: `assets/liu_mei__calculating.png`
 
-Create a seamless looping video. The woman on the reference image is in careful assessment mode with eyes narrowed thoughtfully and the slightly more hooded left eye adding depth to her weighing gaze. Subtle idle animation: slow, controlled breathing in the chest and shoulders, a subtle eye-narrowing cycle as she evaluates, and a calm, deliberate blink cycle. Hair and clothing respond to a faint ambient breeze. Straight dark hair shifts subtly against her neck, and the tailored blazer shifts gently with her breath. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a cool, assessing expression with a lowered chin and measured gaze. Subtle idle animation only: slow controlled breathing, a slight narrowing of the eyes, a small shift of the fingers at the jaw, a slow deliberate blink. Chinese woman of 44, round face, almond dark eyes, small mole on the left cheek, short black side-swept hair, black collared shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__determined` loop
 
 **Input**: `assets/liu_mei__determined.png`
 
-Create a seamless looping video. The woman on the reference image has a resolute, firm expression with eyes steady and clear and thin lips set and brows drawn with quiet resolve. Subtle idle animation: steady, controlled breathing motion in the chest and shoulders, a slight firming micro-motion in the jawline, and an unwavering, slow blink cycle. Hair and clothing respond to a faint ambient breeze. The tailored blazer shifts crisply in the draft, and the understated jewelry catches a faint draft. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a resolved, firm expression with steady eyes and a set mouth. Subtle idle animation only: deep controlled breathing in the chest and shoulders, a slight firming of the jaw, a slow unwavering blink cycle. Chinese woman of 44, round face, almond dark eyes, small mole on the left cheek, short black side-swept hair, black collared shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__vulnerable` loop
 
 **Input**: `assets/liu_mei__vulnerable.png`
 
-Create a seamless looping video. The woman on the reference image shows a rare exposed moment with eyes softened and a hint of weariness in the subtle lines around them. Subtle idle animation: soft, shallow breathing motion in the chest, a subtle easing and slight slump in the shoulders, and a slow, tender blink cycle with a momentary softening of gaze. Hair and clothing respond to a faint ambient breeze. Loose strands of dark hair fall forward across her brow, and the lightweight blouse fabric moves softly against her skin. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a quietly vulnerable expression with open honest eyes and softened features. Subtle idle animation only: soft shallow breathing, a slow easing of tension in the shoulders, a slow tender blink. Chinese woman of 44, round face, almond dark eyes, small mole on the left cheek, short black side-swept hair, black collared shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__smirk` loop
 
 **Input**: `assets/liu_mei__smirk.png`
 
-Create a seamless looping video. The woman on the reference image shows a faint knowing half-smile with one corner of her thin lips curves up and eyes glinting with dry irony. Subtle idle animation: relaxed, easy breathing motion rising and falling in the chest, a subtle micro-lift at the corner of the smirk, and an easy, barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. The tailored blazer settles naturally over her shoulders, and the understated jewelry catches a faint ambient draft. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a knowing one-sided smirk with a lifted brow. Subtle idle animation only: relaxed breathing, a slight tilt of the head, a flicker of the raised brow, a lazy blink. Chinese woman of 44, round face, almond dark eyes, small mole on the left cheek, short black side-swept hair, black collared shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+
+## Wardrobe Loops
+
+### `__outfit-political` loop
+
+**Input**: `assets/liu_mei__outfit-political.png`
+
+Create a seamless looping video. The woman on the reference image shows a neutral composed resting expression, looking at the camera with steady presence. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Chinese woman of 44, round face, small mole on the left cheek, short black side-swept hair, tailored charcoal blazer over a pale blouse with pearl earrings. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

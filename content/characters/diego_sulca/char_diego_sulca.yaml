@@ -3,15 +3,16 @@ name: Diego Sulca
 title: Environmental Science Student, Fisherman's Son from San Pedro de los Pescadores
 birth_year: 2058
 description: |
-  Diego Sulca is a 19-year-old university student hailing from a modest background, embodying the journey of a young man caught between aspiration and anxiety. His mother is from San Pedro de los Pescadores, and his father comes from Old Las Flores, where they instilled in him the values of hard work and perseverance. Diego is determined to make a better life for himself, but he finds himself grappling with the harsh realities of university life.
+  Diego Sulca is a 19-year-old university student from a modest background, caught between aspiration and anxiety. His mother is from San Pedro de los Pescadores, and his father comes from Old Las Flores, where they instilled in him the values of hard work and perseverance. Diego is determined to make a better life for himself, but he finds himself grappling with the harsh realities of university life.
 
-  Diego has a lean, athletic build from years of helping his mother with fishing. He has dark, curly hair and warm brown eyes that reflect his inherent kindness but also reveal his shyness. His clothing typically consists of comfortable, casual wear, often a bit rumpled due to his easygoing nature. He prefers practicality over fashion, reflecting his working-class roots.
-physical_description: Lean, athletic 19-year-old indigenous Latino man with dark curly hair, warm brown shy eyes and light brown olive skin; wears rumpled, practical casual clothes such as a faded university hoodie and cargo pants.
+  Diego has a slim, wiry build from years of helping his mother fish the river, with narrow shoulders and a slight stoop. He has short, messy dark wavy-curly hair, a faint peach-fuzz stubble and warm brown eyes that reflect his inherent kindness but also reveal his shyness. His clothing typically consists of comfortable, rumpled casual wear such as a faded grey work shirt, and he wears a braided blue net-twine bracelet. He prefers practicality over fashion, reflecting his working-class roots.
+physical_description: Slim, wiry 19-year-old indigenous Latino man of average height with narrow shoulders and a slight stoop, short messy dark wavy-curly hair, faint peach-fuzz stubble, warm brown shy eyes and light brown olive skin; wears rumpled, practical clothes such as a dusty light grey button-up with rolled sleeves (or a faded university hoodie and cargo pants) and a braided blue net-twine bracelet.
 psychological_description: Ambitious, kind-hearted and shy; anxious about his academic struggles but sustained by perseverance and the values his parents taught him.
 background_and_role:
-  - Environmental Science student at the university
+  - Environmental Science student at the university, focused on river water quality and fisheries
   - Son of a fisherwoman from San Pedro de los Pescadores and a father from Old Las Flores
   - Wants to advocate for sustainable fishing in his community
+  - Classmate of Camila Reyes and fellow San Pedro native of Sofia Aguirre (links invented, see lore)
 metadata:
   type: human
   role: npc
@@ -25,8 +26,8 @@ metadata:
   education: Environmental Science major at university, struggles with coursework, repeats challenging courses
   residence: university housing or modest accommodation near campus
   organization: university student
-  allies: mother (fisherwoman from San Pedro de los Pescadores), father (from Old Las Flores), working-class community
-  mannerisms: shy demeanor, prefers practical clothing, plays charango, enjoys outdoor solitude, seeks help when struggling academically
+  allies: mother (fisherwoman from San Pedro de los Pescadores), father (from Old Las Flores), working-class community, Sofia Aguirre (invented), Camila Reyes (invented), Quechua families of Old Las Flores (invented)
+  mannerisms: shy demeanor, avoids eye contact then glances up, rubs the back of his neck, prefers practical clothing, plays charango alone (it was his Quechua grandfather's), enjoys outdoor solitude, seeks help when struggling academically
   motivations: complete degree, return to community, advocate for sustainable fishing, educate fishermen about eco-friendly practices, prove himself despite academic struggles
   quote: I may struggle in the classroom, but I know the value of hard work. The mountains don't judge you for your grades.
   methods: perseverance, community support, outdoor therapy, traditional music, seeking academic help

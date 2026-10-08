@@ -7,7 +7,7 @@
 > **Status:** Active
 
 ## Physical Description
-- Hair: Ash blonde, shoulder-length, often styled in soft waves or an elegant updo
+- Hair: Silver-blonde, swept back into an elegant low updo
 - Eyes: Pale blue, refined and discerning
 - Build: Tall and slender, graceful posture
 - Skin: Fair, carefully maintained with subtle cosmetic enhancements

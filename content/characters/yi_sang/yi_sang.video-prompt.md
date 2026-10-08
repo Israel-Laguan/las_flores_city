@@ -6,40 +6,40 @@ source: content/characters/yi_sang/yi_sang.prompt.md
 target: content/characters/yi_sang/assets/
 ---
 
-Game year **2077**: Yī Sāng is **~50**, active LW Chief of Operations. Loops match cold corporate-security portraits — dark graying receding hair, left-jaw scar, athletic-compact build.
-
 # Video Prompts: Yī Sāng
+
+NOTE: two-era flag: `yi_sang__legacy.png` exists (a younger past-era likeness); no second set created. Existing PNG has a detailed office backdrop; regenerate on plain flat grey. Also `y_s_ng__default.png` is a stray duplicate filename.
+
+Generate seamless looping portrait videos from each expression variant PNG. Use the corresponding `yi_sang__<expression>.png` as the input image for each prompt. The man on the reference image is the character described in the source prompt file.
 
 ## Base Loop (Default)
 
 **Input**: `assets/yi_sang__default.png`
 
-Seamless loop. Cold resting expression, athletic-compact frame, sport earbud, dark security attire. Subtle idle: minimal breathing, rare blink, almost no sway. Background static. Perfect loop. No camera move.
+Create a seamless looping video. The man on the reference image shows a neutral relaxed resting expression, looking at the camera. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Chinese-Korean man of about 50, angular face, narrow dark eyes, short gray receding hair, faint scar along the left cheek and jaw, athletic-compact build, small black earbud, black stand-collar jacket over a black T-shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
-
-Generate each loop from its corresponding expression PNG.
 
 ### `__calculating` loop
 
 **Input**: `assets/yi_sang__calculating.png`
 
-Calculating micro-narrowing of eyes; slow controlled breathing. Perfect loop.
+Create a seamless looping video. The man on the reference image shows cold analytical thought with narrowed eyes and a thin set mouth. Subtle idle animation only: slow measured breathing, a subtle micro-narrowing of the eyes, an infrequent deliberate blink cycle. Chinese-Korean man of about 50, angular face, narrow dark eyes, short gray receding hair, faint scar along the left cheek and jaw, athletic-compact build, small black earbud, black stand-collar jacket over a black T-shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__determined` loop
 
 **Input**: `assets/yi_sang__determined.png`
 
-Steady unflinching resolve; deep controlled breathing; firm jaw micro-motion. Perfect loop.
+Create a seamless looping video. The man on the reference image shows firm resolve with steady unflinching eyes and a set jaw. Subtle idle animation only: deep controlled breathing, a slight firming of the jaw, a slow unwavering blink cycle. Chinese-Korean man of about 50, angular face, narrow dark eyes, short gray receding hair, faint scar along the left cheek and jaw, athletic-compact build, small black earbud, black stand-collar jacket over a black T-shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__smirk` loop
 
 **Input**: `assets/yi_sang__smirk.png`
 
-Thin cold smirk micro-lift; relaxed breathing; barely perceptible blink. Perfect loop.
+Create a seamless looping video. The man on the reference image shows a faint knowing half-smile with one raised brow. Subtle idle animation only: relaxed easy breathing, a subtle micro-lift at the corner of the smirk, an unhurried blink cycle. Chinese-Korean man of about 50, angular face, narrow dark eyes, short gray receding hair, faint scar along the left cheek and jaw, athletic-compact build, small black earbud, black stand-collar jacket over a black T-shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__afraid` loop
 
 **Input**: `assets/yi_sang__afraid.png`
 
-Guarded control-loss tension — shallow held breathing, quick blink — not panic. Perfect loop.
+Create a seamless looping video. The man on the reference image shows real fear with wide tense eyes and a tight jaw. Subtle idle animation only: quick shallow breathing, a faint tremor in the shoulders, an anxious blink cycle. Chinese-Korean man of about 50, angular face, narrow dark eyes, short gray receding hair, faint scar along the left cheek and jaw, athletic-compact build, small black earbud, black stand-collar jacket over a black T-shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

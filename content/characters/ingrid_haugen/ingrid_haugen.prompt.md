@@ -2,40 +2,42 @@
 name: Ingrid Haugen
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/ingrid_haugen/ingrid_haugen.md
 target: `asset_paths.portrait` in `content/characters/ingrid_haugen/char_ingrid_haugen.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Ingrid Haugen
 
 ## Prompt (Draft)
 
-Scandinavian corporate liaison in her late 30s, tall and sharp-featured with unnervingly perfect posture, clear fair skin. Straight blonde hair pulled back in a severe immaculate style, arched brows, wide-set pale blue intelligent cold eyes, pointed nose, angular face with a prominent jawline, thin lips, barely visible pale scar on her right upper lip. Immaculate professional attire, company-issued tablet in hand, small sport earbud clipped to earlobe. Sterile N&M LTD office backdrop with cold clean lighting. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Norwegian woman of 39, tall and sharp-featured with rigid, perfect posture, fair skin, blonde hair severely pulled back into a smooth low ponytail, cold pale blue eyes under straight pale brows, high cheekbones, narrow nose, thin lips, an immaculate black tailored blazer over a crisp white shirt, plain flat grey background. neutral relaxed expression, front-facing, arms relaxed. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Scandinavian corporate liaison in her late 30s. Tall, sharp-featured build with unnervingly perfect posture. Clear fair skin. Straight blonde hair pulled back in a severe, immaculate style. Arched brows over wide-set pale blue eyes, intelligent and cold. Pointed nose, angular face with a prominent jawline, thin lips. A barely visible pale scar marks her right upper lip. Small sport non-in-ear earbud clipped to the left earlobe. Immaculate professional attire: a sharply tailored blazer over a high-collared blouse, a company-issued tablet held at her side. The backdrop is a sterile N&M LTD corporate office or processing room, cold clean lighting over glass and brushed steel. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Norwegian woman of 39. Tall and sharp-featured with rigid, perfect posture. Fair skin. Blonde hair severely pulled back into a smooth low ponytail. Cold pale blue eyes under straight pale brows. High cheekbones, narrow nose, thin lips. Wears an immaculate black tailored blazer over a crisp white shirt. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no Latino features, no East Asian features, no African features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, Latino features, East Asian features, African features
 
 ## Variations
 
-- [ ] Seated at a sterile conference table, tablet raised, cold light on glass walls
-- [ ] Walking a processing-room corridor, heels clicking, tablet tucked under one arm
-- [ ] Greeting a newly arrived subject from behind a desk, polite smile perfectly in place
+- [ ] Holding a slim tablet in a stark corporate lobby, speaking with practised calm
+- [ ] Texting on a phone in a sleek white corridor
+- [ ] Standing at a glass wall watching a bank of monitors, tablet at her hip
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral, composed resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__calculating.png`**: Use the base portrait as reference. A cold, analytic expression, looking directly at the camera, 3/4 take. Wide-set eyes narrowed, thin lips pressed, head tilted a fraction, angular face composed, the pale scar on the upper lip catching the sterile light. Keep the same art style as reference, same blazer and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral relaxed resting expression, mouth closed and relaxed, brows unfurrowed, looking at the camera, 3/4 take. Shoulders level, arms hanging relaxed at her sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__smirk.png`**: Use the base portrait as reference. A faint, controlled half-smile, looking at the camera, 3/4 take. One corner of the thin lips pulled up, wide-set eyes glinting with professional calculation, the scar on the upper lip more visible, arched brows lifted slightly. Keep the same art style as reference, same attire and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__calculating.png`**: Use the base portrait as reference. Chin lowered, pale eyes narrowed, lips thin, looking at the camera, 3/4 take. A slim tablet held across her chest in one arm, a fingertip of the other hand resting against her lower lip. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__vulnerable.png`**: Use the base portrait as reference. A rare crack in the facade, looking at the camera, 3/4 take. Wide-set eyes softening, chin dipping a fraction, thin lips parting, the composed angular face momentarily unguarded, posture losing a shade of rigidity. Keep the same art style as reference, same blouse and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__smirk.png`**: Use the base portrait as reference. Faint controlled half-smile, one corner of the thin lips lifted, looking at the camera, 3/4 take. A slim tablet tucked under one arm, the free hand sliding into her blazer pocket. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__afraid.png`**: Use the base portrait as reference. A controlled, effortful fear, looking at the camera, 3/4 take. Wide-set eyes slightly widened, arched brows drawn, thin lips set, jaw tight, posture gone rigid with restraint. Keep the same art style as reference, same corporate attire and earbud. Clean confident linework, painterly soft shading with sharper edges, muted natural palette.
+- **`__vulnerable.png`**: Use the base portrait as reference. A crack in the facade, eyes softening and glistening, chin dipping, lips parting, looking at the camera, 3/4 take. Shoulders dropping a fraction, both hands pressing the slim tablet against her stomach. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__afraid.png`**: Use the base portrait as reference. Eyes widened, brows drawn up, lips pressed to a tight line, jaw tense, looking at the camera, 3/4 take. Shoulders rising stiffly, the slim tablet clutched to her chest, the free hand gripping the opposite elbow. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.

@@ -3,10 +3,10 @@
 > Tags: `#criminal` `#flowers_syndicate` `#van_der_meer` `#industrial_zone`
 
 ## Physical Description
-- Hair: Black, thinning and receding, kept short and practical
+- Hair: Thick black, slicked straight back and greying at the temples
 - Eyes: Dark brown, cold and calculating, hooded with age
-- Build: Broad-shouldered but softening around the midsection, walks with slight limp from old injury
-- Skin: Light olive complexion, weathered and lined from stress
+- Build: Tall and lean, slightly gaunt, walks with slight limp from old injury
+- Skin: Light olive, slightly sallow complexion, weathered with deep lines from stress
 - Distinguishing features: Thin scar along right jawline from the shootout, heavy-lidded eyes, gold cufflinks with the Van der Meer crest, always impeccably dressed despite rough surroundings, rings on multiple fingers, gold watch
 
 ## Overview

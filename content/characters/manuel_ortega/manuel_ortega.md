@@ -1,9 +1,9 @@
 # Manuel Ortega
 
-**Title:** 63-year-old former smuggler who has now
+**Title:** Former Smuggler, Cartel Link
 
 **Physical Description:**
-- Distinctive appearance fitting their background
+- Latino man in his early sixties with a lean wiry build, long weathered face, thin gray-white receding hair, deep-set eyes and a faded smuggling scar across his right cheek; dresses in practical fisherman's layers.
 
 **Description (full):**
 
@@ -11,5 +11,5 @@ Manuel Ortega, commonly known as "El Viejo" (The Old Man), is a 63-year-old form
 
 **Age (2077):** ~63
 **District:** Las Flores
-**Role:** 63-year-old former smuggler who has now
-**Descendancy:** i
+**Role:** Former Smuggler
+**Descendancy:** Latin American

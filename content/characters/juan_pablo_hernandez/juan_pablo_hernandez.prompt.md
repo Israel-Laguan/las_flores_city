@@ -1,41 +1,49 @@
 ---
-name: Juan Pablo Hernandez
+name: Juan Pablo Hernández
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/juan_pablo_hernandez/juan_pablo_hernandez.md
 target: `asset_paths.portrait` in `content/characters/juan_pablo_hernandez/char_juan_pablo_hernandez.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
-# Prompt: Juan Pablo Hernandez
+# Prompt: Juan Pablo Hernández
 
 ## Prompt (Draft)
 
-Latino man in his early 30s, lean-wiry build, clear skin, straight dark hair. Long face with a prominent jawline, high cheekbones, round eyes, thick brows, wide lips, straight nose. Slightly asymmetric smile, small scar on a knuckle. Small sport earbud clipped to earlobe, casual blogger attire with a laptop bag and a lanyard carrying a press pass. Home-office or street-corner backdrop with a laptop and handmade flyers. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Lean wiry Latino man of 32, warm-brown skin, long face, light stubble, straight untamed dark hair, dark navy button-up shirt, plain flat grey background. Neutral relaxed expression, mouth closed, eyes to camera, front-facing, arms relaxed. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man in his early 30s. Lean-wiry build with a sharp, restless energy. Clear warm-brown skin. Straight dark hair, kept practical and a little untamed. Long face with a prominent jawline and high cheekbones. Round eyes, bright and watchful, thick brows, wide lips, and a straight nose. A slightly asymmetric smile and a small scar on one knuckle give the face character. Alert, engaged grassroots bearing. Small sport non-in-ear earbud clipped to earlobe. Casual blogger attire: a plain tee under an open overshirt, a laptop bag over one shoulder, a lanyard carrying a press pass. The backdrop is a home office or street corner with a laptop and handmade flyers, warm practical light. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a lean, wiry Latino man of 32. Warm-brown skin, a long face with a prominent jaw and light stubble, bright watchful round dark brown eyes under heavy brows, and straight untamed dark hair swept back. Dark navy button-up collared shirt. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no East Asian features, no Northern European features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Northern European features, muscular, older
 
 ## Variations
 
-- [ ] At his desk mid-typing, flyers and a laptop before him
-- [ ] On a street corner handing out a flyer, passersby blurred behind
-- [ ] Reading a draft aloud to a friend, papers in hand
+- [ ] Typing fast on a laptop at a crowded cafe table, lit by the screen
+- [ ] Speaking into a phone camera on a rooftop at sunset, one arm outstretched
+- [ ] Pulling a hood up while walking away from a protest, laptop bag across his chest
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__angry.png`**: Use the base portrait as reference. His fervor turns sharp, looking at the camera, 3/4 take. Eyes narrowed, thick brows drawn hard down, wide lips pressed into a tight line. The long face and prominent jawline tense with conviction. Keep the same art style as reference, same overshirt, bag and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders relaxed and level, arms hanging loosely at his sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__determined.png`**: Use the base portrait as reference. He is fixed on a cause, looking unflinchingly at the camera, 3/4 take. Eyes steady and burning, thick brows set, wide lips firm. The prominent jawline is set forward. Keep the same art style as reference, same clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__angry.png`**: Use the base portrait as reference. Eyes narrowed, brows low and hard, lips tight, jaw set, looking at the camera, 3/4 take. Shoulders rigid and forward, both hands clenched into fists at his sides, neck tendons visible. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__smirk.png`**: Use the base portrait as reference. A knowing half-smile plays across his face, looking at the camera, 3/4 take. Eyes glinting with dry irony, the asymmetric smile pulling one side up, thick brows lifted. Keep the same art style as reference, same overshirt and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__determined.png`**: Use the base portrait as reference. Eyes steady, brows drawn slightly together, lips pressed in a firm line, chin lifted a little, looking at the camera, 3/4 take. Shoulders squared, chin lifted, one hand gripping the strap of a bag across his chest. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__surprised.png`**: Use the base portrait as reference. Caught off guard, looking at the camera with widened startlement, 3/4 take. Eyes open wide, thick brows shot up, wide lips parted. The long face stretches. Keep the same art style as reference, same clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__smirk.png`**: Use the base portrait as reference. One corner of the mouth pulled up in a knowing half-smile, one brow slightly raised, eyes narrowed a touch, looking at the camera, 3/4 take. Head tilted, a lopsided asymmetric grin, one hand in his pocket and the other flicking two fingers outward. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__surprised.png`**: Use the base portrait as reference. Eyes wide, brows high, mouth slightly open, looking at the camera, 3/4 take. Shoulders jumping up, eyes wide, both hands raised halfway with the fingers spread. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Same face, hair and build as the base portrait; only the outfit changes. -->
+
+- **`__outfit-overshirt.png`**: Use the base portrait as reference. Same face, hair and build as the base. Plain tee under an open overshirt, a laptop bag strap across the chest. Neutral relaxed resting expression, front-facing, arms relaxed at the sides. Keep the same art style as reference and the backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.

@@ -8,13 +8,15 @@ target: content/characters/ana_silva/assets/
 
 # Video Prompts: Ana Silva
 
+NOTE: the PNG matches the lore on age, ethnicity and hair but hides the silver hoops and shows no folder; both are staged in the council outfit variant.
+
 Generate seamless looping portrait videos from each expression variant PNG. Use the corresponding `ana_silva__<expression>.png` as the input image for each prompt. The woman on the reference image is the character described in the source prompt file.
 
 ## Base Loop (Default)
 
 **Input**: `assets/ana_silva__default.png`
 
-Create a seamless looping video. The woman on the reference image holds a neutral resting expression marked by a fierce progressive bearing and commanding dignity. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. Voluminous curly black hair coils shift faintly in the air, the fabric of her professional jacket shifts subtly, and her silver hoop earrings glint with a faint, minute sway. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image has a neutral relaxed resting expression with a closed relaxed mouth. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Afro-Latina woman of 55, sturdy imposing build, smooth deep brown skin, deep-set dark brown eyes, thick curly black hair in a voluminous natural style, dark navy sleeveless top. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
 
@@ -22,22 +24,22 @@ Create a seamless looping video. The woman on the reference image holds a neutra
 
 **Input**: `assets/ana_silva__angry.png`
 
-Create a seamless looping video. The woman on the reference image has an expression filled with full righteous fury, blazing eyes locked forward, full lips pressed hard, and her left brow arching dramatically higher with indignation. Subtle idle animation: tight, heavy breathing motion in the chest and squared shoulders, a subtle micro-tension tightening across her jaw and brow, and a sharp, deliberate blink cycle. Hair and clothing respond to a faint ambient breeze. Black curly tendrils quiver faintly with restrained anger, the lapels of her professional attire tense and shift subtly, and the silver hoop earrings catch light with barely perceptible motion. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows hard anger with narrowed eyes and tight lips. Subtle idle animation only: tense controlled breathing, a slight flare of the nostrils, a clench in the jaw, a slow hard blink. Afro-Latina woman of 55, sturdy imposing build, smooth deep brown skin, deep-set dark brown eyes, thick curly black hair in a voluminous natural style, dark navy sleeveless top. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__determined` loop
 
 **Input**: `assets/ana_silva__determined.png`
 
-Create a seamless looping video. The woman on the reference image projects unwavering resolve, with steady burning eyes and a jaw set firmly in uncompromising conviction. Subtle idle animation: steady, rhythmic breathing motion in the chest, a slight firming micro-motion in her jawline, and a slow, resolute blink cycle. Hair and clothing respond to a faint ambient breeze. Loose natural curls stir lightly around her temples, and the fabric of her professional attire and the edge of her leather folder shift faintly in the draft. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows firm resolve with steady eyes and a set mouth. Subtle idle animation only: deep controlled breathing, a slight firming of the jaw, a slow unwavering blink cycle. Afro-Latina woman of 55, sturdy imposing build, smooth deep brown skin, deep-set dark brown eyes, thick curly black hair in a voluminous natural style, dark navy sleeveless top. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__vulnerable` loop
 
 **Input**: `assets/ana_silva__vulnerable.png`
 
-Create a seamless looping video. The woman on the reference image is captured in a rare private moment, her guard is lowered, revealing weary softened eyes and full lips slightly parted in quiet exhaustion. Subtle idle animation: deep, soft breathing motion in the chest, an easing of tension in her shoulders and brow, and a slow, gentle blink cycle with a momentary softening of her gaze. Hair and clothing respond to a faint ambient breeze. Voluminous curls drift softly against her temples, while her professional jacket fabric relaxes gently with each breath. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows quiet vulnerability with open honest eyes and softened features. Subtle idle animation only: soft shallow breathing, a slow easing of tension in the shoulders, a slow tender blink. Afro-Latina woman of 55, sturdy imposing build, smooth deep brown skin, deep-set dark brown eyes, thick curly black hair in a voluminous natural style, dark navy sleeveless top. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__shocked` loop
 
 **Input**: `assets/ana_silva__shocked.png`
 
-Create a seamless looping video. The woman on the reference image is caught completely off guard, with wide disbelieving eyes, asymmetric brows raised high in disbelief, and lips slightly parted in sudden startlement. Subtle idle animation: a suspended, shallow breathing motion in the upper chest, micro-movements of startled recovery in her widened eyes and raised brow, and a rapid, hesitant blink cycle. Hair and clothing respond to a faint ambient breeze. Fine curly strands flutter faintly around her forehead, her silver hoop earrings sway with a faint micro-tremor, and her jacket fabric shifts subtly in the ambient air. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows wide-eyed shock with high brows and parted lips. Subtle idle animation only: a sharp intake of breath lifting the shoulders, a held tension, a slow shaky exhale. Afro-Latina woman of 55, sturdy imposing build, smooth deep brown skin, deep-set dark brown eyes, thick curly black hair in a voluminous natural style, dark navy sleeveless top. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

@@ -1,10 +1,10 @@
-# Sofia Hernánez
+# Sofia Hernández
 
 **Title:** Conservationist, Hiker, Photographer
 
 **Description (full):**
 
-Sofia Hernánez is a 27-year-old conservationist from the Andean region near Las Flores who channels her lifelong love for nature into environmental advocacy. Through her work and personal adventures, she promotes the importance of protecting natural spaces while inspiring others to experience the outdoors responsibly.
+Sofia Hernández is a 27-year-old conservationist from the Andean region near Las Flores who channels her lifelong love for nature into environmental advocacy. Through her work and personal adventures, she promotes the importance of protecting natural spaces while inspiring others to experience the outdoors responsibly.
 
 ## Background & Career
 

@@ -7,7 +7,7 @@
 **District:** Las Flores (high-society circuit; Chronicle offices downtown)
 **Role:** Media owner, society power broker, information broker
 **Faction:** Media
-**Descendancy:** e
+**Descendancy:** Latin American
 **Politics:** Far right-leaning; extremist ideas surface under pressure — especially racism and classism
 
 **Physical Description:**

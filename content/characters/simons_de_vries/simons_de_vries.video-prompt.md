@@ -8,13 +8,15 @@ target: content/characters/simons_de_vries/assets/
 
 # Video Prompts: Simon De Vries
 
+NOTE: PNG depicts a man of about 35 with brown hair and stubble; canon is 21 with sandy-blonde hair. Regenerate portrait, variants and videos.
+
 Generate seamless looping portrait videos from each expression variant PNG. Use the corresponding `simons_de_vries__<expression>.png` as the input image for each prompt. The man on the reference image is the character described in the source prompt file.
 
 ## Base Loop (Default)
 
 **Input**: `assets/simons_de_vries__default.png`
 
-Create a seamless looping video. The man on the reference image holds a calm determined resting expression with dark hair in simple, un-styled flowing shapes. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, and a barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. Dark hair shifts subtly, and the minimalist, pocketless practical clothing suited to his environment shifts gently in the draft. The small sport earbud clipped firmly to his earlobe remains still. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a neutral composed resting expression, looking at the camera with steady presence. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Dutch-Latino mixed young man of 21, lean athletic build, angular face, deep blue eyes, short side-swept sandy-blonde hair, smooth clear light skin, navy collared button-up shirt open at the neck. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
 
@@ -22,22 +24,22 @@ Create a seamless looping video. The man on the reference image holds a calm det
 
 **Input**: `assets/simons_de_vries__determined.png`
 
-Create a seamless looping video. The man on the reference image shows steady resolve with eyes fixed and sharp and defined jaw set. Subtle idle animation: steady, controlled breathing motion in the chest and shoulders, a slight firming micro-motion in the jawline, and a resolute, slow blink cycle. Hair and clothing respond to a faint ambient breeze. The practical clothing shifts crisply in the draft, and the earbud catches a faint draft. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a resolved, firm expression with steady unflinching eyes and a set mouth. Subtle idle animation only: deep controlled breathing in the chest and shoulders, a slight firming of the jaw, a slow unwavering blink cycle. Dutch-Latino mixed young man of 21, lean athletic build, angular face, deep blue eyes, short side-swept sandy-blonde hair, smooth clear light skin, navy collared button-up shirt open at the neck. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__calculating` loop
 
 **Input**: `assets/simons_de_vries__calculating.png`
 
-Create a seamless looping video. The man on the reference image shows sharp strategic focus with eyes narrowed and brows drawn and lips a thin line. Subtle idle animation: slow, controlled breathing in the chest and shoulders, a subtle eye-narrowing cycle as he evaluates, and a calm, deliberate blink cycle. Hair and clothing respond to a faint ambient breeze. Dark hair shifts subtly against his temples, and the practical clothing shifts gently with his breath. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a cold, sharp, assessing expression with narrowed eyes and a lowered chin. Subtle idle animation only: controlled shallow breathing, a slow tap of one fingertip against the lips, an occasional deliberate blink. Dutch-Latino mixed young man of 21, lean athletic build, angular face, deep blue eyes, short side-swept sandy-blonde hair, smooth clear light skin, navy collared button-up shirt open at the neck. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__contemplative` loop
 
 **Input**: `assets/simons_de_vries__contemplative.png`
 
-Create a seamless looping video. The man on the reference image shows a reflective pause with eyes softening into the middle distance and jaw relaxed. Subtle idle animation: slow, measured breathing motion rising and falling gently in the chest, a quiet softening of gaze into the distance, and a slow, reflective blink cycle. Hair and clothing respond to a faint ambient breeze. Strands of dark hair drift delicately across his forehead, the practical clothing shifts gently with his breath, and the earbud shifts slightly. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a reflective expression with the gaze drifting softly into the middle distance. Subtle idle animation only: slow thoughtful breathing, a slight tilt of the head easing back and forth, a long slow blink cycle. Dutch-Latino mixed young man of 21, lean athletic build, angular face, deep blue eyes, short side-swept sandy-blonde hair, smooth clear light skin, navy collared button-up shirt open at the neck. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__happy` loop
 
 **Input**: `assets/simons_de_vries__happy.png`
 
-Create a seamless looping video. The man on the reference image shows a warm, genuine smile with eyes brightening and lips curving up and the composed bearing warming. Subtle idle animation: warm, buoyant breathing motion lifting his chest and shoulders, a soft pulsing ease in the crinkles around his eyes, and a warm, natural blink cycle. Hair and clothing respond to a faint ambient breeze. Dark hair shifts gently in the draft, and the practical clothing shifts softly with his buoyant breathing. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a warm genuine smile with brightening eyes and lifted cheeks. Subtle idle animation only: buoyant breathing lifting the chest and shoulders, a soft crinkling around the eyes, a warm natural blink cycle. Dutch-Latino mixed young man of 21, lean athletic build, angular face, deep blue eyes, short side-swept sandy-blonde hair, smooth clear light skin, navy collared button-up shirt open at the neck. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

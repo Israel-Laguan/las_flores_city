@@ -2,39 +2,45 @@
 name: Aisha Al-Sayed
 type: portrait
 size: 1024x1024
-source: content/characters/aisha_al_sayed/aisha_al_sayed.md
-target: `portrait_urls[].url` in `content/characters/char_aisha_al_sayed.yaml`
-consumer: portrait
 aspect_ratio: 3:4
+source: content/characters/aisha_al_sayed/aisha_al_sayed.md
+target: `asset_paths.portrait` in `content/characters/aisha_al_sayed/char_aisha_al_sayed.yaml`
+consumer: portrait
 ---
 
 # Prompt: Aisha Al-Sayed
 
+NOTE: PNG reads as a woman in her 20s with long loose straight hair, no glasses and no safety vest; canon is late 30s (b.2039), wavy hair in a low bun, wire-rimmed glasses, high-visibility vest. Regenerate (high priority).
+
 ## Prompt (Draft)
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Middle Eastern Arab woman in her late 30s. Lean angular frame, deep amber-brown eyes sharp and focused, stern expression with steady bearing. Dark brown wavy hair in practical low bun, slight widow's peak, wire-rimmed glasses, sport earbud clipped to earlobe. Wears minimalist work clothing with high-visibility safety vest over blouse, warm olive complexion. hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality, East Asian features, Chinese aesthetics
+
+Middle Eastern Arab woman of about 38, medium height, lean angular frame, warm olive skin, deep amber-brown eyes, dark brown wavy hair in a low bun, slight widow's peak, thin wire-rimmed glasses, small sport earbud on one earlobe, high-visibility safety vest without lettering over a blouse. Plain flat grey background. Neutral relaxed expression, mouth closed, looking at the camera, front-facing, arms relaxed at the sides. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Middle Eastern Arab woman in her late 30s. Medium height, lean and angular frame with deeply unique, un-idealized facial anatomy. Realistic eye sizes, deep amber-brown, sharp and focused. Stern expression, steady composed bearing. Dark brown wavy hair pulled back in practical low bun, slight widow's peak. Wears thin wire-rimmed glasses, small sport non-in-ear earbud clipped to earlobe. Minimalist pocketless practical work clothing with high-visibility safety vest over blouse, warm olive complexion. Thin scar visible on left forearm from factory incident. The backdrop is a weathered urban Latin American industrial facility under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Middle Eastern Arab woman of about 38. Medium height with a lean, angular frame. Warm olive skin, deep amber-brown eyes, a slight widow's peak, and dark brown wavy hair pulled back in a practical low bun. Thin wire-rimmed glasses and a small sport non-in-ear earbud clipped to one earlobe. Plain practical blouse under a high-visibility safety vest without lettering or logos, a thin scar on the left forearm. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no East Asian features, no Chinese aesthetics
+
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Chinese aesthetics
 
 ## Variations
 
-- [ ] At work in the Mineria Estrella facility, focused on electrical schematics, wire-rimmed glasses pushed up on nose
-- [ ] In a moment of reflection at her desk, considering career strategy, stern expression showing determination
-- [ ] With her engineering team in a professional setting, engaged in technical discussion, safety vest prominently visible
-- [ ] Attending a leadership workshop, networking with colleagues, professional and composed
+- [ ] At work in an industrial facility, studying electrical schematics, glasses pushed up her nose
+- [ ] At her desk late in the day, weighing a career decision
+- [ ] With a small team of engineers in a technical discussion, safety vest prominent
+- [ ] At a leadership workshop, networking with colleagues, polished and composed
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__focused.png`**: Use the base portrait as reference. Intense concentration, looking directly at the camera, 3/4 take. Glasses pushed up high on her nose, eyes narrowing sharply, brows drawn with a slight furrow, mouth pressed closed in determination. Keep the same art style as reference, same high-visibility safety vest and work clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders level and relaxed, arms hanging loosely at her sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__determined.png`**: Use the base portrait as reference. Stern expression with jaw set, looking unflinchingly at the camera, 3/4 take. Eyes sharp and piercing, lips pressed in a thin line of resolve. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading with deep shadows.
+- **`__focused.png`**: Use the base portrait as reference. Head bowed, eyes on a tablet held in front of her, brows drawn in concentration, lips pursed, 3/4 take. Both hands holding the tablet at waist height, one fingertip nudging her glasses up her nose. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__contemplative.png`**: Use the base portrait as reference. Deep thought, looking thoughtfully at the camera, 3/4 take. Eyes gazing softly into the middle distance, slight downward tilt to her head, mouth relaxed but thoughtful. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__determined.png`**: Use the base portrait as reference. Eyes steady, brows drawn slightly together, lips set in a firm line, looking at the camera, 3/4 take. Chin lifted, shoulders squared, one hand curled into a firm fist at chest height. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__professional.png`**: Use the base portrait as reference. Composed and authoritative expression, looking directly at the camera, 3/4 take, slightly angled toward the viewer. Eyes engaged and assessing, slight upward lift to her chin conveying confidence. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__contemplative.png`**: Use the base portrait as reference. Eyes drifting to the middle distance past the camera, brows softly knit, mouth relaxed, 3/4 take. Head tilted slightly, one hand resting at her jaw, the other arm folded loosely across her waist. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
+- **`__professional.png`**: Use the base portrait as reference. Composed courteous expression, a faint polite smile, eyes level, looking at the camera, 3/4 take. Back straight, hands clasped lightly in front of her at waist height, a slight courteous incline of the head. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.

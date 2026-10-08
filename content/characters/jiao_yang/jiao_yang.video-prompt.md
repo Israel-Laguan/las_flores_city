@@ -8,13 +8,15 @@ target: content/characters/jiao_yang/assets/
 
 # Video Prompts: Jiao Yang
 
+NOTE: the current PNG shows a broad smile; re-roll the base with the neutral clause when convenient (low priority, face and look otherwise match canon).
+
 Generate seamless looping portrait videos from each expression variant PNG. Use the corresponding `jiao_yang__<expression>.png` as the input image for each prompt. The woman on the reference image is the character described in the source prompt file.
 
 ## Base Loop (Default)
 
 **Input**: `assets/jiao_yang__default.png`
 
-Create a seamless looping video. The woman on the reference image holds a warm resting expression with a subtle knowing half-smile and jet black long hair in simple, un-styled flowing shapes. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, and a barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. Jet black long hair shifts subtly, and the minimalist, pocketless practical work clothing shifts gently in the draft. The small sport earbud clipped firmly to her earlobe remains still. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a neutral relaxed resting expression, looking at the camera. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Petite Chinese woman of 28, graceful sturdy build, fair skin, bright dark brown eyes, long jet-black straight hair, white V-neck t-shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
 
@@ -22,22 +24,22 @@ Create a seamless looping video. The woman on the reference image holds a warm r
 
 **Input**: `assets/jiao_yang__happy.png`
 
-Create a seamless looping video. The woman on the reference image shows a warm, open smile with eyes bright and crinkling and lips parting in a genuine grin. Subtle idle animation: warm, buoyant breathing motion lifting her chest and shoulders, a soft pulsing ease in the crinkles around her eyes, and an easy, natural blink cycle. Hair and clothing respond to a faint ambient breeze. Jet black hair strands flutter playfully around her face, and the practical work clothing shifts softly with her buoyant breathing. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a warm genuine smile with crinkled eyes. Subtle idle animation only: light easy breathing, a slight lift of the shoulders, a soft blink as the smile brightens and eases. Petite Chinese woman of 28, graceful sturdy build, fair skin, bright dark brown eyes, long jet-black straight hair, white V-neck t-shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__focused` loop
 
 **Input**: `assets/jiao_yang__focused.png`
 
-Create a seamless looping video. The woman on the reference image displays absorbed concentration with eyes intent and brows drawn slightly and lips set in quiet focus. Subtle idle animation: slow, controlled breathing rhythm in the chest, a subtle micro-narrowing cycle of focused scrutiny in the eyes, and a deliberate, focused blink cycle. Hair and clothing respond to a faint ambient breeze. Jet black hair shifts minimally, and the practical work clothing catches a faint draft. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows absorbed concentration with lowered eyes. Subtle idle animation only: calm steady breathing, tiny eye movements as if reading, a slow blink. Petite Chinese woman of 28, graceful sturdy build, fair skin, bright dark brown eyes, long jet-black straight hair, white V-neck t-shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__surprised` loop
 
 **Input**: `assets/jiao_yang__surprised.png`
 
-Create a seamless looping video. The woman on the reference image experiences a mild, curious startle with eyes widened and brows lifted and lips parted. Subtle idle animation: a momentary catch in breath followed by gentle chest motion, a sudden quick blink cycle that settles back into composed alertness, and micro-tension across the collarbone. Hair and clothing respond to a faint ambient breeze. Jet black hair strands lift faintly in the air, and the practical work clothing shifts subtly in the ambient air. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows wide-eyed surprise with high brows and a slightly open mouth. Subtle idle animation only: a sharp intake of breath lifting the shoulders, a held beat, a slow exhale as the brows settle. Petite Chinese woman of 28, graceful sturdy build, fair skin, bright dark brown eyes, long jet-black straight hair, white V-neck t-shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__contemplative` loop
 
 **Input**: `assets/jiao_yang__contemplative.png`
 
-Create a seamless looping video. The woman on the reference image shows thoughtful consideration with eyes softening into the middle distance and smile fading to a thoughtful set. Subtle idle animation: slow, measured breathing motion rising and falling gently in the chest, a quiet softening of gaze into the distance, and a slow, reflective blink cycle. Hair and clothing respond to a faint ambient breeze. Strands of jet black hair drift delicately across her forehead, the practical work clothing shifts faintly in the breeze, and the earbud shifts slightly. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a quiet inward look with the gaze resting in the middle distance. Subtle idle animation only: slow even breathing, a gentle drift of the eyes, a slow thoughtful blink. Petite Chinese woman of 28, graceful sturdy build, fair skin, bright dark brown eyes, long jet-black straight hair, white V-neck t-shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

@@ -7,6 +7,7 @@
 > **Status:** Active
 
 ## Physical Description
+- Age (2077): 44 (born ~2033)
 - Hair: Black with significant gray, thinning and combed to the side
 - Eyes: Dark brown, warm and distant, often looking at festivals with quiet longing
 - Build: Slightly stooped, wiry strength from years of engineering work

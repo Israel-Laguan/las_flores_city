@@ -8,13 +8,15 @@ target: content/characters/valentina_reyes/assets/
 
 # Video Prompts: Valentina "Val" Reyes
 
+NOTE: existing canonical PNG shows hair worn loose, skin paler than the lore's sun-kissed bronze and no earbud; the alternate `valentina_val_reyes__default.png` is closer to lore (bronze, hair up, earbud) but has a street backdrop. Low-priority regen.
+
 Generate seamless looping portrait videos from each expression variant PNG. Use the corresponding `valentina_reyes__<expression>.png` as the input image for each prompt. The woman on the reference image is the character described in the source prompt file.
 
 ## Base Loop (Default)
 
 **Input**: `assets/valentina_reyes__default.png`
 
-Create a seamless looping video. The woman on the reference image holds a calm determined resting expression with dark hair tied in a ponytail. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, and a barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. Dark hair tied in a ponytail shifts minimally, and the practical clothing shifts gently in the draft. The small sport earbud clipped to her earlobe remains still. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a neutral relaxed resting expression, looking at the camera. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Latina woman of about 18, solid build, warm light-olive skin, long straight black hair worn loose with a centre part, dark brown eyes, plain navy crew-neck T-shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
 
@@ -22,22 +24,28 @@ Create a seamless looping video. The woman on the reference image holds a calm d
 
 **Input**: `assets/valentina_reyes__focused.png`
 
-Create a seamless looping video. The woman on the reference image shows absorbed concentration with eyes intent and brows knit and lips pressed in quiet focus. Subtle idle animation: slow, controlled breathing rhythm in the chest, a subtle micro-narrowing cycle of focused scrutiny in the eyes, and a deliberate, focused blink cycle. Hair and clothing respond to a faint ambient breeze. Dark hair shifts minimally, and the practical clothing catches a faint draft. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows absorbed concentration with lowered eyes fixed on a task and knit brows. Subtle idle animation only: slow controlled breathing, tiny eye movements as if reading, a deliberate blink cycle. Latina woman of about 18, solid build, warm light-olive skin, long straight black hair worn loose with a centre part, dark brown eyes, plain navy crew-neck T-shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__determined` loop
 
 **Input**: `assets/valentina_reyes__determined.png`
 
-Create a seamless looping video. The woman on the reference image shows steady resolve with eyes fixed and sharp and defined jaw set. Subtle idle animation: steady, controlled breathing motion in the chest and shoulders, a slight firming micro-motion in the jawline, and a resolute, slow blink cycle. Hair and clothing respond to a faint ambient breeze. The practical clothing shifts crisply in the draft, and the earbud catches a faint draft. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows firm resolve with steady unflinching eyes and a set jaw. Subtle idle animation only: deep controlled breathing, a slight firming of the jaw, a slow unwavering blink cycle. Latina woman of about 18, solid build, warm light-olive skin, long straight black hair worn loose with a centre part, dark brown eyes, plain navy crew-neck T-shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__happy` loop
 
 **Input**: `assets/valentina_reyes__happy.png`
 
-Create a seamless looping video. The woman on the reference image shows a warm, genuine smile with eyes brightening and cheeks lifting and the composed bearing warming. Subtle idle animation: warm, buoyant breathing motion lifting her chest and shoulders, a soft pulsing ease in the crinkles around her eyes, and a warm, natural blink cycle. Hair and clothing respond to a faint ambient breeze. Dark hair shifts gently in the draft, and the practical clothing shifts softly with her buoyant breathing. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a warm genuine smile with lifted cheeks and brightening eyes. Subtle idle animation only: buoyant breathing lifting the shoulders, a soft crinkle around the eyes, a warm natural blink cycle. Latina woman of about 18, solid build, warm light-olive skin, long straight black hair worn loose with a centre part, dark brown eyes, plain navy crew-neck T-shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__contemplative` loop
 
 **Input**: `assets/valentina_reyes__contemplative.png`
 
-Create a seamless looping video. The woman on the reference image shows a thoughtful pause with eyes softening into the middle distance and lips relaxed. Subtle idle animation: slow, measured breathing motion rising and falling gently in the chest, a quiet softening of gaze into the distance, and a slow, reflective blink cycle. Hair and clothing respond to a faint ambient breeze. Strands of dark hair drift delicately across her forehead, the practical clothing shifts gently with her breath, and the earbud shifts slightly. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a reflective pause with the gaze drifting into the middle distance. Subtle idle animation only: slow quiet breathing, a gentle drift of the eyes, a slow thoughtful blink cycle. Latina woman of about 18, solid build, warm light-olive skin, long straight black hair worn loose with a centre part, dark brown eyes, plain navy crew-neck T-shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+
+### `__sad` loop
+
+**Input**: `assets/valentina_reyes__sad.png`
+
+Create a seamless looping video. The woman on the reference image shows a heavy quiet sadness with lowered glistening eyes and a downturned mouth. Subtle idle animation only: slow heavy breathing, a slight sinking of the shoulders, a slow blink with a faint lip tremor. Latina woman of about 18, solid build, warm light-olive skin, long straight black hair worn loose with a centre part, dark brown eyes, plain navy crew-neck T-shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

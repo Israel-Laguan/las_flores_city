@@ -11,6 +11,7 @@
 > **Mannerisms:** Direct, assertive, fiercely committed to supporting the fight for justice
 
 ## Physical Description
+- Age depicted: about 40, shortly before her assassination on July 14, 2059 (flashback-era figure; no 2077 version)
 - Hair: Dark brown, long and wavy, often worn loose or in a practical ponytail
 - Eyes: Dark brown, warm and determined
 - Build: Medium height, strong and athletic from field work

@@ -2,40 +2,48 @@
 name: Alexander van der Meer Jr.
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/alexander_van_der_meer_jr/alexander_van_der_meer_jr.md
 target: `asset_paths.portrait` in `content/characters/alexander_van_der_meer_jr/char_alexander_van_der_meer_jr.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Alexander van der Meer Jr.
 
 ## Prompt (Draft)
 
-Dutch man in his mid-70s, soft-rounded prosperous build, weathered fair skin with age spots. Thin white hair receding at the temples, thick white-gray brows, deep-set eyes with the left eyelid drooping faintly, oval face, narrow nose, subtle cheekbones, receding jawline, thin lips, deep nasolabial folds. Cosmopolitan composed bearing, well-tailored European suit with pocket square, signet ring, small sport earbud clipped to earlobe. Refined office with warm wood paneling backdrop. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Elderly Dutch man in his mid-70s, soft rounded prosperous build, thin white-gray hair receding at the temples, thick white-gray brows, blue eyes, weathered fair age-spotted skin, gray open-collar button shirt. Plain flat grey background. Neutral relaxed expression, mouth closed, looking at the camera, front-facing, arms relaxed at the sides. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch man in his mid-70s. Soft-rounded, prosperous build, the easy bearing of a life lived in comfort. Weathered fair skin with age spots across the cheeks and hands, deep nasolabial folds framing a composed mouth. Thin white hair receding at the temples, swept back with practiced care. Thick white-gray brows. Deep-set eyes — the left eyelid droops faintly, lending an asymmetry to an otherwise measured expression. Oval face, narrow nose, subtle cheekbones, a receding jawline softened by age, thin lips. Cosmopolitan, discreetly charming bearing. Small sport non-in-ear earbud clipped to earlobe. A well-tailored European suit in muted tones, a folded pocket square, a signet ring catching low light on one hand. The backdrop is a refined office with warm wood paneling — bookshelves, brass fixtures, soft amber lamplight. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of an elderly Dutch man in his mid-70s. Soft, rounded, prosperous build. Weathered fair skin with age spots on the forehead, cheeks and hands, deep-set blue eyes under thick white-gray brows. Thin white-gray hair receding at the temples. Plain gray button-up shirt with the collar open. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no Latino features, no East Asian features, no African features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, Latino features, East Asian features, African features
 
 ## Variations
 
-- [ ] Seated behind a carved desk in his Rotterdam office, signing papers
-- [ ] Greeting family in a Las Flores hotel lobby, signet ring catching the light
-- [ ] At a window overlooking the harbor, hands folded, lost in old memories
+- [ ] Man seated behind a carved desk in a harbor-city office, signing papers
+- [ ] Man greeting family in a hotel lobby, signet ring catching the light
+- [ ] Man at a window overlooking a harbor, hands folded, lost in memory
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__smirk.png`**: Use the base portrait as reference. A knowing, worldly half-smile, looking at the camera, 3/4 take. Eyes glinting with old wit, one corner of lips lifting, brows relaxed. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders level and relaxed, arms hanging loosely at his sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__calculating.png`**: Use the base portrait as reference. Measured assessment, looking directly at the camera, 3/4 take. Eyes narrowed beneath brows, lips pressed into a diplomatic line. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__smirk.png`**: Use the base portrait as reference. One corner of the mouth lifted in a knowing half-smile, one brow raised, looking at the camera, 3/4 take. Chin tucked, one shoulder raised, one hand slipped into a shirt pocket, a dry sidelong look. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__tender.png`**: Use the base portrait as reference. A quiet, fond warmth, looking at the camera, 3/4 take. Eyes softening, lips curved into a gentle almost-smile, brows relaxed. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__calculating.png`**: Use the base portrait as reference. Eyes narrowed and cool, one brow slightly raised, lips pressed thin, looking at the camera, 3/4 take. Head tilted down, hands folded and one thumb stroking the other, eyes narrowed and measuring. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__sad.png`**: Use the base portrait as reference. A quiet old sorrow, looking at the camera, 3/4 take. Eyes distant and downcast, lips flat, brows drawn gently inward. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__tender.png`**: Use the base portrait as reference. Soft warm eyes, a faint gentle smile, brows relaxed, looking at the camera, 3/4 take. Head tilted, shoulders softened, one hand resting open over his chest. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__sad.png`**: Use the base portrait as reference. Eyes downcast and glossy, inner brows tilted up, mouth turned down, looking at the camera, 3/4 take. Shoulders slumped, head bowed, hands limp and loosely together at his waist. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Lore wardrobe staged as outfit variants of the base portrait: `assets/<slug>__outfit-<name>.png`. Same face, hair and build as the base. -->
+
+- **`__outfit-suit.png`**: Use the base portrait as reference. Same man, now in a well-tailored European suit with a folded pocket square and a gold signet ring on one hand. Neutral expression, shoulders level, looking at the camera, 3/4 take. Keep the same face, hair, build and art style as reference, plain flat neutral light-grey backdrop. Clean confident linework, painterly soft shading, muted natural palette.

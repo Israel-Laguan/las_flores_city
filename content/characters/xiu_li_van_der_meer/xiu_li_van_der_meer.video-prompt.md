@@ -8,13 +8,15 @@ target: content/characters/xiu_li_van_der_meer/assets/
 
 # Video Prompts: Xiu Li van der Meer Krol
 
+NOTE: existing PNG reads as European rather than Chinese-Dutch mixed heritage (face, eyes, skin); medium-priority regen to push the mixed heritage. Hair, eye colour and age match.
+
 Generate seamless looping portrait videos from each expression variant PNG. Use the corresponding `xiu_li_van_der_meer__<expression>.png` as the input image for each prompt. The woman on the reference image is the character described in the source prompt file.
 
 ## Base Loop (Default)
 
 **Input**: `assets/xiu_li_van_der_meer__default.png`
 
-Create a seamless looping video. The woman on the reference image holds a calm determined resting expression with dark brown thick hair in simple, un-styled flowing shapes. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, and a barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. Dark brown thick hair shifts subtly, and the minimalist, pocketless tailored professional outfit shifts gently in the draft. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a neutral relaxed resting expression, looking at the camera. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Chinese-Dutch mixed-heritage woman of about 46, strong build, hazel eyes, light olive skin, thick straight dark-brown shoulder-length hair, dark slate collared overshirt over a white T-shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
 
@@ -22,22 +24,30 @@ Create a seamless looping video. The woman on the reference image holds a calm d
 
 **Input**: `assets/xiu_li_van_der_meer__determined.png`
 
-Create a seamless looping video. The woman on the reference image shows quiet political resolve with eyes fixed and sharp and jaw set. Subtle idle animation: steady, controlled breathing motion in the chest and shoulders, a slight firming micro-motion in the jawline, and a resolute, slow blink cycle. Hair and clothing respond to a faint ambient breeze. The tailored professional outfit shifts crisply in the draft. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows firm resolve with steady unflinching eyes and a set jaw. Subtle idle animation only: deep controlled breathing, a slight firming of the jaw, a slow unwavering blink cycle. Chinese-Dutch mixed-heritage woman of about 46, strong build, hazel eyes, light olive skin, thick straight dark-brown shoulder-length hair, dark slate collared overshirt over a white T-shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__calculating` loop
 
 **Input**: `assets/xiu_li_van_der_meer__calculating.png`
 
-Create a seamless looping video. The woman on the reference image shows sharp strategic focus with eyes narrowed in calculation and brows drawn and lips a thin line. Subtle idle animation: slow, controlled breathing in the chest and shoulders, a subtle eye-narrowing cycle as she evaluates, and a calm, deliberate blink cycle. Hair and clothing respond to a faint ambient breeze. Dark brown thick hair shifts subtly against her neck, and the tailored outfit shifts gently with her breath. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows cold analytical thought with narrowed eyes and a thin set mouth. Subtle idle animation only: slow measured breathing, a subtle micro-narrowing of the eyes, an infrequent deliberate blink cycle. Chinese-Dutch mixed-heritage woman of about 46, strong build, hazel eyes, light olive skin, thick straight dark-brown shoulder-length hair, dark slate collared overshirt over a white T-shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__contemplative` loop
 
 **Input**: `assets/xiu_li_van_der_meer__contemplative.png`
 
-Create a seamless looping video. The woman on the reference image shows a reflective pause with eyes softening into the middle distance and jaw relaxed. Subtle idle animation: slow, measured breathing motion rising and falling gently in the chest, a quiet softening of gaze into the distance, and a slow, reflective blink cycle. Hair and clothing respond to a faint ambient breeze. Strands of dark hair drift delicately across her forehead, the tailored outfit shifts gently with her breath. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a reflective pause with the gaze drifting into the middle distance. Subtle idle animation only: slow quiet breathing, a gentle drift of the eyes, a slow thoughtful blink cycle. Chinese-Dutch mixed-heritage woman of about 46, strong build, hazel eyes, light olive skin, thick straight dark-brown shoulder-length hair, dark slate collared overshirt over a white T-shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__happy` loop
 
 **Input**: `assets/xiu_li_van_der_meer__happy.png`
 
-Create a seamless looping video. The woman on the reference image shows a warm, engaged smile with eyes brightening with warmth and lips curving up genuinely. Subtle idle animation: warm, buoyant breathing motion lifting her chest and shoulders, a soft pulsing ease in the crinkles around her eyes, and a warm, natural blink cycle. Hair and clothing respond to a faint ambient breeze. Dark hair shifts gently in the draft, and the tailored outfit shifts softly with her buoyant breathing. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a warm genuine smile with lifted cheeks and brightening eyes. Subtle idle animation only: buoyant breathing lifting the shoulders, a soft crinkle around the eyes, a warm natural blink cycle. Chinese-Dutch mixed-heritage woman of about 46, strong build, hazel eyes, light olive skin, thick straight dark-brown shoulder-length hair, dark slate collared overshirt over a white T-shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+
+## Wardrobe Loops
+
+### `__outfit-professional` loop
+
+**Input**: `assets/xiu_li_van_der_meer__outfit-professional.png`
+
+Create a seamless looping video. The woman on the reference image shows a neutral relaxed resting expression, looking at the camera, now wearing a tailored navy blazer over a white blouse, a practical silver necklace, and a worn leather portfolio held under one arm. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. The same face, hair and build as the base loop. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

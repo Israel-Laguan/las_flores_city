@@ -3,13 +3,13 @@
 **Title:** CEO, Global Lithium Corp (GLC)
 
 **Physical Description:**
-- Distinctive appearance fitting their background
+- Dutch man in his early 50s with a broad, heavy, prosperous build, thin receding gray-blonde hair, a square face, shrewd almond eyes and a small mole on his left cheek; wears a tailored suit with a GLC lapel pin.
 
 **Description (full):**
 
 Dutch businessman and CEO of Global Lithium Corp. Launched the 'Futuro Brillante' scholarship program to support students from Old Las Flores and combat gang violence through education.
 
-**Age (2077):** ~adult
+**Age (2077):** 52 (b. 2025)
 **District:** Las Flores
 **Role:** CEO
-**Descendancy:** v
+**Descendancy:** Dutch

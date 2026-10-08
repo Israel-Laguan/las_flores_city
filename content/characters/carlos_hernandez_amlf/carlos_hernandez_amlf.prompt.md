@@ -2,40 +2,44 @@
 name: Carlos Hernandez
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/carlos_hernandez_amlf/carlos_hernandez_amlf.md
 target: `asset_paths.portrait` in `content/characters/carlos_hernandez_amlf/char_carlos_hernandez_amlf.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Carlos Hernandez
 
+NOTE: the PNG shows slicked straight black hair with no gray, two fresh red scars on both cheeks and a dark cave backdrop, and the face is nearly identical to the carlos_alberto_hernandez PNG; YAML says curly dark hair with gray streaks and one faded scar on the left cheek. Regenerate from this prompt.
+
 ## Prompt (Draft)
 
-Latino man in his 50s, broad heavy build, square face, strong jaw, pronounced cheeks, wide nose, deep-set eyes, thick brows, full lips. Dust-weathered scarred skin, faded mining scar across his left cheek, broken callused hands. Curly dark hair with gray streaks. Weatherworn resolute bearing of a seasoned labor organizer, AMLF pin on a worn union jacket over a work shirt, heavy boots, small sport earbud clipped to earlobe. Miners' union hall or mine entrance backdrop, industrial. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Latino man of 55, broad heavy build, square face with a strong jaw, tanned weathered skin, dark brown eyes, curly dark hair with gray streaks, faded scar across the left cheek, worn dark canvas work jacket with a small round enamel pin over a grey work shirt, plain flat grey background, neutral relaxed expression, mouth closed, eyes to camera, front-facing, level shoulders, arms relaxed at sides, premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man in his 50s. Broad, heavy build hardened by decades underground. Square face, strong jaw, pronounced cheeks, wide nose, and deep-set eyes beneath thick heavy brows. Full lips. Dust-weathered, scarred skin, a faded mining scar across his left cheek, broken callused hands. Curly dark hair threaded with gray streaks. Weatherworn, resolute bearing. Worn union jacket over a work shirt, heavy boots, small sport non-in-ear earbud clipped to earlobe. Backdrop of a miners' union hall or mine entrance, an industrial backdrop. Clean confident linework, painterly soft shading, muted natural palette, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man of 55. Broad, heavy build with thick shoulders and a thick neck. Square face with a strong jaw and a flattened nose, tanned weathered skin with deep creases and a faded scar running across the left cheek. Dark brown eyes under heavy straight brows. Short curly dark hair with gray streaks at the temples. Worn dark canvas work jacket with a small round enamel pin on the chest, over a grey collared work shirt. Broken, callused hands. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no East Asian features, no Northern European features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Northern European features
 
 ## Variations
 
-- [ ] Addressing workers from a raised platform in the miners' union hall, AMLF banners behind him
-- [ ] At the mine entrance in heavy boots, reviewing safety rosters with callused hands
-- [ ] In quiet talk with a worker in the industrial yard, dust in the air
+- [ ] Standing on a loading dock at dawn, addressing a crowd of workers with one hand raised
+- [ ] Sitting across a long table from men in suits, arms folded, jaw set
+- [ ] Alone at a kitchen table under a bare bulb, turning a worn hard hat in his hands
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral resolute resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same union jacket and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__angry.png`**: Use the base portrait as reference. Hard, righteous anger tightens his features, looking at the camera, 3/4 take. Eyes narrow, thick brows lower, square-set jaw clenched. Keep the same art style as reference, same union jacket, pin and earbud. Clean confident linework, painterly soft shading with deep shadows, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral relaxed resting expression, mouth closed and relaxed, brows unfurrowed, looking at the camera, 3/4 take. Shoulders level, arms hanging relaxed at his sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__determined.png`**: Use the base portrait as reference. Unshakeable resolve, looking at the camera, 3/4 take. Eyes steady, strong jaw squared. Keep the same art style as reference, same union jacket and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__angry.png`**: Use the base portrait as reference. Eyes blazing under lowered brows, nostrils flared, teeth clenched, the scar pulled tight, looking at the camera, 3/4 take. Body leaning forward, one fist slammed into the opposite open palm at chest height, shoulders rigid. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__calculating.png`**: Use the base portrait as reference. Sharp strategic assessment, looking at the camera, 3/4 take. Eyes narrowed appraisingly, brows drawn, full lips set in a calculating line. Keep the same art style as reference, same union jacket and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__determined.png`**: Use the base portrait as reference. Dark eyes level and unblinking, brows low, jaw set, lips firm, looking at the camera, 3/4 take. Shoulders squared, chin lifted, one broken callused hand raised closed in a fist at shoulder height, the other arm straight at his side. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__tender.png`**: Use the base portrait as reference. Rare, gentle warmth softens his weathered features, looking at the camera, 3/4 take. Eyes kind, thick brows relaxed, full lips curved in a quiet paternal smile. Keep the same art style as reference, same union jacket and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__calculating.png`**: Use the base portrait as reference. Eyes lifted from under lowered brows, narrowed and measuring, lips closed, looking at the camera, 3/4 take. Head dipped, one thick hand rubbing the scarred cheek, the other arm folded across his chest. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__tender.png`**: Use the base portrait as reference. Dark eyes softened, brows relaxed, the hint of a gruff gentle smile, looking at the camera, 3/4 take. Shoulders loosened, one callused hand held out palm-up, the other hand resting over the pin on his jacket. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.

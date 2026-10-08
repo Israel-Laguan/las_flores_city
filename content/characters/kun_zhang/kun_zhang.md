@@ -3,7 +3,7 @@
 **Title (full):** Retired Textile Factory Supervisor, Chinese Community Elder
 
 **Physical Description:**
-- Hair: White, thin and wispy, kept neat
+- Hair: Silver-grey, thin, swept back from a high forehead and kept neat
 - Eyes: Dark brown, wise and cautious
 - Build: Slightly stooped, thin but dignified
 - Skin: Fair, deeply lined from age and years of factory work

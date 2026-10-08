@@ -6,7 +6,7 @@
 > **Status:** Active
 
 ## Physical Description
-- Hair: Salt-and-pepper, slicked back, thinning at crown
+- Hair: Black, slicked back, receding at the temples
 - Eyes: Dark brown, hooded and calculating, never quite smile
 - Build: Stocky and powerful, thick neck, carries weight like authority
 - Skin: Deep olive, weathered and lined from years underground
@@ -42,9 +42,9 @@ This uneasy alliance connects Las Flores' local criminal underworld to the highe
 Despite the authorities' efforts to bring El Caimán to justice, they have encountered fierce resistance:
 - Witnesses who cooperate with police face violent retaliation
 - The syndicate's influence extends into marginalized communities where residents view El Caimán as a protector against foreign exploitation
-- The family's wealth and connections have been used to obstruct investigations
+- The syndicate's money and connections in the barrios have been used to obstruct investigations
 
-> "Es frustrante. Sabemos que Dong es responsable de muchos crímenes, pero no podemos hacer nada sin pruebas contundentes." — Anonymous city official
+> "Dong y yo compartimos rutas y enemigos, nunca la mesa. Cuando el negocio se acaba, cada quien cuida lo suyo." — El Caimán, on his tense cooperation with Dong van der Meer's Flowers Syndicate
 
 ## In-Game References
 - Syndicate as a source of quests, threats, and underground economy

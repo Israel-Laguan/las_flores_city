@@ -7,6 +7,14 @@
 > **Role:** First wife of Pieter van der Meer, mother of Alexander and Elisabeth
 > **Status:** Deceased
 
+## Physical Description
+- Age depicted: early 40s, a few years before her death at about 45 (~2005); flashback-era figure, no 2077 version
+- Hair: Ash-blonde, shoulder-length, in soft waves
+- Eyes: Pale blue
+- Skin: Fair, with subtle laugh lines at the eyes and mouth
+- Build: Slender and graceful
+- Clothing: Refined cream blouse with a strand of pearls
+
 ## Overview
 
 Marleen van der Meer was the first wife of Pieter van der Meer and the mother of his two eldest children, Alexander and Elisabeth. She passed away before Pieter's move to Las Flores, leaving him to raise their children alone until he met and married Annabella.
@@ -14,8 +22,8 @@ Marleen van der Meer was the first wife of Pieter van der Meer and the mother of
 ## Family
 
 - **Pieter van der Meer** — Husband (first marriage)
-- **Alexander van der Meer** (b. ~1995) — Eldest son
-- **Elisabeth van der Meer** (b. ~1995) — Daughter
+- **Alexander van der Meer** (b. 1992) — Eldest son
+- **Elisabeth van der Meer** (b. 1995) — Daughter
 
 ## Legacy
 

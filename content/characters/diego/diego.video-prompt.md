@@ -14,7 +14,7 @@ Generate seamless looping portrait videos from each expression variant PNG. Use 
 
 **Input**: `assets/diego__default.png`
 
-Create a seamless looping video. The man on the reference image holds a neutral alert composed expression with a thin scar across his left eyebrow and a worn headlamp around his neck. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, and a barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. Dark brown short tousled dusty hair shifts subtly, and the rugged practical outdoor gear — canvas jacket, cargo pants, sturdy boots — shifts gently in the draft. The worn headlamp around his neck remains still. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a neutral composed resting expression, looking at the camera with steady presence. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Young Latino man of about 28, lean medium build, warm brown eyes, sun-browned skin, light stubble, thin scar on the left cheek, short tousled dusty dark brown hair, dusty dark grey work shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
 
@@ -22,22 +22,28 @@ Create a seamless looping video. The man on the reference image holds a neutral 
 
 **Input**: `assets/diego__determined.png`
 
-Create a seamless looping video. The man on the reference image shows a resolved, firm expression with steady eyes and his jaw squared with guide's resolve. Subtle idle animation: steady and controlled breathing in his chest and shoulders, a slight firming micro-motion in the jaw muscles, and a decisive, slow blink cycle. Hair and clothing respond to a faint ambient breeze. Dark brown hair shifts subtly across his brow, and the canvas jacket and cargo pants shift against his sturdy frame. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a resolved, firm expression with steady unflinching eyes and a set mouth. Subtle idle animation only: deep controlled breathing in the chest and shoulders, a slight firming of the jaw, a slow unwavering blink cycle. Young Latino man of about 28, lean medium build, warm brown eyes, sun-browned skin, light stubble, thin scar on the left cheek, short tousled dusty dark brown hair, dusty dark grey work shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
-### `__vigilant` loop
+### `__focused` loop
 
-**Input**: `assets/diego__vigilant.png`
+**Input**: `assets/diego__focused.png`
 
-Create a seamless looping video. The man on the reference image is in sharp alertness with eyes narrowed with guide's vigilance and a slightly furrowed brow. Subtle idle animation: measured, steady breathing motion in the chest, a slight micro-narrowing cycle of concentrated scrutiny in the eyes, and a disciplined, slow blink cycle. Hair and clothing respond to a faint ambient breeze. The headlamp around his neck shifts minutely, and the outdoor gear fabric catches a faint draft. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows absorbed concentration with a lowered brow and fixed eyes. Subtle idle animation only: slow measured breathing, a tiny tilt of the head, the hands making a small adjusting movement, a slow steady blink. Young Latino man of about 28, lean medium build, warm brown eyes, sun-browned skin, light stubble, thin scar on the left cheek, short tousled dusty dark brown hair, dusty dark grey work shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+
+### `__afraid` loop
+
+**Input**: `assets/diego__afraid.png`
+
+Create a seamless looping video. The man on the reference image shows guarded fear with widened eyes and tense features. Subtle idle animation only: quick shallow breathing, a slight tremor in the shoulders, a flinching blink cycle. Young Latino man of about 28, lean medium build, warm brown eyes, sun-browned skin, light stubble, thin scar on the left cheek, short tousled dusty dark brown hair, dusty dark grey work shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__vulnerable` loop
 
 **Input**: `assets/diego__vulnerable.png`
 
-Create a seamless looping video. The man on the reference image shows a quietly burdened expression with open eyes carrying survivor's weight and mouth slightly parted. Subtle idle animation: soft, gentle breathing motion gently lifting his chest, a soft drop in the shoulders, and a slow, tender blink cycle with a momentary softening of gaze. Hair and clothing respond to a faint ambient breeze. Dusty hair strands drift softly across his forehead, and the canvas jacket fabric moves gently against his frame. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a quietly vulnerable expression with open honest eyes and softened features. Subtle idle animation only: soft shallow breathing, a slow easing of tension in the shoulders, a slow tender blink. Young Latino man of about 28, lean medium build, warm brown eyes, sun-browned skin, light stubble, thin scar on the left cheek, short tousled dusty dark brown hair, dusty dark grey work shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__smirk` loop
 
 **Input**: `assets/diego__smirk.png`
 
-Create a seamless looping video. The man on the reference image wears a faint, knowing half-smile with eyes glinting with dry humor and one corner of his mouth pulled up. Subtle idle animation: relaxed, easy breathing motion rising and falling in his chest, a slight micro-lift at the corner of the smirk, and a relaxed, barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. Dark brown hair strands sway lightly in the faint air current, and the cargo pants and boots shift subtly over his frame. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a one-sided knowing smirk with a lifted brow. Subtle idle animation only: slow easy breathing, a subtle flex of the cheek at the smirk, a slow lazy blink. Young Latino man of about 28, lean medium build, warm brown eyes, sun-browned skin, light stubble, thin scar on the left cheek, short tousled dusty dark brown hair, dusty dark grey work shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

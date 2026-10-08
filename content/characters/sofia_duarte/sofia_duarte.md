@@ -3,7 +3,7 @@
 > Tags: `#figure` `#politician` `#antagonist` `#corruption` `#business_coalition` `#mining`
 
 **Full Name:** Sofia Duarte  
-**Age:** 45 (as of 2052)  
+**Age:** 45 (as of 2052); 70 in 2077  
 **Gender:** Female  
 **Occupation:** Councilwoman, Las Flores Free City Council  
 **Faction:** Business Coalition  
@@ -12,7 +12,7 @@
 ---
 
 ## Physical Description
-- Hair: Dark brown with silver streaks, styled in an elegant updo
+- Hair: Dark brown, chin-length bob swept to one side
 - Eyes: Dark brown, sharp and calculating
 - Build: Tall and poised, commanding presence
 - Skin: Medium brown, carefully maintained with cosmetic procedures

@@ -1,0 +1,300 @@
+id: e0d019c9-cddd-4ae4-99c6-f84156f0261b
+name: "Peter Jr. Act 1 - Sunset Social"
+description: "First contact on the Van der Meer yacht. Front stage: Peter Jr. is a glossy host surrounded by Kiara, Bruno and a hired photographer, pin always in frame. Between shots the player catches him alone at the stern with his phone, the performance off. How the player approaches him sets his first read, and noticing the phone and the schedule starts the pjr_dig stat."
+character_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+scene_id: 4810b5b7-71da-464e-9837-85f094e42f93
+dialogue_scope: character
+start_node_id: pjr1_start
+
+nodes:
+  pjr1_start:
+    id: pjr1_start
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Ah! Fresh face! Kiara, Bruno — new prop incoming! I'm Peter. Peter Jr., actually, but the Jr. is the brand, so. Perfect timing — we need a fourth for this shot. Drink? Photo? Both? Doesn't matter, the pin has to be in frame. You're tall enough. Just — smile like you mean it, or at least like you get paid for it."
+    thought: "He is bright, fast, and already calculating angles. The rainbow pin on his collar gleams like a brand logo, not a badge. A hired camera flashes before the player can even nod. The performance is on, the mask is firmly in place."
+    visual:
+      expression: happy
+      position: right
+      transition: fade
+    effects:
+      relationship_effect:
+        axes:
+          trust: 2
+          visibility: 25
+      state_set:
+        last_pjr_encounter_at: NOW
+    choices:
+      - id: pjr1_join
+        text: "[Join the photo. Play the prop.]"
+        next_node_id: pjr1_join_response
+        time_block_cost:
+          amount: 1
+          description: "A sunset social on the Van der Meer yacht"
+      - id: pjr1_real
+        text: "You're using me as scenery. That's... a choice."
+        next_node_id: pjr1_real_response
+        time_block_cost:
+          amount: 1
+          description: "A sunset social on the Van der Meer yacht"
+      - id: pjr1_rail
+        text: "[Slip away to the rail. The performance is suffocating.]"
+        next_node_id: pjr1_alone
+        time_block_cost:
+          amount: 1
+          description: "A sunset social on the Van der Meer yacht"
+
+  pjr1_join_response:
+    id: pjr1_join_response
+    type: character
+    speaker_id: 2b16c495-8a5a-4a1a-8f1b-5be27cd97d84
+    text: "Omg yes! Stand closer, the pin has to be in frame — Adrián says it does numbers, and Adrián's numbers are law. Peter's great with new faces, honestly, we're basically family. Right, Bruno? Just angle a little left, yeah — perfect. The pin catches the light beautifully."
+    thought: "Kiara talks into the lens while she poses and never once looks at the boy next to her. Bruno grins and nods a beat late, already calculating his own angles. The photographer says 'perfect' and the group dissolves in four seconds, as if someone had pressed a button. The pin gleams like a stage light."
+    visual:
+      expression: default
+      position: left
+    effects:
+      relationship_effect:
+        axes:
+          visibility: 5
+    choices:
+      - id: pjr1_join_continue
+        text: "[The deck empties out. Walk toward the stern for air.]"
+        next_node_id: pjr1_alone
+
+  pjr1_real_response:
+    id: pjr1_real_response
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "For the camera? Obviously. That's the hosting voice — I have three, like a corporate phone tree. ...Sorry, that was a joke. Mostly. It's a lot of people and I'm paying attention to all of them at once, which is, you know, the brand. Okay, I need a second. For the brand to recharge."
+    thought: "He laughs, but it's a practiced laugh, the kind that means the camera is still rolling in his head. He checks his phone as he says the last line. The smile doesn't drop — it just goes on standby, like a screen dimming but not turning off."
+    visual:
+      expression: default
+      position: right
+    effects:
+      stat_set:
+        pjr_dig: 1
+    choices:
+      - id: pjr1_real_follow
+        text: "[Follow him toward the stern.]"
+        next_node_id: pjr1_alone
+
+  pjr1_alone:
+    id: pjr1_alone
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "...Oh. Hi. You found the one spot with no ring light. Don't tell Adrián — he'll have one installed by morning. Is it weird that this is my favourite part of the boat? Nobody performs back here. Not even me."
+    thought: "He is leaning on the stern rail with his phone in one hand, scrolling a calendar that has no blank hour in it. The performance mask has slipped, but it's still there, hanging loosely. His face looks younger and a little tired, and he doesn't seem embarrassed to be seen like this, which is somehow more revealing than the performance."
+    visual:
+      expression: default
+      position: right
+    choices:
+      - id: pjr1_honest
+        text: "I'm not here for the party. I heard about Amor Verdadero and wanted to meet you — not the pin, not the brand."
+        next_node_id: pjr1_honest_response
+      - id: pjr1_phone
+        text: "Your calendar has no gaps in it. Who's driving that schedule?"
+        next_node_id: pjr1_phone_response
+      - id: pjr1_namedrop
+        text: "Anna sent me. I'm on the list."
+        next_node_id: pjr1_namedrop_response
+      - id: pjr1_leave
+        text: "Sorry — wrong party."
+        next_node_id: pjr1_leave_response
+      - id: pjr1_hostile
+        text: "You're just a kid playing dress-up for likes. The pin doesn't make you brave."
+        next_node_id: pjr1_hostile_response
+
+  pjr1_honest_response:
+    id: pjr1_honest_response
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Meet me. Not the pin, not the brand, me. ...That's actually a better answer than most. Most people lead with my father or Anna or the whole Van der Meer thing. You — you saw through the prop. Nou, if you want the real thing, not the staged thing, there's a place I go on weekdays. Marco will let you through. Just... don't expect me to be off-brand there either. Old habits."
+    thought: "He puts the phone face-down on the rail, which seems to cost him something. For a moment the mask wavers, and he is simply a boy being listened to. Then it snaps back into place, but not as tightly as before."
+    visual:
+      expression: happy
+      position: right
+    effects:
+      stat_set:
+        pjr_dig: 1
+    choices:
+      - id: pjr1_honest_follow
+        text: "I'd like that."
+        next_node_id: pjr1_end_open
+        effects:
+          relationship_effect:
+            axes:
+              trust: 8
+              familiarity: 6
+              alignment: 5
+          state_set:
+            last_pjr_encounter_at: NOW
+
+  pjr1_phone_response:
+    id: pjr1_phone_response
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Who made it. Hm. Adrián, mostly. He's my manager — Lumen Studio. Every hour has a label. 'Pin post, 5pm.' 'Charity visit, 6.' It's fine. It keeps things moving. ...Honestly I haven't looked at the whole week in a while. It's easier not to."
+    thought: "He shrugs, the way people shrug at weather. It is clear he has never been asked this and has not decided whether he likes being asked."
+    visual:
+      expression: default
+      position: right
+    effects:
+      stat_set:
+        pjr_dig: 1
+      flag_set:
+        pjr_noticed_calendar: true
+    choices:
+      - id: pjr1_phone_follow
+        text: "Come see me when the week has a gap in it."
+        next_node_id: pjr1_end_open
+        effects:
+          relationship_effect:
+            axes:
+              trust: 6
+              familiarity: 8
+              alignment: 4
+              tension: 4
+          state_set:
+            last_pjr_encounter_at: NOW
+
+  pjr1_namedrop_response:
+    id: pjr1_namedrop_response
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Tante Anna sent you. Of course. She never tells me. Okay, you're on the list, I trust the list. Just — you don't have to lead with her name, tá? She's great. She's also the first thing everybody says to me, and it gets heavy."
+    thought: "He is polite and a wall slides across it. He has heard this opening hundreds of times and knows exactly where the conversation goes when it starts here."
+    visual:
+      expression: default
+      position: right
+    choices:
+      - id: pjr1_namedrop_apology
+        text: "Fair. Forget Anna — I'm here for you."
+        next_node_id: pjr1_end_open
+        effects:
+          relationship_effect:
+            axes:
+              trust: 4
+              familiarity: 4
+              tension: -3
+          state_set:
+            last_pjr_encounter_at: NOW
+      - id: pjr1_namedrop_push
+        text: "The family name opens doors. That's how it works."
+        next_node_id: pjr1_end_guarded
+        effects:
+          relationship_effect:
+            axes:
+              trust: -8
+              alignment: -10
+              tension: 10
+          state_set:
+            last_pjr_encounter_at: NOW
+
+  pjr1_hostile_response:
+    id: pjr1_hostile_response
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "...Wow. Okay. That's — wow. You know what, you're right. I *am* just a kid. And you're just... here to make sure I know it. Congratulations, you win the gold star for spotting the obvious. Kiara! Bruno! We have a critic! Maybe they'll be more photogenic than the last one."
+    thought: "The smile freezes on his face and his voice takes on a new, biting edge. The ring-light persona does not slip; it hardens. He turns toward the deck and calls out brightly, but his eyes stay on the player for a beat longer than necessary, and they are cold."
+    visual:
+      expression: angry
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_first_contact_made: true
+        pjr_act1_done: true
+        pjr_hostile_path: true
+      state_set:
+        pjr_act: "1_done"
+        pjr_approach: hostile
+        last_pjr_encounter_at: NOW
+      story_beat: pjr_act1_hostile_met
+      relationship_effect:
+        axes:
+          trust: -15
+          alignment: -12
+          tension: 20
+
+  pjr1_leave_response:
+    id: pjr1_leave_response
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Oh — okay. Sure. Wrong party happens. ...If you ever want the right one, I'm here most weekends. Well. Everyone knows where I am. Obrigado for stopping by."
+    thought: "He stays at the rail a moment after the player goes. When Kiara calls his name from the deck he is already smiling again."
+    visual:
+      expression: sad
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_first_contact_made: true
+        pjr_act1_incomplete: true
+      state_set:
+        pjr_act: "1_incomplete"
+        last_pjr_encounter_at: NOW
+      relationship_effect:
+        axes:
+          familiarity: -2
+
+  pjr1_end_open:
+    id: pjr1_end_open
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Here. Take a pin. Everyone who comes gets one — not as a donation, just so there's one more of us out there. ...What? No, it's not a bribe. It's a... calling card. Wear it if you want. Or don't. I won't tell Adrián either way. The Sky Atrium, weekdays. Marco will let you through. Okay, they're calling. Back on stage."
+    thought: "He presses the pin into the player's palm and holds on a half-second too long, like someone checking whether a stranger will stay a stranger. Then he turns and the ring-light smile clicks back on, bright as a stage light. The mask is back in place."
+    visual:
+      expression: happy
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_first_contact_made: true
+        pjr_act1_done: true
+      state_set:
+        pjr_act: "1_done"
+        pjr_approach: open
+        last_pjr_encounter_at: NOW
+      story_beat: pjr_act1_met
+      relationship_effect:
+        axes:
+          familiarity: 4
+
+  pjr1_end_guarded:
+    id: pjr1_end_guarded
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "...Right. That's how it works. I know. I've watched it work my whole life. Take a pin. The Atrium, weekdays — it's on the list, remember? Just don't tell me how it works again, tá? I already know."
+    thought: "He says it lightly, almost kindly, and the kindness is the sharpest part. The smile stays. The door behind it closes a few centimetres."
+    visual:
+      expression: default
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_first_contact_made: true
+        pjr_act1_done: true
+        pjr_namedropped: true
+      state_set:
+        pjr_act: "1_done"
+        pjr_approach: guarded
+        last_pjr_encounter_at: NOW
+      story_beat: pjr_act1_met
+
+metadata:
+  version: "2.0"
+  tags:
+    - "peter_jr"
+    - "act1"
+    - "first_contact"
+    - "yacht"
+    - "front_stage"
+  notes: |
+    Act 1 sets how Peter Jr. reads the player. `pjr_dig` (stat) rises when the
+    player notices the phone/schedule (real question, calendar). Dig is the
+    thread that unlocks the later "who is this for?" questions. Player lines
+    are gender-neutral. New paths: `pjr_lover_path` (romantic interest, opens with
+    the romantic_hint choice), `pjr_hostile_path` (enemy path, opens with hostile
+    choice). Peter Jr. is 14; romantic path is about first crush feelings, not
+    explicit romance.

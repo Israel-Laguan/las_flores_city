@@ -3,7 +3,7 @@
 **Title:** Welcome Interface
 
 **Physical Description:**
-- Distinctive appearance fitting their background
+- Androgynous human-presenting AI avatar with a sleek athletic build, heart-shaped face, round warm eyes with a soft inner glow and unnaturally smooth skin with a faint seam along one cheek; wears minimalist interface-style attire with a soft glowing halo motif.
 
 **Description (full):**
 

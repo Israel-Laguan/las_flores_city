@@ -3,7 +3,7 @@
 **Title:** Vice-Mayor of Las Flores Free City
 
 **Physical Description:**
-- Distinctive appearance fitting their background
+- Chinese woman in her mid-40s with a round face, almond eyes, short black side-swept hair and a tiny mole on her left cheek; wears professional political attire with understated jewelry.
 
 **Description (full):**
 

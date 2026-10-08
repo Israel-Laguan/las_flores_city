@@ -2,40 +2,50 @@
 name: Cecilia Perez
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/cecilia_perez/cecilia_perez.md
 target: `asset_paths.portrait` in `content/characters/cecilia_perez/char_cecilia_perez.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Cecilia Perez
 
+NOTE: depicts the young scientist at about 24 (flashback figure: deceased at about 24, so YAML birth_year 2025 must not be read as an age of 52 today)
+
 ## Prompt (Draft)
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a slender early-20s Latina female. Dark brown shoulder-length hair often in messy bun, warm brown intense focused eyes, slender wiry build, light brown olive undertone complexion, small wire-framed glasses pushed up, ink stains on fingers, thin scar on left hand, small silver locket, practical lab coat over blouse, Minera Estrella research field backdrop, no European features
+Slender wiry Latina woman of about 24, slightly below average height, light olive-toned skin, warm brown eyes, dark brown hair in a loose messy top bun with strands falling free, plain charcoal-grey crew-neck t-shirt. neutral relaxed expression, mouth closed, brows unfurrowed, eyes to camera, front-facing, arms relaxed. plain flat grey background. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a slender Latina woman in her early 20s. She is slightly below average height, with wiry strength and a slender build. Dark brown, shoulder-length hair, often tied back in a messy bun while working. Warm brown eyes, intense and focused. Light brown skin with a natural olive undertone. Small wire-framed glasses that she constantly pushes up. Ink stains on her fingers from lab work. A thin scar on her left hand. A small silver locket, her only jewelry. She wears a practical lab coat over a blouse. Her expression is focused intensity. The backdrop is an outdoor research field — experimental plant plots, data sheets clipped to boards, rows of low-growing crop specimens between the rows, late afternoon light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman of about 24. Slender, wiry build, slightly below average height. Narrow face with warm brown eyes under straight dark brows, a straight nose, soft full lips and light olive-toned skin. Dark brown hair gathered into a loose messy top bun with long strands falling free around the face and neck. Plain charcoal-grey crew-neck t-shirt. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no European features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Northern European features
 
 ## Variations
 
-- [ ] Cecilia in the experimental field, notebook in hand, Carinata specimens around her, the whistleblower at work
-- [ ] Cecilia at her desk reviewing audit reports late at night, glasses pushed up, ink on her fingers, the evidence mounting
-- [ ] Cecilia at the City District alley, shadows closing in, the dangerous moment just before — the courage and the cost
+- [ ] Crouched in a small experimental field, measuring leaf samples into labelled tubes
+- [ ] Hunched over a laptop at a cluttered lab bench, glasses pushed up her nose
+- [ ] Walking a dim alley at dusk with a satchel clutched against her side
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral focused intense expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__focused.png`**: Use the base portrait as reference. Sharp scientific concentration, looking directly at the camera, 3/4 take. Eyes narrowed behind wire-framed glasses, brow furrowed in focused analysis. Keep the same art style as reference, same lab coat and glasses. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders relaxed and level, arms hanging loosely at her sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__determined.png`**: Use the base portrait as reference. Resolved, firm expression, looking unflinchingly at the camera, 3/4 take. Eyes steady with quiet courage, jaw set, frame squared. Keep the same art style as reference, same lab coat. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__focused.png`**: Use the base portrait as reference. Brows drawn tight, warm brown eyes intent, lips pressed, looking at the camera, 3/4 take. Head bowed slightly, both hands holding a small glass sample vial up near the chest as if checking it against the light. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__vulnerable.png`**: Use the base portrait as reference. Quietly earnest expression, looking gently at the camera, 3/4 take. Eyes open and honest, the vulnerability of someone who knows the danger. Keep the same art style as reference, same lab coat. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__determined.png`**: Use the base portrait as reference. Steady eyes, chin level, lips set, looking at the camera, 3/4 take. Shoulders squared, one hand curled into a firm fist at the waist, the other gripping the strap of a bag across her shoulder. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__tender.png`**: Use the base portrait as reference. Soft, reflective expression, looking warmly at the camera, 3/4 take. Eyes distant with thought, small smile of someone remembering why she is doing this. Keep the same art style as reference, same lab coat and locket. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__vulnerable.png`**: Use the base portrait as reference. Eyes glistening, brows lifted at the inner ends, lips slightly parted, looking at the camera, 3/4 take. Shoulders drawn in, both arms folded close with the hands tucked under the elbows. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__tender.png`**: Use the base portrait as reference. Soft warm eyes, a faint gentle smile, brows relaxed, looking at the camera, 3/4 take. Head tilted slightly, one hand lightly touching a small silver locket at her chest, the other resting open at her side. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Lore wardrobe staged as outfit variants of the base portrait: `assets/<slug>__outfit-<name>.png`. Same face, hair and build as the base. -->
+
+- **`__outfit-lab-coat.png`**: Use the base portrait as reference. Same woman, now wearing a practical white lab coat over a blouse, small wire-framed glasses on her nose, ink stains on her fingertips and a small silver locket at her throat, hair in the same messy bun, neutral relaxed expression, shoulders level, looking at the camera, 3/4 take. Keep the same face, build and art style as reference, plain flat neutral light-grey backdrop. Clean confident linework, painterly soft shading, muted natural palette.

@@ -2,38 +2,48 @@
 name: Sofia Diaz
 type: portrait
 size: 1024x1024
-source: content/characters/sofia_diaz/sofia_diaz.md
-target: `portrait_urls[].url` in `content/characters/char_sofia_diaz.yaml`
-consumer: portrait
 aspect_ratio: 3:4
+source: content/characters/sofia_diaz/sofia_diaz.md
+target: `asset_paths.portrait` in `content/characters/sofia_diaz/char_sofia_diaz.yaml`
+consumer: portrait
 ---
 
 # Prompt: Sofia Diaz
 
 ## Prompt (Draft)
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a slender in her early 30s Latin American Photorealistic portrait of Sofia Diaz. Her frame is slender, graceful. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, expressive and passionate on stage. Her expression is warm, as she offers a subtle, knowing half-smile. Her dark brown long hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless practical work clothing.. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality,...
+
+Latina woman of 32, slender graceful build, oval face, high cheekbones, expressive dark brown eyes, arched brows, small mole on the right cheek, full lips, light brown skin with warm undertones, long sleek dark hair with a center part, plain white crew-neck top, neutral relaxed expression, mouth closed, brows unfurrowed, eyes to camera, facing front, arms relaxed, plain flat grey background. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a slender Latin American woman in her early 30s. Her frame is slender and graceful. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown expressive eyes, passionate on stage. Her expression is warm, as she offers a subtle, knowing half-smile. Her long dark brown hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears minimalist, pocketless practical work clothing. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman of 32. Slender, graceful build with a long neck. Oval face with high cheekbones, a straight nose, expressive dark brown eyes under softly arched brows, full lips, and a small mole on the right cheek. Light brown skin with warm undertones. Long, sleek, dark brown-black hair with a center part falling past the shoulders. Plain white crew-neck top. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
---no neon, no androids, no clean backgrounds, no modern clothing
+
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Northern European features
 
 ## Variations
 
-- [ ] Sofia Diaz performing with her guitar, expressing emotion through music on stage
-- [ ] Sofia Diaz in a quiet moment of reflection, considering the emotional resonance of her latest song
-- [ ] Sofia Diaz rehearsing with her band, preparing for an upcoming performance
+- [ ] Singing into a vintage microphone on a small stage, eyes closed, one hand on the stand
+- [ ] Sitting on a stool tuning an acoustic guitar with a songwriting notebook beside her
+- [ ] Walking through a crowd of fans, signing a poster with a marker
 
 ## Expression Variants
 
-- **`sofia_diaz__default.png`**: Use the base portrait as reference. Warm resting expression with a subtle knowing half-smile, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`sofia_diaz__happy.png`**: Use the base portrait as reference. A bright, expressive smile, looking at the camera, 3/4 take. Eyes lighting up with musical passion, lips parting in a warm grin, long hair framing her face. Keep the same art style as reference, same earbud and clothing, stage light behind her. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders relaxed and level, arms hanging loosely at her sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`sofia_diaz__contemplative.png`**: Use the base portrait as reference. A quiet moment of reflection, looking at the camera, 3/4 take. Eyes softening into the middle distance, lips relaxed, considering the emotional resonance of her song. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__happy.png`**: Use the base portrait as reference. Wide, charismatic smile, eyes bright, cheeks lifted, looking at the camera, 3/4 take. Shoulders loose, head tipped back slightly, one arm raised with an open hand as if greeting an audience, the other hand relaxed at the side. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`sofia_diaz__focused.png`**: Use the base portrait as reference. Absorbed in rehearsal, looking at the camera, 3/4 take. Eyes intent, brows knit, lips set in concentration. Guitar edge the frame. Keep the same art style as reference, same earbud and clothing. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__contemplative.png`**: Use the base portrait as reference. Eyes drifting to one side into the middle distance, lips relaxed and slightly parted, brows gently raised, 3/4 take. Head tilted, one hand tucking a lock of hair behind the ear, the other arm folded across the waist. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`sofia_diaz__sad.png`**: Use the base portrait as reference. A tender, melancholy moment, looking slightly down, 3/4 take. Eyes dimmed and soft, brows drawn, lips pressed gently. The sorrow behind the song. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__focused.png`**: Use the base portrait as reference. Brows knit lightly, lips set in concentration, 3/4 take, eyes lowered to the task in her hands. Head bowed, shoulders rounded slightly forward, one hand holding a blank notebook while the other writes with a pencil. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
+- **`__sad.png`**: Use the base portrait as reference. Eyes downcast and glossy, inner brows tilted up, mouth turned down, looking at the camera, 3/4 take. Shoulders slumped, head bowed slightly, arms limp with hands loosely together at the waist. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Lore wardrobe staged as outfit variants of the base portrait: `assets/<slug>__outfit-<name>.png`. Same face, hair and build as the base. -->
+
+- **`__outfit-stage.png`**: Use the base portrait as reference. Same woman, wearing layered handcrafted beaded necklaces and silver earrings over a fitted dark top, a guitar strap across one shoulder, hair in loose soft curls, neutral calm expression, shoulders level, looking at the camera, 3/4 take. Keep the same face, build and art style as reference, plain flat neutral light-grey backdrop. Clean confident linework, painterly soft shading, muted natural palette.

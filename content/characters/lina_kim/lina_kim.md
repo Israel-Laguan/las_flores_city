@@ -2,6 +2,7 @@
 
 > Tags: `#figure` `#journalist` `#la_prensa` `#investigation` `#lithium`
 > 
+> **Born:** 2025 (age 52 in 2077)
 > **Role:** Investigative Journalist at La Prensa
 > **Status:** Active (2077)
 
@@ -14,7 +15,7 @@ The Great Lithium Leak occurred on August 15, 2052. Lina Kim began her investiga
 
 Lina Kim is a tenacious and fearless investigative journalist who has dedicated her career to uncovering truth and seeking justice. Born in 2025 to Korean immigrants in the National Country, she grew up in a multicultural environment that fostered her curiosity about the world. Her parents instilled in her a strong work ethic and a passion for truth—values that have driven her journalistic pursuits throughout her illustrious career.
 
-Known for her sharp intellect, skeptical mind, and meticulous approach to reporting, Lina has established herself as one of the leading journalists of her generation. Her exposé on the Great Lithium Leak in 2053 brought international pressure for accountability and established her reputation as a journalist who fears no story. She combines rigorous investigation with empathetic storytelling, making her pieces both impactful and relatable.
+Known for her sharp intellect, skeptical mind, and meticulous approach to reporting, Lina has established herself as one of the leading journalists of her generation. Her exposé on the Great Lithium Leak in 2052 brought international pressure for accountability and established her reputation as a journalist who fears no story. She combines rigorous investigation with empathetic storytelling, making her pieces both impactful and relatable.
 
 Despite her tough exterior, Lina has a compassionate heart, particularly for the underprivileged and marginalized whose stories she seeks to bring to light.
 
@@ -48,11 +49,11 @@ She is known for her ability to make complex issues accessible without oversimpl
 
 Her work has taken her across the globe, investigating stories ranging from corporate malfeasance to political scandals. Yet through it all, she has maintained her commitment to the fundamental principles of journalism: seeking truth, holding power to account, and giving voice to the voiceless.
 
-### The Great Lithium Leak - 2053
+### The Great Lithium Leak - 2052
 
 At age 28, Lina Kim was already making waves in investigative journalism. Her most notable early work was the exposé on the Great Lithium Leak, a story that would establish her as one of the leading journalists of her generation.
 
-Based in Las Flores for a couple of months in 2053, Lina worked tirelessly to uncover the truth behind the environmental disaster. The official narratives were inconsistent and evasive. Companies and government officials were more interested in containing the story than addressing the crisis. Through persistent investigation, confidential sources, and meticulous documentation, Lina revealed the extent of the cover-up and the corporate negligence that had led to the disaster.
+Based in Las Flores for a couple of months in 2052, Lina worked tirelessly to uncover the truth behind the environmental disaster. The official narratives were inconsistent and evasive. Companies and government officials were more interested in containing the story than addressing the crisis. Through persistent investigation, confidential sources, and meticulous documentation, Lina revealed the extent of the cover-up and the corporate negligence that had led to the disaster.
 
 Her reporting brought international pressure for accountability and forced both corporate and government entities to address the crisis seriously. The exposé cemented her reputation as a journalist who would not be deterred by powerful interests and who had the skills to uncover even the most carefully concealed truths.
 

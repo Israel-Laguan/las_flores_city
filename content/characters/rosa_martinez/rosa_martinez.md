@@ -1,8 +1,8 @@
-# Rosa Marúñez
+# Rosa Martínez
 
 - **Age:** 45
 - **Background:** Rosa grew up in a small mountain village in the Andean region of Las Flores. She comes from a family of farmers and learned the value of hard work from a young age. Rosa began working at a local restaurant in the mountains, where she honed her culinary skills and developed a passion for traditional Andean cuisine.
-- **Appearance:** Rosa has a warm, inviting presence, with long, dark hair often tied back in a practical bun. She has expressive brown eyes that convey her nurturing nature. Her attire is typically smart-casual, a blend of comfort and professional polish suited for her role in the city center.
+- **Appearance:** Rosa has a warm, inviting presence, with long, straight dark brown hair with subtle reddish highlights, centre-parted and falling past her shoulders. She has expressive brown eyes that convey her nurturing nature. Her attire is typically smart-casual, a blend of comfort and professional polish suited for her role in the city center.
 - **Personality:** Rosa is resilient, resourceful, and deeply empathetic. She has a strong sense of community and is known for her kindness and hospitality. Her experience working in the restaurant industry has shaped her ability to connect with people from all walks of life. She is often seen as a mentor to younger colleagues, sharing wisdom and encouragement.
 - **Current Job:** Rosa currently works as a supervisor at a popular café in Central Las Flores, where she oversees daily operations and ensures quality customer service. The café prides itself on serving a mix of traditional Andean dishes and modern fusion cuisine, and Rosa plays a pivotal role in the menu development by incorporating her culinary background.
 - **Challenges:** Transitioning from her previous job in the mountains to a busy city café has had its challenges. Rosa sometimes feels disconnected from her roots and misses the simpler life she knew. She navigates the fast-paced urban environment while trying to maintain a work-life balance, often struggling with long hours.

@@ -2,56 +2,64 @@
 name: Camila Reyes
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/camila_reyes/camila_reyes.md
 target: `asset_paths.portrait` in `content/characters/camila_reyes/char_camila_reyes.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Camila Reyes
 
+NOTE: the PNG matches the YAML on age, ethnicity and hair but sits in front of a detailed coastal town and shows a slight smile. The lore dress, sandals, bracelet and camera are staged in the seaside outfit variant. Regenerate against a plain flat grey backdrop with a neutral mouth.
+
 ## Prompt (Draft)
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 19-year-old Latina female. Long wavy dark hair with colorful headband, bright brown curious eyes, petite sun-kissed build, flowy white dress over bikini, woven bracelet, leather sandals, camera in one hand, Bahía beach backdrop at golden hour, no European features
+petite Latina woman of 19, sun-kissed warm olive skin, bright light brown eyes, long wavy dark hair worn down with a colourful woven headband, oval face, loose seafoam-green t-shirt, plain flat grey background, neutral relaxed expression, mouth closed, eyes to camera, front-facing, level shoulders, arms relaxed at sides, premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 19-year-old Environmental Science student from Bahía de las Olas. Long, wavy dark hair cascading down her back, often adorned with a colorful woven headband. Bright brown eyes sparkling with curiosity and enthusiasm. Petite, sun-kissed build from a childhood spent surfing and playing beach volleyball. She wears a flowy white linen dress over a bikini, leather sandals, a woven bracelet on her wrist from her coastal village. A camera is held loosely in one hand — she photographs everything that moves her. Her expression is radiant, adventurous warmth — the kind that makes friends wherever she goes. The backdrop is Bahía beach at golden hour. Ocean stretching to the horizon, soft waves, the village's colorful buildings in the distance. Warm light gilding the sand and the water. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a petite Latina woman of 19. Slight build with narrow shoulders. Sun-kissed warm olive skin with a small beauty mark on the cheek. Oval face with a small straight nose and softly full lips. Bright light brown eyes under strong dark brows. Long wavy dark hair worn down past the shoulders with a centre parting, held back from the face by a colourful woven headband. Loose seafoam-green cotton t-shirt. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no European features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Northern European features
 
 ## Variations
 
-- [ ] Camila walking the Bahía shoreline at dawn, camera raised, wet sand reflecting the first light of day
-- [ ] Camila in a university lab, hunched over a microscope, notebook in hand, coastal photos taped to her locker
-- [ ] Camila at a community beach cleanup, laughing with local kids, sunhat pushed back on her head
-- [ ] Camila in her small city apartment, sitting on the floor looking at a physical photo album of her family, looking quietly homesick
-- [ ] Camila in a heated debate at a city council meeting, standing tall, passionately gesturing with a stack of environmental reports
+- [ ] Wading through shallow water at the shoreline at golden hour, a camera held up to her eye
+- [ ] Sitting cross-legged on a dorm floor surrounded by maps, charts and sample jars
+- [ ] Standing on a hillside above a small seaside village, wind in her hair
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral bright open expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__happy.png`**: Use the base portrait as reference. Broad, radiant grin, looking at the camera, 3/4 take. Eyes crinkled with joy, mouth wide with warmth. Keep the same art style as reference, same dress and bracelet. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral relaxed resting expression, mouth closed and relaxed, brows unfurrowed, looking at the camera, 3/4 take. Shoulders level, arms hanging relaxed at her sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__focused.png`**: Use the base portrait as reference. Sharp concentration, looking directly at the camera, 3/4 take. Eyes narrowed in focused thought, brow slightly furrowed, mouth pressed in analysis. Keep the same art style as reference, same dress and sandals. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__happy.png`**: Use the base portrait as reference. Wide bright smile with teeth showing, eyes crinkling into crescents, brows lifted, looking at the camera, 3/4 take. Shoulders lifted, both arms flung open wide, head tilted back slightly in delight. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__vulnerable.png`**: Use the base portrait as reference. Quietly homesick expression, looking gently at the camera, 3/4 take. Eyes softening, smile faltering just enough to show the distance from home. Keep the same art style as reference, same dress and sandals. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__focused.png`**: Use the base portrait as reference. Head bowed, eyes lowered on a task, brows drawn together, lips pressed, looking at the camera, 3/4 take. Shoulders leaning forward, a small handheld screen held in both hands at chest height, one thumb swiping across it. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__determined.png`**: Use the base portrait as reference. Resolute, firm expression, looking unflinchingly at the camera, 3/4 take. Eyes steady with resolve, jaw squared. Keep the same art style as reference, same dress and sandals. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__vulnerable.png`**: Use the base portrait as reference. Eyes wide and glossy, inner brows lifted, lips slightly parted, looking at the camera, 3/4 take. Shoulders drawn in, one hand gripping the opposite elbow, the other arm across her waist, head tilted down. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__tender.png`**: Use the base portrait as reference. Softly affectionate and gentle, looking at the camera, 3/4 take. Eyes warm and fond, soft reassuring smile. Keep the same art style as reference, same dress and sandals. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__determined.png`**: Use the base portrait as reference. Bright eyes steady and fierce, brows low, jaw set, lips firm, looking at the camera, 3/4 take. Shoulders squared, chin lifted, one fist raised in front of her chest, the other arm straight at her side. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__afraid.png`**: Use the base portrait as reference. Fearful and tense, looking slightly away from the camera, 3/4 take. Eyes wide with anxiety, mouth tightly closed, shoulders rigid. Keep the same art style as reference, same dress and sandals. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__tender.png`**: Use the base portrait as reference. Soft warm eyes, a gentle closed-mouth smile, brows relaxed, looking at the camera, 3/4 take. Head tilted toward one shoulder, one hand reaching forward palm-up, the other hand resting over her heart. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__sad.png`**: Use the base portrait as reference. Deeply mournful and defeated, looking down slightly, 3/4 take. Eyes downcast and heavy, mouth downturned. Keep the same art style as reference, same dress and sandals. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__afraid.png`**: Use the base portrait as reference. Eyes wide and fixed, brows pulled up and together, lips pressed tight, looking at the camera, 3/4 take. Body leaning back, shoulders hunched, both hands raised close to her collarbone with fingers curled. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__shocked.png`**: Use the base portrait as reference. Completely startled, looking directly at the camera, 3/4 take. Eyes wide open in disbelief, mouth slightly agape, eyebrows raised high. Keep the same art style as reference, same dress and sandals. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__sad.png`**: Use the base portrait as reference. Eyes downcast and glossy, inner brows tilted up, mouth turned down, looking at the camera, 3/4 take. Head bowed, shoulders slumped, arms limp with hands loosely clasped at her waist. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__angry.png`**: Use the base portrait as reference. Fierce and indignant, glaring at the camera, 3/4 take. Eyes narrowed and sharp, jaw clenched tight. Keep the same art style as reference, same dress and sandals. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__shocked.png`**: Use the base portrait as reference. Eyes very wide, brows jumping high, mouth open, looking at the camera, 3/4 take. Body snapping upright, both hands clamped over her mouth and nose, elbows pulled in. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__calculating.png`**: Use the base portrait as reference. Shrewd and assessing, looking at the camera, 3/4 take. Eyes cool and observant, slight asymmetrical smirk. Keep the same art style as reference, same dress and sandals. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__angry.png`**: Use the base portrait as reference. Eyes narrowed and hard, brows slammed low, lips tight, jaw tense, looking at the camera, 3/4 take. Body leaning forward, both hands clenched into fists at her sides, shoulders rigid. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__surprised.png`**: Use the base portrait as reference. Pleasantly startled, looking at the camera, 3/4 take. Eyes wide with sudden realization, slight gasp. Keep the same art style as reference, same dress and sandals. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__calculating.png`**: Use the base portrait as reference. Eyes narrowed and sliding sideways, lips closed in a thin flat line, looking at the camera, 3/4 take. Chin lowered, head angled, one hand with a thumb tucked under her chin and a finger against her cheek, the other arm folded across her waist. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__surprised.png`**: Use the base portrait as reference. Brows raised, eyes widened, lips parted in a small round shape, looking at the camera, 3/4 take. Head drawn back a little, one hand lifted palm-out at shoulder height, the other hand touching her headband. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Lore wardrobe staged as outfit variants of the base portrait: `assets/<slug>__outfit-<name>.png`. Same face, hair and build as the base. -->
+
+- **`__outfit-seaside.png`**: Use the base portrait as reference. Same young woman, same long wavy hair and woven headband, now wearing a flowy white linen dress over a bikini with worn leather sandals, a woven bracelet on one wrist and a camera strap across her chest, hands hanging relaxed at her sides. Neutral relaxed expression, shoulders level, looking at the camera, 3/4 take. Keep the same face, hair, build and art style as reference, plain flat neutral light-grey backdrop. Clean confident linework, painterly soft shading, muted natural palette.

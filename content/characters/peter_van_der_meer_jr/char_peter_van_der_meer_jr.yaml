@@ -2,9 +2,9 @@ id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
 name: Peter van der Meer Jr.
 title: Young LGBTQ+ Advocate & Van der Meer Heir
 birth_year: 2063
-description: Son of Peter van der Meer and Rafaela. A teenage heir and the youngest public face of Amor Verdadero, an organization championing queer causes. A young, outspoken LGBTQ+ advocate in Las Flores who aspires to study law.
-physical_description: "Dutch-Latina mixed boy of about 14 with a lean, wiry build and clear olive-fair skin; angular face with high cheekbones, prominent jaw, wavy dark-blonde hair, thick brows and a small scar near the right ear."
-psychological_description: "Confident and warm; a young, community-minded advocate shaped by his role as a family heir."
+description: Son of Peter van der Meer and Rafaela. A teenage heir and the youngest public face of Amor Verdadero, an organization championing queer causes. Outspoken LGBTQ+ advocate and managed influencer in Las Flores; he says he wants to study law. His manager runs his content calendar and his mother encourages a very public life, so the central question is who this performance is for. His rainbow pin is both brand and mask — the more the player sees past it, the more they see him. Romantic path unlocks at Act 3 once the player has dug deep enough (pjr_dig >= 1) to see beyond the prop.
+physical_description: "Dutch-Brazilian mixed boy of about 14 with a lean, wiry build and clear olive-fair skin; angular face with high cheekbones, prominent jaw, wavy dark-blonde hair, thick brows and a small scar near the right ear."
+psychological_description: "Warm and performative in public, detached in private; sincere but unsure which parts of his public life are his own."
 background_and_role:
   - "Son of Peter van der Meer and Rafaela"
   - "Van der Meer heir"
@@ -15,10 +15,82 @@ metadata:
   role: npc
   faction: van_der_meer
   personality: activist_heir
+  gender: Male
+  ethnicity: Dutch-Brazilian
+  relationship_dimensions:
+    pjr_trust: 0
+    pjr_familiarity: 0
+    pjr_alignment: 0
+    pjr_tension: 0
+    pjr_intimacy: 0
+  relationship_endings:
+    ally:
+      required_stats:
+        pjr_trust: "gte:50"
+        pjr_alignment: "gte:40"
+      required_flags:
+        pjr_friend_path: true
+      description: "Trusted friend of the Amor Verdadero table."
+    mentor:
+      required_stats:
+        pjr_trust: "gte:45"
+        pjr_familiarity: "gte:45"
+      required_flags:
+        pjr_mentor_path: true
+      description: "Guides him toward his own legal-aid project."
+    rival:
+      required_flags:
+        pjr_rival_path: true
+      description: "Mocked, used or betrayed him; a patient, public opponent."
+    drifted:
+      required_stats:
+        pjr_trust: "gte:15"
+        pjr_familiarity: "gte:30"
+      required_flags:
+        pjr_act4_deflected: true
+      description: "Absent at the rally; he moves on to a new circle, door left open."
+    his_own:
+      required_stats:
+        pjr_trust: "gte:30"
+      required_flags:
+        pjr_found_truth: true
+      description: "Helped him ask who his public life is for; he takes his schedule back."
+    distant:
+      required_stats:
+        pjr_trust: "lt:50"
+      description: "Parallel lives, nothing personal."
+    lover:
+      required_stats:
+        pjr_trust: "gte:75"
+        pjr_familiarity: "gte:70"
+        pjr_intimacy: "gte:60"
+      required_flags:
+        pjr_lover_path: true
+      description: "Romantic relationship; the player earned his trust and he let himself be seen."
+    failed_lover:
+      required_stats:
+        pjr_trust: "gte:50"
+        pjr_familiarity: "gte:60"
+        pjr_intimacy: "gte:40"
+      required_flags:
+        pjr_lover_path: true
+        pjr_romance_broken: true
+      description: "Romantic path that fractured; too close for distance, too fractured for closeness."
+    enemy:
+      required_stats:
+        pjr_trust: "lte:-30"
+        pjr_alignment: "lte:-20"
+      description: "Active opposition; the player has harmed him or Amor Verdadero deliberately."
 asset_paths:
   portrait: peter_van_der_meer_jr__default.png
 
 lore_path: peter_van_der_meer_jr.md
+available_dialogues:
+  - e0d019c9-cddd-4ae4-99c6-f84156f0261b
+  - d2c8775f-e54b-4029-84c8-33d35f6bb634
+  - 4fbed4ae-dfce-4c02-9d5b-28b76c550558
+  - f2b45586-8d36-419a-9e49-604c55f5a809
+  - d0684d96-c949-47aa-aadc-dca2c1b366f5
 portrait_urls:
   - url: s3://las-flores/portraits/peter_van_der_meer_jr/peter_van_der_meer_jr__default.png
     label: dev

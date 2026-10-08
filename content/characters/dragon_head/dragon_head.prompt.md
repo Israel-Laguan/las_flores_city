@@ -2,40 +2,48 @@
 name: Dragon Head
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/dragon_head/dragon_head.md
 target: `asset_paths.portrait` in `content/characters/dragon_head/char_dragon_head.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Dragon Head
 
 ## Prompt (Draft)
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of an elderly Chinese male. Silver-white hair cropped in military-style cut, dark brown cold penetrating heavy-lidded eyes, tall lean controlled precision build, pale weathered skin with fine lines, thin gold-rimmed spectacles, jade ring on right pinky, immaculate tailored suit, Chinatown back room, no Latin American features
+Elderly Chinese man of about 77, tall lean build, silver-white hair in a close slicked cut, heavy-lidded dark brown eyes, pale weathered skin with fine lines, black high-collared coat with shoulder epaulettes over a white shirt and dark tie. neutral relaxed expression, mouth closed, brows unfurrowed, eyes to camera, front-facing, arms relaxed. plain flat grey background. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of an elderly Chinese man. Silver-white hair, cropped close in a military-style cut. Dark brown, cold and penetrating, heavy-lidded eyes. Tall and lean, carries himself with controlled precision — no wasted movement. Pale, weathered skin with fine lines around the eyes and mouth. Thin gold-rimmed spectacles. A jade ring on his right pinky finger. He wears an immaculate tailored suit, the kind that signals power without needing logos or ornament. His expression is silent authority. The backdrop is a dim back room with dark wood paneling, a half-empty porcelain tea cup, maps and ledgers spread on a low table, a single warm lamp light against surrounding dark. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of an elderly Chinese man of about 77. Tall, lean build with narrow shoulders and a thin neck. Gaunt face with heavy-lidded dark brown eyes, fine lines around the eyes and mouth, a straight nose and pale weathered skin. Silver-white hair in a close, military-style cut combed back. Black high-collared coat with shoulder epaulettes over a white shirt and a dark tie. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no Latin American features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, Latino features, African features
 
 ## Variations
 
-- [ ] Dragon Head in his Chinatown office, seated behind a low table, tea cup in hand, maps of Chinatown spread before him
-- [ ] Dragon Head standing in a crowded Chinatown market, immaculate suit turning heads, silent authority in every step
-- [ ] Dragon Head at a high-stakes negotiation, spectacles on, voice barely audible, the room leaning in
+- [ ] Seated at a lacquered table in a dim restaurant back room, fingertips together
+- [ ] Walking a harbour pier at dawn between two silent bodyguards
+- [ ] Alone in a quiet study, writing with an ink brush
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral silent authoritative expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__calculating.png`**: Use the base portrait as reference. A sharp, calculating focus, looking directly at the camera, 3/4 take. Eyes narrowed, tall lean build tense. Keep the same art style as reference, same tailored suit. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders relaxed and level, arms hanging loosely at his sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__contemplative.png`**: Use the base portrait as reference. Quiet thought, looking thoughtfully at the camera with a 3/4 take. Eyes distant, heavy lids lowered in reflection, tall lean build relaxed. Keep the same art style as reference, same suit. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__calculating.png`**: Use the base portrait as reference. Heavy-lidded eyes narrowed and cold, brows level, lips thin, looking at the camera, 3/4 take. Chin lowered, one hand lifted with a forefinger resting against the lips, the other arm folded behind the back. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__determined.png`**: Use the base portrait as reference. A resolved, firm expression, looking unflinchingly at the camera, 3/4 take. Eyes steady with silent resolve, jaw set, tall lean build squared. Keep the same art style as reference, same suit and jade ring. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__contemplative.png`**: Use the base portrait as reference. Softened distant eyes, brows relaxed, lips closed, looking at the camera, 3/4 take. Head tilted slightly, both hands clasped loosely at the belt, shoulders easy. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__angry.png`**: Use the base portrait as reference. A controlled, dangerous anger, looking at the camera, 3/4 take. Eyes blazing behind spectacles, jaw tight, tall lean build tense. Keep the same art style as reference, same suit. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__determined.png`**: Use the base portrait as reference. Dark eyes steady and unblinking, jaw set, lips thin, looking at the camera, 3/4 take. Spine straight and shoulders squared, one hand closing slowly into a fist at his side, the other flat on his chest. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__angry.png`**: Use the base portrait as reference. Cold flat eyes, brows low, lips pressed to a thin line, nostrils flared, looking at the camera, 3/4 take. Shoulders rigid, chin lifted, one hand slicing sharply through the air, the other fist clenched behind the back. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Lore wardrobe staged as outfit variants of the base portrait: `assets/<slug>__outfit-<name>.png`. Same face, hair and build as the base. -->
+
+- **`__outfit-suit-spectacles.png`**: Use the base portrait as reference. Same man, now wearing an immaculately tailored charcoal suit with a white shirt, thin gold-rimmed spectacles and a jade ring on the right little finger, neutral relaxed expression, shoulders level, looking at the camera, 3/4 take. Keep the same face, build and art style as reference, plain flat neutral light-grey backdrop. Clean confident linework, painterly soft shading, muted natural palette.

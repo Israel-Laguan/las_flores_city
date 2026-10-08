@@ -7,6 +7,7 @@
 > **Status:** Active
 
 ## Physical Description
+- Age (2077): 75 (born ~2002); the early-20s translator years appear only in flashbacks
 - Hair: Dark brown with silver threads, worn in a neat professional bob
 - Eyes: Warm brown, shrewd and experienced
 - Build: Average height, poised and controlled posture

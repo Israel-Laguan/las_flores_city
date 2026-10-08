@@ -2,40 +2,48 @@
 name: Carlos Medina
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/carlos_medina/carlos_medina.md
 target: `asset_paths.portrait` in `content/characters/carlos_medina/char_carlos_medina.yaml`
 consumer: portrait
-aspect_ratio: 3:4
 ---
 
 # Prompt: Carlos Medina
 
 ## Prompt (Draft)
 
-Young Latino man of 23, slender lean-wiry build, long face, receding jaw, subtle cheeks, pointed nose, hooded earnest dark-brown eyes, thin lips. Left brow habitually raised, black unruly hair pushed from his eyes. Clear light-brown skin. Heavy canvas jacket with an Electricians' Guild patch on the shoulder, carrying a diagnostic tablet, small sport earbud clipped to earlobe. University lab or electrical room backdrop, schematic screens. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Slender wiry Latino man of about 23, long face, hooded dark-brown eyes, light-brown skin, unruly black hair, light stubble, grey collared work shirt. neutral relaxed expression, mouth closed, brows unfurrowed, eyes to camera, front-facing, arms relaxed. plain flat grey background. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a young Latino man of 23. Slender, lean-wiry build. Long face with a receding jaw and subtle cheeks, a pointed nose, and hooded earnest dark-brown eyes fixed on some schematic. Thin lips. One brow habitually raised as he pushes unruly black hair from his eyes. Clear light-brown skin. Heavy canvas jacket with a trade badge on the shoulder, a diagnostic tablet in hand, small sport non-in-ear earbud clipped to earlobe. Backdrop of a university lab or an electrical room with schematic screens. Clean confident linework, painterly soft shading, muted natural palette, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man of about 23. Slender, wiry build with narrow shoulders and a long neck. Long face with hooded dark-brown eyes, thick dark brows, light-brown skin, a straight nose and light stubble on the upper lip and chin. Unruly black hair falling over the forehead. Grey button-up work shirt with the collar open. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no East Asian features, no Northern European features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Northern European features
 
 ## Variations
 
-- [ ] Inspecting a circuit panel in the electrical room, tablet glowing with schematics
-- [ ] At a university lab bench, scribbling notes beside a diagnostic readout
-- [ ] Walking through the Residencial Las Estrellas corridor, lost in a technical detail
+- [ ] Poring over a wiring schematic with a diagnostic tablet under one arm
+- [ ] Crouched at an open electrical panel, tracing a fault with a pen light
+- [ ] Hurrying down a corridor with a canvas jacket slung over one shoulder
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Neutral earnest resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`__calculating.png`**: Use the base portrait as reference. Focused problem-solving, looking at the camera, 3/4 take. Eyes narrow as he runs a circuit in his head, one brow habitually raised. Pointed nose angled, thin lips pressed. Keep the same art style as reference, same jacket and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders relaxed and level, arms hanging loosely at his sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__surprised.png`**: Use the base portrait as reference. Sudden realization breaks across his face, looking at the camera, 3/4 take. Eyes widen, the raised brow jumps higher, mouth slightly open. Keep the same art style as reference, same jacket and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__focused.png`**: Use the base portrait as reference. Brows pulled together, hooded eyes intent, lips parted in concentration, looking at the camera, 3/4 take. Head bowed, both hands holding a large diagram sheet at chest height, thumb pinning one corner. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__afraid.png`**: Use the base portrait as reference. A flicker of fear, looking at the camera, 3/4 take. Eyes dart wide and wary, the raised brow anxious, thin lips tight. Keep the same art style as reference, same jacket and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__surprised.png`**: Use the base portrait as reference. Eyes widening, brows lifting, lips parting, looking at the camera, 3/4 take. Torso leaning back, one hand rising with fingers spread, the other still gripping a small tablet. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__determined.png`**: Use the base portrait as reference. Quiet conviction, looking at the camera, 3/4 take. Eyes steady and set, the raised brow firm, receding jaw squared. Thin lips pressed into resolve. Keep the same art style as reference, same jacket and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__afraid.png`**: Use the base portrait as reference. Wide fixed eyes, brows drawn up in the middle, lips pressed tight, looking at the camera, 3/4 take. Shoulders hunched, chin tucked, one arm pulled across the body with the fingers clutching the opposite elbow, glancing as if checking behind him. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__determined.png`**: Use the base portrait as reference. Dark eyes steady, brows low, jaw clenched, looking at the camera, 3/4 take. Shoulders squared, one hand closed into a fist at the waist, the other gripping a tablet like a shield. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Lore wardrobe staged as outfit variants of the base portrait: `assets/<slug>__outfit-<name>.png`. Same face, hair and build as the base. -->
+
+- **`__outfit-canvas-jacket.png`**: Use the base portrait as reference. Same man, now wearing a heavy canvas work jacket with a plain cloth patch on one shoulder over the work shirt, a slim diagnostic tablet held under one arm, neutral relaxed expression, shoulders level, looking at the camera, 3/4 take. Keep the same face, build and art style as reference, plain flat neutral light-grey backdrop. Clean confident linework, painterly soft shading, muted natural palette.

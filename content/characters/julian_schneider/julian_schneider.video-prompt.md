@@ -8,13 +8,15 @@ target: content/characters/julian_schneider/assets/
 
 # Video Prompts: Julian Schneider
 
+NOTE: the current PNG shows a man of about 35 with stubble and dark hair; lore says 21 with tousled light-brown hair and bright blue eyes (YAML physical_description says dark hair and dark eyes). Prompts follow the lore .md; portrait/variants/videos need regeneration.
+
 Generate seamless looping portrait videos from each expression variant PNG. Use the corresponding `julian_schneider__<expression>.png` as the input image for each prompt. The man on the reference image is the character described in the source prompt file.
 
 ## Base Loop (Default)
 
 **Input**: `assets/julian_schneider__default.png`
 
-Create a seamless looping video. The man on the reference image holds a calm determined resting expression with dark hair in simple, un-styled flowing shapes. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, and a barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. Dark hair shifts subtly, and the minimalist, pocketless practical clothing suited to his environment shifts gently in the draft. The small sport earbud clipped firmly to his earlobe remains still. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a neutral relaxed resting expression, looking at the camera. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. European young man of 21, solid build, fair clean-shaven skin, bright blue eyes, tousled light brown hair, navy casual open-collar shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
 
@@ -22,22 +24,22 @@ Create a seamless looping video. The man on the reference image holds a calm det
 
 **Input**: `assets/julian_schneider__determined.png`
 
-Create a seamless looping video. The man on the reference image shows steady resolve with eyes fixed and sharp and defined jaw set. Subtle idle animation: steady, controlled breathing motion in the chest and shoulders, a slight firming micro-motion in the jawline, and a resolute, slow blink cycle. Hair and clothing respond to a faint ambient breeze. The practical clothing shifts crisply in the draft, and the earbud catches a faint draft. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a resolved, firm expression with steady eyes and a set mouth. Subtle idle animation only: deep controlled breathing in the chest and shoulders, a slight firming of the jaw, a slow unwavering blink. European young man of 21, solid build, fair clean-shaven skin, bright blue eyes, tousled light brown hair, navy casual open-collar shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__calculating` loop
 
 **Input**: `assets/julian_schneider__calculating.png`
 
-Create a seamless looping video. The man on the reference image shows sharp strategic focus with eyes narrowed and brows drawn and lips a thin line. Subtle idle animation: slow, controlled breathing in the chest and shoulders, a subtle eye-narrowing cycle as he evaluates, and a calm, deliberate blink cycle. Hair and clothing respond to a faint ambient breeze. Dark hair shifts subtly against his temples, and the practical clothing shifts gently with his breath. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a cold calculating look with lowered chin and narrowed eyes. Subtle idle animation only: slow measured breathing, a slight tightening of the jaw, a slow deliberate blink. European young man of 21, solid build, fair clean-shaven skin, bright blue eyes, tousled light brown hair, navy casual open-collar shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__contemplative` loop
 
 **Input**: `assets/julian_schneider__contemplative.png`
 
-Create a seamless looping video. The man on the reference image shows a reflective pause with eyes softening into the middle distance and jaw relaxed. Subtle idle animation: slow, measured breathing motion rising and falling gently in the chest, a quiet softening of gaze into the distance, and a slow, reflective blink cycle. Hair and clothing respond to a faint ambient breeze. Strands of dark hair drift delicately across his forehead, the practical clothing shifts gently with his breath, and the earbud shifts slightly. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows a quiet inward look with the gaze resting in the middle distance. Subtle idle animation only: slow even breathing, a gentle drift of the eyes, a slow thoughtful blink. European young man of 21, solid build, fair clean-shaven skin, bright blue eyes, tousled light brown hair, navy casual open-collar shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__surprised` loop
 
 **Input**: `assets/julian_schneider__surprised.png`
 
-Create a seamless looping video. The man on the reference image shows a controlled startle with eyes widened and brows lifted and lips parted. Subtle idle animation: a momentary catch in breath followed by gentle chest motion, a sudden quick blink cycle that settles back into composed alertness, and micro-tension across the collarbone. Hair and clothing respond to a faint ambient breeze. Dark hair strands lift faintly in the air, and the practical clothing shifts subtly in the ambient air. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The man on the reference image shows wide-eyed surprise with high brows and a slightly open mouth. Subtle idle animation only: a sharp intake of breath lifting the shoulders, a held beat, a slow exhale as the brows settle. European young man of 21, solid build, fair clean-shaven skin, bright blue eyes, tousled light brown hair, navy casual open-collar shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

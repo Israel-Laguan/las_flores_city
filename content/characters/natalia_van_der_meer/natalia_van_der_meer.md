@@ -3,7 +3,7 @@
 **Title:** Artist
 
 **Physical Description:**
-- Distinctive appearance fitting their background
+- Lean, wiry Dutch artist in her 20s-30s with a heart-shaped face, wavy blonde messy-chic hair and paint-stained fingers, wearing paint-flecked overalls.
 
 **Description (full):**
 
@@ -12,4 +12,4 @@ An up-and-coming artist in the Van der Meer family. Her first solo exhibition 'B
 **Age (2077):** ~30 (b. ~2047)
 **District:** Las Flores
 **Role:** Artist
-**Descendancy:** v
+**Descendancy:** Dutch

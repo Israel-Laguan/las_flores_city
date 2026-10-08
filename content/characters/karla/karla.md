@@ -2,6 +2,7 @@
 
 > Tags: `#figure` `#victim` `#evidence` `#lithium` `#farmer` `#carinata`
 > 
+> **Born:** ~2025 (about 28 at her death; no 2077 version)
 > **Died:** February 2053
 > **Role:** Local Farmer, Activist (murdered)
 > **Status:** Deceased

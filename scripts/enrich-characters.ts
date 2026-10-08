@@ -261,7 +261,7 @@ async function enrichCharacter(characterFolder: string, index: number): Promise<
   // Skip if already fully enriched with all 4 fields
   if (characterData.physical_description && characterData.psychological_description && 
       characterData.background_and_role?.length > 0 && 
-characterData.birth_year != null) {
+      characterData.birth_year != null) {
     console.log(`  ✅ Already fully enriched: ${characterData.name}`);
     return { success: true, character: characterData.name, folder: characterFolder };
   }

@@ -14,7 +14,7 @@ Generate seamless looping portrait videos from each expression variant PNG. Use 
 
 **Input**: `assets/ingrid_haugen__default.png`
 
-Create a seamless looping video. The woman on the reference image holds a neutral, composed resting expression with straight blonde hair pulled back in a severe, immaculate style and a barely visible pale scar on her right upper lip. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, and a barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. Straight blonde hair in a severe, immaculate style shifts minimally, and the sharply tailored blazer over a high-collared blouse shifts gently in the draft. The small sport earbud clipped to her left earlobe and the company-issued tablet at her side remain still. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a neutral composed resting expression, looking at the camera with steady presence. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Norwegian woman of 39, tall and sharp-featured, fair skin, blonde hair pulled back in a low ponytail, cold pale blue eyes, black tailored blazer over a white shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
 
@@ -22,22 +22,22 @@ Create a seamless looping video. The woman on the reference image holds a neutra
 
 **Input**: `assets/ingrid_haugen__calculating.png`
 
-Create a seamless looping video. The woman on the reference image shows a cold, analytic expression with wide-set eyes narrowed and thin lips pressed, head tilted a fraction. Subtle idle animation: slow, controlled breathing in the chest and shoulders, a subtle eye-narrowing micro-movement as she evaluates, and a calm, deliberate blink cycle. Hair and clothing respond to a faint ambient breeze. Straight blonde hair shifts subtly against her neck, and the sharply tailored blazer shifts gently with her breath. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a cold assessing look with a lowered chin and narrowed eyes. Subtle idle animation only: slow measured breathing, a slight tightening at the corner of the mouth, a slow deliberate blink. Norwegian woman of 39, tall and sharp-featured, fair skin, blonde hair pulled back in a low ponytail, cold pale blue eyes, black tailored blazer over a white shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__smirk` loop
 
 **Input**: `assets/ingrid_haugen__smirk.png`
 
-Create a seamless looping video. The woman on the reference image shows a faint, controlled half-smile with one corner of the thin lips pulled up and wide-set eyes glinting with professional calculation. Subtle idle animation: relaxed, easy breathing motion rising and falling in the chest, a subtle micro-lift at the corner of the smirk, and an easy, barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. The blazer jacket settles naturally over her shoulders, and the company-issued tablet stays still at her side. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a knowing half-smile with one corner of the mouth lifted. Subtle idle animation only: relaxed breathing, a faint lift of one brow, a slow amused blink. Norwegian woman of 39, tall and sharp-featured, fair skin, blonde hair pulled back in a low ponytail, cold pale blue eyes, black tailored blazer over a white shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__vulnerable` loop
 
 **Input**: `assets/ingrid_haugen__vulnerable.png`
 
-Create a seamless looping video. The woman on the reference image shows a rare crack in the facade with wide-set eyes softening and chin dipping a fraction. Subtle idle animation: soft, gentle breathing motion gently lifting her chest, a subtle easing and slight slump in the shoulders, and a slow, tender blink cycle with a momentary softening of gaze. Hair and clothing respond to a faint ambient breeze. Loose strands of blonde hair fall forward across her brow, and the high-collared blouse fabric moves softly against her skin. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a quietly vulnerable expression with open honest eyes and softened features. Subtle idle animation only: soft shallow breathing, a slow easing of tension in the shoulders, a slow tender blink. Norwegian woman of 39, tall and sharp-featured, fair skin, blonde hair pulled back in a low ponytail, cold pale blue eyes, black tailored blazer over a white shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__afraid` loop
 
 **Input**: `assets/ingrid_haugen__afraid.png`
 
-Create a seamless looping video. The woman on the reference image shows a controlled, effortful fear with wide-set eyes slightly widened and arched brows drawn. Subtle idle animation: shallow, held breathing motion in the upper chest, subtle micro-tremor in the lifted shoulders and parted lips, and a quick, nervous blink cycle before resuming composed focus. Hair and clothing respond to a faint ambient breeze. Blonde hair strands flutter lightly in the air, and the blazer shifts faintly against her taut frame. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows guarded fear with widened eyes and tense features. Subtle idle animation only: quick shallow breathing, a slight tremor in the shoulders, a flinching blink cycle. Norwegian woman of 39, tall and sharp-featured, fair skin, blonde hair pulled back in a low ponytail, cold pale blue eyes, black tailored blazer over a white shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

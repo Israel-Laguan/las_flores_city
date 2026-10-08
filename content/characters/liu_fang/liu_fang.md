@@ -6,6 +6,7 @@
 > **Status:** Deceased (Murdered August 2059)
 
 ## Physical Description
+- Age depicted: late 30s (about 38), shortly before her murder in August 2059 (born 2021; no 2077 version)
 - Hair: Black, shoulder-length, usually pulled back in a neat clip
 - Eyes: Dark brown, intelligent and wary
 - Build: Slender and average height, moves with quiet efficiency

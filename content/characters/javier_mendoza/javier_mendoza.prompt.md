@@ -2,39 +2,50 @@
 name: Javier Mendoza
 type: portrait
 size: 1024x1024
-source: content/characters/javier_mendoza/javier_mendoza.md
-target: `portrait_urls[].url` in `content/characters/char_javier_mendoza.yaml`
-consumer: portrait
 aspect_ratio: 3:4
+source: content/characters/javier_mendoza/javier_mendoza.md
+target: `asset_paths.portrait` in `content/characters/javier_mendoza/char_javier_mendoza.yaml`
+consumer: portrait
 ---
 
 # Prompt: Javier Mendoza
 
+NOTE: the current PNG reads about 60 (lore: 47), shows no neatly trimmed beard, and has a detailed dead-tree backdrop; portrait/variants/videos need regeneration with a flat backdrop.
+
 ## Prompt (Draft)
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a weathered 47-year-old Latin farmer. Javier Mendoza has a solid, muscular frame built from years of outdoor labor. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark expressive eyes, a straight nose, and a defined jaw. His expression is warm yet determined, showing the resilience of a man seeking redemption through honest work. His dark hair is grouped into simple, un-styled flowing shapes, slightly tousled from working in the fields. A small sport non-in-ear earbud is cl. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...
+
+Latino farmer of 47, solid muscular frame, tanned weathered skin, short dark hair with gray, trimmed beard, faded olive sleeveless undershirt, plain flat grey background. Neutral relaxed expression, mouth closed, eyes to camera, front-facing, arms relaxed. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a weathered 47-year-old Latin farmer. He has a solid, muscular frame built from years of outdoor labor. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark expressive eyes, a straight nose, and a defined jaw. His expression is warm yet determined. His dark hair is grouped into simple, un-styled flowing shapes, slightly tousled from working in the fields. A small sport non-in-ear earbud is clipped firmly to his earlobe. He wears practical farming attire - a sturdy cotton work shirt with rolled-up sleeves, durable work pants, and worn leather gloves tucked into his belt. The backdrop features farmland with rows of crops under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, earthy natural palette, zero conventional beauty templates.
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino farmer of 47, about 5'10", with a solid muscular frame. Tanned, weathered skin with sun lines at the eyes, warm brown eyes, short dark hair peppered with gray, and a neatly trimmed short dark beard with gray in it. Faded olive sleeveless undershirt, damp in patches. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
---no neon, no androids, no clean backgrounds, no modern clothing
+
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Northern European features, young
 
 ## Variations
 
-- [ ] Javier Mendoza working in his fields, tending to crops with care and determination
-- [ ] Javier Mendoza inspecting produce with a critical eye, ensuring quality for his customers
-- [ ] Javier Mendoza with his farm workers, coordinating tasks during harvest season
-- [ ] Javier Mendoza negotiating with restaurant buyers, seeking fair prices for his produce
+- [ ] Kneeling in a dry field, crumbling a handful of grey soil between his fingers
+- [ ] Loading crates onto a battered truck at sunrise
+- [ ] Sitting on a porch step at dusk with a mug, staring at a row of withered trees
 
 ## Expression Variants
 
-- **`javier_mendoza__default.png`**: Use the base portrait as reference. Warm determined resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, earthy natural palette, zero conventional beauty templates.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`javier_mendoza__determined.png`**: Use the base portrait as reference. Quiet, hard-won resolve, looking directly at the camera, 3/4 take. Eyes steady and fixed, jaw set, brow firm. A man seeking redemption through honest work. Keep the same art style as reference, same earbud and work shirt, farmland backdrop. Clean confident linework, painterly soft shading, earthy natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, relaxed brows, soft closed mouth, looking at the camera, 3/4 take. Shoulders relaxed and level, arms hanging loosely at his sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`javier_mendoza__happy.png`**: Use the base portrait as reference. A genuine, weathered smile, looking at the camera, 3/4 take. Eyes warm and creased from years in the sun, mouth opening in a tired but real smile. Keep the same art style as reference, same earbud and work shirt, farmland backdrop. Clean confident linework, painterly soft shading, earthy natural palette.
+- **`__determined.png`**: Use the base portrait as reference. Eyes steady, brows drawn slightly together, lips pressed in a firm line, chin lifted a little, looking at the camera, 3/4 take. Squared shoulders, chin lifted, one hand clenched into a fist at his hip, the other arm straight. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`javier_mendoza__contemplative.png`**: Use the base portrait as reference. A reflective pause, looking at the camera, 3/4 take. Eyes softening into the distance, lips relaxed, the weight of his past visible in the lines of his face. Keep the same art style as reference, same earbud and work shirt, farmland backdrop. Clean confident linework, painterly soft shading, earthy natural palette.
+- **`__happy.png`**: Use the base portrait as reference. Genuine warm smile, eyes crinkling, brows relaxed and lifted, looking at the camera, 3/4 take. Shoulders relaxed, a rare warm smile, one hand lifted in a small open wave. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`javier_mendoza__surprised.png`**: Use the base portrait as reference. A startled moment, looking at the camera, 3/4 take. Eyes widened, brows lifted, lips parting. Keep the same art style as reference, same earbud and work shirt, farmland backdrop. Clean confident linework, painterly soft shading, earthy natural palette.
+- **`__contemplative.png`**: Use the base portrait as reference. Brows soft, lips relaxed and slightly parted, expression quiet and inward, gaze drifting off-camera into the middle distance, 3/4 take. Head turned slightly, one hand rubbing the back of his neck, the other thumb hooked in his belt. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
+- **`__surprised.png`**: Use the base portrait as reference. Eyes wide, brows high, mouth slightly open, looking at the camera, 3/4 take. Shoulders rising, one hand halfway raised with the palm out, the other frozen at his side. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Same face, hair and build as the base portrait; only the outfit changes. -->
+
+- **`__outfit-workshirt.png`**: Use the base portrait as reference. Same face, hair and build as the base. Sturdy cotton work shirt in faded blue with sleeves rolled to the forearm, buttoned to the upper chest. Neutral relaxed resting expression, front-facing, arms relaxed at the sides. Keep the same art style as reference and the backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.

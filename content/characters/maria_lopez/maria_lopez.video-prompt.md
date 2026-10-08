@@ -14,7 +14,7 @@ Generate seamless looping portrait videos from each expression variant PNG. Use 
 
 **Input**: `assets/maria_lopez__default.png`
 
-Create a seamless looping video. The woman on the reference image holds a neutral resting expression with wavy dark hair in a practical ponytail and sun-freckled olive skin. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, and a barely perceptible blink cycle. Hair and clothing respond to a faint ambient breeze. Wavy dark hair in a practical ponytail shifts minimally, and the practical field-research attire with fieldwork shirt, GreenWatch vest, and small data tablet shifts gently in the draft. The small sport earbud clipped to her earlobe remains still. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a neutral composed resting expression, looking at the camera with steady presence. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Latina woman of 42, athletic-compact build, almond-shaped dark brown eyes, sun-freckled olive skin, dark low ponytail, olive-green field jacket over a beige shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
 
@@ -22,22 +22,22 @@ Create a seamless looping video. The woman on the reference image holds a neutra
 
 **Input**: `assets/maria_lopez__calculating.png`
 
-Create a seamless looping video. The woman on the reference image is in sharp analytical mode with eyes narrowed in focus and brows drawn together and mouth pressed into a thoughtful line. Subtle idle animation: slow, controlled breathing in the chest and shoulders, a subtle eye-narrowing cycle as she evaluates, and a calm, deliberate blink cycle. Hair and clothing respond to a faint ambient breeze. Wavy dark hair shifts subtly against her neck, and the GreenWatch vest shifts gently with her breath. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows cool appraisal with narrowed eyes and a lowered chin. Subtle idle animation only: measured breathing, a slow narrowing and release of the eyes, a deliberate blink cycle. Latina woman of 42, athletic-compact build, almond-shaped dark brown eyes, sun-freckled olive skin, dark low ponytail, olive-green field jacket over a beige shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__determined` loop
 
 **Input**: `assets/maria_lopez__determined.png`
 
-Create a seamless looping video. The woman on the reference image shows a resolved, resolute expression with eyes steady and unwavering and jaw set. Subtle idle animation: steady, controlled breathing motion in the chest and shoulders, a slight firming micro-motion in the jawline, and an unwavering, slow blink cycle. Hair and clothing respond to a faint ambient breeze. The fieldwork shirt shifts crisply in the draft, and the GreenWatch vest catches a faint draft. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a resolved, firm expression with steady unflinching eyes and a set mouth. Subtle idle animation only: deep controlled breathing in the chest and shoulders, a slight firming of the jaw, a slow unwavering blink cycle. Latina woman of 42, athletic-compact build, almond-shaped dark brown eyes, sun-freckled olive skin, dark low ponytail, olive-green field jacket over a beige shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__happy` loop
 
 **Input**: `assets/maria_lopez__happy.png`
 
-Create a seamless looping video. The woman on the reference image shows a warm, genuine smile with lips curving up and eyes crinkling at the corners and cheeks brightening. Subtle idle animation: warm, buoyant breathing motion lifting her chest and shoulders, a soft pulsing ease in the crinkles around her eyes, and a warm, natural blink cycle. Hair and clothing respond to a faint ambient breeze. Dark hair shifts gently in the draft, and the fieldwork shirt and GreenWatch vest shift softly with her buoyant breathing. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a warm genuine smile with brightening eyes and lifted cheeks. Subtle idle animation only: buoyant breathing lifting the chest and shoulders, a soft crinkling around the eyes, a warm natural blink cycle. Latina woman of 42, athletic-compact build, almond-shaped dark brown eyes, sun-freckled olive skin, dark low ponytail, olive-green field jacket over a beige shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__sad` loop
 
 **Input**: `assets/maria_lopez__sad.png`
 
-Create a seamless looping video. The woman on the reference image shows a quiet, heavy expression with eyes soft and slightly downcast in grief and lines around the eyes deepening. Subtle idle animation: slow, heavy breathing rhythm sinking in the chest, a quiet easing and downward settling of the shoulders, and a slow, heavy-lidded blink cycle lingering downward. Hair and clothing respond to a faint ambient breeze. Dark hair drifts heavily across her lowered face, and the fieldwork shirt hangs heavily against her frame. The background remains static. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a heavy quiet sadness with lowered glistening eyes and a downturned mouth. Subtle idle animation only: slow heavy breathing, a slight sinking of the shoulders, a slow blink with a faint lip tremor. Latina woman of 42, athletic-compact build, almond-shaped dark brown eyes, sun-freckled olive skin, dark low ponytail, olive-green field jacket over a beige shirt. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

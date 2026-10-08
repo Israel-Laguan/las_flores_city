@@ -2,38 +2,50 @@
 name: Maria Sanchez Sulca
 type: portrait
 size: 1024x1024
-source: content/characters/maria_sanchez_sulca/maria_sanchez_sulca.md
-target: `portrait_urls[].url` in `content/characters/char_maria_sanchez_sulca.yaml`
-consumer: portrait
 aspect_ratio: 3:4
+source: content/characters/maria_sanchez_sulca/maria_sanchez_sulca.md
+target: `asset_paths.portrait` in `content/characters/maria_sanchez_sulca/char_maria_sanchez_sulca.yaml`
+consumer: portrait
 ---
 
 # Prompt: Maria Sanchez Sulca
 
 ## Prompt (Draft)
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a petite in her late 20s Latin Photorealistic portrait of Maria Sanchez Sulca. Her frame is slight, sturdy, and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, alert and cautious. Her expression is alert, as she meets the viewer with steady, composed bearing. Her dark brown thick hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless practical work c. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...
+
+petite slight Latina woman of 28, heart-shaped face, high cheekbones, small nose, alert dark brown eyes, warm brown skin, thick straight dark brown shoulder-length hair worn loose, light blue collared shirt, neutral relaxed expression with mouth closed and relaxed, brows unfurrowed, eyes straight at the camera, facing front, level shoulders, arms hanging relaxed at the sides, plain flat light-grey background, premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a petite Latin American woman in her late 20s. Her frame is slight, sturdy, and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown eyes that are alert and cautious. Her expression is alert, as she meets the viewer with steady, composed bearing. Her dark brown, thick hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears minimalist, pocketless practical work clothing. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a petite Latina woman of 28. Petite, slight build with narrow shoulders. Heart-shaped face with high cheekbones, a small nose and alert dark brown eyes under straight brows. Warm brown, smooth skin. Thick, straight dark brown hair falling loose to the shoulders. Light blue collared shirt with the top button open. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
---no neon, no androids, no clean backgrounds, no modern clothing
+
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Northern European features
 
 ## Variations
 
-- [ ] Maria Sanchez Sulca with notebook in hand, interviewing a local source for a cultural feature story
-- [ ] Maria Sanchez Sulca reviewing interview notes at their desk, thoughtfully considering story angles
-- [ ] Maria Sanchez Sulca with colleagues in the newsroom, collaborating on a breaking story
+- [ ] Peering through a curtain at a dusky window
+- [ ] Sorting folded papers at a wooden table by lamplight
+- [ ] Walking a forest path with a worn leather satchel clutched to her side
 
 ## Expression Variants
 
-- **`maria_sanchez_sulca__default.png`**: Use the base portrait as reference. Alert, cautious resting expression with a notebook in hand, looking at the camera, 3/4 take. Keep the same art style as reference, same earbud and work clothing, backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry.
+<!-- Plain flat backgrounds are intentional: these portraits are used as sprites. Each variant changes posture and hands, not only the face. -->
 
-- **`maria_sanchez_sulca__focused.png`**: Use the base portrait as reference. Sharp journalistic attention, looking at the camera, 3/4 take. Eyes narrowed and intent, brows drawn, lips firm, notebook poised. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral relaxed resting expression, mouth closed, brows unfurrowed, looking at the camera, 3/4 take. Shoulders level, arms hanging loosely at her sides. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`maria_sanchez_sulca__surprised.png`**: Use the base portrait as reference. A cautious, caught-off-guard moment, looking at the camera, 3/4 take. Eyes widened, brows lifted, lips parted. Alertness heightening. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__focused.png`**: Use the base portrait as reference. Eyes lowered and intent, brows drawn slightly together, lips set, head angled toward the camera, 3/4 take. Head bowed, shoulders curved forward, a few folded papers held in both hands at chest height. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`maria_sanchez_sulca__contemplative.png`**: Use the base portrait as reference. Weighing a story angle, looking thoughtfully at the camera, 3/4 take. Eyes softening into the middle distance, lips relaxed, head tilted. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__surprised.png`**: Use the base portrait as reference. Eyes wide, brows high, lips parted, looking at the camera, 3/4 take. Flinching back, both hands rising to the chest with fingers splayed. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`maria_sanchez_sulca__happy.png`**: Use the base portrait as reference. A warm, genuine smile, looking at the camera, 3/4 take. Eyes brightening, the caution softening, lips curving up. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__contemplative.png`**: Use the base portrait as reference. Eyes soft and far-off, brows relaxed, lips slightly parted, looking at the camera, 3/4 take. Head tilted, arms wrapped loosely around herself, one hand twisting a strand of hair. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
 
+- **`__happy.png`**: Use the base portrait as reference. Shy warm smile, eyes brightening, cheeks lifted, looking at the camera, 3/4 take. Shoulders loosening, hands clasped lightly in front, a small lean toward the viewer. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__afraid.png`**: Use the base portrait as reference. Eyes wide and darting, brows pinched together, lips pressed thin, looking at the camera, 3/4 take. Shoulders hunched, head turned slightly as if glancing over the shoulder, one hand gripping the opposite elbow, the other clutching the collar. Keep the same art style as reference, same clothing and backdrop (plain flat neutral light-grey). Clean confident linework, painterly soft shading, muted natural palette.
+
+## Wardrobe Variants
+
+<!-- Lore wardrobe staged as outfit variants of the base portrait: `assets/<slug>__outfit-<name>.png`. Same face, hair and build as the base. -->
+
+- **`__outfit-shawl.png`**: Use the base portrait as reference. Same woman, now with her hair in a low braid, a woven multicolored shawl over the shoulders, a small gold cross necklace and a worn leather satchel strap across the body. Neutral relaxed expression, shoulders level, looking at the camera, 3/4 take. Keep the same face, hair, build and art style as reference, plain flat neutral light-grey backdrop. Clean confident linework, painterly soft shading, muted natural palette.

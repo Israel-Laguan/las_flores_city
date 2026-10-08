@@ -3,7 +3,7 @@
 **Title (full):** International Relations Student at UILF, Chinese Cultural Purist
 
 ## Physical Description
-- Hair: Jet black, long and straight, often worn in a sleek low bun or flowing down her back
+- Hair: Jet black, a sleek asymmetric chin-length bob, longer on one side and tucked behind one ear
 - Eyes: Dark brown, almond-shaped, sharp and imperious
 - Build: Slender and poised, graceful posture
 - Skin: Fair with warm undertones, smooth complexion

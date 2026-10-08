@@ -1,0 +1,15 @@
+id: ba8c295e-b0d2-4d0e-8bfd-447ce1a42b3c
+name: Adrián Beltrán
+title: Talent & Brand Manager
+birth_year: 2041
+description: "Peter Jr.'s manager. Runs his content calendar, brand deals and 'Sunset Socials' for the agency Lumen Studio. Polished and personable; he treats the boy's public life as a campaign with a launch date. Openly gay, and he understands exactly why the Amor Verdadero angle sells."
+physical_description: "Slim Latino man of 36 with warm brown skin, dark brown eyes, close-cropped dark hair with a neat fade, clean-shaven, a sharp tailored slate-blue jacket over a white open-collar shirt, a smartwatch he checks often and a relaxed professional smile."
+psychological_description: "Warm in public and exact in private; pragmatic, ambitious, and sincerely convinced that visibility is a form of protection."
+background_and_role:
+  - "Manages Peter van der Meer Jr.'s public brand and schedule"
+metadata:
+  type: human
+  role: npc
+  faction: van_der_meer
+  personality: polished_manager
+lore_path: adrian_beltran.md

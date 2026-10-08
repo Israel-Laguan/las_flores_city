@@ -8,14 +8,15 @@ target: content/characters/sofia_ramirez/assets/
 
 # Video Prompts: Sofia Ramirez
 
+NOTE: PNG shows no gray streaks in the hair (canon: black hair streaked with gray, often in a neat bun); regeneration is low priority.
+
 Generate seamless looping portrait videos from each expression variant PNG. Use the corresponding `sofia_ramirez__<expression>.png` as the input image for each prompt. The woman on the reference image is the character described in the source prompt file.
 
 ## Base Loop (Default)
 
 **Input**: `assets/sofia_ramirez__default.png`
 
-Create a seamless looping video. The woman on the reference image holds a neutral composed resting expression, looking at the camera with steady presence. Subtle idle animation: gentle breathing motion in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Latina woman of 52, medium-height solid build, dark expressive eyes, defined jaw, dark hair, practical clothing, small sport earbud clipped to earlobe. The background remains static.
-The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a neutral composed resting expression, looking at the camera with steady presence. Subtle idle animation only: gentle breathing in the chest and shoulders, a micro-shift in weight, a barely perceptible blink cycle. Latina woman of 64, average height, lean build, oval face, deep lines, sharp dark eyes, tan skin, shoulder-length black hair with a few gray streaks, black collared shirt open at the neck. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ## Expression Loops
 
@@ -23,27 +24,22 @@ The motion must loop perfectly — the last frame blends seamlessly into the fir
 
 **Input**: `assets/sofia_ramirez__determined.png`
 
-Create a seamless looping video. The woman on the reference image shows a resolved, firm expression with steady unflinching eyes and a squared jaw. Subtle idle animation: deep controlled breathing motion in the chest and shoulders, a slight firming micro-motion in the jawline, and an unwavering slow blink cycle. Latina woman of 52, medium-height solid build, dark expressive eyes, defined jaw, dark hair, practical clothing, small sport earbud clipped to earlobe. The background remains static.
-The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a resolved, firm expression with steady unflinching eyes and a set mouth. Subtle idle animation only: deep controlled breathing in the chest and shoulders, a slight firming of the jaw, a slow unwavering blink cycle. Latina woman of 64, average height, lean build, oval face, deep lines, sharp dark eyes, tan skin, shoulder-length black hair with a few gray streaks, black collared shirt open at the neck. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__contemplative` loop
 
 **Input**: `assets/sofia_ramirez__contemplative.png`
 
-Create a seamless looping video. The woman on the reference image is in a reflective pause, looking thoughtfully with eyes softening into the middle distance and lips relaxed. Subtle idle animation: soft easy breathing motion in the chest, a subtle settling of the shoulders, and a slow measured blink cycle. Latina woman of 52, medium-height solid build, dark expressive eyes, defined jaw, dark hair, practical clothing, small sport earbud clipped to earlobe. The background remains static.
-The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a reflective expression with the gaze drifting softly into the middle distance. Subtle idle animation only: slow thoughtful breathing, a slight tilt of the head easing back and forth, a long slow blink cycle. Latina woman of 64, average height, lean build, oval face, deep lines, sharp dark eyes, tan skin, shoulder-length black hair with a few gray streaks, black collared shirt open at the neck. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__happy` loop
 
 **Input**: `assets/sofia_ramirez__happy.png`
 
-Create a seamless looping video. The woman on the reference image displays a warm genuine smile with eyes brightening and cheeks lifting. Subtle idle animation: buoyant rhythmic breathing motion lifting the chest and shoulders, a soft crinkling smile cycle around the eyes, and a warm natural blink cycle. Latina woman of 52, medium-height solid build, dark expressive eyes, defined jaw, dark hair, practical clothing, small sport earbud clipped to earlobe. The background remains static.
-The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
+Create a seamless looping video. The woman on the reference image shows a warm genuine smile with brightening eyes and lifted cheeks. Subtle idle animation only: buoyant breathing lifting the chest and shoulders, a soft crinkling around the eyes, a warm natural blink cycle. Latina woman of 64, average height, lean build, oval face, deep lines, sharp dark eyes, tan skin, shoulder-length black hair with a few gray streaks, black collared shirt open at the neck. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
 
 ### `__focused` loop
 
 **Input**: `assets/sofia_ramirez__focused.png`
 
-Create a seamless looping video. The woman on the reference image displays sharp concentration with eyes narrowed in focused thought and a slight furrow in the brow. Subtle idle animation: steady controlled breathing motion in the chest, a subtle eye-narrowing micro-movement as focus sharpens, faint tension in the brow, and a disciplined deliberate blink cycle. Latina woman of 52, medium-height solid build, dark expressive eyes, defined jaw, dark hair, practical clothing, small sport earbud clipped to earlobe. The background remains static.
-The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.
-
+Create a seamless looping video. The woman on the reference image shows a quiet concentrated expression with the gaze lowered to the task in the hands. Subtle idle animation only: slow even breathing, a tiny tightening of the brows, the fingers shifting slightly on the notebook, a slow blink cycle. Latina woman of 64, average height, lean build, oval face, deep lines, sharp dark eyes, tan skin, shoulder-length black hair with a few gray streaks, black collared shirt open at the neck. The background remains a static plain flat neutral background. The motion must loop perfectly — the last frame blends seamlessly into the first. No camera movement, no zoom, no pan.

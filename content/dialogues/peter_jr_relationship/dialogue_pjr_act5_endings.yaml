@@ -1,0 +1,630 @@
+id: d0684d96-c949-47aa-aadc-dca2c1b366f5
+name: "Peter Jr. Act 5 - Endings"
+description: "Resolution is earned from history. Nine endings selected by stats and flags: Lover (romantic relationship), Failed Lover (fractured romance), Enemy (active opposition), His Own Schedule (found the truth with the player), Ally, Mentor, Rival (leaked or mocked), Drifted (the player was absent at the rally) and Distant. Precedence is enforced with hidden_if so at most one specific ending shows with the Distant fallback."
+character_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+scene_id: 696f4dc1-3bc7-4c52-a4f5-247aa8f5e468
+dialogue_scope: character
+start_node_id: pjr5_start
+
+nodes:
+  pjr5_start:
+    id: pjr5_start
+    type: system
+    text: ""
+    thought: "A few weeks after the rally. The Sky Atrium is quieter. Peter Jr.'s notebook is on the planter bench, and whatever the player did at the rally has already settled into the shape of what he says next."
+    effects:
+      flag_set:
+        pjr_act5_reached: true
+    choices:
+      # ENEMY: active opposition and harm. Highest precedence.
+      - id: pjr5_branch_enemy
+        text: "[He looks at you with cold recognition - and dismissal]"
+        next_node_id: pjr5_enemy_start
+        required_relationship:
+          axes:
+            trust: "lte:-30"
+            alignment: "lte:-20"
+        hidden_if:
+          pjr_lover_path: true
+      # LOVER: romantic path, high trust and intimacy. Takes precedence over most.
+      - id: pjr5_branch_lover
+        text: "[He's wearing a pin you haven't seen before - and it's for you]"
+        next_node_id: pjr5_lover_start
+        required_flags:
+          pjr_lover_path: true
+        required_relationship:
+          axes:
+            trust: "gte:75"
+            familiarity: "gte:70"
+          romance: "gte:60"
+        hidden_if:
+          pjr_rival_path: true
+          pjr_act4_deflected: true
+          pjr_romance_broken: true
+      # FAILED LOVER: romantic path that fractured
+      - id: pjr5_branch_failed_lover
+        text: "[He's wearing his usual pin - but something between you is broken]"
+        next_node_id: pjr5_failed_lover_start
+        required_flags:
+          pjr_lover_path: true
+          pjr_romance_broken: true
+        hidden_if:
+          pjr_rival_path: true
+          pjr_act4_deflected: true
+        required_relationship:
+          axes:
+            trust: "gte:50"
+            familiarity: "gte:60"
+          romance: "gte:40"
+      # RIVAL: leaked, mocked, or used his confession. Takes precedence over everything.
+      - id: pjr5_branch_rival
+        text: "[He has not forgotten what you did]"
+        next_node_id: pjr5_rival_start
+        required_flags:
+          pjr_rival_path: true
+        hidden_if:
+          pjr_lover_path: true
+      # DRIFTED: the player left him alone at the rally, trust was real before that.
+      - id: pjr5_branch_drifted
+        text: "[He is still polite, but busy. There is a new circle around him]"
+        next_node_id: pjr5_drifted_start
+        required_flags:
+          pjr_act4_deflected: true
+        hidden_if:
+          pjr_rival_path: true
+          pjr_lover_path: true
+        required_relationship:
+          axes:
+            trust: "gte:15"
+            familiarity: "gte:30"
+      # HIS OWN: the player helped him ask who all this is for.
+      - id: pjr5_branch_his_own
+        text: "[His calendar has an empty block for the first time]"
+        next_node_id: pjr5_his_own_start
+        required_flags:
+          pjr_found_truth: true
+        hidden_if:
+          pjr_rival_path: true
+          pjr_act4_deflected: true
+          pjr_lover_path: true
+        required_relationship:
+          axes:
+            trust: "gte:30"
+      # MENTOR: the player opened the mentor path and kept it.
+      - id: pjr5_branch_mentor
+        text: "[He brings the first brief he finished]"
+        next_node_id: pjr5_mentor_start
+        required_flags:
+          pjr_mentor_path: true
+        hidden_if:
+          pjr_rival_path: true
+          pjr_act4_deflected: true
+          pjr_found_truth: true
+          pjr_lover_path: true
+        required_relationship:
+          axes:
+            trust: "gte:45"
+            familiarity: "gte:45"
+      # ALLY: friend path, trusted and aligned.
+      - id: pjr5_branch_ally
+        text: "[He saves you a seat at the table]"
+        next_node_id: pjr5_ally_start
+        required_flags:
+          pjr_friend_path: true
+        hidden_if:
+          pjr_rival_path: true
+          pjr_act4_deflected: true
+          pjr_mentor_path: true
+          pjr_found_truth: true
+          pjr_lover_path: true
+        required_relationship:
+          axes:
+            trust: "gte:50"
+            alignment: "gte:40"
+      # DISTANT: always-available fallback so the entry node is never empty.
+      - id: pjr5_branch_distant
+        text: "[You never really got close]"
+        next_node_id: pjr5_distant_start
+        hidden_if_relationship:
+          axes:
+            trust: "gte:50"
+        hidden_if:
+          pjr_lover_path: true
+
+  # ============================================
+  # ENDING 1: ALLY
+  # ============================================
+  pjr5_ally_start:
+    id: pjr5_ally_start
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "You came. Of course you came. I made you a name card, look — see? 'The Table's Honorary Friend.' It's laminated. I don't know why I laminated it. Anyway. Anna says I can bring one person to the youth council dinner, and it's you. Not for any reason. Because you're someone I'd bring."
+    thought: "He has been waiting by the door for ten minutes and pretends he has not. The card is slightly crooked, the pin is straight, and he is trying very hard not to look as pleased as he is."
+    visual:
+      expression: happy
+      position: right
+      transition: fade
+    choices:
+      - id: pjr5_ally_accept
+        text: "I'd be honoured. Laminated and everything."
+        next_node_id: pjr5_ally_resolved
+        effects:
+          relationship_effect:
+            axes:
+              trust: 8
+              alignment: 6
+          state_set:
+            last_pjr_encounter_at: NOW
+
+  pjr5_ally_resolved:
+    id: pjr5_ally_resolved
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Gezellig. That's the Dutch word for this, by the way — it means somewhere that feels like people are glad you're there. There isn't a perfect word in Portuguese. Saudade is for people who left. This is for people who stayed. ...Okay, I'm doing the voice. Come on. We're late and Marco will say it's my fault."
+    thought: "He walks ahead and then slows down so they end up side by side, which is exactly what he meant to do. The player has earned a standing invitation to the one room in the city where Peter van der Meer Jr. is allowed to be fourteen."
+    visual:
+      expression: happy
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_ending_ally: true
+      state_set:
+        pjr_act: "5_done"
+        pjr_ending: ally
+        pjr_arc: ally
+        last_pjr_encounter_at: NOW
+      story_beat: act5_pjr_ally_ending
+      relationship_effect:
+        axes:
+          trust: 10
+          alignment: 8
+
+
+  # ============================================
+  # ENDING: HIS OWN SCHEDULE
+  # ============================================
+  pjr5_his_own_start:
+    id: pjr5_his_own_start
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Look. Tuesday afternoon, nothing. Adrián was furious for a week and then he sort of... saw the numbers. Turns out people like the kid who says 'I don't know yet' more than the kid with the perfect caption. I kept the Sunset Socials, but I pick who comes. Tomás is on the list. Kiara and Bruno are not. Mãe said I was breaking her heart and then asked if she could still co-host."
+    thought: "He laughs, a real one, and shows the player his calendar with one empty block in it, framed by a hand-drawn box. The pin is still on his collar, but he has moved it from the front to the side, where he can feel it."
+    visual:
+      expression: happy
+      position: right
+      transition: fade
+    choices:
+      - id: pjr5_his_own_ask
+        text: "And the cause? Is it yours now?"
+        next_node_id: pjr5_his_own_resolved
+        effects:
+          relationship_effect:
+            axes:
+              trust: 8
+          state_set:
+            last_pjr_encounter_at: NOW
+
+  pjr5_his_own_resolved:
+    id: pjr5_his_own_resolved
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Parts of it. Not all of it. I still copy the laws out in the notebook, and I still want to be a lawyer — I think. Nobody told me to want that one. Maybe that's how I know. ...The point is I'm allowed to keep finding out. That's the whole thing I wanted. Obrigado. For asking."
+    thought: "He closes the notebook gently, and for a moment he looks neither like a brand nor like an heir. He looks like a fourteen-year-old who has just been given his own afternoon."
+    visual:
+      expression: happy
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_ending_his_own: true
+      state_set:
+        pjr_act: "5_done"
+        pjr_ending: his_own
+        pjr_arc: his_own
+        last_pjr_encounter_at: NOW
+      story_beat: act5_pjr_his_own_ending
+      relationship_effect:
+        axes:
+          trust: 10
+          alignment: 8
+
+  # ============================================
+  # ENDING 2: MENTOR
+  # ============================================
+  pjr5_mentor_start:
+    id: pjr5_mentor_start
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Here. It's the brief. Eleven pages — I know you said one. I got carried away. It's about how Article Four could be undermined by a 'commercial necessity' clause, and how to close the gap before somebody tries. Anna read it and said 'who helped you?' and I said 'I did, mostly.' Mostly's the right word, right?"
+    thought: "He hands over the folder with both hands, very carefully, the way a student hands in work that matters. Underneath the pride is the question he cannot ask out loud: was it good enough to be worth believing in?"
+    visual:
+      expression: determined
+      position: right
+      transition: fade
+    choices:
+      - id: pjr5_mentor_read
+        text: "[Read the first page. Tell him the truth about it.]"
+        next_node_id: pjr5_mentor_resolved
+        effects:
+          relationship_effect:
+            axes:
+              trust: 8
+              alignment: 8
+          state_set:
+            last_pjr_encounter_at: NOW
+
+  pjr5_mentor_resolved:
+    id: pjr5_mentor_resolved
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "...The truth is it's good, and also page six has a hole in it. Yeah. I found it too, three days ago, and I didn't fix it because then it would be done. ...I'm going to start a legal-aid table at Amor Verdadero. Kids with questions about their rights. Not as a Van der Meer. Just as the kid with the notebook. Will you check my work, when you can?"
+    thought: "He says it so quickly it sounds rehearsed and, in fact, it is. He has been carrying it around for a week, waiting for someone who would neither flatter him nor laugh. He looks, for the first time, like someone with a plan of his own."
+    visual:
+      expression: determined
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_ending_mentor: true
+      state_set:
+        pjr_act: "5_done"
+        pjr_ending: mentor
+        pjr_arc: mentor
+        last_pjr_encounter_at: NOW
+      story_beat: act5_pjr_mentor_ending
+      relationship_effect:
+        axes:
+          trust: 10
+          alignment: 10
+
+  # ============================================
+  # ENDING 3: RIVAL
+  # ============================================
+  pjr5_rival_start:
+    id: pjr5_rival_start
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "I'm not going to shout. Marco says shouting is a gift to people who want clips. So: I know what you did. I know who you told. And I want you to know I didn't cry in front of the cameras, because I decided on the steps that you didn't get that. ...I'll be at every rally. I'll be in every room. And someday I'll be the lawyer in front of you."
+    thought: "He is perfectly polite, perfectly calm, and fourteen years old. The anger has been boiled down into something that will last. He turns and walks away without looking back, and the guards do not need to be asked to see the player out."
+    visual:
+      expression: angry
+      position: right
+      transition: fade
+    choices:
+      - id: pjr5_rival_apologise
+        text: "Peter — I was wrong. I'm sorry."
+        next_node_id: pjr5_rival_resolved
+        effects:
+          relationship_effect:
+            axes:
+              tension: 8
+          state_set:
+            last_pjr_encounter_at: NOW
+      - id: pjr5_rival_silent
+        text: "[Say nothing. Let him go.]"
+        next_node_id: pjr5_rival_resolved
+        effects:
+          relationship_effect:
+            axes:
+              tension: 12
+          state_set:
+            last_pjr_encounter_at: NOW
+
+  pjr5_rival_resolved:
+    id: pjr5_rival_resolved
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Apologies are for people who want to be forgiven. I'm only saying goodbye."
+    thought: "He walks to the lift. Anna is there, her hand light on his shoulder. She looks across the atrium at the player once, a long and unreadable look, and then the doors close on the two of them."
+    visual:
+      expression: angry
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_ending_rival: true
+      state_set:
+        pjr_act: "5_done"
+        pjr_ending: rival
+        pjr_arc: rival
+        last_pjr_encounter_at: NOW
+      story_beat: act5_pjr_rival_ending
+      relationship_effect:
+        axes:
+          trust: -10
+          alignment: -10
+          tension: 10
+
+  # ============================================
+  # ENDING 4: DRIFTED (bittersweet, left open)
+  # ============================================
+  pjr5_drifted_start:
+    id: pjr5_drifted_start
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Oh — hi! Hi. Sorry, I'm late, there's a whole group of us doing the youth council thing, you remember Marta and the twins? We're — it's a lot. Good a lot. I wanted to say thanks for the early days. They mattered. Truly. I just... I think I found people who stay in the room."
+    thought: "He is warm, genuinely warm, and already half-turned toward a doorway with voices in it. There is no accusation in him. He has simply stopped waiting at the door."
+    visual:
+      expression: happy
+      position: right
+      transition: fade
+    choices:
+      - id: pjr5_drifted_graceful
+        text: "I'm glad you found them. Go. I'll be around if you want me."
+        next_node_id: pjr5_drifted_resolved
+        effects:
+          relationship_effect:
+            axes:
+              trust: 6
+              tension: -6
+          state_set:
+            last_pjr_encounter_at: NOW
+      - id: pjr5_drifted_ask
+        text: "Did I miss something? I'd like to make it right."
+        next_node_id: pjr5_drifted_resolved
+        effects:
+          relationship_effect:
+            axes:
+              trust: 3
+              familiarity: 2
+          state_set:
+            last_pjr_encounter_at: NOW
+
+  pjr5_drifted_resolved:
+    id: pjr5_drifted_resolved
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "No — no, you didn't miss anything. You weren't on the steps. That's all. And I know that's not a crime, and I know it's silly to carry it. ...Keep a pin. Come to the next table, any time. The door's not locked, it just doesn't wait. Tchau — go well."
+    thought: "He gives a small, sincere wave and goes through the doorway. The voices fold around him. It is no one's fault, and that is exactly why it is sad. The pin on the table is still there, on top of the flyers, waiting for whoever picks it up."
+    visual:
+      expression: sad
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_ending_drifted: true
+      state_set:
+        pjr_act: "5_done"
+        pjr_ending: drifted
+        pjr_arc: drifted_open
+        last_pjr_encounter_at: NOW
+      story_beat: act5_pjr_drifted_ending
+      relationship_effect:
+        axes:
+          trust: 2
+          visibility: -6
+
+  # ============================================
+  # ENDING 5: DISTANT
+  # ============================================
+  pjr5_distant_start:
+    id: pjr5_distant_start
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "Oh, hello! Good to see you again. The table's over there if you want a pin. ...Sorry, I have a speech at four. It was nice to meet you. Truly."
+    thought: "He is polite and ready, a perfect host. There is nothing wrong. There is also nothing there. He gives the same warm greeting to everyone, and the player is one of everyone."
+    visual:
+      expression: default
+      position: right
+      transition: fade
+    is_end: true
+    effects:
+      flag_set:
+        pjr_ending_distant: true
+      state_set:
+        pjr_act: "5_done"
+        pjr_ending: distant
+        pjr_arc: distant
+        last_pjr_encounter_at: NOW
+      story_beat: act5_pjr_distant_ending
+      relationship_effect:
+        axes:
+          visibility: -4
+
+  # ============================================
+  # ENDING: LOVER
+  # ============================================
+  pjr5_lover_start:
+    id: pjr5_lover_start
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "I saved you a seat. Not at the table. Not in frame. Not where the light hits the pin just right. Over here. Where nobody's watching. I brought something. It's not a pin. It's here. He slides a battered notebook across the table. The one from Act 3, the one nobody else has seen."
+    thought: "He does not sit in his usual spot. He sits turned toward the player, shoulder to shoulder, the way you sit with someone when you're not performing. The notebook is open to a fresh page, the first one that isn't filled with legal notes. He doesn't look at the player. He looks at the notebook, like it might hold the answer."
+    visual:
+      expression: vulnerable
+      position: right
+      transition: fade
+    choices:
+      - id: pjr5_lover_accept
+        text: "What's this for?"
+        next_node_id: pjr5_lover_resolved
+        effects:
+          relationship_effect:
+            axes:
+              trust: 8
+            romance: 10
+          state_set:
+            last_pjr_encounter_at: NOW
+
+  pjr5_lover_resolved:
+    id: pjr5_lover_resolved
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "For you. For me. For whatever this is. I wrote my name in it. Just my name. Not Peter Jr., not the brand. Just Peter. And then I left the rest blank. Because I don't know what comes next. And that's okay. The notebook doesn't have to be full. Neither do I. Look. No pin. He touches his bare collar, where the rainbow pin used to be."
+    thought: "He takes a breath that seems to have been building for weeks. His hand finds the player's under the table, fingers lacing together like they've been waiting to do exactly this. The notebook between them is open, empty, full of possibility. The absence of the pin speaks louder than its presence ever could."
+    visual:
+      expression: happy
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_ending_lover: true
+      state_set:
+        pjr_act: "5_done"
+        pjr_ending: lover
+        pjr_arc: lover
+        last_pjr_encounter_at: NOW
+      story_beat: act5_pjr_lover_ending
+      relationship_effect:
+        axes:
+          trust: 10
+          alignment: 8
+
+        romance: 15
+  # ============================================
+  # ENDING: FAILED LOVER
+  # ============================================
+  pjr5_failed_lover_start:
+    id: pjr5_failed_lover_start
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "You came. Of course you came. I saved you a seat. ...At the table. In frame. Where it's safe. Where the pin is on and the script is ready and I know exactly what to do. ...I put the pin back on. I know you noticed. I noticed you noticing. And I put it back on anyway."
+    thought: "He looks at the player with a mixture of longing and pain. The distance between them is physical and emotional. He is wearing the pin again, the mask firmly back in place. He is not angry. He is not cold. He is simply a boy who has discovered that love can hurt, and that the safest thing to do is to retreat behind what he knows."
+    visual:
+      expression: sad
+      position: right
+      transition: fade
+    choices:
+      - id: pjr5_failed_lover_sorry
+        text: "I'm sorry. I didn't mean to hurt you."
+        next_node_id: pjr5_failed_lover_resolved
+        effects:
+          relationship_effect:
+            axes:
+              trust: 4
+              tension: -4
+          state_set:
+            last_pjr_encounter_at: NOW
+      - id: pjr5_failed_lover_silent
+        text: "[Say nothing. The space between you is its own answer.]"
+        next_node_id: pjr5_failed_lover_resolved
+        effects:
+          relationship_effect:
+            axes:
+              trust: 2
+              tension: 6
+          state_set:
+            last_pjr_encounter_at: NOW
+
+  pjr5_failed_lover_resolved:
+    id: pjr5_failed_lover_resolved
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "...Yeah. Me neither. It's okay. I think it's still okay that it happened. That we almost... that I almost let someone see. That's more than I had before. Just — just stay at the table, okay? The pin stays on. The notebook stays in my bag. And we... pretend this is fine. Because it has to be fine. Right?"
+    thought: "He looks at the player for a long moment, then down at his hands. The pin glints in the light, a barrier and a shield. The boy who could have been his first real connection is still there, still present, even if the connection itself is fractured. It is bittersweet, and it is real, and it hurts in a way that feels like growing up."
+    visual:
+      expression: vulnerable
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_ending_failed_lover: true
+      state_set:
+        pjr_act: "5_done"
+        pjr_ending: failed_lover
+        pjr_arc: failed_lover
+        last_pjr_encounter_at: NOW
+      story_beat: act5_pjr_failed_lover_ending
+      relationship_effect:
+        axes:
+          trust: 5
+          tension: 2
+
+        romance: 4
+  # ============================================
+  # ENDING: ENEMY
+  # ============================================
+  pjr5_enemy_start:
+    id: pjr5_enemy_start
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "You. Of course it's you. I should have known. Every time there's a camera, every time there's a headline, every time there's something to tear down — there you are. Ready with the knife. Ready with the quote. Ready to prove that I'm just a kid who doesn't know what he's doing. ...Guess what? I do. I know exactly what I'm doing. And I know exactly what *you* are."
+    thought: "He is not the warm, performative Peter Jr. any more. His voice is cold, his eyes are sharp, and his posture is closed. He has learned from the best, and now he is looking at the player like someone who has decided not to be hurt again. The door has closed, and it has locked behind it."
+    visual:
+      expression: angry
+      position: right
+      transition: fade
+    choices:
+      - id: pjr5_enemy_defend
+        text: "I never meant to hurt you."
+        next_node_id: pjr5_enemy_resolved
+        effects:
+          relationship_effect:
+            axes:
+              trust: -5
+              tension: 10
+          state_set:
+            last_pjr_encounter_at: NOW
+      - id: pjr5_enemy_attack
+        text: "You're the one who doesn't know what he's doing."
+        next_node_id: pjr5_enemy_resolved
+        effects:
+          relationship_effect:
+            axes:
+              trust: -10
+              tension: 15
+              alignment: -12
+          state_set:
+            last_pjr_encounter_at: NOW
+
+  pjr5_enemy_resolved:
+    id: pjr5_enemy_resolved
+    type: character
+    speaker_id: d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a
+    text: "No. Don't. Don't you dare. You had your chance to be someone else. You chose. And I chose to remember. So. We're done. Not just today — we're done. And the next time you see me at a rally, at a table, on the feed? You won't just see Peter van der Meer Jr. You'll see someone who remembers exactly what you did. Every. Time."
+    thought: "He turns away, his back straight, his head high. The boy who once questioned whether he was real has become someone who knows exactly who he is, and who his enemies are. The cameras do not see this. The feed does not record it. But it is the most real thing about him."
+    visual:
+      expression: angry
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        pjr_ending_enemy: true
+      state_set:
+        pjr_act: "5_done"
+        pjr_ending: enemy
+        pjr_arc: enemy
+        last_pjr_encounter_at: NOW
+      story_beat: act5_pjr_enemy_ending
+      relationship_effect:
+        axes:
+          trust: -15
+          alignment: -15
+          tension: 20
+
+metadata:
+  version: "2.0"
+  required_flags:
+    pjr_act4_done: true
+  tags:
+    - "peter_jr"
+    - "act5"
+    - "endings"
+    - "ally"
+    - "mentor"
+    - "rival"
+    - "drifted"
+    - "distant"
+    - "lover"
+    - "failed_lover"
+    - "enemy"
+    - "gate_logic"
+  notes: |
+    Nine endings, selected by flags and stats (precedence: enemy > lover > failed_lover > rival > drifted > his_own > mentor > ally > distant):
+    0. ENEMY: trust <= -30 and alignment <= -20. Active opposition, highest precedence.
+    1. LOVER: `pjr_lover_path` with trust >= 75, familiarity >= 70, intimacy >= 60. Romantic relationship.
+    2. FAILED LOVER: `pjr_lover_path` + `pjr_romance_broken` with trust >= 50, familiarity >= 60, intimacy >= 40. Fractured romance.
+    3. RIVAL: `pjr_rival_path` (mocked, used confession, or leaked). Overrides most paths except enemy/lover.
+    4. HIS OWN SCHEDULE: `pjr_found_truth` (set in Act 4 via the mother branch), trust >= 30.
+    5. DRIFTED: `pjr_act4_deflected` with trust >= 15 and familiarity >= 30.
+    6. MENTOR: mentor path, trust >= 45, familiarity >= 45.
+    7. ALLY: friend path, trust >= 50, alignment >= 40, no mentor path.
+    8. DISTANT: fallback when trust is below 50 and no specific ending applies.
+
+    Peter Jr. is 14; romantic paths are about first crush feelings, innocence, and discovery.
+    The lover path requires high intimacy; failed_lover is for when the romantic connection fractures.
+    Enemy path is for active opposition and harm to him or Amor Verdadero.
+    Edge case: a player with trust >= 50 who matches no specific ending (for example, the mentor
+    path with low familiarity) sees no choice. Verify and adjust thresholds if that appears
+    in playtesting.

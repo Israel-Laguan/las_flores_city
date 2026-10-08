@@ -3,7 +3,8 @@
 **Title:** Union Leader, Union del Trabajador
 
 **Physical Description:**
-- Distinctive appearance fitting their background
+- Stocky Latino man in his early 50s with a square face, thick dark brows, medium-brown skin, dark brown eyes, curly dark hair streaked with gray and a short full beard
+- Small scar on his brow, callused hands; wears a UT jacket with badge and work boots (union-jacket outfit)
 
 **Description (full):**
 
