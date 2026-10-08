@@ -6,7 +6,7 @@
 
 **Born:** ~2041  
 **Age:** 36 in 2077 (game present)  
-**Family:** Daughter of Jan and Maria van der Meer; sister of Peter; wife of Han Jr.; no children  
+**Family:** Daughter of Jan and Maria van der Meer; sister of Peter; wife of Han Jr. (not Peter's husband Jan Jr.); no children  
 **Role:** Chair of the Board / Executive Director of Van der Meer Industries (the CEO post is held by her cousin Sebastian van der Meer), social advocate, later Las Flores City Council member  
 **Faction:** `van_der_meer`  
 **Personality:** `empathetic_pragmatic_reformer`

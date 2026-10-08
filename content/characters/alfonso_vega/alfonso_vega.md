@@ -2,8 +2,8 @@
 
 > Tags: `#figure` `#politics` `#mayor` `#lithium` `#controversy`
 >
-> **Role:** Former Mayor of Las Flores
-> **Status:** Retired (as of 2077)
+> **Role:** Mayor of Las Flores
+> **Status:** Killed in the 2077 estate raid (shot by Chief Inspector Adeyemi)
 
 ## Physical Description
 - Hair: Silver-gray, thick and wavy, swept back in a distinguished style
@@ -34,7 +34,9 @@ Despite the cloud over his administration, Vega's ability to steer the city towa
 
 ## Later Years
 
-Opting not to seek re-election, Vega's final years in office were focused on maintaining stability and ensuring a smooth transition. His departure from public life was marked by a quiet retreat to a finca in the north, distancing himself from the ongoing disputes and tensions within the city.
+Vega remains mayor into 2077, aligned with Li Wei's LW network. He orders the raid on the Sector Norte community center against Alex's movement. When Alex's movement and Evelyn Ruthenberg breach his estate, he withdraws to a hidden safe room beneath the main building, leaving enforcement officers to hunt Evelyn. There, Chief Inspector Adeyemi, who was stationed as his security coordinator, hears him talk freely about the deals with Li Wei and the shell-company money, then shoots him once. See [Alex & Evelyn: The 2077 Endgame](../../lore/stories/alex_and_evelyn_2077/alex_and_evelyn_2077.md) and [The Moral Fracture](../../lore/stories/the_moral_fracture/the_moral_fracture.md).
+
+*(Earlier versions of this file said he declined re-election and retired to a finca in the north; that conflicted with the endgame and was removed.)*
 
 ## Conclusion
 

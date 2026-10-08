@@ -4,11 +4,13 @@ title: CEO, Van der Meer Industries
 birth_year: 2032
 description: Ambitious CEO of Van der Meer Industries. Together with his cousin Liam, he has driven exponential growth through strategic decisions and identifying profitable investment opportunities.
 physical_description: "Dutch man in his 40s with an athletic-compact build, angular face, strong jaw, straight blonde hair threaded with gray and a small scar near the left brow; wears CEO business attire with a company pin."
-psychological_description: "Ambitious executive focused on growth and profitable investment."
+psychological_description: "Ambitious executive focused on growth and profitable investment. A newcomer from the European branch who has to prove he runs the company rather than merely fronts it, and whose appetite for risk has already put him in a leaked party scandal."
 background_and_role:
   - "CEO of Van der Meer Industries"
   - "Drove growth together with his cousin Liam"
   - "Identifies profitable investment opportunities"
+  - "Elder son of Alexander van der Meer Jr. and brother of Nico; joined the family business recently and sits under Chair Anna van der Meer"
+  - "Alleged attendee, with Natalia van der Meer, of the Punta del Este villa party scandal"
 metadata:
   type: human
   role: npc

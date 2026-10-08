@@ -4,11 +4,14 @@ title: Architecture Student, Van der Meer Scholar, Leader of the 2077 Grassroots
 birth_year: 2055
 description: The central protagonist of the 2077 endgame arc. Youngest child of the Garcia flower-growing family by the Río de las Flores, Alex grew up knowing the cost of corporate greed intimately — their mother Maria died in 2071, when Alex was 16, of lithium-contaminated water. Alex enrolled at Universidad Nacional de Las Flores in 2075 to study sustainable urban design on a Van der Meer Foundation scholarship. After moving into Residencial Las Estrellas, Alex noticed a pattern of suspicious deaths and began investigating, eventually discovering Evelyn Ruthenberg's vigilante campaign. The revelation that Evelyn was targeting the people responsible for the contamination that killed their mother transformed Alex's grief into directed action. Alex built a grassroots movement that brought the fight into the light, and died in 2077 detonating an abandoned mine to create an improvised dam — saving the city from a catastrophic flood and buying Evelyn and the others the cover they needed to escape.
 physical_description: "22-year-old Latino person of lean, wiry, medium-height build with straight, shaggy dark hair, hooded dark eyes with faint dark circles and a heart-shaped face; ink-stained hands, jeans, a hoodie, old sneakers and an overstuffed backpack of sketchbooks."
-psychological_description: "Brilliant and driven, a survivor who channeled grief over their mother's death into school and then into directed action."
+psychological_description: "Brilliant and driven, a survivor who channeled grief over their mother's death into school and then into directed action. Warm and self-deprecating, bad at accepting compliments, and prone to sketching when nervous. Never forgives themselves for hesitating, which is why they act before anyone agrees on a plan, burn themselves out, and in the end go to the mine alone."
 background_and_role:
   - "Architecture student on a Van der Meer Foundation scholarship"
   - "Central protagonist of the 2077 endgame arc"
   - "Leader of the grassroots movement against corporate contamination"
+  - "Youngest child of Alejandro and Maria Garcia; the flower-field family's only university student"
+  - "Core of an investigation group with Miguel Jhonson, Ana Kim, Isabella Vargas and Carlos Medina; uneasy ally of Evelyn Ruthenberg"
+  - "Dies in 2077 detonating an abandoned mine to save the city from a flood"
 metadata:
   type: human
   role: npc

@@ -1,11 +1,11 @@
 id: 3315f76b-a1dc-4525-b247-bcb99560b606
 name: Carlos Rodriguez
-title: Mayor of Las Flores Free City
+title: Progressive Alliance Leader and City Council Member
 birth_year: 2029
 description: |
-  Carlos Rodriguez is a 48-year-old Progressive Alliance mayor serving his second term. A founding member, his partnership with Ana Silva — the coalition's environmental policy architect — anchors his agenda. Together they co-authored three contamination oversight bills; two passed in weakened form under LW Group lobbying pressure.
+  Carlos Rodriguez is a 48-year-old Progressive Alliance leader and city council member. A founding member of the Alliance, his partnership with Ana Silva — the coalition's environmental policy architect — anchors his agenda. Together they co-authored three contamination oversight bills; two passed in weakened form under LW Group lobbying pressure.
 
-  His contested position defines him: a reformist mayor governing a city whose largest employer is LW Group. His statements invoke the 2052 Great Lithium Leak and its health impacts; his environmental legislation contains enforcement provisions analysts call toothless.
+  His contested position defines him: a reformist legislator working in a city whose largest employer is LW Group and whose mayor, Alfonso Vega, is aligned with the LW network. His statements invoke the 2052 Great Lithium Leak and its health impacts; his environmental legislation contains enforcement provisions analysts call toothless.
 
   Rodriguez is pragmatic: he identifies the achievable within his constraints, achieves it, and calls it progress.
 relationships:
@@ -20,9 +20,9 @@ relationships:
     trust: -80
     context: Corporate opposition in city council, primary lobbying pressure
 physical_description: "Latino man of 48 with an athletic-compact build, wavy dark hair graying at the temples, almond dark eyes, thick brows and a faint old scar on the chin; wears a well-fitted suit with an open collar and a city pin."
-psychological_description: "Pragmatic reformer who identifies the achievable within his constraints and achieves it, governing a city whose largest employer is LW Group."
+psychological_description: "Pragmatic reformer who identifies the achievable within his constraints and achieves it, working in a city whose largest employer is LW Group."
 background_and_role:
-  - "Progressive Alliance mayor of Las Flores Free City, elected 2071 and serving a second term"
+  - "Progressive Alliance leader and city council member of Las Flores Free City"
   - "Career politician from a working-class Central City background"
   - "Co-authored contamination oversight bills with Ana Silva"
 metadata:
@@ -33,13 +33,13 @@ metadata:
   age: 48
   gender: Male
   ethnicity: Latino
-  occupation: Mayor of Las Flores Free City
-  organization: Progressive Alliance, Office of the Mayor
+  occupation: City Council Member, Progressive Alliance leader
+  organization: Progressive Alliance, City Council
   residence: Central City
-  background: career politician from working-class Central City background, entered politics after the 2058 industrial riots, served two city council terms before mayoral election in 2071
+  background: career politician from working-class Central City background, entered politics after the 2058 industrial riots and has served on the city council since, becoming the Progressive Alliance's leader
   motivations: environmental contamination legislation, transit equity, working-class constituency representation, political survival within structural constraints
   methods: coalition-building, legislative compromise, public advocacy, selective confrontation with corporate interests
-  quote: I govern the city that exists, not the city that should have been built. My job is to make them closer to the same thing, one bill at a time.
+  quote: I legislate for the city that exists, not the city that should have been built. My job is to make them closer to the same thing, one bill at a time.
 asset_paths:
   portrait: carlos_rodriguez__default.png
 
