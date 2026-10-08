@@ -84,7 +84,7 @@ Carlos Lacan is a warm, funny electronics repairer from the city's northern edge
 - **The shop:** A small repair shop with a glass counter, a bench in the back and a wall of labelled drawers. Customers drop off phones, radios and recorders; he narrates each repair to whoever is standing there. *(Existing: part-time work at an electronics repair shop where his sister later keeps his photograph. Layout invented.)*
 - **Regulars:** Neighbours from the northern edge who bring things he fixes for little or nothing: an old man's hearing aid, a kid's drone, a corner stall's card reader. *(Invented.)*
 - **Money:** Partial scholarship plus shop wages; he spends the spare on components. He pays his sister's school costs when the family is short. *(Last point invented.)*
-- **Shows, never tells:** He lays out every part on a cloth in the order he will need it. He labels with masking tape and writes jokes on the tape ("DO NOT TRUST THIS WIRE. IT HAS LIED BEFORE."). He turns up twenty minutes early, per the Week Three account, and is already on his second sandwich when everyone else arrives.
+- **Shows, never tells:** He lays out every part on a cloth in the order he will need it. He labels with masking tape and writes jokes on the tape ("DO NOT TRUST THIS WIRE. IT HAS LIED BEFORE."). He turns up twenty minutes early, and is already on his second sandwich when everyone else arrives.
 - **Fear, handled:** When something frightens him he gets more precise and quieter, then makes a small joke about the thing that frightens him. This is how the others know he is frightened.
 
 ### The Name Gag (invented)

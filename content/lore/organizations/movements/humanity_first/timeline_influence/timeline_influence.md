@@ -30,7 +30,7 @@
 - **Advocacy:** Pressure for relocation of severely affected families
 - **Expert Collaboration:** Environmental scientists and NGOs brought in to measure contamination and advise remediation
 
-### Mid-2052 — Escalation
+### September 2052 — Escalation
 
 #### Public Protests
 - Thousands of residents, environmental groups, students, activists

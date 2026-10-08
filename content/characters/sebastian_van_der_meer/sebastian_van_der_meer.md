@@ -8,7 +8,7 @@
 
 **Description (full):**
 
-Ambitious CEO of Van der Meer Industries. Elder son of [Alexander van der Meer Jr.](../alexander_van_der_meer_jr/alexander_van_der_meer_jr.md) (European branch) and brother of [Nico](../nico_van_der_meer/nico_van_der_meer.md); a cousin once removed of [Liam](../liam_van_der_meer/liam_van_der_meer.md), [Xiu Li](../xiu_li_van_der_meer/xiu_li_van_der_meer.md) and [Dong](../dong_van_der_meer/dong_van_der_meer.md). Together with Liam, he has driven exponential growth through strategic decisions and identifying profitable investment opportunities.
+Ambitious CEO of Van der Meer Industries. Elder son of [Alexander van der Meer Jr.](../alexander_van_der_meer_jr/alexander_van_der_meer_jr.md) (European branch) and brother of [Nico](../nico_van_der_meer/nico_van_der_meer.md); a second cousin of [Liam](../liam_van_der_meer/liam_van_der_meer.md), [Xiu Li](../xiu_li_van_der_meer/xiu_li_van_der_meer.md) and [Dong](../dong_van_der_meer/dong_van_der_meer.md). Together with Liam, he has driven exponential growth through strategic decisions and identifying profitable investment opportunities.
 
 **Age (2077):** 45 (b. 2032)
 **District:** Las Flores

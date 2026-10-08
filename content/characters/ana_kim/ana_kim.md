@@ -142,7 +142,7 @@ To cope with danger she retreats into observation mode, treating human tragedy a
 ### Meeting Ken
 - **When:** Around the same month, while the building mystery deepens
 - **Who:** Ken, an undercover investigator stationed by Chief Inspector Adeyemi in the building's vacant apartment to watch Alex and the owners; he has no surname and no character file yet
-- **Cover:** To keep the vacant unit credible, Ana poses as Alex's relative and Ken as her fiancé (per the source dump; the canonical story leaves the relative as an unnamed police investigator)
+- **Cover:** Ana stays close to the apartment operation, but she does not take the investigator's cover herself. The source dump casts her as Alex's relative and Ken as her fiancé; the canonical account assigns that apartment cover to an unnamed police investigator.
 - **Texture:** Professional and uncomfortable; Adeyemi controls what the team knows. Ana asks the questions everyone else sidesteps, and she is intelligent enough to notice Ken's inconsistencies
 
 ### Role in the Movement
@@ -374,7 +374,7 @@ conveying tension and the moment of decision, cinematic, ultra-detailed, 8k
 - City Hall archive break-in and injury; stepping back from the field
 - Using Ken as an informant, discovering the double agent and double-crossing him
 - Distributing the data to the press through Lina Kim after Alex's death
-- Decision to leave the investigation
+- Decision to leave fieldwork
 - Post-broadcast message to Miguel
 
 ---
@@ -390,4 +390,4 @@ conveying tension and the moment of decision, cinematic, ultra-detailed, 8k
 
 ---
 
-*Ana Kim represents the courage of honesty in the Las Flores 2077 story. Her decision to leave the investigation — far from being cowardly — is one of the most honest and sustainable choices made by any character. She demonstrates that knowing one's limits is not failure, but the wisdom that allows movements to continue and people to survive.*
+*Ana Kim represents the courage of honesty in the Las Flores 2077 story. Her decision to leave fieldwork — far from being cowardly — is one of the most honest and sustainable choices made by any character. She demonstrates that knowing one's limits is not failure, but the wisdom that allows movements to continue and people to survive.*

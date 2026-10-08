@@ -77,7 +77,8 @@ const DESCENDANCY_BY_LEADING_WORD = {
 // leading descriptor of physical_description ("Latina woman ..."), else a neutral default.
 function extractDescendancy(data) {
   if (data.ethnicity) return data.ethnicity;
-  const m = (data.physicalDescription || '').match(/\b(latino|latina|dutch|chinese|korean|indigenous|quechua)\b/i);
+  const lead = (data.physicalDescription || '').split(/[,.]/)[0];
+  const m = lead.match(/\b(latino|latina|dutch|chinese|korean|indigenous|quechua)\b/i);
   return m ? DESCENDANCY_BY_LEADING_WORD[m[1].toLowerCase()] : 'Mixed heritage';
 }
 

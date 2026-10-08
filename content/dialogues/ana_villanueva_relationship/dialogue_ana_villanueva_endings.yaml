@@ -16,15 +16,23 @@ nodes:
       - id: "trigger_lover"
         text: "[Trigger Lover Ending: You showed her she could rest without earning it.]"
         next_node_id: "c1120000-0000-0000-0000-000000000042"
+        required_state:
+          ana_date_outcome: "lover"
       - id: "trigger_friend"
         text: "[Trigger Friend Ending: You gave her a place where the numbers stop.]"
         next_node_id: "c1120000-0000-0000-0000-000000000043"
+        required_state:
+          ana_date_outcome: "friend"
       - id: "trigger_ex"
         text: "[Trigger Ex/Tragic Ending: You kept being her content.]"
         next_node_id: "c1120000-0000-0000-0000-000000000044"
+        required_state:
+          ana_date_outcome: "ex"
       - id: "trigger_enemy"
         text: "[Trigger Enemy Ending: You shamed her ambition.]"
         next_node_id: "c1120000-0000-0000-0000-000000000045"
+        required_state:
+          ana_date_outcome: "enemy_path"
 
   c1120000-0000-0000-0000-000000000042:
     id: "c1120000-0000-0000-0000-000000000042"

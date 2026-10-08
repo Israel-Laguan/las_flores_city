@@ -178,8 +178,8 @@ She represents the **precision that keeps the work honest** — where Alex's war
 
 ### With Carlos Medina
 - **Connection:** Professional respect for technical competence
-- **Shared:** Both provide practical skills to the group
-- **Loss:** Carlos's death affects the whole group's approach
+- **Knowledge:** She studies his work and the archive of what he uncovered
+- **Loss:** She arrived at the café after his death; his death affects the whole group's approach
 - **Legacy:** Isabella continues the work Carlos helped start
 
 ### With Ana Kim

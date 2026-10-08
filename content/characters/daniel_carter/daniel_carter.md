@@ -14,7 +14,7 @@ The founding Pioneer of the Humanity First movement in Las Flores. Arriving from
 **Role:** Pioneer
 **Descendancy:** Canadian
 
-**Movement:** [Humanity First](../../lore/organizations/movements/humanity_first/overview/overview.md), founding Pioneer and first Chair (2035–2039)
+**Movement:** [Humanity First](../../lore/organizations/movements/humanity_first/overview/overview.md), founding Pioneer (not first Chair; first Chair was Elena Ramirez from Jan 2036)
 
 ---
 

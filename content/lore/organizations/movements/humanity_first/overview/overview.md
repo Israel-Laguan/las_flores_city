@@ -71,7 +71,7 @@ Humanity First is a global movement centered on principles that prioritize human
 
 | Era | Chair | Notes |
 |---|---|---|
-| 2035–2039 | Daniel Carter (Pioneer) | Founded the movement in Las Flores |
+| 2035–2036 | Daniel Carter (Pioneer) | Founded and initially organized the movement in Las Flores |
 | 2036–2057 | Elena Ramirez | Appointed first Chair Jan 2036; formally elected Aug 2039 |
 | 2057–2077+ | Sofia Alvarez | Former Youth Council leader |
 

@@ -77,7 +77,7 @@ Anna is empathetic and a strong listener, especially with constituents and vulne
 
 ## Legacy
 
-Anna van der Meer left behind a legacy of compassion, reform, and public courage. She co-founded an LGBTQ+ youth nonprofit, modernized Van der Meer Industries as CEO, fought for environmental and workers' rights, and helped redefine what it meant to be a public leader in Las Flores. Her life remains a touchstone for future generations of Las Flores activists who believe elite power can be forced into public service.
+Anna van der Meer left behind a legacy of compassion, reform, and public courage. She co-founded an LGBTQ+ youth nonprofit, modernized Van der Meer Industries as Chair, fought for environmental and workers' rights, and helped redefine what it meant to be a public leader in Las Flores. Her life remains a touchstone for future generations of Las Flores activists who believe elite power can be forced into public service.
 
 ---
 

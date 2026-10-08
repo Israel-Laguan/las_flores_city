@@ -29,7 +29,7 @@ Young Latina woman of 18 with slightly olive skin and brown curly hair in a pony
 - **Hometown:** A secondary South American city, a working-class house with the football on a small TV and a father's quiet worry. At home her love of superhero stories earned her the label "she likes that boys stuff".
 - **Camilo's death** (date not stated; before she migrates, so shortly before 2077 *(invented timing)*): her closest friend [Camilo Orozco](../camilo_orozco/camilo_orozco.md) dies. She loses her "safe fantasy" and, for a time, becomes a street-level vigilante: she trains in street survival, carries a knife or a stolen pistol, and intervenes in robberies and domestic violence anonymously.
 - **What it cost:** fights are fast and pathetic, people freeze rather than cheer, and the criminals are teenagers. She almost kills someone by accident. She leaves with paranoia, insomnia and numbness, and she notices she is becoming less like Camilo.
-- **Migration:** moves to Las Flores with [Alberto Ramírez](../alberto_ramirez/alberto_ramirez.md), changes her name and builds a civic form of heroism: flyers, youth work, community organizing. The shift away from violence is the story's thesis, and it is not complete.
+- **Migration:** moves to Las Flores with [Alberto Ramírez](../alberto_ramirez/alberto_ramirez.md), changes her name, and there begins her three-part arc of heroism — starting again with physical vigilantism, then flyers and youth work, and finally community organizing. The shift away from violence is the story's thesis, and it is incomplete.
 
 ## Want, Flaw, Fear
 

@@ -69,7 +69,7 @@ When the family saw the full potential of the region, they made a calculated str
 
 - **Liam van der Meer (b. 2035):** Illegitimate son of Alexander van der Meer; half-brother to Xiu Li and Dong. Executive at Van der Meer Industries; advocates for better EU-Las Flores relations. Works closely with European ambassadors. Married **Sofia Rodriguez** in 2068; three young children: twins Miguel and Maria (b. ~2070) and Antonio (b. ~2073). Future aspirations: diplomacy, law and engineering respectively.
 
-- **Sebastian van der Meer (b. 2032):** Ambitious CEO of Van der Meer Industries; drives corporate strategy. Elder son of Alexander van der Meer Jr. (b. 2002, European branch, Hendrik's line) and brother of Nico; a cousin once removed of Liam, Xiu Li and Dong.
+- **Sebastian van der Meer (b. 2032):** Ambitious CEO of Van der Meer Industries; drives corporate strategy. Elder son of Alexander van der Meer Jr. (b. 2002, European branch, Hendrik's line) and brother of Nico; a second cousin of Liam, Xiu Li and Dong.
 
 - **Eva Krol (b. ~2052):** Daughter of Xiu Li van der Meer Krol and Hans Krol. Entrepreneur established successful startups in sustainable mining and renewable energy. Overseeing Northern Mine operations. Two young children: Olivia and Benjamin. Future aspirations: entrepreneurship (Olivia) and environmental law (Benjamin).
 

@@ -21,6 +21,7 @@ nodes:
             friendship: 3
           state_set:
             last_ana_villanueva_encounter_at: NOW
+            ana_date_outcome: "ex"
       - id: "take_phone"
         text: "Ana. Phone. Down. Now."
         next_node_id: "c1120000-0000-0000-0000-000000000023"
@@ -29,11 +30,12 @@ nodes:
             friendship: -8
           state_set:
             last_ana_villanueva_encounter_at: NOW
+            ana_date_outcome: "enemy_path"
       - id: "make_deal"
         text: "Every shop has closing hours. Give me ninety minutes. Treat it as a business decision."
         next_node_id: "c1120000-0000-0000-0000-000000000024"
         required_relationship:
-          friendship: "gte:10"
+          friendship: "gte:5"
         effects:
           relationship_effect:
             friendship: 5
@@ -127,13 +129,14 @@ nodes:
         text: "You're not a storefront, Ana. You're allowed to be here without earning it."
         next_node_id: "c1120000-0000-0000-0000-000000000029"
         required_relationship:
-          friendship: "gte:20"
+          friendship: "gte:12"
         effects:
           relationship_effect:
             friendship: 5
             romance: 1
           state_set:
             last_ana_villanueva_encounter_at: NOW
+            ana_date_outcome: "lover"
       - id: "friend_line"
         text: "Then let me be the person who sits with you when nothing is for sale."
         next_node_id: "c1120000-0000-0000-0000-000000000030"
@@ -142,6 +145,7 @@ nodes:
             friendship: 8
           state_set:
             last_ana_villanueva_encounter_at: NOW
+            ana_date_outcome: "friend"
       - id: "pragmatic_line"
         text: "Then build a business that doesn't need you awake at three in the morning."
         next_node_id: "c1120000-0000-0000-0000-000000000030"
@@ -150,6 +154,7 @@ nodes:
             friendship: 4
           state_set:
             last_ana_villanueva_encounter_at: NOW
+            ana_date_outcome: "friend"
 
   c1120000-0000-0000-0000-000000000029:
     id: "c1120000-0000-0000-0000-000000000029"
