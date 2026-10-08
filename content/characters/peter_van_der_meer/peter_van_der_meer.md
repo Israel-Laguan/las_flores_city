@@ -49,5 +49,29 @@ Peter possesses a complex character shaped by privilege, responsibility, and per
 - **Empathetic & Integral:** His leadership style is marked by genuine concern for his employees and high ethical standards.
 - **Responsible:** Despite his personal struggles and journey, he has never shirked his family duties or business obligations.
 
+## Want, Flaw, Fear
+
+- **Want:** To live openly and keep faith with his workers and his family at once. He came out in 2065 "to embrace who I am fully", and he still wants to be judged as an executive, not as a headline.
+- **Flaw:** Duty over self. For years he stayed in the closet and in an arranged marriage because the family expected it; he "has never shirked his family duties". The family stays "publicly unified" while divided over Dong and over Peter himself, and he goes along with that front. *(that he is slow to confront relatives is invented)*
+- **Fear:** That his son pays for his choices. Rafaela's 2070 tell-all put the marriage of convenience on the public record, and Peter Jr. was seven. *(that this is Peter's central fear is an interpretation)*
+
+## Habits and Contradictions
+
+- Always carries a leather briefcase and wears subtle cologne (from his description).
+- Earned respect by being a middle manager at a GLC mine, not as the heir: a privileged man whose reputation rests on treating workers well.
+- Contradiction: a beneficiary of a mining fortune built on the leak that poisoned the city, who is celebrated for courage in one area and quiet in the other. *(the framing is interpretive; the lore does not show him addressing the leak)*
+
+## Relationships (with cost)
+
+- **[Rafaela](../rafaela/rafaela.md), ex-wife.** A marriage arranged to please families; it ended amicably, then in 2070 she publicized it. The cost is his privacy and some trust.
+- **[Peter van der Meer Jr.](../peter_van_der_meer_jr/peter_van_der_meer_jr.md), son (b. 2063).** The youth ambassador of the advocacy group Amor Verdadero; he was about two at the 2065 press conference.
+- **[Jan van der Meer Jr.](../jan_van_der_meer_jr/jan_van_der_meer_jr.md), husband.** A Dutch cousin's son, met at a charity gala. His support drove a wedge with other relatives.
+- **[Anna van der Meer](../anna_van_der_meer/anna_van_der_meer.md), sister.** Co-manages their mother's care after Jan's death (January 2060) and co-founded Amor Verdadero with him.
+- **[Jan van der Meer](../jan_van_der_meer/jan_van_der_meer.md) and [Maria Martinez van der Meer](../maria_martinez_van_der_meer/maria_martinez_van_der_meer.md), parents.** His father died in January 2060; his mother's dementia deepened afterward.
+
+## Story Role
+
+A prominent Van der Meer figure and ally for LGBTQ+ causes (see [the Van der Meer LGBTQ+ legacy story](../../lore/stories/van_der_meer_lgbtq_legacy/van_der_meer_lgbtq_legacy.md)). He is **not** part of the 2077 Alex/Evelyn main plot, though the family's mining wealth links him to its backdrop.
+
 ## Related Lore
 - [Van der Meer Family](../../lore/organizations/families/van_der_meer/van_der_meer.md)

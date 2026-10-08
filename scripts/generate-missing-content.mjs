@@ -56,20 +56,30 @@ function parseYamlSimple(filePath) {
     name: get('name'),
     title: get('title'),
     description,
-    faction: (() => {
-      const m = content.match(/faction:\s*"?([^"\n]+?)"?/);
-      return m ? m[1].trim() : '';
-    })(),
-    personality: (() => {
-      const m = content.match(/personality:\s*"?([^"\n]+?)"?/);
-      return m ? m[1].trim() : '';
-    })(),
+    // NOTE: use get() (line-anchored, greedy to end of line). The old
+    // /key:\s*"?([^"\n]+?)"?/ form had a lazy quantifier followed by an optional
+    // quote, so it matched a single character (e.g. "independent" -> "i").
+    faction: get('faction'),
+    personality: get('personality'),
+    ethnicity: get('ethnicity'),
+    physicalDescription: get('physical_description'),
     lorePath: get('lore_path'),
-    portraitPath: (() => {
-      const m = content.match(/portrait:\s*"?([^"\n]+?)"?/);
-      return m ? m[1].trim() : '';
-    })(),
+    portraitPath: get('portrait'),
   };
+}
+
+const DESCENDANCY_BY_LEADING_WORD = {
+  latino: 'Latin American', latina: 'Latin American', dutch: 'Dutch', chinese: 'Chinese',
+  korean: 'Asian (Korean)', indigenous: 'Indigenous', quechua: 'Indigenous (Quechua)',
+};
+
+// Descendancy is ethnic heritage, NOT faction. Prefer the yaml's `ethnicity`, then the
+// leading descriptor of physical_description ("Latina woman ..."), else a neutral default.
+function extractDescendancy(data) {
+  if (data.ethnicity) return data.ethnicity;
+  const lead = (data.physicalDescription || '').split(/[,.]/)[0];
+  const m = lead.match(/\b(latino|latina|dutch|chinese|korean|indigenous|quechua)\b/i);
+  return m ? DESCENDANCY_BY_LEADING_WORD[m[1].toLowerCase()] : 'Mixed heritage';
 }
 
 function extractAge(description) {
@@ -135,7 +145,7 @@ ${data.description || `${data.name} is a resident of Las Flores, working as ${da
 **Age (2077):** ~${age}
 **District:** ${district}
 **Role:** ${data.title ? data.title.split(',')[0].trim() : 'resident'}
-**Descendancy:** ${data.faction || 'Mixed heritage'}
+**Descendancy:** ${extractDescendancy(data)}
 `;
 }
 

@@ -4,11 +4,14 @@ title: City Editor, La Prensa (Las Flores)
 birth_year: 2035
 description: City Editor for La Prensa's Las Flores bureau. Coordinates coverage of local news, from politics to cultural events, ensuring the newspaper reflects the city's diverse fabric.
 physical_description: "Latino man in his early 40s with a stocky, solid build, wavy dark hair threaded with gray, a slightly crooked nose and a small mole on his cheek, in smart-casual attire with a press lanyard."
-psychological_description: "Calm and coordinating, with an observant, steady manner."
+psychological_description: "Calm and coordinating, with an observant, steady manner. Avoids confrontation and passes hard calls up to the bureau chief."
 background_and_role:
   - "City Editor of La Prensa's Las Flores bureau"
   - "Coordinates local news coverage from politics to culture"
   - "Ensures the paper reflects the city's diverse fabric"
+  - "Turns tips into assignments for La Prensa's Las Flores bureau"
+  - "Manages Sofia Cortez and Emilio Navarro; reports to Mariana De La Cruz"
+  - "Competes with El Informador for local scoops"
 metadata:
   type: human
   role: npc

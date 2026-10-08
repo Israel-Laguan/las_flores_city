@@ -1,0 +1,99 @@
+id: "c1120000-0000-0000-0000-000000000001"
+name: "Ana Villanueva - Intro"
+description: "The player meets Ana at her day job in the import office while she sells beauty goods on her lunch break. The question that opens the arc: what is all this hustle for?"
+scene_id: "00000000-0000-0000-0000-000000000000"
+character_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+dialogue_scope: "character"
+start_node_id: "c1120000-0000-0000-0000-000000000002"
+nodes:
+  c1120000-0000-0000-0000-000000000002:
+    id: "c1120000-0000-0000-0000-000000000002"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "One sec. Yes, the rose serum is in stock, I can ship Thursday. Hold on, I have eleven minutes of lunch and four of them are yours. Invoice or product?"
+    thought: "(Expression: happy. She is on the phone with one customer, tapping a calculator for another, and holding a lunch she has not touched. Everything about her is in motion.)"
+    choices:
+      - id: "ask_product"
+        text: "Product. What's good?"
+        next_node_id: "c1120000-0000-0000-0000-000000000003"
+      - id: "ask_invoice"
+        text: "Invoice. I'm here about the port shipment."
+        next_node_id: "c1120000-0000-0000-0000-000000000004"
+      - id: "ask_her"
+        text: "Neither. Eleven minutes is a lot for someone who also sells serum on her lunch."
+        next_node_id: "c1120000-0000-0000-0000-000000000005"
+
+  c1120000-0000-0000-0000-000000000003:
+    id: "c1120000-0000-0000-0000-000000000003"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "The rose serum, because the margin is honest. The mask, because people reorder. And the lip oil, because it photographs well. Everything here has a reason."
+    thought: "(Expression: calculating. She pitches without breathing, but she is also reading how the player reacts to each item, like a shopkeeper learning a customer.)"
+    choices:
+      - id: "buy_it"
+        text: "Fine. One serum."
+        next_node_id: "c1120000-0000-0000-0000-000000000006"
+        effects:
+          relationship_effect:
+            friendship: 2
+          state_set:
+            last_ana_villanueva_encounter_at: NOW
+      - id: "ask_goal_a"
+        text: "Honest question. What is all this for?"
+        next_node_id: "c1120000-0000-0000-0000-000000000007"
+
+  c1120000-0000-0000-0000-000000000004:
+    id: "c1120000-0000-0000-0000-000000000004"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "Desk three. Sign here, and if you ever need something off-invoice, my page is on the lanyard."
+    thought: "(Expression: default. She is polished and efficient, a perfectly good office assistant. The player has seen only the day shift.)"
+    is_end: true
+
+  c1120000-0000-0000-0000-000000000005:
+    id: "c1120000-0000-0000-0000-000000000005"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "Because nobody pays an office assistant what an office assistant is worth. So I stopped waiting for somebody to notice."
+    thought: "(Expression: surprised. She was about to deflect with a joke. The player's question was too accurate, and she answers before she can polish it.)"
+    choices:
+      - id: "ask_goal_b"
+        text: "Then what is it you want to be worth?"
+        next_node_id: "c1120000-0000-0000-0000-000000000007"
+        effects:
+          relationship_effect:
+            friendship: 2
+          state_set:
+            last_ana_villanueva_encounter_at: NOW
+
+  c1120000-0000-0000-0000-000000000006:
+    id: "c1120000-0000-0000-0000-000000000006"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "Perfect. Follow the page, tag me when it arrives, and we're even. See you around."
+    thought: "(Expression: happy. A clean transaction. She files the player as a customer, which is a start, but only a start.)"
+    is_end: true
+
+  c1120000-0000-0000-0000-000000000007:
+    id: "c1120000-0000-0000-0000-000000000007"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "A storefront with my name on the sign. Not a stall, not a feed. A door I can lock. I have a number for it and a date. Ninety-eight more days of this and I'm there."
+    thought: "(Expression: determined. She says it like a prayer she has said every night. For a second the salesperson drops and the person shows.)"
+    choices:
+      - id: "ask_stop"
+        text: "Do you ever stop?"
+        next_node_id: "c1120000-0000-0000-0000-000000000008"
+        effects:
+          relationship_effect:
+            friendship: 5
+          state_set:
+            last_ana_villanueva_encounter_at: NOW
+
+  c1120000-0000-0000-0000-000000000008:
+    id: "c1120000-0000-0000-0000-000000000008"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "Stopping is what people do when someone else pays the bills. ...Why, are you offering to?"
+    thought: "(Expression: calculating. She laughs it off, but her eyes linger a beat too long. She files the player as someone who asks the real question. A date may now be negotiable.)"
+    is_end: true

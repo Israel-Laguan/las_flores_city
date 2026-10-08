@@ -232,7 +232,7 @@ After analysis, the following surname assignments were made to reflect Las Flore
 
 | Character | Final Name | Reasoning |
 |-----------|-----------|-----------|
-| Alex's engineering friend | **Carlos Lacan** | Lacan (European/French-Caribbean) was unused; Mendoza exists as separate figure (Javier Mendoza) |
+| Alex's engineering friend | **Carlos Medina** | Medina is the group's Carlos and dies in the Week-Four chase; Mendoza exists as separate figures (Roberto, Carlos and Javier Mendoza). **Carlos Lacan** (European/French-Caribbean) is a separate, living electronics technician unrelated to Alex's investigation |
 | Alex's logistics friend | **Miguel Jhonson** | Jhonson (Anglo-Caribbean) was unused; Reyes exists as separate figures (Camila, Valentina, Emilio Reyes) |
 | The investigation analyst | **Isabella Vargas** | Retained — Vargas was less used than Lopez; Mateo Vargas exists but surname is shared |
 | The library colleague | **Ana Kim** | Kim (Asian-descent) was less used than Castillo (unused); Lina Kim exists as separate journalist |

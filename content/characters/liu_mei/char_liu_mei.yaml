@@ -2,11 +2,11 @@ id: 88c25091-3e3b-4b28-a53c-8ce103a98d0d
 name: Liu Mei
 title: Vice-Mayor of Las Flores Free City
 birth_year: 2033
-description: "Liu Mei is a 44-year-old lawyer-turned-politician serving as Vice-Mayor under Mayor Carlos Rodriguez — a Progressive Alliance appointee selected in 2071 whose expertise in bilateral investment law governs the Chinese enclave's relationship with the city. Within the enclave she is seen as too assimilated, prioritising her Alliance platform over enclave interests. Among the Latino working class and Afro-Dutch minority some view her as an LW Group proxy, a perception rooted in her pre-political legal career. Her actual record contradicts this: she co-authored the 2074 surveillance disclosure proposal and consistently advocates for inequality reduction, arguing that redirecting investment from the enclave to the Industrial Zone is politically necessary. She knows that in Las Flores, being complex is not the same as being effective."
+description: "Liu Mei is a 44-year-old lawyer-turned-politician serving as Vice-Mayor under Mayor Alfonso Vega — a Progressive Alliance appointee selected in 2071 whose expertise in bilateral investment law governs the Chinese enclave's relationship with the city. Within the enclave she is seen as too assimilated, prioritising her Alliance platform over enclave interests. Among the Latino working class and Afro-Dutch minority some view her as an LW Group proxy, a perception rooted in her pre-political legal career. Her actual record contradicts this: she co-authored the 2074 surveillance disclosure proposal and consistently advocates for inequality reduction, arguing that redirecting investment from the enclave to the Industrial Zone is politically necessary. She knows that in Las Flores, being complex is not the same as being effective."
 physical_description: Chinese woman in her mid-40s with a round face, almond eyes, short black side-swept hair and a tiny mole on her left cheek; wears professional political attire with understated jewelry.
 psychological_description: Diplomatic and composed, aware that being complex is not the same as being effective; navigates distrust from every side with legal pragmatism.
 background_and_role:
-  - Vice-Mayor of Las Flores Free City under Mayor Carlos Rodriguez
+  - Vice-Mayor of Las Flores Free City under Mayor Alfonso Vega, as a Progressive Alliance appointee
   - Lawyer-turned-politician specializing in bilateral investment law
   - Progressive Alliance appointee who co-authored the 2074 surveillance disclosure proposal
 relationships:
@@ -14,7 +14,7 @@ relationships:
     type: professional
     closeness: 70
     trust: 85
-    context: Mayor and political ally in the Progressive Alliance
+    context: Political ally in the Progressive Alliance
   - target_id: LW Group
     type: rival
     closeness: -20

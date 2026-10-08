@@ -92,13 +92,13 @@ The staged electrical failure narrative was leveraged to:
 - **Manipulate Evidence**: Controlled explosion left fabricated physical evidence consistent with electrical grid failure
 - **Misleading Expert Testimonies**: Influenced experts corroborated the electrical malfunction theory
 - **Shift Focus**: Away from pre-existing structural weaknesses near the river
-- **Undermine Witness Credibility**: Witnesses like Liu Fang disappeared; Javier Mendoza retracted statements
+- **Undermine Witness Credibility**: Witnesses were intimidated; Javier Mendoza retracted statements
 
 ## Prosecution Team
 
 - Sofia Ramirez (Lead Prosecutor) — Seasoned environmental law attorney
 - Diego Torres — Young prosecutor from Las Flores
-- Carlos Mendoza — Experienced lawyer from Colombia
+- Carlos Mejía — Experienced lawyer from Colombia
 - Elena Vasquez — European environmental law specialist from Spain
 - Robert Green — American attorney with toxic tort background
 
@@ -113,6 +113,8 @@ The staged electrical failure narrative was leveraged to:
 ## Outcome
 
 Despite compelling evidence, the defense's narrative of an unforeseeable catastrophe, combined with legal technicalities and behind-the-scenes manipulation, resulted in acquittal on most charges. The verdict sparked widespread protests and international criticism.
+
+Follow-up proceedings followed in 2059; Liu Fang, who held the auditors' evidence, was murdered in August 2059, ahead of them.
 
 ## Related Lore
 

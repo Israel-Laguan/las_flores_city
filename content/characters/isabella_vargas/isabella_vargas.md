@@ -176,10 +176,10 @@ She represents the **precision that keeps the work honest** — where Alex's war
 - **Archive:** Both present at City Hall break-in
 - **Dynamic:** Miguel's practicality complements Isabella's analysis
 
-### With Carlos Lacan
+### With Carlos Medina
 - **Connection:** Professional respect for technical competence
-- **Shared:** Both provide practical skills to the group
-- **Loss:** Carlos's death affects the whole group's approach
+- **Knowledge:** She studies his work and the archive of what he uncovered
+- **Loss:** She arrived at the café after his death; his death affects the whole group's approach
 - **Legacy:** Isabella continues the work Carlos helped start
 
 ### With Ana Kim
@@ -313,7 +313,7 @@ cinematic, ultra-detailed, 8k
 ### Connected Files
 - [Alex Garcia](../alex_garcia/alex_garcia.md) — Group leader, visionary
 - [Miguel Jhonson](../miguel_jhonson/miguel_jhonson.md) — Logistics expert, practical anchor
-- [Carlos Lacan](../carlos_lacan/carlos_lacan.md) — Technical expert, emotional heart
+- [Carlos Medina](../carlos_medina/carlos_medina.md) — Technical expert; the group's Carlos
 - [Ana Kim](../ana_kim/ana_kim.md) — Early investigator, conscientious objector
 - [Evelyn Ruthenberg](../evelyn_ruthenberg/evelyn_ruthenberg.md) — Whistleblower, shadow network leader
 - [Las Estrellas Investigation](../../lore/stories/retirement_complex_murders/retirement_complex_murders.md) — The case they worked on

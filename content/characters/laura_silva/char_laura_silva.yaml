@@ -1,14 +1,17 @@
 id: e6f7a8b9-c0d1-4e2f-ba4b-5c6d7e8f9a0b
 name: Laura Silva
-title: Investigative Journalist
+title: Investigative Journalist, La Prensa
 birth_year: 2038
 description: Wrote 'How the Business Elite Manipulate Local Politics,' exposing the Business Coalition's shadow government, campaign finance manipulation, and corporate control of Las Flores politics.
 physical_description: "Lean, wiry Latina woman in her late 30s to early 40s with warm-brown skin, straight dark hair pulled back, an oval face with strong jaw, keen wide-set eyes and a faint scar on her left brow."
-psychological_description: "Tenacious and watchful investigative reporter with a sharp, tireless presence."
+psychological_description: "Tenacious and watchful investigative reporter with a sharp, tireless presence. Follows the money rather than the personalities, and is slow to abandon her framing once the pattern is clear."
 background_and_role:
   - Investigative journalist
   - "Exposed the Business Coalition's shadow government"
   - Author of a piece on elite manipulation of local politics
+  - "Author of 'How the Business Elite Manipulate Local Politics'"
+  - "Placed at La Prensa's Las Flores bureau (the lore names no outlet)"
+  - "Rival and sometimes ally of Alejandro Ruiz on the political-money beat"
 metadata:
   type: human
   role: npc

@@ -26,9 +26,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Crouched on a rooftop at night with a flashlight between his teeth, soldering a small circuit board
-- [ ] At a cluttered workbench, hands full of tools, grinning while explaining a wiring fault to friends
-- [ ] Kneeling beside an outdoor condenser unit with a notebook in hand under bright midday sun
+- [ ] Behind a glass repair counter, narrating a repair aloud to a customer with a soldering iron in hand, parts laid out on a cloth in order of use
+- [ ] Holding up a roll of masking tape labelled "DO NOT PSYCHOANALYZE THIS WIRE. IT HAS ISSUES." with a deadpan grin
+- [ ] Leaning on the counter with a cracked radio, listening patiently to an elderly customer who calls him "Doctor" and is describing her dreams
 
 ## Expression Variants
 

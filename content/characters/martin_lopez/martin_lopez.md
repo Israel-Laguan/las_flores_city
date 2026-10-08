@@ -1,6 +1,6 @@
 # Martín López
 
-**Title:** 55-year-old Veteran Journalist & Investigative Reporter at El Diario de Las Flores
+**Title:** 55-year-old Veteran Journalist & Investigative Reporter at El Informador
 
 ## Physical Description
 - Hair: Gray-brown, thinning and combed back
@@ -11,7 +11,7 @@
 
 **Description (full):**
 
-Martín López is a 55-year-old veteran journalist and investigative reporter at El Diario de Las Flores. He began his career as a reporter for a small local newspaper in Las Flores. His tenacious pursuit of the truth led him to uncover numerous cases of corruption and organized crime within the city. Despite facing threats and pushback from powerful figures, he continued his work, earning a reputation as one of the most respected journalists in Las Flores.
+Martín López is a 55-year-old veteran journalist and investigative reporter at [El Informador de Las Flores](../../lore/media/press/el_informador/el_informador.md), where he covers crime and social justice for editor-in-chief [Juan Rodríguez](../juan_rodriguez/juan_rodriguez.md). He began his career as a reporter for a small local newspaper in Las Flores. His tenacious pursuit of the truth led him to uncover numerous cases of corruption and organized crime within the city. Despite facing threats and pushback from powerful figures, he continued his work, earning a reputation as one of the most respected journalists in Las Flores.
 
 Martín's unyielding commitment to uncovering the truth drives him to pursue even the most difficult stories, no matter the obstacles or risks. His keen analytical mind allows him to connect seemingly unrelated events and expose hidden patterns of corruption. Deeply moved by the suffering of others, Martín uses his platform to give voice to those who have been silenced or marginalized.
 

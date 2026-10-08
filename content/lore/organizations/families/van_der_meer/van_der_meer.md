@@ -46,7 +46,7 @@ When the family saw the full potential of the region, they made a calculated str
 
 - **Elisabeth van der Meer (b. ~1995):** Daughter of Pieter and Marleen (first marriage). Step-daughter of Annabella. Arrived in Las Flores with her father. Married Carlos Alberto Hernandez in 2038 in a strategic alliance; her Dutch values clashed with the Hernandez family's corruption. After divorce, focused on raising her daughter Sophia and becoming involved in Las Flores' social scene.
 
-- **Jan van der Meer (b. 2019):** Youngest child of Pieter and Annabella (biological son of Annabella). Father of Peter, Anna, and Lucas. Married local woman Maria Martinez. Took over the family business after his father's retirement and became a prominent figure in Las Flores' development. Passed away suddenly in 2060.
+- **Jan van der Meer (b. 2019):** Youngest child of Pieter and Annabella (biological son of Annabella). Father of Peter, Anna, and Lucas. Married local woman Maria Martinez. Took over GLC in 2045 (aged about 26) when his father retired, shortly before Pieter's death, and became a prominent figure in Las Flores' development. Alexander ran Van der Meer Mining until his own 2045 resignation, so the two never held the same post. Jan passed away suddenly in January 2060.
 
 ### Current Generation — Core Business Line
 - **Xiu Li van der Meer Krol (b. 2031):** Eldest child of Alexander and Wang Mei Li. Inherited her mother's entrepreneurial spirit but struggled to find acceptance within the family due to her mixed heritage. Inherited Alexander's mining interests after his retirement. Became a prominent local politician advocating for women's rights. Married Dutch businessman **Hans Krol**; their daughter is **Eva Krol**.
@@ -65,11 +65,11 @@ When the family saw the full potential of the region, they made a calculated str
 - **Jan van der Meer Jr.:** Peter's cousin and husband (son of the late Jan van der Meer's cousin from Amsterdam). Staunch ally during Peter's coming out; his support drove a wedge with other family members. Brought fresh insights from Europe to the family business. Together with Peter, oversaw development of new state-of-the-art refinery.
 
 ### Current Generation — Business Leadership
-- **Anna van der Meer (b. ~2041):** Daughter of Jan and Maria. Took on the top role at Van der Meer Industries after Jan's death in 2060 at age 19, initially with board management. Now Chair of the board / executive director (the CEO post is held by her cousin Sebastian); active in the 2070s, pursuing environmental activism, LGBTQ+ advocacy, and socially conscious photography. Married Han Jr. (a Dutch cousin) around 2072; no children. Won a Las Flores City Council seat in 2078.
+- **Anna van der Meer (b. ~2041):** Daughter of Jan and Maria. Took on the top role at Van der Meer Industries after Jan's death in 2060 at age 19, initially with board management. Now Chair of the board / executive director (the CEO post is held by her cousin Sebastian); active in the 2070s, pursuing environmental activism, LGBTQ+ advocacy, and socially conscious photography. Married Han Jr. (a Dutch cousin, a different man from Peter's husband Jan Jr.) around 2072; no children. Won a Las Flores City Council seat in 2078.
 
-- **Liam van der Meer (b. ~2035-38):** Illegitimate son of Alexander van der Meer; half-brother to Xiu Li and Dong. Executive at Van der Meer Industries; advocates for better EU-Las Flores relations. Works closely with European ambassadors. Married **Sofia Rodriguez** in 2068; three young children: twins Miguel and Maria (b. ~2070) and Antonio (b. ~2073). Future aspirations: diplomacy, law and engineering respectively.
+- **Liam van der Meer (b. 2035):** Illegitimate son of Alexander van der Meer; half-brother to Xiu Li and Dong. Executive at Van der Meer Industries; advocates for better EU-Las Flores relations. Works closely with European ambassadors. Married **Sofia Rodriguez** in 2068; three young children: twins Miguel and Maria (b. ~2070) and Antonio (b. ~2073). Future aspirations: diplomacy, law and engineering respectively.
 
-- **Sebastian van der Meer (b. 2032):** Ambitious CEO of Van der Meer Industries; drives corporate strategy. Elder son of Alexander van der Meer Jr. (b. 2002, European branch, Hendrik's line) and brother of Nico; a cousin once removed of Liam, Xiu Li and Dong.
+- **Sebastian van der Meer (b. 2032):** Ambitious CEO of Van der Meer Industries; drives corporate strategy. Elder son of Alexander van der Meer Jr. (b. 2002, European branch, Hendrik's line) and brother of Nico; a second cousin of Liam, Xiu Li and Dong.
 
 - **Eva Krol (b. ~2052):** Daughter of Xiu Li van der Meer Krol and Hans Krol. Entrepreneur established successful startups in sustainable mining and renewable energy. Overseeing Northern Mine operations. Two young children: Olivia and Benjamin. Future aspirations: entrepreneurship (Olivia) and environmental law (Benjamin).
 
@@ -78,7 +78,7 @@ When the family saw the full potential of the region, they made a calculated str
 - **Anna-Louise:** Sister of Jan Jr. Headed public relations and community outreach for Van der Meer Industries. Two children with husband Roberto Martinez: Elena (joined Van der Meer Industries) and Mateo (computer science).
 - **Isabella van der Meer Rodriguez (b. ~2062):** Elder daughter of Sophia and Carlos Rodriguez Jr.; a teenager in 2077 already showing her mother's activist streak. *Not to be confused with Isabella "Izzy" Rodriguez (b. 2054, Humanity First organizer, City District), who is unrelated.* **Future branch (post-2077, projection only):** expected to become an anti-corruption activist, marry fellow activist Javier Perez and have a daughter, Lucía.
 - **Diego Rodriguez (b. ~2065):** Younger child of Sophia and Carlos Rodriguez Jr.; a young teenager in 2077, already more drawn to business than politics. **Future branch (post-2077, projection only):** expected to manage the Southern Mine operations and marry Ana Garcia, daughter of a prominent Latino businessman. His children are not set.
-- **Willem van der Meer (b. 2015):** Dutch mining executive of the European branch (Hendrik's line, Pieter's brother's family); father of Natalia.
+- **Willem van der Meer (b. 2015):** Mining executive based in Las Flores, Dutch by descent (European branch, Hendrik's line, Pieter's brother's family); father of Natalia.
 - **Lucas (b. ~2046):** Youngest child of Jan and Maria. Struggles with drug addiction and mental health issues from childhood trauma. Ended up in psychiatric institution after several public incidents.
 - **Wang Mei Li:** Ex-wife of Alexander. Founded Dragon Phoenix Trading ~2048-50 after the divorce; the company focuses on trade between China and Las Flores.
 - **Maria Martinez:** Wife of Jan (a Martinez of Old Las Flores; not the Fundación Esperanza founder of the same name). Influential socialite and philanthropist. Developed dementia after Jan's death.
@@ -92,7 +92,7 @@ When the family saw the full potential of the region, they made a calculated str
 |---|---|---|
 | **Van der Meer Industries** | Umbrella Corporation | Mining, renewable energy, real estate development |
 | **Van der Meer Mining** | Flagship | Lithium extraction, 2 active mines |
-| **Global Lithium Corp (GLC)** | Parent company | International mining corporation; Jan van Dijk is CEO |
+| **Global Lithium Corp (GLC)** | Parent company | International mining corporation; Jan van Dijk (unrelated to the family) is CEO in 2077. Family member Jan van der Meer led GLC 2045-2060 |
 | **Neptune's Haven B.V.** | Port operations | Dutch pier management in Las Flores |
 | **EBF Partnership** | Energy | San Miguel Dam investment |
 
@@ -198,7 +198,7 @@ The family is characterized by:
 | **Minera Estrella** | Direct competitor in mining |
 | **Juan Pablo Ramos** | Political ally; the family funded his Free City campaign |
 | **Flowers Syndicate** | Controlled by Dong van der Meer; legitimate family keeps public distance |
-| **Global Lithium Corp** | Parent company; Jan van Dijk serves as CEO |
+| **Global Lithium Corp** | Parent company; Jan van Dijk (not a family member) serves as CEO |
 | **Free City Government** | Ongoing political relationships |
 
 ---
@@ -215,9 +215,33 @@ The family is characterized by:
 ## Related Lore
 
 - [Van der Meer Mining Company](../../companies/van_der_meer_mining/van_der_meer_mining.md)
-- [Peter van der Meer — LGBTQ+ Advocate](../../../figures/peter_van_der_meer/peter_van_der_meer.md)
-- [Senator Chen Wei — Rival](../../../figures/senator_chen_wei/senator_chen_wei.md)
+- [Peter van der Meer — LGBTQ+ Advocate](../../../../characters/peter_van_der_meer/peter_van_der_meer.md)
+- [Senator Chen Wei — Rival](../../../../characters/senator_chen_wei/senator_chen_wei.md)
 - [Business Coalitions — Political Manipulation](../../../stories/business_elite_manipulate_politics/business_elite_manipulate_politics.md)
 - [Van der Meer Women — Philanthropy & Style](../../../stories/van_der_meer_women/van_der_meer_women.md)
 - [GLC Scholarship Program — Futuro Brillante](../../../stories/glc_scholarship_program/glc_scholarship_program.md)
 - [Neptune's Haven B.V.](../../companies/neptunes_haven/neptunes_haven.md)
+
+## Character Files
+
+- [Pieter van der Meer](../../../../characters/pieter_van_der_meer/pieter_van_der_meer.md)
+- [Alexander van der Meer](../../../../characters/alexander_van_der_meer/alexander_van_der_meer.md)
+- [Elisabeth van der Meer](../../../../characters/elisabeth_van_der_meer/elisabeth_van_der_meer.md)
+- [Jan van der Meer](../../../../characters/jan_van_der_meer/jan_van_der_meer.md)
+- [Maria Martinez van der Meer](../../../../characters/maria_martinez_van_der_meer/maria_martinez_van_der_meer.md)
+- [Xiu Li van der Meer Krol](../../../../characters/xiu_li_van_der_meer/xiu_li_van_der_meer.md)
+- [Dong van der Meer](../../../../characters/dong_van_der_meer/dong_van_der_meer.md)
+- [Sophia van der Meer Rodriguez](../../../../characters/sophia_van_der_meer_rodriguez/sophia_van_der_meer_rodriguez.md)
+- [Peter van der Meer](../../../../characters/peter_van_der_meer/peter_van_der_meer.md)
+- [Peter van der Meer Jr.](../../../../characters/peter_van_der_meer_jr/peter_van_der_meer_jr.md)
+- [Rafaela](../../../../characters/rafaela/rafaela.md)
+- [Jan van der Meer Jr.](../../../../characters/jan_van_der_meer_jr/jan_van_der_meer_jr.md)
+- [Anna van der Meer](../../../../characters/anna_van_der_meer/anna_van_der_meer.md)
+- [Liam van der Meer](../../../../characters/liam_van_der_meer/liam_van_der_meer.md)
+- [Sebastian van der Meer](../../../../characters/sebastian_van_der_meer/sebastian_van_der_meer.md)
+- [Natalia van der Meer](../../../../characters/natalia_van_der_meer/natalia_van_der_meer.md)
+- [Willem van der Meer](../../../../characters/willem_van_der_meer/willem_van_der_meer.md)
+- [Lucas van der Meer](../../../../characters/lucas_van_der_meer/lucas_van_der_meer.md)
+- [Alexander van der Meer Jr.](../../../../characters/alexander_van_der_meer_jr/alexander_van_der_meer_jr.md)
+- [Nico van der Meer](../../../../characters/nico_van_der_meer/nico_van_der_meer.md)
+- [Jan van Dijk (GLC CEO, not a family member)](../../../../characters/jan_van_dijk/jan_van_dijk.md)

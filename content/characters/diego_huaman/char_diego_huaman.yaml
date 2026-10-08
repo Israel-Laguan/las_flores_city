@@ -17,7 +17,7 @@ background_and_role:
 metadata:
   type: human
   role: npc
-  faction: lw_group
+  faction: civil_society
   personality: ambitious_curious_resilient
   age: "19"
   gender: Male

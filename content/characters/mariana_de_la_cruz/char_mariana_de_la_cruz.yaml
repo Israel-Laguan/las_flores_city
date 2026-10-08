@@ -4,11 +4,14 @@ title: Bureau Chief, La Prensa (Las Flores)
 birth_year: 2033
 description: Oversees La Prensa's operations in Las Flores. Pivotal in building the newspaper's presence and credibility in the city through insightful local coverage.
 physical_description: "Latina woman in her 40s with an athletic-compact, poised build; angular face, high cheekbones, wavy dark chin-length hair and a small mole near her lower lip, dressed in professional attire with press credentials."
-psychological_description: "Sharp and commanding, with a focused, editorial bearing."
+psychological_description: "Sharp and commanding, with a focused, editorial bearing. Cautious in a city where local media avoid the leak, and she carries the bureau's local risk."
 background_and_role:
   - "Bureau Chief of La Prensa in Las Flores"
   - "Oversees the newspaper's local operations"
   - "Built its presence and credibility in the city through local coverage"
+  - "Runs La Prensa's Las Flores bureau"
+  - "Manages the LW Group's local advertising and personal pressure on the bureau"
+  - "Contact for the bureau's reporters (Pedro Escobar, Sofia Cortez, Emilio Navarro, Lina Kim)"
 metadata:
   type: human
   role: npc

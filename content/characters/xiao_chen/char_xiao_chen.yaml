@@ -4,11 +4,13 @@ title: CEO of LW Group
 birth_year: 2025
 description: Appointed in 2065, she is the first woman to lead the LW Group conglomerate. Known for her forward-thinking approach, diplomatic persuasion, and emphasis on sustainable tech and social responsibility.
 physical_description: "A Chinese woman in her early 50s with an oval face, almond eyes, a straight dark elegant bob threaded with gray and a tiny mole near her lower lip. She has an athletic-compact build and wears CEO executive attire with a small sport earbud."
-psychological_description: "A visionary diplomat with a forward-thinking, persuasive approach who emphasizes sustainable tech and social responsibility."
+psychological_description: "A visionary diplomat with a forward-thinking, persuasive approach who emphasizes sustainable tech and social responsibility. A former defense attorney who argued the 'natural causes' story at the 2055 lithium leak trial; whether she knew it was a cover-up is left open. Mentored, and anchored to old state interests, by Li Wei."
 background_and_role:
   - "CEO of LW Group, appointed in 2065"
   - "First woman to lead the LW Group conglomerate"
   - "Champions sustainable technology and social responsibility"
+  - "Born 2025 in Chongqing, educated at Peking University; led the defense in the lithium leak trial from January 2055"
+  - "Successor to Li Wei, who remains the real power behind the group"
 metadata:
   type: human
   role: npc

@@ -4,11 +4,12 @@ title: 22-year-old Business Student & Older Sister
 birth_year: 2055
 description: "22-year-old business student and older sister to Lin Xiu. Non-idol features: broad-shouldered build, sun-tanned skin, strong angular asymmetrical jaw, and sharp swallow-tail eyebrows. Sleek black hair in a high ponytail. Favors modern, chic clothing incorporating Peranakan Nyonya batik prints. Exudes a confident, intimidating presence. Compensates for insecurities by trying to feel superior. Grew up working at the port. Shares a complex relationship with Lin Xiu: they adopt a shared arms-crossed tapping posture when defensive, and argue in Hokkien port slang to exclude others."
 physical_description: "Chinese business student in her early 20s with a solid, broad-shouldered build, sun-tanned skin, an angular asymmetrical jaw, sharp swallow-tail eyebrows and sleek black hair in a high ponytail, dressed in chic clothing with Peranakan batik prints."
-psychological_description: "Confident and intimidating, she compensates for insecurities by trying to feel superior and is shrewd about business."
+psychological_description: "Confident and intimidating, she compensates for insecurities by trying to feel superior and is shrewd about business. As the eldest she carries the family's expectations and sees herself as a curator of their Peranakan heritage; she longs for acknowledgment and is hurt, not angry, when her sister wavers."
 background_and_role:
   - "Business student and older sister of Lin Xiu"
   - "Grew up working at the family's port business"
   - "Peranakan (Straits Chinese) heritage"
+  - "Social-storyline contact in the Lin sisters dialogues; not part of the main 2077 plot"
 metadata:
   type: human
   role: npc

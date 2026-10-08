@@ -4,11 +4,14 @@ title: Artist
 birth_year: 2047
 description: An up-and-coming artist in the Van der Meer family. Her first solo exhibition 'Breaking Boundaries' featured abstract paintings and mixed media sculptures challenging traditional norms.
 physical_description: "Lean, wiry Dutch artist in her 20s-30s with a heart-shaped face, wavy blonde messy-chic hair and paint-stained fingers, wearing paint-flecked overalls."
-psychological_description: "Artistic and rebellious, with a vivid, open expression."
+psychological_description: "Artistic and rebellious, with a vivid, open expression. Provocative by method; her exhibitions (Breaking Boundaries, Disruption) and her alleged place in the Punta del Este scandal feed the same publicity."
 background_and_role:
   - "Up-and-coming artist in the Van der Meer family"
   - "First solo exhibition 'Breaking Boundaries'"
   - "Challenges traditional norms through abstract paintings and mixed media sculptures"
+  - "Daughter of Willem van der Meer (European branch)"
+  - "Alleged attendee, with Sebastian van der Meer, of the Punta del Este villa party scandal"
+  - "Not part of the 2077 main plot"
 metadata:
   type: human
   role: npc

@@ -4,11 +4,13 @@ title: Union Leader, AMLF
 birth_year: 2022
 description: Former miner who leads the Asociación de Mineros Las Flores (AMLF). Negotiated improved safety standards and better compensation for mining workers. Distinct from the politician Carlos Hernandez.
 physical_description: "Latino man in his 50s with a broad, heavy build, square face, strong jaw, curly dark hair with gray streaks and a faded mining scar across his left cheek; wears a worn union jacket with an AMLF pin and has broken, callused hands."
-psychological_description: "Seasoned and resolute, with the weatherworn bearing of a veteran labor organizer."
+psychological_description: "Seasoned and resolute, with the weatherworn bearing of a veteran labor organizer. A pragmatic negotiator who wins safety and pay gains for miners by bargaining, allied with the Progressive Alliance, and wary of intimidation."
 background_and_role:
   - "Former miner"
   - "Leader of the Asociación de Mineros Las Flores (AMLF)"
   - "Negotiated improved safety standards and compensation for miners"
+  - "Allied with the Progressive Alliance; not the politician Carlos Hernandez (b. ~1975) nor his son Carlos Alberto Hernandez (b. ~2015)"
+  - "Not part of the 2077 main plot"
 metadata:
   type: human
   role: npc

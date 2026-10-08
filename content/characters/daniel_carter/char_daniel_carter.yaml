@@ -1,14 +1,17 @@
 id: a843f0f8-a506-495f-a971-c7e03918276f
 name: Daniel Carter
 title: Pioneer, Humanity First
-birth_year: 2012
+birth_year: 2005
 description: The founding Pioneer of the Humanity First movement in Las Flores. Arriving from Canada in 2035, he laid the groundwork for the community councils and the movement's core values.
-physical_description: Canadian man in his mid-60s with a broad, heavy build, weathered wind-crinkled skin and a square face; thin receding gray-white hair, thick brows, warm round eyes and a faded scar across one brow; wears a practical weathered jacket with a Humanity First lapel pin.
-psychological_description: Visionary founder; warm and community-minded, steady in his convictions about the movement's core values.
+physical_description: Canadian man in his early 70s with a broad, heavy build, weathered wind-crinkled skin and a square face; thin receding gray-white hair, thick brows, warm round eyes and a faded scar across one brow; wears a practical weathered jacket with a Humanity First lapel pin.
+psychological_description: "Patient, trusting and deliberately self-effacing; a Pioneer whose method is to make himself unnecessary, and who is celebrated for leaving."
 background_and_role:
   - Canadian settler who arrived in Las Flores in 2035
   - Founding Pioneer of the Humanity First movement
   - Laid the groundwork for the community councils
+  - "Arrived in March 2035 aged 30; founding organizer who stepped down June 2039 (first Chair was Elena Ramirez, appointed Jan 2036)"
+  - "Recruited Elena Ramirez, Javier Torres and Carlos Lopez; whereabouts in 2077 unstated"
+  - "Not part of the 2077 main plot"
 metadata:
   type: human
   role: npc

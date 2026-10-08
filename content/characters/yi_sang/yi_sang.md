@@ -22,7 +22,8 @@
 
 | Moment | Year | Age |
 |---|---|---|
-| Rising LW security / early handler work | ~2055 (Liu Fang era) | ~28 |
+| Rising LW security / early handler work | ~2055 | ~28 |
+| Liu Fang alley protocol | Aug 2059 | ~32 |
 | Oversees “Doctor” op from Café de las Mañanas (Student’s Flight) | late 2050s | ~31 |
 | Game present — Chief of Operations | 2077 | **~50** |
 
@@ -40,8 +41,8 @@ He is not Zhang Liang (capital and counsel). He is not Zheng Wuhao (facility gui
 
 ## Known Operations
 
-### Liu Fang / alley protocol (2055)
-As Viktor Reyes’s **handler**, Yi Sang owned the corporate side of intercepting whistleblower **Liu Fang** before trial. Viktor played doctor in the alley; Yi Sang owned the tasking, extraction of evidence priorities, and aftermath hygiene.
+### Liu Fang / alley protocol (August 2059)
+As Viktor Reyes’s **handler**, Yi Sang owned the corporate side of intercepting whistleblower **Liu Fang** before the class-action proceedings. Viktor played doctor in the alley; Yi Sang owned the tasking, extraction of evidence priorities, and aftermath hygiene.
 
 ### The Student’s Flight (late 2050s)
 Seated at **Café de las Mañanas** on Bulevar Progreso with mining agents (including negotiator **Nadia Al-Farsi**), Yi Sang oversaw the Doctor’s assassination op from a safe distance while managing the PR crisis of a massive anti-mining protest in Parque de los Pioneros. Classic Yi Sang: coffee, sightlines, deniability.

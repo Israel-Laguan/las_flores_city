@@ -1,12 +1,12 @@
 # Carlos Lacan
 
-> Tags: `#figure` `#2077` `#movement` `#allies` `#las_estrellas` `#deceased` `#technical` `#emotional`
+> Tags: `#figure` `#npc` `#northern_edge` `#technical` `#electronics` `#student`
 > 
 > **Full Name:** Carlos Lacan
-> **Age (2077):** ~24 (Deceased)
-> **Status:** Deceased (2077, during car chase)
-> **Role:** Technical Expert (electronics and hardware), Emotional Heart
-> **Not to be confused with:** [Carlos Medina](../carlos_medina/carlos_medina.md), a separate student killed in a separate chase (see "Told Apart From Carlos Medina")
+> **Age (2077):** ~24
+> **Status:** Alive
+> **Role:** Electronics repair technician and electrical engineering student
+> **Not to be confused with:** [Carlos Medina](../carlos_medina/carlos_medina.md), the power-systems student who belongs to Alex's group and dies in the Week-Four chase. Lacan is a separate, living character with no part in Alex's investigation.
 > **Descendancy:** European/French-Caribbean
 > **District:** Northern Edge
 
@@ -14,9 +14,7 @@
 
 ## Overview
 
-Carlos Lacan was the **emotional heart** and **technical backbone** of Alex's investigation group. Known for saying "yes" before you finished the sentence, his instinctive loyalty and technical competence made him both beloved and essential to the Las Estrellas investigation.
-
-His death in the car chase is the **central wound** of the story — the moment that transformed the investigation from an amateur inquiry into a personal reckoning. His loss continues to shape the decisions and actions of the surviving group members.
+Carlos Lacan is a warm, funny electronics repairer from the city's northern edge, known for saying "yes" before you finish the sentence and for narrating every repair out loud so that nobody standing at his counter feels left out. He knows Miguel Jhonson from shared coursework, but he is not part of Alex's investigation and is untouched by the Residencial Las Estrellas events. He is an independent character the player can meet and befriend later.
 
 ---
 
@@ -86,8 +84,14 @@ His death in the car chase is the **central wound** of the story — the moment 
 - **The shop:** A small repair shop with a glass counter, a bench in the back and a wall of labelled drawers. Customers drop off phones, radios and recorders; he narrates each repair to whoever is standing there. *(Existing: part-time work at an electronics repair shop where his sister later keeps his photograph. Layout invented.)*
 - **Regulars:** Neighbours from the northern edge who bring things he fixes for little or nothing: an old man's hearing aid, a kid's drone, a corner stall's card reader. *(Invented.)*
 - **Money:** Partial scholarship plus shop wages; he spends the spare on components. He pays his sister's school costs when the family is short. *(Last point invented.)*
-- **Shows, never tells:** He lays out every part on a cloth in the order he will need it. He labels with masking tape and writes jokes on the tape ("DO NOT TRUST THIS WIRE. IT HAS LIED BEFORE."). He turns up twenty minutes early, per the Week Three account, and is already on his second sandwich when everyone else arrives.
+- **Shows, never tells:** He lays out every part on a cloth in the order he will need it. He labels with masking tape and writes jokes on the tape ("DO NOT TRUST THIS WIRE. IT HAS LIED BEFORE."). He turns up twenty minutes early, and is already on his second sandwich when everyone else arrives.
 - **Fear, handled:** When something frightens him he gets more precise and quieter, then makes a small joke about the thing that frightens him. This is how the others know he is frightened.
+
+### The Name Gag (invented)
+- **The joke:** His surname is pronounced like the French psychoanalyst and philosopher Jacques Lacan, and everyone at the university has made the joke. Philosophy students at his counter ask whether he is "the Lacan of the mirror stage"; he answers that his only mirror stage was fixing the one in the shop's bathroom.
+- **The regulars:** An elderly customer insists on calling him "Doctor Lacan" and asks him to interpret her dreams while he repairs her radio. He plays along: "The radio is a symptom. The capacitor is the cause."
+- **On the tape labels:** Among his masking-tape jokes is "DO NOT PSYCHOANALYZE THIS WIRE. IT HAS ISSUES."
+- **The truth:** He has never read a page of the philosopher and says so cheerfully, which makes the joke last longer.
 
 ### Cultural Identity
 - **European/French-Caribbean descent** — reflects Las Flores's multicultural heritage
@@ -96,93 +100,28 @@ His death in the car chase is the **central wound** of the story — the moment 
 
 ---
 
-## The 2077 Investigation Arc
+## Place in the World (2077)
 
-### Joining the Investigation
-- **Connection:** Through Miguel, who knew him from shared coursework
-- **Catalyst:** Miguel explains Alex's theory about HVAC murders, anomalies, roof apparatus
-- **Response:** Asks "what they need him to look at" before Miguel finishes
-- **Confirmation:** Confirms the theory within two roof inspections
-- **Immediate Action:** Begins planning camera installation
-
-### Role in the Movement
-- **Technical Lead:** Confirms and expands on Alex's theories
-- **Installation:** Plans and executes surveillance camera setup
-- **Maintenance:** Physical maintenance of surveillance equipment
-- **Problem-Solving:** Identifies technical aspects of sabotage
-- **Education:** Makes complex technical information understandable
-
-### Risk-Taking
-- **Rooftop Work:** Volunteers for nighttime rooftop tasks
-- **Physical Maintenance:** Takes on risky physical work
-- **Attitude:** Not indifferent to danger, but understands fear ≠ unwillingness
-- **Calculation:** Has done the risk calculation enough that it becomes habitual
-
-### The Car Chase (Death Scene)
-- **Context:** Alex spots the old gasoline car parked near the building one afternoon and acts before anyone has agreed on a plan; Miguel, Carlos and Ana arrive, and Ana says she is not going anywhere
-- **Position:** Following in two vehicles on the road south to the outer districts (per the story; Isabella is not there and reaches the cafe afterwards)
-- **Circumstances:** High-speed chase; a motorcycle appears and cuts across Carlos's lane. It was not random.
-- **Impact:** Carlos dies in the crash; the motorcycle continues south and is never traced
-- **Significance:** Central wound of the story, transforms investigation into personal reckoning
-
----
-
-## Legacy & Remembrance
-
-### Immediate Impact
-- **On Alex:** Never stops carrying the loss, frames all subsequent decisions about risk
-- **On Miguel:** Changes his approach — takes fewer risks with others' lives, more precise about requests
-- **On Group:** Becomes the moment that defines their commitment and caution
-- **On Movement:** First person to die for what the investigation would become
-
-### How He's Remembered
-- **By Group:** Person who made technical work feel possible and danger feel less isolating
-- **By Movement:** First martyr for the Las Estrellas investigation
-- **By Sister:** Keeps framed photograph at electronics shop counter where he worked
-
-### Memorial
-- **Location:** Electronics repair shop (where he worked)
-- **Item:** Framed photograph kept by younger sister
-- **Interviews:** Sister does not grant interviews
-- **Notification:** Informed of death before public broadcast
+- **The repair shop:** He keeps the counter and bench of a small electronics repair shop on the northern edge, fixing phones, radios, recorders and chargers for neighbours who often cannot pay full price.
+- **Miguel Jhonson:** They know each other from shared coursework and still trade parts and favours. Lacan has heard Miguel mention "a friend with a theory about the building" but was never asked to look at anything and was never involved.
+- **Optional later hook:** The player can bring him a broken device, a recorder or a camera to repair, learn from him how hardware is tampered with, or meet him as Miguel's friend after Alex's group has lost its own Carlos.
 
 ---
 
 ## Relationships
 
 ### With Miguel Jhonson
-- **Connection:** Shared coursework, brought Carlos into investigation
-- **Dynamic:** Miguel as connector, Carlos as technical expert
-- **Impact:** Carlos's death hits Miguel with direction, changes his approach
-- **Legacy:** Miguel carries Carlos's memory in his careful approach
-
-### With Alex Garcia
-- **Foundation:** Carlos provides technical precision and courage
-- **Alex's Need:** Needs Carlos to restrain from taking risks that endanger others
-- **Balance:** Carlos's technical competence complements Alex's vision
-- **Tragedy:** Alex never stops carrying Carlos's death
+- **Connection:** Shared coursework; casual friends who trade parts and favours
+- **Dynamic:** Miguel is a connector who sometimes sends people to Carlos's counter; Carlos never asks what for
+- **Note:** Miguel brought a *different* Carlos (Medina) into Alex's investigation
 
 ### With Carlos Medina (invented, optional)
-- **Connection:** Carlos Medina, an unrelated power-systems student, once brought a cracked diagnostic tablet to the repair counter. Carlos Lacan fixed it while narrating the repair aloud; Medina watched in silence.
-- **Aftermath:** Lacan remembers him only as a polite, oddly tidy student. They are two different young men with similar jobs, not one man with two names.
-- **Recommended echo:** If the motorcycle rider is one enforcer across both deaths, Lacan's chase is the second time that rider has been seen.
+- **Connection:** Carlos Medina, an unrelated power-systems student, once brought a cracked diagnostic tablet to the repair counter. Lacan fixed it while narrating the repair aloud; Medina watched in silence.
+- **Aftermath:** Lacan remembers him only as a polite, oddly tidy student. If he learns of Medina's death later, it hits him as a stranger's loss that sat a few feet from his own bench.
 
 ### With His Sister
 - **Connection:** Younger sister, unnamed in existing lore (name left open for the user)
-- **Dynamic:** He teaches her to read a multimeter; she keeps him fed. Shown through the framed photograph she later keeps on the counter.
-- **Legacy:** She does not give interviews and was informed before the public broadcast (existing).
-
-### With Ana Kim
-- **Connection:** Both involved in investigation from early stages
-- **Shared Experience:** Ana is in the car chase that kills Carlos
-- **Impact:** Carlos's death is part of what leads Ana to eventually leave
-- **Memory:** Ana carries the experience and the loss
-
-### With Isabella Vargas
-- **Connection:** Professional respect, both technical in their approaches (but they only overlap briefly: Isabella joins the group after his death)
-- **Dynamic:** Carlos's practical technical work complements Isabella's analytical approach
-- **Tragedy:** Isabella arrives at the cafe independently after the crash and stays when she understands; she never worked beside Carlos
-- **Legacy:** Both continue the work Carlos helped start
+- **Dynamic:** He teaches her to read a multimeter; she keeps him fed, and he pays her school costs when the family is short *(invented)*.
 
 ---
 
@@ -190,8 +129,8 @@ His death in the car chase is the **central wound** of the story — the moment 
 
 ### Electrical Engineering
 - **Knowledge:** Sophisticated technical understanding
-- **Application:** Confirms HVAC sabotage theory
-- **Installation:** Surveillance camera systems
+- **Application:** Diagnosing and repairing consumer and low-voltage electronics
+- **Installation:** Small cameras, sensors and recorders
 - **Maintenance:** Ongoing technical support
 
 ### Problem-Solving
@@ -202,16 +141,16 @@ His death in the car chase is the **central wound** of the story — the moment 
 ### Equipment & Tools
 - **Specialty:** Electronics repair, technical installation
 - **Tools:** Soldering iron, multimeter, small recorders and cameras; standard electrical engineering equipment
-- **Specifically for the investigation:** Wired the rooftop camera to a passive recorder that could be retrieved without going on the roof; supplied the second camera for the vacant room (existing, Weeks Three and Four)
 - **Work Style:** Narrates process, includes others in understanding
 
 ---
 
 ## Quotes & Sayings
 
-- **On Joining:** Asks what they need him to look at (before sentence finishes)
+- **On Helping:** "What do you need me to look at?" (before the sentence finishes)
 - **On Work:** Running technical commentary while working
-- **On Danger:** "Being afraid of something was not the same as being unwilling to do it"
+- **On His Name:** "No relation. I only analyze things that blow fuses."
+- **On Fear:** Gets quieter and more precise, then makes a small joke about the thing that frightens him
 - **On Loyalty:** Says yes before you finish the sentence
 
 ---
@@ -239,25 +178,11 @@ conveying loyalty, kindness, and technical competence, detailed face, 8k
 
 ### For Scene Illustrations
 ```
-Prompt: Carlos Lacan working on rooftop at night in Las Flores, 
-methodical posture while examining HVAC system with flashlight, 
-technical tools spread out, city lights in background, 
-warm accent lighting from equipment against dark night sky, 
-industrial setting with circuit-like patterns in background, 
-conveying technical competence and quiet courage, 
+Prompt: Carlos Lacan at the repair counter of a small electronics shop on the Las Flores northern edge,
+laying out parts on a cloth in order of use, narrating a repair to a customer,
+labelled drawers and a glass counter, warm lamp light, roll of masking tape with jokes written on it,
+warm orange and electric blue accents, conveying kindness and technical competence,
 cinematic lighting, ultra-detailed, 8k
-```
-
-### Memorial Illustration
-```
-Prompt: Memorial scene for Carlos Lacan at electronics repair shop, 
-framed photograph on counter, warm lighting, 
-shop interior with technical equipment, 
-subtle ghostly image of Carlos working in background, 
-sister behind counter with somber but proud expression, 
-warm orange and electric blue color accents, 
-conveying loss, memory, and continuing legacy, 
-emotional and respectful tone, ultra-detailed, 8k
 ```
 
 ---
@@ -265,15 +190,14 @@ emotional and respectful tone, ultra-detailed, 8k
 ## Game Design Notes
 
 ### Character Type
-- **Role:** Technical Expert, Support
-- **Archetype:** The Loyal Technician / The Heart of the Group
-- **Function:** Technical problem-solving, emotional support
+- **Role:** Technical contact, side-quest giver, potential friend
+- **Archetype:** The Loyal Technician
+- **Function:** Hardware repair and explanation, warmth and humour
 
 ### Potential Interactions
-- **Technical Quests:** Help Carlos install and maintain surveillance equipment
-- **Rooftop Missions:** Accompany Carlos on nighttime technical inspections
+- **Repair Quests:** Bring Carlos broken devices; learn how hardware is tampered with
+- **Errands:** Fetch components from the electronics supply stores in the university district
 - **Dialogue Options:** Technical explanations, humorous commentary
-- **Memorial Content:** Post-death remembrance, impact on other characters
 
 ### Dialogue Style
 - **Tone:** Warm, kind, slightly humorous
@@ -285,52 +209,34 @@ emotional and respectful tone, ultra-detailed, 8k
 - **Loyalty:** Willing to help anyone in need
 - **Fear vs Courage:** Understands fear but acts anyway
 - **Inclusion:** Makes sure everyone feels part of the group
-- **Sacrifice:** Willing to take risks for others
+- **Generosity:** Fixes things for little or nothing
 
 ---
 
 ## Lore Connections
 
 ### Connected Files
-- [Alex Garcia](../alex_garcia/alex_garcia.md) — Group leader, visionary
-- [Miguel Jhonson](../miguel_jhonson/miguel_jhonson.md) — Close friend, logistics expert
-- [Ana Kim](../ana_kim/ana_kim.md) — Early investigator, fellow group member
-- [Isabella Vargas](../isabella_vargas/isabella_vargas.md) — Intelligence, pattern recognition
-- [Carlos Medina](../carlos_medina/carlos_medina.md) — A different student killed in a related chase (Ana Villanueva's strand)
-- [Las Estrellas Investigation](../../lore/stories/retirement_complex_murders/retirement_complex_murders.md) — The case they worked on
-- [Alex & Evelyn: The 2077 Endgame](../../lore/stories/alex_and_evelyn_2077/alex_and_evelyn_2077.md) — Climax of the movement
+- [Miguel Jhonson](../miguel_jhonson/miguel_jhonson.md): friend from shared coursework
+- [Carlos Medina](../carlos_medina/carlos_medina.md): unrelated student with a similar first name and field; killed in the Alex-group chase
 
 ### Told Apart From Carlos Medina
 
 | | **Carlos Lacan** | **Carlos Medina** |
 |---|---|---|
 | Born / age 2077 | 2053 / 24 | 2054 / 23 |
-| Discipline | Electronics, devices, surveillance hardware (the bench) | Power systems, building electrical, grid (the wire and the load) |
+| Status | Alive | Deceased (Week-Four chase) |
+| Discipline | Electronics, devices (the bench) | Power systems, building electrical, grid (the wire and the load) |
 | Family | Working-class northern-edge family, Martinique roots, younger sister | Three generations of guild electricians |
-| Work | Counter and bench at a repair shop; fixes and narrates | Building electrical inspector; photographs, files, reports |
 | Temperament | Warm, funny, talkative, says yes at once | Quiet, ordered, formal, assumes the system will listen |
-| Story | Alex's investigation: confirms the HVAC theory, installs cameras, dies in the Week-Four chase | Ana Villanueva's strand: first casualty, killed by fixers before his report is filed |
-| Look | Slight, round soft face, wavy dark hair, light tan skin, work shirt and tool belt | Slender, long face, unruly black hair, light-brown skin, grey shirt, canvas jacket and tablet |
-
-### Key Events
-- Joining the Las Estrellas investigation
-- Confirming HVAC sabotage theory
-- Planning and installing surveillance cameras
-- Death in car chase (2077)
-- Legacy shaping group's approach to risk
+| Story | Independent; not part of Alex's investigation | Alex's group |
 
 ---
 
 ## Metadata
 
 - **Created:** 2026-07-01
-- **Status:** Deceased (2077)
-- **Cause of Death:** Car accident during investigation chase
-- **Faction:** Las Estrellas Movement
+- **Status:** Alive
+- **Faction:** Independent
 - **Location:** Northern Edge, Las Flores
 - **Occupation:** Electrical Engineering Student (electronics), Electronics Repair Technician
-- **Last Updated:** 2026-10-07 (lore expansion to separate from Carlos Medina)
-
----
-
-*Carlos Lacan represents the tragic hero of the Las Flores 2077 story — the person whose loyalty and courage cost him his life, but whose memory continues to shape the movement. His death is the central wound that transforms the investigation from a theoretical pursuit into a deeply personal mission for truth and justice.*
+- **Last Updated:** 2026-10-08 (separated from Alex's investigation; the group's Carlos is Carlos Medina)

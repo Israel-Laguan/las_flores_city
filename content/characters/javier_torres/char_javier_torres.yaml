@@ -1,14 +1,17 @@
 id: f89c0700-c1b6-4eb2-9233-e044cec2ad18
 name: Javier Torres
 title: Vice-Chair, Humanity First
-birth_year: 2035
+birth_year: 2012
 description: A dedicated environmental activist and Vice-Chair of the Humanity First council. He played a crucial role in responding to the Great Lithium Leakage and organizing cleanup campaigns.
-physical_description: "Stocky Latino man in his early 40s with sun-damaged warm-brown skin, short curly dark hair with gray streaks, a round face with strong jaw, hooded dark eyes, thick brows, and a faded scar on his right forearm; wears a Humanity First vest and work boots."
-psychological_description: "Passionate and earnest environmental activist with a determined, energetic bearing."
+physical_description: "Stocky Latino man in his mid-60s with sun-damaged warm-brown skin, short curly dark hair with gray streaks, a round face with strong jaw, hooded dark eyes, thick brows, and a faded scar on his right forearm; wears a Humanity First vest and work boots."
+psychological_description: "Dedicated and impatient, an environmental activist who gives away credit and restrains himself for the movement's non-violence; fears the river damage cannot be undone."
 background_and_role:
   - Vice-Chair of the Humanity First council
   - Responded to the Great Lithium Leakage
   - Organizes cleanup campaigns
+  - "One of Daniel Carter's three first allies (June 2035); led the 2037 river cleanup"
+  - "Vice-Chair beside Elena Ramirez and then Sofia Alvarez; led the 2052 leak response"
+  - "Not part of the 2077 main plot"
 metadata:
   type: human
   role: npc

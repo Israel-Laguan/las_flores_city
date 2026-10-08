@@ -27,6 +27,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Poring over a wiring schematic with a diagnostic tablet under one arm
 - [ ] Crouched at an open electrical panel, tracing a fault with a pen light
 - [ ] Hurrying down a corridor with a canvas jacket slung over one shoulder
+- [ ] Crouched on a rooftop at dusk beside a control housing, a pocket ruler laid next to a small camera he is wiring to a recorder
 
 ## Expression Variants
 

@@ -10,11 +10,14 @@ available_dialogues:
   - 8f7e6f5a-4b3c-5f0a-bc8d-7e6f5f4a3b2f
   - 9e8f7e6d-5b4c-4f1a-8d9d-8f7e6e5b4c30
 physical_description: "Young Latina woman of 18 with slightly olive skin and brown curly hair in a ponytail; wears street clothes and a worn canvas jacket with vintage hero comics tucked inside."
-psychological_description: "Idealistic daydreamer with a grounded belief in justice and community solidarity despite quiet exhaustion."
+psychological_description: "Idealistic daydreamer with a grounded belief in justice and community solidarity despite quiet exhaustion. Survivor guilt over her friend Camilo, and a fear of becoming less like him; she has tried violent vigilantism, found it ugly, and now works toward civic heroism while still tempted by revenge."
 background_and_role:
   - "Student activist at Universidad del Valle"
   - "Born in a secondary city in South America"
-  - "Lost a childhood friend to street violence"
+  - "Lost a childhood friend (Camilo Orozco) to street violence"
+  - "Born Graciela Ramírez; adopted the name Sofia Mendoza on migrating to Las Flores"
+  - "Protective older sister of Alberto Ramírez, who runs packages for the Los Culebras gang"
+  - "Lead of the Real Heroism in Latam storyline; not part of the 2077 Alex/Evelyn main plot"
 metadata:
   type: human
   role: npc

@@ -27,7 +27,7 @@ Jan was always a quiet intellectual, focusing on his studies and developing a de
 
 In 2040, at age 21, Jan married Maria Martinez, a stunningly beautiful woman from a prominent local family. They had three children together: Anna, Peter, and Lucas.
 
-As his father Pieter retired from Global Lithium Corp (GLC), Jan stepped into the role of CEO with grace and determination. He guided the company towards more sustainable practices while maintaining incredibly strong relationships with both employees and community members. His tenure was marked by a shift away from the ruthless expansion tactics of his father towards a philosophy of long-term integration and ethical resource management.
+In 2045, when the aging Pieter retired from Global Lithium Corp (GLC) shortly before his death, Jan (then about 26) stepped into the role of CEO. Alexander, meanwhile, ran Van der Meer Mining until his own resignation that same year, so there was no overlap in the top job. Jan led GLC for fifteen years until his death in 2060. He guided the company towards more sustainable practices while maintaining incredibly strong relationships with both employees and community members. His tenure was marked by a shift away from the ruthless expansion tactics of his father towards a philosophy of long-term integration and ethical resource management.
 
 ## Untimely Death
 

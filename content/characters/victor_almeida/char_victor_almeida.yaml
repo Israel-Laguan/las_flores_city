@@ -4,11 +4,14 @@ title: Editor-in-Chief, La Prensa
 birth_year: 2015
 description: Veteran journalist with over three decades of experience. Known for uncompromising editorial stance and dedication to truth. Led La Prensa's resurgence in investigative journalism.
 physical_description: "A stocky Latino man in his late 50s to mid-60s with a square face, strong jaw, thick brows, weathered skin and thin gray receding hair. He has a faded scar on his right brow and wears veteran editor's attire with a press pass and reading glasses."
-psychological_description: "An uncompromising veteran editor dedicated to the truth."
+psychological_description: "An uncompromising veteran editor dedicated to the truth. He holds the line against LW-linked advertising pressure even when it costs revenue, and distrusts speed when rigor is at stake."
 background_and_role:
   - "Editor-in-Chief of La Prensa"
   - "Journalist with over three decades of experience"
   - "Led La Prensa's resurgence in investigative journalism"
+  - "Backed Lina Kim's 2052 lithium-leak series despite LW advertising pressure"
+  - "Resists the multimedia pace pushed by managing editor Soledad Ortega"
+  - "Main-office editor; not part of the 2077 main plot"
 metadata:
   type: human
   role: npc

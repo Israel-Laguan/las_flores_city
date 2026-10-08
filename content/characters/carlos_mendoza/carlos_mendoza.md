@@ -50,4 +50,4 @@ The structural calculations, riverbank survey drawings and pipe-support details 
 - [Roberto Mendoza](../roberto_mendoza/roberto_mendoza.md): older brother.
 - [Javier Mendoza](../javier_mendoza/javier_mendoza.md): his nephew. Carlos never forgave the retraction, and speaks about it with a mix of anger and love.
 
-**Name collisions (not related):** Carlos Lacan and Carlos Medina (students in the Las Estrellas arc), Carlos Mendoza the prosecutor in the trial team list, Sofia Mendoza (adopted surname).
+**Name collisions (not related):** Carlos Medina (the student killed in the Las Estrellas arc) and Carlos Lacan (an unrelated electronics technician), Carlos Mejía (the Colombian prosecutor on the trial team, previously listed under the same surname), Sofia Mendoza (adopted surname).

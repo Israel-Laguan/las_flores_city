@@ -25,7 +25,7 @@ Viktor is a cold, meticulous professional. He does not hate his targets; he simp
 ## Role in the Story
 When LW Group arranges an 'incident' (a car crash, a mugging gone wrong), Viktor is deployed as the first medical responder. His job is to ensure the target does not survive and to remove any incriminating evidence, all while appearing to provide emergency care. 
 
-In 2055, during the crucial period before the Minera Estrella trial, Viktor was deployed to intercept the whistleblower Liu Fang. In a dark alleyway, he arrived just after she was stabbed. He smoothly displaced an off-duty nurse (Cecilia Rodríguez) who was trying to save her. With chilling calmness, he took over the triage, subtly ensuring Liu Fang bled out while ostensibly performing CPR, and recovered the primary evidence she was carrying (though she had already passed a memory card to a student).
+In August 2059, in the run-up to the class-action proceedings that followed the Minera Estrella trial, Viktor was deployed to intercept the whistleblower Liu Fang. In a dark alleyway, he arrived just after she was stabbed. He smoothly displaced an off-duty nurse (Cecilia Rodríguez) who was trying to save her. With chilling calmness, he took over the triage, subtly ensuring Liu Fang bled out while ostensibly performing CPR, and recovered the primary evidence she was carrying (though she had already passed a memory card to a student).
 
 ## Connections
 - **Yi Sāng**: His handler within the LW Group structure.

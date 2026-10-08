@@ -1,22 +1,27 @@
 id: e6f7a8b9-c0d1-4e2f-a3b4-c5d6e7f8a9b0
 name: Ana Kim
-title: University Library Worker, Former Investigator
+title: Sociology and Journalism Student, Library Worker, Informant Handler
 birth_year: 2052
 description: |-
-  Ana Kim was a colleague of Alex Garcia at the university library. She was drawn into the Residencial Las Estrellas investigation by accident — she came to return Alex's forgotten notebook and ended up helping follow a car. She was sharp, warm, and consistently more competent than her role required.
-
-  After the City Hall archive break-in left her injured (swollen eye, bruised ribs, damaged wrist), Ana made the difficult choice to leave the investigation. She was not a coward — she recognized honestly what she could sustain without destroying herself. She sent money to the movement twice through untraceable channels, never asking for acknowledgment.
+  Ana Kim is the niece of investigative journalist Lina Kim, grew up admiring her aunt's career and believed investigative work looked like the detective books she read. A sociology and journalism student who works at the university library where Alex Garcia has a part-time shift, she was drawn into the Residencial Las Estrellas investigation when she came to return Alex's forgotten notebook and ended up helping follow a car. She grew close to Carlos Medina, met Adeyemi's undercover investigator Ken, and watched Carlos die in the chase. Hardened, she stepped back from fieldwork after the City Hall archive break-in injured her, but kept supplying information and contacts, ran Ken as an informant, discovered he was a double agent and double-crossed him, and after Alex's death got the evidence to the press through her aunt. In 2077 she studies and does freelance background-investigation work while keeping a foot in investigative information.
 physical_description: "25-year-old Korean woman, petite and neat with a straight black bob, soft dark brown eyes, delicate features and light clear skin; a crisp white button-down shirt under a black blazer (a soft grey cardigan over her shoulders in the outfit variant) and small silver stud earrings."
-psychological_description: "Sharp, warm and direct, more competent than her role required, with an honest sense of her own limits."
+psychological_description: "Cautious, observant and brave; sharp, warm and direct, with an honest sense of her own limits. Hardened by betrayal, she keeps people at arm's length and goes unreachable in a crisis."
 background_and_role:
-  - "University library worker and former investigator"
+  - "Sociology and journalism student and university library worker"
+  - "Niece of journalist Lina Kim"
   - "Colleague of Alex Garcia drawn into the Residencial Las Estrellas investigation"
-  - "Left the investigation after the City Hall archive break-in injuries"
+  - "Worked undercover with Adeyemi's investigator Ken in the building's vacant apartment"
+  - "Stepped back from fieldwork after the City Hall archive break-in injuries; kept supplying information and contacts"
+  - "Ran Ken as an informant, uncovered his double role and double-crossed him; distributed the evidence to the press through Lina Kim"
 metadata:
   type: human
   role: npc
   faction: independent
-  status: Alive (left Las Flores, 2077)
+  personality: cautious_observant_brave
+  mannerisms: Verifies every claim by reflex, makes deadpan jokes with a straight face, feeds people without comment, writes in a pocket notebook, sits where she can see the door.
+  fears: Being the reason someone else gets hurt; that being useful and being safe cannot be the same thing.
+  family: Niece of investigative journalist Lina Kim, who taught her to verify everything and never wanted her in the field.
+  status: Alive (studying and freelancing, 2077)
 portrait_urls:
   - url: s3://las-flores/portraits/ana_kim/ana_kim__default.png
     label: dev
