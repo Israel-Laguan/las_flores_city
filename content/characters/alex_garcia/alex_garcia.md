@@ -59,6 +59,6 @@ The central protagonist of the 2077 endgame arc. Born in the Garcia family's flo
 
 Alex is the 2077 protagonist and, by the end, a martyr. The scholarship makes Alex a beneficiary of GLC, the Van der Meer family's company, whose mining the leak came from. *(treating that irony as a theme is an editorial reading, not stated in the stories)* The movement outlives Alex: a studio at the architecture school, a community center in Sector Norte and a bench near Las Estrellas carry their name.
 
-## Known Inconsistencies (for later review)
+## Notes
 
-- [Miguel Jhonson](../miguel_jhonson/miguel_jhonson.md) says he "was there at the end with Alex", while the endgame story has Alex drive to the mine alone. Not resolved here.
+- Alex drove to the mine alone and told no one; [Miguel Jhonson](../miguel_jhonson/miguel_jhonson.md) worked it out too late and reached the entrance as the ground shook (the earlier "there at the end with Alex" wording in Miguel's file was corrected to match).

@@ -142,7 +142,7 @@ He shot Mayor Alfonso Vega. Once.
 
 Then he walked back through the sealed corridors, found Evelyn in the same hallway where he had left her, and told her what he had done.
 
-"You need to make it look like you killed him," Evelyn said. "The world needs a story it can understand. The vigilante killed the mayor. You captured her. That's the narrative that works."
+"You need to make it look like I killed him," Evelyn said. "The world needs a story it can understand. The vigilante killed the mayor. You captured her. That's the narrative that works."
 
 Adeyemi understood. He handcuffed her.
 

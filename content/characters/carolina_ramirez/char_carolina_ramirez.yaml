@@ -4,11 +4,13 @@ title: District Official
 birth_year: 2045
 description: The young Pacific District official who first noticed discrepancies in Manuel Rodriguez's travel expenses. Her investigation exposed his corruption, and she withstood his retaliatory smear campaign with unwavering integrity.
 physical_description: "Petite, slender Latina woman in her early 30s with thick wavy dark brown hair in a low ponytail, warm alert brown eyes, light brown skin and a small mole below her right eye; wears a professional blouse and blazer with a thin gold chain."
-psychological_description: "Principled and unwavering in her integrity, even under a retaliatory smear campaign."
+psychological_description: "Principled and unwavering in her integrity, even under a retaliatory smear campaign. Cannot let a small discrepancy go; afraid the next whistleblower will stay silent after seeing what happened to her."
 background_and_role:
   - "Young Pacific District official"
   - "First noticed discrepancies in Manuel Rodriguez's travel expenses"
   - "Her investigation exposed his corruption"
+  - "Exposed Governor's representative Manuel Rodriguez in the early 2070s (story period moved so she is an adult official)"
+  - "Not part of the 2077 main plot"
 metadata:
   type: human
   role: npc

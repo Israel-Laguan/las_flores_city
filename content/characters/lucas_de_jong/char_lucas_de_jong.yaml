@@ -11,7 +11,7 @@ background_and_role:
 metadata:
   type: human
   role: npc
-  faction: media
+  faction: dutch_interest
   personality: cunning_manipulator
 asset_paths:
   portrait: lucas_de_jong__default.png

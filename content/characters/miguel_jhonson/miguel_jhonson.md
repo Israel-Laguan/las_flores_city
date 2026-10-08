@@ -116,7 +116,7 @@ He represents the **practical revolutionary** — someone who doesn't romanticiz
 ## After Alex (2077 and Beyond)
 
 ### Immediate Aftermath
-- **Witness:** The one who was there at the end with Alex
+- **Witness:** Worked out too late where Alex had gone and reached the mine entrance just as the ground shook (per the endgame story; Alex drove there alone)
 - **Silence:** Has never spoken publicly about those final minutes
 - **Continuation:** Joins the transitional council
 

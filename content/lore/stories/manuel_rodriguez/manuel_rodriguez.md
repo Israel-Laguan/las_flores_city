@@ -3,7 +3,7 @@
 > Tags: `#politics` `#corruption` `#pacific`
 > 
 > **Location:** Pacific District, Las Flores
-> **Period:** ~2040s–2050s
+> **Period:** early 2070s *(revised from ~2040s–2050s so that whistleblower Carolina Ramirez, b. ~2045, is an adult official)*
 
 ## Overview
 Manuel Rodriguez was appointed as the Governor's representative in the Pacific District of Las Flores. His role was to oversee the district's administration, ensure the smooth operation of local government affairs, and act as a liaison between the Governor and the district's residents. Manuel was initially known for his charisma and dedication to his work, but his true character would soon be revealed.
@@ -32,4 +32,4 @@ Carolina, aware of Manuel's attempts to discredit her, remained steadfast in her
 In the end, Manuel's efforts to seek revenge backfired. His vindictive actions only served to further expose his own corrupt nature and cement Carolina's reputation as a principled and dedicated public servant. Manuel was ultimately left isolated and disgraced, his once-promising career in ruins due to his own greed and deceit.
 
 ## Related Lore
-- [Pacific District](../districts/pacific.md)
+- [Pacific District](../../../districts/pacific/pacific.md)

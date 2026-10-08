@@ -4,9 +4,11 @@ title: Peter Jr.'s School Friend
 birth_year: 2063
 description: "A quiet 14-year-old from Los Andes on a scholarship at Peter Jr.'s school. The feed keeps calling him Peter Jr.'s 'namorado'. In truth he is the only person who asks Peter Jr. how he is, and he doesn't care about the cameras. He is unbothered by the rumor and a little embarrassed by it."
 physical_description: "Short, sturdy Andean Latino boy of 14 with dark straight hair, a round face, smooth brown skin and thick-framed glasses; wears an old knit school jumper under a borrowed, oversized jacket."
-psychological_description: "Honest, steady and dry-humored; unimpressed by status and quietly loyal."
+psychological_description: "Honest, steady and dry-humored; unimpressed by status, quietly loyal, and afraid the rumor costs him his scholarship."
 background_and_role:
   - "Peter Jr.'s one real friend, caught in a tabloid rumor"
+  - "From Los Andes, on a scholarship at Peter Jr.'s school"
+  - "Not stated to be related to Isabella Quispe of San Pedro"
 metadata:
   type: human
   role: npc

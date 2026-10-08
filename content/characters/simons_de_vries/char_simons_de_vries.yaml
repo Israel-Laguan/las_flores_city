@@ -4,12 +4,14 @@ title: Engineering Student, Universidad Nacional
 birth_year: 2056
 description: A 21-year-old engineering student in Las Flores, Simon is the son of a Dutch sailor and a local woman. He grew up in a modest household, supporting his mother while receiving annual visits from his father at sea. A dedicated student with a passion for maritime technology, he aims to work at the port and support his family. His engineering studies and love for ships reflect his blended heritage and ambition.
 physical_description: "Lean, athletic young man with sandy blonde hair and deep blue eyes; dresses casually but professionally."
-psychological_description: "Determined and dedicated; supportive of his family and driven by a passion for maritime technology."
+psychological_description: "Hardworking, compassionate and over-eager to fix things; torn between a mother who stays and a father who is always at sea."
 background_and_role:
   - "Engineering student at Universidad Nacional"
   - "Son of a Dutch sailor and a local woman"
   - "Supports his mother while studying"
   - "Aims to work at the port"
+  - "Half-Dutch through his sailor father but with no Van der Meer or Dutch-interest ties"
+  - "Aims at a job at the port (run in part by Neptune's Haven B.V.)"
 metadata:
   type: human
   role: npc
