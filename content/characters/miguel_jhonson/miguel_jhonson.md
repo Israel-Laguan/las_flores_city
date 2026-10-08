@@ -142,7 +142,7 @@ He represents the **practical revolutionary** — someone who doesn't romanticiz
 - **Balance:** Alex needs Miguel to restrain him from taking risks that endanger others
 - **Dynamic:** Miguel pushes past his instinct to protect rather than act
 
-### With Carlos Lacan
+### With Carlos Medina
 - **History:** Knew from shared coursework
 - **Connection:** Miguel brought Carlos into the investigation
 - **Loss:** Carlos's death is the wound that changes Miguel's approach
@@ -250,7 +250,7 @@ conveying competence and care, cinematic lighting, ultra-detailed, 8k
 
 ### Connected Files
 - [Alex Garcia](../alex_garcia/alex_garcia.md) — Group leader, visionary
-- [Carlos Lacan](../carlos_lacan/carlos_lacan.md) — Technical expert, close friend
+- [Carlos Medina](../carlos_medina/carlos_medina.md) — Technical expert, shared-coursework friend
 - [Ana Kim](../ana_kim/ana_kim.md) — Early investigator, practical contributor
 - [Isabella Vargas](../isabella_vargas/isabella_vargas.md) — Intelligence, pattern recognition
 - [Las Estrellas Investigation](../../lore/stories/retirement_complex_murders/retirement_complex_murders.md) — The case they worked on
@@ -259,7 +259,7 @@ conveying competence and care, cinematic lighting, ultra-detailed, 8k
 ### Key Events
 - Joining the Las Estrellas investigation
 - Building the logistical network
-- Carlos Lacan's death and aftermath
+- Carlos Medina's death and aftermath
 - The 2077 broadcast
 - Transitional council work (post-2077)
 

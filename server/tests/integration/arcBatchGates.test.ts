@@ -26,7 +26,7 @@ import * as yaml from 'js-yaml';
 const TEST_USER_ID = 'e4800000-0000-4000-8000-000000048002';
 
 const CAMILA_ID = '66856547-525f-4d5d-8b3c-6a264134d868';
-const ANA_ID = '6a8b13c0-7e61-419b-98f5-b772e0c238fa';
+const ANA_ID = 'e6f7a8b9-c0d1-4e2f-a3b4-c5d6e7f8a9b0';
 const LIN_XIU_ID = '33333333-4444-4555-8666-777777770001';
 
 const SOFIA_ID = 'c3d4e5f6-a7b8-4012-8def-123456789012';
@@ -155,8 +155,8 @@ describe('Camila Santander (batch 2) — incompatible states', () => {
 });
 
 
-describe('Ana Villanueva (batch 5) — incompatible states', () => {
-  const midgame = () => loadDialogueYaml('dialogues/ana_villanueva_relationship/dialogue_ana_midgame_tacos.yaml');
+describe('Ana Kim (batch 5) — incompatible states', () => {
+  const midgame = () => loadDialogueYaml('dialogues/ana_kim_relationship/dialogue_ana_midgame_tacos.yaml');
 
   test('romance confrontation hidden below friendship gte:20; cold path stays open', async () => {
     const tree = midgame();
@@ -369,9 +369,9 @@ describe('Phase 6 batch closure — entry nodes keep ≥1 ungated choice', () =>
     'dialogues/camila_santander_endings.yaml',
     'dialogues/camila_santander_epilogue.yaml',
     'dialogues/camila_upload.yaml',
-    'dialogues/ana_villanueva_relationship/dialogue_ana_intro.yaml',
-    'dialogues/ana_villanueva_relationship/dialogue_ana_midgame_tacos.yaml',
-    'dialogues/ana_villanueva_relationship/dialogue_ana_endings.yaml',
+    'dialogues/ana_kim_relationship/dialogue_ana_intro.yaml',
+    'dialogues/ana_kim_relationship/dialogue_ana_midgame_tacos.yaml',
+    'dialogues/ana_kim_relationship/dialogue_ana_endings.yaml',
     'dialogues/lin_sisters_encounter/dialogue_lin_sisters_encounter.yaml',
     'dialogues/lin_sisters_romance/dialogue_xiu_language.yaml',
     'dialogues/lin_sisters_parents/dialogue_lin_sisters_parents.yaml',

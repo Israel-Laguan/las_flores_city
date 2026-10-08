@@ -1,0 +1,62 @@
+id: "c1120000-0000-0000-0000-000000000040"
+name: "Ana Villanueva - Endings"
+description: "The final resolution of Ana's relationship arc after she opens her first storefront."
+scene_id: "00000000-0000-0000-0000-000000000000"
+character_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+dialogue_scope: "character"
+start_node_id: "c1120000-0000-0000-0000-000000000041"
+nodes:
+  c1120000-0000-0000-0000-000000000041:
+    id: "c1120000-0000-0000-0000-000000000041"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "The shop opens at nine tomorrow. Whatever happens, the first day's ledger is balanced."
+    thought: "(Expression: default. The culmination of the arc. Her reaction depends on whether the player ever helped her step away from the hustle.)"
+    choices:
+      - id: "trigger_lover"
+        text: "[Trigger Lover Ending: You showed her she could rest without earning it.]"
+        next_node_id: "c1120000-0000-0000-0000-000000000042"
+      - id: "trigger_friend"
+        text: "[Trigger Friend Ending: You gave her a place where the numbers stop.]"
+        next_node_id: "c1120000-0000-0000-0000-000000000043"
+      - id: "trigger_ex"
+        text: "[Trigger Ex/Tragic Ending: You kept being her content.]"
+        next_node_id: "c1120000-0000-0000-0000-000000000044"
+      - id: "trigger_enemy"
+        text: "[Trigger Enemy Ending: You shamed her ambition.]"
+        next_node_id: "c1120000-0000-0000-0000-000000000045"
+
+  c1120000-0000-0000-0000-000000000042:
+    id: "c1120000-0000-0000-0000-000000000042"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "There's a sign on the door: 'Closing hours, 6 p.m. sharp.' I put it there myself. I made a reservation for after. No tripod. No ring light. ...Come hungry?"
+    thought: "(Expression: happy. The Lover Ending. Her hustle has a door she can lock, and she locks it to be with the player.)"
+    choices:
+      - id: "lover_end"
+        text: "I'll be there at six."
+        next_node_id: "END"
+
+  c1120000-0000-0000-0000-000000000043:
+    id: "c1120000-0000-0000-0000-000000000043"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "Thirty percent off for friends, a hundred for you. Don't tell my accountant. And first Fridays, phones in the bag. Deal?"
+    thought: "(Expression: tender. The Friend Ending. A warm, steady partnership with one protected evening a month.)"
+    is_end: true
+
+  c1120000-0000-0000-0000-000000000044:
+    id: "c1120000-0000-0000-0000-000000000044"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "Four hundred thousand followers and I ate dinner alone, filming it. You were right and you let me do it anyway. I'm moving to the capital to scale. Don't follow my page."
+    thought: "(Expression: sad. The Ex/Tragic Ending. She became the brand and lost the person. She is professional and tired, and she does not blame the player out loud.)"
+    is_end: true
+
+  c1120000-0000-0000-0000-000000000045:
+    id: "c1120000-0000-0000-0000-000000000045"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "You made my dream a joke in front of the only people I ever cared to impress. I'm taking my business where it's respected. Reviews are public, by the way. Two stars."
+    thought: "(Expression: angry. The Enemy Ending. She keeps the shop and her pride, and loses her trust in the player.)"
+    is_end: true

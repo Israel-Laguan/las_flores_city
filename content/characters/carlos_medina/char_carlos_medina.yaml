@@ -3,14 +3,15 @@ name: Carlos Medina
 title: Electrical Engineering Student (Power Systems), Building Electrical Inspector
 birth_year: 2054
 description: |
-  A final-year power-systems student, third in a line of guild electricians, who took a side job inspecting building electrical systems and discovered the deliberate AC sabotage at Residencial Las Estrellas. Methodical and detail-obsessed, he photographs every panel before he touches it and trusts that a fault put on the record will be fixed. He tried to report the anomaly formally, and was killed in a high-speed chase by corporate fixers (a motorcyclist ran him down) before he could expose the truth. His friend Ana Villanueva was in the car and survived; his death is what pulled her in. He is a different person from Carlos Lacan: Medina works the grid and the paperwork, Lacan works the repair bench and the rooftop hardware.
+  A final-year power-systems student, third in a line of guild electricians, who took a side job inspecting building electrical systems and discovered the deliberate AC sabotage at Residencial Las Estrellas. Methodical and detail-obsessed, he photographs every panel before he touches it and trusts that a fault put on the record will be fixed. Miguel brought him into Alex Garcia's group in Week Three; he confirmed the HVAC theory and installed the surveillance cameras. He was killed in the Week-Four car chase when a motorcyclist cut across his lane. He is the single "Carlos" of the source story; Carlos Lacan is a separate, living character.
 physical_description: "Slender, wiry Latino man of 23 with a long face, hooded earnest dark-brown eyes, clear light-brown skin and unruly black hair; wears a heavy canvas jacket with an Electricians' Guild patch and carries a diagnostic tablet."
 psychological_description: "Analytical, curious and methodical; detail-obsessed and earnest in trying to report what he found."
 background_and_role:
-  - "Final-year electrical engineering student (power systems) at the Universidad Tecnica de Las Flores; first in his guild-electrician family to attend university"
+  - "Final-year electrical engineering student (power systems) at the Universidad Nacional de Las Flores; first in his guild-electrician family to attend university"
   - "Part-time building electrical inspector, assigned to Residencial Las Estrellas"
   - "Discovered the deliberate AC sabotage at Residencial Las Estrellas"
-  - "Killed by corporate fixers in a high-speed chase before he could expose it"
+  - "Member of Alex Garcia's investigation group: confirmed the HVAC sabotage theory and installed the rooftop and vacant-room cameras"
+  - "Killed in the Week-Four car chase in 2077 when a motorcycle cut across his lane"
 metadata:
   type: human
   role: npc
@@ -19,14 +20,14 @@ metadata:
   age_2077: 23
   occupation: Student, part-time building electrical inspector
   residence: Electricians' Guild district, Las Flores (family home)
-  background: Third generation of a guild electrician family; first to attend the Universidad Tecnica de Las Flores. Final year of electrical engineering, grid-modernization job lined up, girlfriend, proud family. Inspected building electrical systems to pay for the final year.
+  background: Third generation of a guild electrician family; first to attend the Universidad Nacional de Las Flores. Final year of electrical engineering, grid-modernization job lined up, girlfriend, proud family. Inspected building electrical systems to pay for the final year.
   mannerisms: Photographs every panel with a pocket ruler for scale before and after touching it. Re-labels mislabelled breakers in block capitals. Speaks in ordered sentences, goes silent while thinking, tablet held flat to his chest.
   motivations: Fix the unreliable power in the outer districts. Make a faulty system answer to the record.
   fears: Doing the job badly. Letting his family's name be signed to something wrong.
   goals: Get the Residencial Las Estrellas anomaly on the record and fixed. Graduate and start grid-modernization work.
   challenges: Socially oblivious; assumes reporting a fault gets it fixed.
-  relationships: Ana Villanueva (friend, in the car during the chase); girlfriend; guild family; briefly met Carlos Lacan at an electronics repair counter (invented, optional).
-  status: Deceased (2077)
+  relationships: Alex Garcia, Miguel Jhonson and Ana Kim (investigation group); girlfriend; guild family; briefly met Carlos Lacan at an electronics repair counter (invented, optional; Lacan is a separate, living character).
+  status: Deceased (2077, Week-Four chase)
   appearance: "Young Latino man, early 20s, earnest expression, wearing an engineering guild jacket, carrying a diagnostic tablet."
 lore_path: carlos_medina.md
 asset_paths:

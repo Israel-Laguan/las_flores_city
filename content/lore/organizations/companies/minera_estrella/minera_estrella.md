@@ -140,7 +140,7 @@ In essence, Minera Estrella stands as a testament to the transformative impact o
 | Míngzé Luo | President of Minera Estrella | Active — denied responsibility at trial |
 | Zheng Wuhao | Facility Supervisor (retired ~2056) | Alive in 2077 — long retired |
 | Liu Xiaoping | Chief Engineer | Involved in cover-up fabrication |
-| Liu Fang | Former Employee / Whistleblower | Disappeared 2055 |
+| Liu Fang | Former Employee / Whistleblower | Murdered August 2059 (after the 2057 verdict, ahead of the class-action proceedings) |
 
 ## In-Game References
 - Central antagonist in environmental mystery arcs

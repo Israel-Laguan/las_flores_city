@@ -12,4 +12,4 @@ Liu Mei is a 44-year-old lawyer-turned-politician serving as Vice-Mayor under Ma
 **Age (2077):** ~44
 **District:** is politically necessary
 **Role:** Vice-Mayor of Las Flores Free City
-**Descendancy:** g
+**Descendancy:** Chinese

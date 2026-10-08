@@ -13,4 +13,4 @@ Leads reporting on technology, science, and their societal impacts. Instrumental
 **Age (2077):** ~35 (b. 2042)
 **District:** Las Flores
 **Role:** Technology & Innovation Editor
-**Descendancy:** m
+**Descendancy:** Latin American

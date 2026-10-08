@@ -74,7 +74,7 @@ That paper trail was the evidence they needed. It existed in physical form in th
 
 ### Ana's Distance
 
-Ana had left. She had chosen a peaceful life and she was living it. The movement's members did not know her name. But she sent money, twice, in amounts that required some sacrifice, through intermediaries that could not be traced. She never asked for acknowledgment. This was, perhaps, its own form of the same thing.
+Ana had stepped back from the field after the archive break-in, but she had not left. She worked the paper and the contacts from a rented room near the university. She kept Ken, Adeyemi's undercover investigator, as an informant, until she found out that he was reporting to both Adeyemi and the corporation. She did not cut him off. She fed him what she wanted his handlers to believe. As Alex drew close to Evelyn she was sidelined, and the movement's members knew her mostly as the one who always had the next contact.
 
 ---
 
@@ -180,7 +180,7 @@ Li Wei was arrested in Santiago de Chile four weeks later. Senator Chen was deta
 
 Chief Inspector Adeyemi coordinated the initial wave of domestic arrests. His own past was publicly known and publicly contested—he had enabled the system he ultimately refused, and the city spent years deciding what to make of that. He never sought exoneration. He worked, and let the work be its own answer.
 
-The surviving members of the movement were rounded up in the days after the raid. Miguel was arrested at his family home in the western district. Isabella was detained at a safehouse in Sector Norte. Ana, who had been living quietly in another part of the country, was identified through financial records and brought in for questioning. They were charged with conspiracy, terrorism, and complicity in the mayor's murder — the same charges the LW Group had used to frame activists for years.
+The surviving members of the movement were rounded up in the days after the raid. Miguel was arrested at his family home in the western district. Isabella was detained at a safehouse in Sector Norte. Ana, who had been working quietly from the university district, was identified through her contacts and financial records and brought in for questioning. They were charged with conspiracy, terrorism, and complicity in the mayor's murder — the same charges the LW Group had used to frame activists for years.
 
 But the movement's network was not so easily dismantled. Several key organizers escaped the crackdown through the distributed infrastructure Miguel had built — safehouses in remote neighborhoods, communication channels that could not be traced, people who had never been part of the visible leadership. They carried the work forward underground, ensuring the evidence could not be suppressed.
 
@@ -205,6 +205,8 @@ The trial lasted six months. In the end, Evelyn was convicted on reduced charges
 She served four. The transitional government commuted her sentence as part of the broader reconciliation process, citing her cooperation with the international forensic investigation and the unprecedented public service of her testimony.
 
 She was released quietly in 2081. She did not give interviews. She did not write a memoir. She was seen, occasionally, walking in the neighborhoods of Sector Norte, near the places where the movement had been strongest. She never spoke about Alex publicly. But those who saw her on those walks said she always stopped at the bench with the inscription: *This neighborhood will be better built next time.*
+
+After Alex's death, Ana got the data to the press. She used her aunt, the journalist Lina Kim, and the contacts of La Prensa to reach the news organizations, so the broadcast did not rest on a single channel.
 
 ### The Movement After Alex
 

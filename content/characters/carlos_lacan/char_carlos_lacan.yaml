@@ -1,16 +1,15 @@
 id: d5e9f3a4-6b7c-4d8e-8f1a-2b3c4d5e6f7a
 name: Carlos Lacan
-title: University Student (Electrical Engineering, Electronics), Technical Expert
+title: University Student (Electrical Engineering, Electronics), Repair Technician
 birth_year: 2053
-description: "A close friend of Alex Garcia through Miguel, Carlos was an electrical engineering student who confirmed the HVAC sabotage theory and set up surveillance at Residencial Las Estrellas. Of European/French-Caribbean descent, the Lacan family has roots in Martinique before settling in Las Flores. Carlos was the person who said yes before you finished the sentence — out of instinctive loyalty that found decline harder than the thing being declined. He was deeply, unambiguously kind: the kind that makes people feel like they are not a problem or an inconvenience. He died in a car chase while pursuing the killer's vehicle, cut off by a motorcycle that appeared from a side street. His death was the story's central wound — when the amateur investigation became personal. He had a younger sister, who keeps his photograph on the repair-shop counter. Distinct from Carlos Medina, who works the grid and paperwork, Lacan works the electronics bench and rooftop hardware."
+description: "A warm, funny electrical engineering student and electronics repairer from the city's northern edge. He knows Miguel Jhonson from shared coursework but is not part of Alex Garcia's investigation. Of European/French-Caribbean descent (the Lacan family has roots in Martinique before settling in Las Flores), Carlos says yes before you finish the sentence and narrates every repair out loud so no one at his counter feels left out. He is a separate, living character from Carlos Medina."
 physical_description: "Slightly built man of 24 of European/French-Caribbean descent with dark wavy hair, warm kind brown eyes, a round soft face, faint stubble and quick precise hands; wears a worn work shirt with a tool belt slung low."
 psychological_description: "Loyal and brave; deeply and unambiguously kind, calm about alarming technical problems, and quick to say yes out of instinctive loyalty to his friends."
 background_and_role:
   - "Electrical engineering student on a partial scholarship"
   - "Part-time electronics repair worker from the city's northern edge"
-  - "Close friend of Alex Garcia who helped set up surveillance at Residencial Las Estrellas"
-  - "Built and maintained the rooftop camera, passive recorder and second camera for the investigation"
-  - "Killed in a car chase in 2077 when a motorcycle cut across his lane"
+  - "Friend of Miguel Jhonson from shared coursework; not part of Alex Garcia's investigation"
+  - "Independent, living character the player can meet and befriend"
 metadata:
   type: human
   role: npc
@@ -23,15 +22,16 @@ metadata:
   background: Electrical engineering student from a working-class family on the city's northern edge. Won a partial scholarship; covered the remainder through part-time technical work at an electronics repair shop. Of European/French-Caribbean descent (Lacan family from Martinique).
   residence: Northern District, Las Flores
   mannerisms_visible: Lays parts out on a cloth in order of use. Labels things with masking tape and writes jokes on the tape. Arrives twenty minutes early. Gets quieter and more precise when frightened, then jokes about it.
-  social_circle: Miguel Jhonson (shared coursework), Alex Garcia and the cafe group, regulars at the repair counter, his younger sister
-  discipline: Electronics, devices and surveillance hardware (the bench), as opposed to Carlos Medina's power-systems and building-electrical work
+  social_circle: Miguel Jhonson (shared coursework), regulars at the repair counter, his younger sister
+  discipline: Electronics and devices (the bench), as opposed to Carlos Medina's power-systems and building-electrical work
+  name_gag: His surname echoes the French psychoanalyst Jacques Lacan; he plays along with jokes ("No relation. I only analyze things that blow fuses.") despite never having read him.
   mannerisms: Calm about technical problems that should be alarming. Made difficult things sound like puzzles worth solving. Funny in the way of someone who observed things accurately and reported them honestly.
-  motivations: Help his friends. Use his skills to uncover the truth.
+  motivations: Help his friends. Use his skills to make things work for people who cannot afford new ones.
   fears: Letting people down. Not being there when someone needs him.
-  goals: Figure out what's happening at the complex. Keep everyone safe.
-  challenges: None — he was killed before the investigation reached its climax.
-  quote: Whoever did this knew exactly what they were doing. They bypassed the safety protocols... it's sophisticated. And premeditated.
-  status: Deceased (2077)
+  goals: Finish his degree. Keep the repair shop running. Keep his friends and family safe.
+  challenges: Takes on too much unpaid repair work; says yes before weighing the cost.
+  quote: What do you need me to look at? Put it on the cloth, I'll narrate while I fix it.
+  status: Alive
 portrait_urls:
   - url: s3://las-flores/portraits/carlos_lacan/carlos_lacan__default.png
     label: dev

@@ -12,7 +12,8 @@ physical_description: "Latino farmer of 47, about 5'10\" with tanned, weathered 
 psychological_description: "Determined and hardworking to the point of stubbornness; he struggles to ask for help and bears burdens alone out of responsibility to his family, employees and community."
 background_and_role:
   - Farm owner in the Agricultural Valley
-  - Son of a foreign-born mother who built the farm from scratch
+  - Son of a foreign-born mother who built the farm from scratch and of Roberto Mendoza, the Minera Estrella piping engineer
+  - Nephew of Carlos Mendoza, the structural engineer who kept the original leak calculations
   - Sells directly to restaurants and hotels after a corporate scam
 metadata:
   type: human

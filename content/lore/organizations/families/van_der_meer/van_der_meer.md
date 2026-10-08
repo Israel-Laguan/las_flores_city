@@ -46,7 +46,7 @@ When the family saw the full potential of the region, they made a calculated str
 
 - **Elisabeth van der Meer (b. ~1995):** Daughter of Pieter and Marleen (first marriage). Step-daughter of Annabella. Arrived in Las Flores with her father. Married Carlos Alberto Hernandez in 2038 in a strategic alliance; her Dutch values clashed with the Hernandez family's corruption. After divorce, focused on raising her daughter Sophia and becoming involved in Las Flores' social scene.
 
-- **Jan van der Meer (b. 2019):** Youngest child of Pieter and Annabella (biological son of Annabella). Father of Peter, Anna, and Lucas. Married local woman Maria Martinez. Took over the family business after his father's retirement and became a prominent figure in Las Flores' development. Passed away suddenly in 2060.
+- **Jan van der Meer (b. 2019):** Youngest child of Pieter and Annabella (biological son of Annabella). Father of Peter, Anna, and Lucas. Married local woman Maria Martinez. Took over GLC in 2045 (aged about 26) when his father retired, shortly before Pieter's death, and became a prominent figure in Las Flores' development. Alexander ran Van der Meer Mining until his own 2045 resignation, so the two never held the same post. Jan passed away suddenly in January 2060.
 
 ### Current Generation — Core Business Line
 - **Xiu Li van der Meer Krol (b. 2031):** Eldest child of Alexander and Wang Mei Li. Inherited her mother's entrepreneurial spirit but struggled to find acceptance within the family due to her mixed heritage. Inherited Alexander's mining interests after his retirement. Became a prominent local politician advocating for women's rights. Married Dutch businessman **Hans Krol**; their daughter is **Eva Krol**.
@@ -92,7 +92,7 @@ When the family saw the full potential of the region, they made a calculated str
 |---|---|---|
 | **Van der Meer Industries** | Umbrella Corporation | Mining, renewable energy, real estate development |
 | **Van der Meer Mining** | Flagship | Lithium extraction, 2 active mines |
-| **Global Lithium Corp (GLC)** | Parent company | International mining corporation; Jan van Dijk is CEO |
+| **Global Lithium Corp (GLC)** | Parent company | International mining corporation; Jan van Dijk (unrelated to the family) is CEO in 2077. Family member Jan van der Meer led GLC 2045-2060 |
 | **Neptune's Haven B.V.** | Port operations | Dutch pier management in Las Flores |
 | **EBF Partnership** | Energy | San Miguel Dam investment |
 
@@ -198,7 +198,7 @@ The family is characterized by:
 | **Minera Estrella** | Direct competitor in mining |
 | **Juan Pablo Ramos** | Political ally; the family funded his Free City campaign |
 | **Flowers Syndicate** | Controlled by Dong van der Meer; legitimate family keeps public distance |
-| **Global Lithium Corp** | Parent company; Jan van Dijk serves as CEO |
+| **Global Lithium Corp** | Parent company; Jan van Dijk (not a family member) serves as CEO |
 | **Free City Government** | Ongoing political relationships |
 
 ---

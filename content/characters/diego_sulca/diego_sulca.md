@@ -1,6 +1,6 @@
 # Diego Sulca
 
-**Title (full):** Environmental Science Student, Fisherman's Son from San Pedro de los Pescadores
+**Title (full):** Environmental Science Student, Fisherwoman's Son from San Pedro de los Pescadores
 
 **Description (full):**
 

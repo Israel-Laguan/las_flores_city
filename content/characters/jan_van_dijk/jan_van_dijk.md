@@ -13,3 +13,5 @@ Dutch businessman and CEO of Global Lithium Corp. Launched the 'Futuro Brillante
 **District:** Las Flores
 **Role:** CEO
 **Descendancy:** Dutch
+
+**Not to be confused with:** [Jan van der Meer](../jan_van_der_meer/jan_van_der_meer.md) (b. 2019, d. 2060), the family member who led GLC from 2045 until his death. Jan van Dijk (b. 2025) is an unrelated professional executive who runs GLC in 2077.

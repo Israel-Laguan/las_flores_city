@@ -1,13 +1,13 @@
 # Anna van der Meer
 
-> Tags: `#figure` `#npc` `#van_der_meer` `#ceo` `#lgbtq` `#environmentalism` `#city_council`
+> Tags: `#figure` `#npc` `#van_der_meer` `#chair` `#lgbtq` `#environmentalism` `#city_council`
 
 ## Overview
 
 **Born:** ~2041  
 **Age:** 36 in 2077 (game present)  
 **Family:** Daughter of Jan and Maria van der Meer; sister of Peter; wife of Han Jr.; no children  
-**Role:** Van der Meer Industries CEO, social advocate, later Las Flores City Council member  
+**Role:** Chair of the Board / Executive Director of Van der Meer Industries (the CEO post is held by her cousin Sebastian van der Meer), social advocate, later Las Flores City Council member  
 **Faction:** `van_der_meer`  
 **Personality:** `empathetic_pragmatic_reformer`
 
@@ -21,7 +21,7 @@ Anna's early years were marked by privilege and opportunity. She attended elite 
 
 ---
 
-## Jan's Death and Rise to CEO
+## Jan's Death and Rise to Chair
 
 When Jan van der Meer died suddenly in 2060, Anna was 19 years old. The loss was devastating, but she inherited control of Van der Meer Industries through a family trust. During her early years as the nominal head, day-to-day operations were managed by experienced board members while Anna completed her education and prepared for leadership.
 
@@ -47,13 +47,13 @@ Anna's advocacy for LGBTQ+ rights intensified after her brother Peter came out a
 
 ## Van der Meer Industries
 
-After completing her education and gaining experience, Anna took active control of Van der Meer Industries. She was determined to honor her father's legacy while modernizing the company for a changing world. Her tenure included bold initiatives to reduce environmental impact, improve worker conditions, and push the company toward a more responsible public posture. Some board members resisted, citing profit concerns, but Anna's conviction and family influence carried the day.
+After completing her education and gaining experience, Anna took an active role at the top of Van der Meer Industries as Chair of the board and executive director, setting direction and values while her cousin Sebastian van der Meer runs day-to-day corporate strategy as CEO. She was determined to honor her father's legacy while modernizing the company for a changing world. Her tenure included bold initiatives to reduce environmental impact, improve worker conditions, and push the company toward a more responsible public posture. Some board members resisted, citing profit concerns, but Anna's conviction and family influence carried the day.
 
 ---
 
 ## Family & Caregiving
 
-As Maria's dementia worsened after 2071, Anna struggled to balance her work as CEO with her responsibilities as a daughter and caregiver. She considered hiring a full-time nurse but hesitated, worried that strangers would not provide the same level of care and dignity her mother deserved. Instead, Anna relied heavily on Dirk, the loyal housekeeper who had served the family since before Anna's birth. Her days were filled with corporate meetings, strategy, and advocacy, while many nights were spent sitting at her mother's bedside.
+As Maria's dementia worsened after 2071, Anna struggled to balance her work as Chair with her responsibilities as a daughter and caregiver. She considered hiring a full-time nurse but hesitated, worried that strangers would not provide the same level of care and dignity her mother deserved. Instead, Anna relied heavily on Dirk, the loyal housekeeper who had served the family since before Anna's birth. Her days were filled with corporate meetings, strategy, and advocacy, while many nights were spent sitting at her mother's bedside.
 
 ---
 

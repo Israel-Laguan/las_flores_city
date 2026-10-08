@@ -1,0 +1,168 @@
+id: "c1120000-0000-0000-0000-000000000020"
+name: "Ana Villanueva - Midgame Night Market Date"
+description: "A date at the rooftop night market. Ana turns every bite into content. The player has to find a way to make her enjoy the evening without it becoming a post, and without demanding she give up the hustle she is proud of."
+scene_id: "00000000-0000-0000-0000-000000000000"
+character_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+dialogue_scope: "character"
+start_node_id: "c1120000-0000-0000-0000-000000000021"
+nodes:
+  c1120000-0000-0000-0000-000000000021:
+    id: "c1120000-0000-0000-0000-000000000021"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "Okay, sit on the left, the neon is better on your left. Don't look at the lens, look at the food. When I point, say 'mmm'. Natural!"
+    thought: "(Expression: happy. She has set up a tripod and a ring light before the first plate arrived. She has turned the date into a shoot before it started, and she is thrilled with the framing.)"
+    choices:
+      - id: "play_prop"
+        text: "[Play along and be her scenery]"
+        next_node_id: "c1120000-0000-0000-0000-000000000022"
+        effects:
+          relationship_effect:
+            friendship: 3
+          state_set:
+            last_ana_villanueva_encounter_at: NOW
+      - id: "take_phone"
+        text: "Ana. Phone. Down. Now."
+        next_node_id: "c1120000-0000-0000-0000-000000000023"
+        effects:
+          relationship_effect:
+            friendship: -8
+          state_set:
+            last_ana_villanueva_encounter_at: NOW
+      - id: "make_deal"
+        text: "Every shop has closing hours. Give me ninety minutes. Treat it as a business decision."
+        next_node_id: "c1120000-0000-0000-0000-000000000024"
+        required_relationship:
+          friendship: "gte:10"
+        effects:
+          relationship_effect:
+            friendship: 5
+          state_set:
+            last_ana_villanueva_encounter_at: NOW
+
+  c1120000-0000-0000-0000-000000000022:
+    id: "c1120000-0000-0000-0000-000000000022"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "Perfect! That's a month of content from one dinner. You're a natural. We should do this every week."
+    thought: "(Expression: happy. She had a great day at work. She did not rest, she did not eat anything warm, and she did not notice. This locks out the Lover ending.)"
+    is_end: true
+
+  c1120000-0000-0000-0000-000000000023:
+    id: "c1120000-0000-0000-0000-000000000023"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "Do not take my phone. You think this is a hobby? Rent is not a hobby. My parents counting coins every month is not a hobby."
+    thought: "(Expression: angry. The player has called her ambition frivolous in front of her own mirror. This starts the path toward the Enemy ending.)"
+    is_end: true
+
+  c1120000-0000-0000-0000-000000000024:
+    id: "c1120000-0000-0000-0000-000000000024"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "Ninety minutes of dead feed costs me reach. Reach is revenue. So what do I get?"
+    thought: "(Expression: calculating. She is not offended; she is negotiating, and the player has finally spoken her language. The deal is a real one to her.)"
+    choices:
+      - id: "offer_post"
+        text: "One photo at the end of the night. Your pick, your caption. It costs you nothing."
+        next_node_id: "c1120000-0000-0000-0000-000000000025"
+        effects:
+          relationship_effect:
+            friendship: 2
+          state_set:
+            last_ana_villanueva_encounter_at: NOW
+      - id: "offer_bag"
+        text: "My bag. Phone goes in, face down, and I watch for orders. If a big one comes, I tell you."
+        next_node_id: "c1120000-0000-0000-0000-000000000025"
+        effects:
+          relationship_effect:
+            friendship: 2
+          state_set:
+            last_ana_villanueva_encounter_at: NOW
+
+  c1120000-0000-0000-0000-000000000025:
+    id: "c1120000-0000-0000-0000-000000000025"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "...Ninety minutes. But if an order comes in, I take it. That's not up for negotiation."
+    thought: "(Expression: vulnerable. She hands over the phone and her hands do not know what to do. They keep drifting toward a pocket that is no longer there.)"
+    choices:
+      - id: "give_game"
+        text: "Then give your hands something else. Guess what spice is in this one."
+        next_node_id: "c1120000-0000-0000-0000-000000000026"
+      - id: "sit_still"
+        text: "Nothing. Just breathe. It's okay to be bad at this."
+        next_node_id: "c1120000-0000-0000-0000-000000000027"
+
+  c1120000-0000-0000-0000-000000000026:
+    id: "c1120000-0000-0000-0000-000000000026"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "Tamarind? No, smoke. Wait, don't tell me. ...I haven't eaten something without photographing it in two years."
+    thought: "(Expression: happy. She laughs, really laughs, and guesses wrong on purpose just to be corrected. The salesperson is off duty.)"
+    choices:
+      - id: "ask_why_game"
+        text: "Why two years?"
+        next_node_id: "c1120000-0000-0000-0000-000000000028"
+
+  c1120000-0000-0000-0000-000000000027:
+    id: "c1120000-0000-0000-0000-000000000027"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "This is the longest I've been still since the bank quoted me the loan. It's awful. ...It's also kind of nice?"
+    thought: "(Expression: sad. She tolerates the silence with visible discomfort and slowly learns it does not bite.)"
+    choices:
+      - id: "ask_why_still"
+        text: "What are you afraid will happen if you stop?"
+        next_node_id: "c1120000-0000-0000-0000-000000000028"
+
+  c1120000-0000-0000-0000-000000000028:
+    id: "c1120000-0000-0000-0000-000000000028"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "My parents taught for thirty years and still count coins at the end of the month. I decided nobody was ever going to hold my payroll over me. The thing is... I don't know who I am when nothing is for sale."
+    thought: "(Expression: vulnerable. The deepest thing she has said in the arc. She is not asking to be fixed; she is checking whether the player will stay.)"
+    choices:
+      - id: "lover_line"
+        text: "You're not a storefront, Ana. You're allowed to be here without earning it."
+        next_node_id: "c1120000-0000-0000-0000-000000000029"
+        required_relationship:
+          friendship: "gte:20"
+        effects:
+          relationship_effect:
+            friendship: 5
+            romance: 1
+          state_set:
+            last_ana_villanueva_encounter_at: NOW
+      - id: "friend_line"
+        text: "Then let me be the person who sits with you when nothing is for sale."
+        next_node_id: "c1120000-0000-0000-0000-000000000030"
+        effects:
+          relationship_effect:
+            friendship: 8
+          state_set:
+            last_ana_villanueva_encounter_at: NOW
+      - id: "pragmatic_line"
+        text: "Then build a business that doesn't need you awake at three in the morning."
+        next_node_id: "c1120000-0000-0000-0000-000000000030"
+        effects:
+          relationship_effect:
+            friendship: 4
+          state_set:
+            last_ana_villanueva_encounter_at: NOW
+
+  c1120000-0000-0000-0000-000000000029:
+    id: "c1120000-0000-0000-0000-000000000029"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "Okay. The phone stays face down. Tomorrow I'll review the dessert for my followers. Tonight it isn't for sale."
+    thought: "(Expression: tender. She leans her head on the player's shoulder for the first time. Lover path secured. The ring light is still on, and nobody turns it off.)"
+    is_end: true
+
+  c1120000-0000-0000-0000-000000000030:
+    id: "c1120000-0000-0000-0000-000000000030"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "I'm not promising to log off. But that was the best ninety minutes I've had in a year. Same time next month? Phones in the bag."
+    thought: "(Expression: happy. Friend path secured. She has found something she did not know she was shopping for: a place where the numbers stop.)"
+    is_end: true

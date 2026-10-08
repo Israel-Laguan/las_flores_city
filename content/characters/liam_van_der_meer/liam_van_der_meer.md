@@ -14,4 +14,4 @@ Cousin of Sebastian van der Meer. Together they have led strategic decisions at 
 **Age (2077):** ~42 (b. 2035)
 **District:** Las Flores
 **Role:** Executive
-**Descendancy:** v
+**Descendancy:** Dutch

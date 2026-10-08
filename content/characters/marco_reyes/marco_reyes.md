@@ -17,4 +17,4 @@ A retired dockworker from the Port District, Marco Reyes spent thirty years orga
 **Age (2077):** 67
 **District:** Las Flores
 **Role:** Retired Dockworker
-**Descendancy:** l
+**Descendancy:** Latin American

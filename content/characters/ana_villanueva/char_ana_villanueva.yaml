@@ -1,23 +1,23 @@
 id: 6a8b13c0-7e61-419b-98f5-b772e0c238fa
 name: Ana Villanueva
-title: Independent Shadow Journalist (Former Student)
+title: Office Assistant and Online Seller
 birth_year: 2050
 description: |
-  A former sociology student drawn into a corporate conspiracy years ago after a deadly car chase. After navigating police betrayals and the fallout of the Evelyn Ruthenberg events, she dropped out of university to become a "shadow journalist." In 2077, she operates entirely off the grid, publishing under pseudonyms and feeding airtight evidence to trusted mentors while remaining invisible to corporate retaliation.
+  An office assistant at a mid-size import-and-distribution firm near the port who spends her nights running a small online store of imported clothes and beauty goods that she promotes on her social network. An entrepreneur in the making, she is an empowered, confident young woman focused on making it big and scaling the store into a brand. She has no connection to Alex Garcia's group or the Las Estrellas investigation.
 physical_description: "27-year-old Latina woman, lean and unassuming with clear warm olive skin, straight dark brown hair, sharp watchful almond eyes and an oval face; jeans, an oversized sweater and a messenger bag."
-psychological_description: "Cautious, observant and brave, deliberately inconspicuous to stay invisible to retaliation."
+psychological_description: "An entrepreneur in the making: confident, empowered and ambitious, focused on making it big."
 background_and_role:
-  - "Former sociology and journalism student who dropped out of university"
-  - "Independent shadow journalist publishing under pseudonyms"
-  - "Operates off the grid, feeding airtight evidence to trusted mentors"
+  - "Office assistant at an import-and-distribution firm near the port"
+  - "Runs an online store of imported clothes and beauty goods, promoted on social media at night"
+  - "Grew up in Barrio Norte, daughter of two teachers"
 metadata:
   type: human
   role: npc
   faction: independent
-  personality: cautious_observant_brave
+  personality: entrepreneur_in_the_making
   age_2077: 27
-  occupation: Shadow Journalist
-  appearance: "Latina woman, age 27, sharp observant eyes, dressed in practical casual clothes (jeans, oversized sweater) with a messenger bag, blending unobtrusively off the grid."
+  occupation: Office Assistant, Online Seller
+  appearance: "Latina woman, age 27, sharp observant eyes, neat practical clothes suited to both office and product shoots, a messenger bag."
 lore_path: ana_villanueva.md
 asset_paths:
   portrait: ana_villanueva__default.png

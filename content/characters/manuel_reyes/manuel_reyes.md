@@ -13,4 +13,4 @@ Charismatic leader of Union del Trabajador (UT). Campaigns for fair wages, safe 
 **Age (2077):** ~52 (b. ~2025)
 **District:** Las Flores
 **Role:** Union Leader
-**Descendancy:** l
+**Descendancy:** Latin American

@@ -19,6 +19,9 @@ Known for her sharp intellect, skeptical mind, and meticulous approach to report
 
 Despite her tough exterior, Lina has a compassionate heart, particularly for the underprivileged and marginalized whose stories she seeks to bring to light.
 
+## Family
+Lina is the aunt of [Ana Kim](../ana_kim/ana_kim.md), her younger sibling's daughter, born in 2052, the year of the Great Lithium Leak. Lina began investigating the leak a few weeks after Ana's birth and missed much of Ana's first year (invented). She is the cool, famous relative Ana grew up admiring, and the one who taught her to verify everything. She never wanted Ana in the field, and learned in 2077 that Ana had been in the car, in the apartment and at the break-in. After Alex Garcia's death she was the channel through which Ana got the movement's evidence to the press; Lina published on a source she knew better than anyone, and finally told Ana she was proud and sorry. See Ana's file for the full dynamic.
+
 ## Background
 
 Lina Kim's story begins in 2025 in the National Country, where she was born to Korean immigrant parents who had sought new opportunities abroad. The multicultural environment of her upbringing exposed her to diverse perspectives from an early age, sparking a lifelong curiosity about the world and how it works. More importantly, it was within her family that she developed the core values that would define her career: a strong work ethic inherited from her parents' own struggles, and an unyielding passion for truth and justice that they modeled through their actions.

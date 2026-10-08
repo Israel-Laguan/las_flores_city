@@ -28,7 +28,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 - [ ] Shelving books at a quiet reading-room table, a small stack beside her
 - [ ] Carrying a paper bag of food into a cramped planning room, glancing around
-- [ ] Standing at a tall window with a coat over her arm, deciding to leave
+- [ ] At a café table with a phone held low, reading an informant's message with a carefully neutral face
+- [ ] Handing a sealed folder to an older Korean woman journalist in a quiet press-room hallway
+- [ ] Standing at a tall window with a coat over her arm, deciding to step back from the field
 
 ## Expression Variants
 
@@ -65,3 +67,5 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 <!-- Lore wardrobe staged as outfit variants of the base portrait: `assets/<slug>__outfit-<name>.png`. Same face, hair and build as the base. -->
 
 - **`__outfit-cardigan.png`**: Use the base portrait as reference. Same woman, same bob, now wearing a crisp white button-down shirt with a soft grey cardigan draped over her shoulders, small silver stud earrings visible, hands hanging relaxed at her sides. Neutral relaxed expression, shoulders level, looking at the camera, 3/4 take. Keep the same face, hair, build and art style as reference, plain flat neutral light-grey backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__outfit-casual.png`**: Use the base portrait as reference. Same woman, same bob, now wearing faded jeans and an oversized knit sweater with a practical canvas messenger bag across one shoulder, relying on looking unassuming, hands hanging relaxed at her sides. Neutral relaxed expression, shoulders level, looking at the camera, 3/4 take. Keep the same face, hair, build and art style as reference, plain flat neutral light-grey backdrop. Clean confident linework, painterly soft shading, muted natural palette.

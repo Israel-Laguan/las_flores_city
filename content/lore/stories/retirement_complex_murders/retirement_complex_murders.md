@@ -155,13 +155,13 @@ When the guards found Miguel and Ana in the corridor, Isabella did not stay to h
 
 It was tactically correct. To Ana, even knowing this, it felt like abandonment. This distinction did not fully resolve between them.
 
-Ana walked out with a swollen eye, bruised ribs, and a wrist that would ache for months. In the car on the way back, while Isabella was already talking about what the documents confirmed, Ana waited for a full stop and said: *I'm done. Not because I don't believe this. Because I have to be able to live my life.* She thanked Isabella specifically—for pulling her out of the guard's grip. She left. No one held it against her.
+Ana walked out with a swollen eye, bruised ribs, and a wrist that would ache for months. In the car on the way back, while Isabella was already talking about what the documents confirmed, Ana waited for a full stop and said: *I'm done with this part. Not because I don't believe this. Because I have to be able to live my life.* She thanked Isabella specifically—for pulling her out of the guard's grip. She stepped back from the field and kept working the information from a distance. No one held it against her.
 
 ---
 
 ## Adeyemi's Maneuver
 
-Before his arrest of Diego Reyes, Adeyemi had brought Alex and the remaining team into an uneasy collaboration. He stationed an undercover investigator named **Ken** in the building's empty apartment, posing as the fiancé of a police investigator playing the role of a distant relative of Alex's. They installed additional cameras, set up monitoring rotations, and were meant to catch the killer in the act. The arrangement was professional and uncomfortable. Adeyemi controlled what the team knew. The team suspected Adeyemi controlled more than he admitted.
+Before his arrest of Diego Reyes, Adeyemi had brought Alex and the remaining team into an uneasy collaboration. Ana already knew the investigator: she had met **Ken** weeks earlier, when Adeyemi first placed him in the building to watch Alex. He stationed the undercover investigator named **Ken** in the building's empty apartment, posing as the fiancé of a police investigator playing the role of a distant relative of Alex's. They installed additional cameras, set up monitoring rotations, and were meant to catch the killer in the act. The arrangement was professional and uncomfortable. Adeyemi controlled what the team knew. The team suspected Adeyemi controlled more than he admitted.
 
 When he announced the arrest of Diego Reyes and declared the case closed, Alex's first instinct was relief. Their second instinct—almost immediate—was wrongness.
 
@@ -209,7 +209,7 @@ He did not ask for mercy in exchange. He said he just wanted to finish telling i
 
 **Justice delayed and corrupted.** The official investigation into the murders was not incompetent. It was managed. Adeyemi was not a fool. He was a man operating inside constraints he had accepted over a long career, and the murders at the complex represented a case where those constraints served the wrong people. His eventual choice to refuse Mayor Vega's execution order was not a sudden awakening—it was the culmination of a crisis of conscience that the complexity of the case had forced to the surface.
 
-**What amateurs can do.** Alex, Miguel, Carlos, Ana, and Isabella cracked a twenty-year cover-up without resources, without training, and without the protection of any institution. They also paid for it: Carlos with his life, Ana with injury and permanent exit, all of them with a kind of innocence that does not come back.
+**What amateurs can do.** Alex, Miguel, Carlos, Ana, and Isabella cracked a twenty-year cover-up without resources, without training, and without the protection of any institution. They also paid for it: Carlos with his life, Ana with injury and the end of her fieldwork, all of them with a kind of innocence that does not come back.
 
 ---
 

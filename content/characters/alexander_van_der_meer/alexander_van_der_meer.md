@@ -41,7 +41,7 @@ As CEO of Van der Meer Mining, Alexander:
 - Navigated complex political relationships between Dutch, Chinese, and Latin American interests
 - Maintained the family's influence in the Free City government
 
-In 2045 a scandal involving a young employee forced his resignation. Leadership of the family business passed to the next generation: Jan van der Meer headed GLC until his death in 2060, after which Anna van der Meer became CEO of Van der Meer Industries. Alexander lost his wealth and status, spiraled into alcoholism and depression by 2059, and in 2077 a public incident forced him into rehabilitation.
+In 2045 a scandal involving a young employee forced his resignation. Alexander led Van der Meer Mining, while his half-brother Jan (then about 26) took over GLC from the retiring Pieter in 2045. Jan headed GLC until his death in 2060, after which his daughter Anna took the top role at Van der Meer Industries (today as Chair; Sebastian van der Meer is CEO). Alexander lost his wealth and status, spiraled into alcoholism and depression by 2059, and in 2077 a public incident forced him into rehabilitation.
 
 ## Family Dynamics
 

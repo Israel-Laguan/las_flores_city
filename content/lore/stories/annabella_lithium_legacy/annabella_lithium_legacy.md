@@ -12,11 +12,11 @@ What Annabella carried back from that mine was more than a sample of lithium-tai
 
 ## The Inheritance
 
-Decades later, her granddaughter Anna van der Meer would carry that same philosophy into the boardroom of Van der Meer Industries. As CEO, Anna pushed for environmental sustainability, worker protections, and community investment — not because they were profitable, but because they were right. When Anna stood before the Las Flores City Council in 2078, she cited Annabella's discovery as the foundation of her family's responsibility to the city.
+Decades later, her granddaughter Anna van der Meer would carry that same philosophy into the boardroom of Van der Meer Industries. As head of the board, Anna pushed for environmental sustainability, worker protections, and community investment — not because they were profitable, but because they were right. When Anna stood before the Las Flores City Council in 2078, she cited Annabella's discovery as the foundation of her family's responsibility to the city.
 
 ## Connection
 
-Annabella never met Anna — the geologist was a generation removed from the CEO. But through Jan, her biological son and Anna's father, the values of scientific curiosity, community respect, and responsible stewardship were passed down. Anna grew up hearing stories of her grandmother's discovery, and those stories shaped her conviction that elite power must serve the public good.
+Annabella never met Anna — the geologist was a generation removed from the board chair. But through Jan, her biological son and Anna's father, the values of scientific curiosity, community respect, and responsible stewardship were passed down. Anna grew up hearing stories of her grandmother's discovery, and those stories shaped her conviction that elite power must serve the public good.
 
 ## Related Lore
 - [Discovery of the Lithium Vein](../discovery_lithium_vein/discovery_lithium_vein.md)

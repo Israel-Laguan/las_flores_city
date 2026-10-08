@@ -14,7 +14,7 @@
 - Distinguishing features: Small rectangular glasses, always carries a leather portfolio, nervous habit of checking over her shoulder, simple pearl stud earrings
 
 ## Overview
-Liu Fang was a whistleblower from within the LW Group who provided damning evidence of bribery and corruption to local officials. She was brutally murdered in an alleyway in August 2059 under mysterious circumstances, just days before she was set to testify at the Minera Estrella trial. 
+Liu Fang was a whistleblower from within the LW Group who provided damning evidence of bribery and corruption to local officials. She was brutally murdered in an alleyway in August 2059 under mysterious circumstances, days before she was set to testify in the 2059 class-action proceedings against Minera Estrella, the follow-up to the 2055-2057 trial. 
 
 In her final moments, she managed to pass her memory card of evidence to a passing student. As she bled out, a young nurse, Cecilia Rodríguez, attempted to save her life. However, a corporate "cleaner" posing as a doctor, Viktor Reyes, displaced the nurse and ensured Liu Fang did not survive.
 ## Evidence Collected

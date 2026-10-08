@@ -8,7 +8,7 @@ target: content/characters/carlos_lacan/assets/
 
 # Video Prompts: Carlos Lacan
 
-NOTE: current PNG depicts a young woman; portrait/variants/videos need regeneration as a slight man of about 24 (see YAML physical_description)
+NOTE: current PNG depicts a young woman; portrait/variants/videos need regeneration as a slight man of about 24 (see YAML physical_description). He is alive and warm, a repair-bench joker, with a running gag about sharing a surname with the French psychoanalyst; loops lean amused and kind.
 
 Generate seamless looping portrait videos from each expression variant PNG. Use the corresponding `carlos_lacan__<expression>.png` as the input image for each prompt. The man on the reference image is the character described in the source prompt file.
 

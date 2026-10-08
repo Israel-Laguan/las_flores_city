@@ -16,4 +16,4 @@ A loving mother who tended the Garcia family's flower fields. She died from comp
 **Born:** ~2012 (deceased; ~59 at death in January 2071, after years of lithium-related illness that began in 2052)
 **District:** Las Flores
 **Role:** Flower Farmer
-**Descendancy:** i
+**Descendancy:** Latin American
