@@ -23,7 +23,7 @@ Leads reporting on technology, science, and their societal impacts. Instrumental
 
 She leads the paper's technology and science desk and is "instrumental in engaging younger audiences through cutting-edge digital storytelling techniques." In a city where the product is lithium, her beat is the technology behind it: batteries, extraction, surveillance. *(her exact stories are invented)*
 
-- **Born 2042**, so she is about 35 in 2077 and the youngest editor on the main-office list.
+- **Born 2042**, so she is about 35 in 2077 and the youngest editor on the main-office list. *(her age is invented; Victor is 62 and Soledad Ortega 42)*
 
 ## Want, Flaw, Fear
 

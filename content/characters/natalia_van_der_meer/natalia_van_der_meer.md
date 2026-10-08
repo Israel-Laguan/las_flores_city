@@ -23,7 +23,7 @@ An up-and-coming artist in the Van der Meer family. Her first solo exhibition 'B
 - **Rising star.** Press covers her debut "Breaking Boundaries" and a later exhibition, "Disruption", described by *ArtReview* as showing "her unique perspective on contemporary society."
 - **The Punta del Este scandal.** She is named, with [Sebastian](../sebastian_van_der_meer/sebastian_van_der_meer.md), as an alleged attendee of the villa party whose footage leaked ([scandal story](../../lore/stories/van_der_meer_orgy_scandal/van_der_meer_orgy_scandal.md)).
 - She also appears in the family's women's profile ([Las Mujeres de la Familia Van der Meer](../../lore/stories/van_der_meer_women/van_der_meer_women.md)).
-- A hostile Chinese-language social post, "what is this girl thinking? She actually likes someone from this family", tags her with the names Olivia and Benjamin (the children of Eva Krol). **Ruling:** Natalia is in a relationship with Eva Krol (b. ~2052), a distant cousin from the Las Flores line; the post names Olivia and Benjamin because it treats Natalia as joining Eva's household.
+- A hostile Chinese-language social post, "what is this girl thinking? She actually likes someone from this family", tags her with the names Olivia and Benjamin (the children of Eva Krol). **Canon:** Eva Krol (b. ~2052) is the daughter of Xiu Li and Hans Krol, with two young children, Olivia and Benjamin (see [Van der Meer family](../../lore/organizations/families/van_der_meer/van_der_meer.md)). The only Natalia link is that hostile post, with hashtags #Natalia #Olivia #Benjamin; no lore states a relationship. **Ruling:** Natalia is in a relationship with Eva Krol, and the post names Olivia and Benjamin because it treats Natalia as joining Eva's household. *(invented, marked for veto)*
 
 ## Want, Flaw, Fear
 
@@ -50,4 +50,4 @@ A scandal and culture NPC: gossip item, gallery scenes and a possible patron/art
 ## Known inconsistencies
 
 - Resolved: Willem works in Las Flores mining and is European-branch by descent (Hendrik's line). Natalia's mother is deliberately left unnamed.
-- Resolved: the "Olivia/Benjamin" hint points to her relationship with Eva Krol (see Background).
+- Resolved by invention: lore never states the "Olivia/Benjamin" link; the Eva Krol relationship is an invented ruling marked for veto (see Background).

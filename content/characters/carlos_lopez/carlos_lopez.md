@@ -35,7 +35,7 @@ A small business owner who serves as a vital verifier for Humanity First's proje
 
 - **Want:** Money that is spent where it was promised, and an organization whose books survive a hostile read.
 - **Flaw:** Suspicion that becomes policy. He can be harsh on honest volunteers whose paperwork is sloppy. *(invented)*
-- **Fear:** Missing the one fraud that matters: Diego Salazar and Carla Ruiz fooled the council with staged cleanups, and Tomas Herrera's scandal came in 2057–2058 anyway ([Rogue Incidents](../../lore/organizations/movements/humanity_first/rogue_incidents/rogue_incidents.md)). *(framing is mine)*
+- **Fear:** Missing the one fraud that matters: Diego Salazar and Carla Ruiz fooled the council with staged cleanups, and Tomas Herrera's scandal came in 2057–2058 anyway ([Rogue Incidents](../../lore/organizations/movements/humanity_first/rogue_incidents/rogue_incidents.md)). *(invented framing; the incidents are the lore's)*
 
 ## Habits and Contradictions
 

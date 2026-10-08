@@ -25,7 +25,7 @@ A retired dockworker from the Port District, Marco Reyes spent thirty years orga
 
 ## Background
 
-- **Born 2010 in the Port District** *(his origin is invented)*. He spends about thirty years organizing labor at the port facilities, roughly 2030 to the early 2060s, in the era when the port grew under Dutch pier management ([Neptune's Haven B.V.](../../lore/organizations/companies/neptunes_haven/neptunes_haven.md)) and the mineral trade. *(the exact span is inferred)*
+- **Born 2010 in the Port District** *(his origin is invented)*. He spends about thirty years organizing labor at the port facilities, roughly 2030 to the early 2060s. *(the exact span is inferred)* Canon: [Neptune's Haven B.V.](../../lore/organizations/companies/neptunes_haven/neptunes_haven.md) manages the Dutch pier; Marco's career overlapping the port's growth under that management and the mineral trade is *(invented)*.
 - **The union link.** He knew [Miguel Jhonson](../miguel_jhonson/miguel_jhonson.md)'s father from the union. That link is why Miguel can call on him.
 - **2077:** an "unexpected ally" of Alex's movement, he gives it access to the port's storage facilities for supply caches. When the local media is compromised, he helps smuggle evidence documents out of the city to international journalists. *(why he was unexpected is invented: a veteran of union fights who does not trust students)*
 - **After the transition:** advises on labor policy reform.

@@ -23,7 +23,7 @@ City Editor for La Prensa's Las Flores bureau. Coordinates coverage of local new
 The city editor "coordinates coverage of local news, from politics to cultural events, ensuring La Prensa reflects the diverse fabric of the city." He is the desk where a tip becomes an assignment. *(everything beyond the role is invented)*
 
 - **Born 2035** (42 in 2077); he was 17 at the 2052 leak.
-- Keeps [Emilio Navarro](../emilio_navarro/emilio_navarro.md)'s cultural stories and [Sofia Cortez](../sofia_cortez/sofia_cortez.md)'s environmental reports in the same paper, an uneasy fit.
+- Keeps [Emilio Navarro](../emilio_navarro/emilio_navarro.md)'s cultural stories and [Sofia Cortez](../sofia_cortez/sofia_cortez.md)'s environmental reports in the same paper, an uneasy fit. *(invented)*
 
 ## Want, Flaw, Fear
 
@@ -38,9 +38,9 @@ The city editor "coordinates coverage of local news, from politics to cultural e
 
 ## Relationships (with cost)
 
-- **[Mariana De La Cruz](../mariana_de_la_cruz/mariana_de_la_cruz.md), bureau chief.** Reports to her.
+- **[Mariana De La Cruz](../mariana_de_la_cruz/mariana_de_la_cruz.md), bureau chief.** Reports to her. *(invented reporting line)*
 - **[Sofia Cortez](../sofia_cortez/sofia_cortez.md) and [Emilio Navarro](../emilio_navarro/emilio_navarro.md).** His reporters; he shields both from deadline pressure. *(invented)*
-- **[Lina Kim](../lina_kim/lina_kim.md).** When she is in the city, he is the one assigning her local leg-work.
+- **[Lina Kim](../lina_kim/lina_kim.md).** When she is in the city, he is the one assigning her local leg-work. *(invented)*
 - **Other local outlets** such as [El Informador](../../lore/media/press/el_informador/el_informador.md), his chief competitor for local scoops. *(invented rivalry)*
 
 ## Story Role

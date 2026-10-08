@@ -3,7 +3,7 @@
 **Title:** Night Receptionist, Pacific Coast
 
 **Physical Description:**
-- Latina woman of 55 with a soft, rounded, welcoming build; round face, dark brown eyes, gentle wrinkles and laugh lines, warm tan skin and a short straight black bob with a side part tucked behind one ear. Usually in a plain blue crew-neck t-shirt off shift.
+- Latina woman of 55 with a soft, rounded, welcoming build; round face, dark brown eyes, gentle wrinkles and laugh lines, warm tan skin and a short straight black bob with a side part tucked behind one ear. Usually in a plain blue crew-neck t-shirt off shift. *(look and wardrobe invented)*
 
 **Description (full):**
 
@@ -25,7 +25,7 @@ She is warm, funny and tired. Her name is a coincidence she has stopped finding 
 All details below are invented; no existing lore mentions her. She replaces the earlier "Maria Martinez, founder of Fundación Esperanza", who has been folded into the Van der Meer matriarch's file.
 
 - **Born 2022** on the Pacific Coast, the daughter of a fishing-boat mechanic and a market-stall seller. *(invented)*
-- **Married young**, had a daughter around 2051, and drifted into hotel work when the family needed a second income. *(invented)*
+- **Married**, had a daughter around 2051 (aged 29), and drifted into hotel work when the family needed a second income. *(invented)*
 - **Separated about three years ago.** No dramatic reason; the marriage wore down. She kept the rented flat inland from the bay. *(invented)*
 - **Daughter:** Lucía, in her mid-twenties, moved to the city for work. She calls on Sundays and worries about her mother being alone. *(invented)*
 

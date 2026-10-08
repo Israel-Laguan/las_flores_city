@@ -52,4 +52,4 @@ A mid-level corporate antagonist and gossip source. He is not part of the 2077 A
 
 ## Known inconsistencies
 
-- The press says Sebastian "joined a few months ago" but also credits him with "exponential growth" and with already being CEO; the family file gives no arrival date. Ruling: he joined the Las Flores business a few months before 2077 and was installed as CEO on arrival; the "growth" credit refers to the strategy he and Liam are driving, not to a long tenure.
+- The press says Sebastian "joined a few months ago" but also credits him with "exponential growth" and with already being CEO; the family file gives no arrival date. Canon: the posts in `content/lore/media/social_media_posts/platform_posts.yaml` are undated ("a few months ago", "since Sebastian joined"), and family lore and [Anna's file](../anna_van_der_meer/anna_van_der_meer.md) make him CEO with Anna as Chair. Ruling: he joined the Las Flores business a few months before 2077 *(invented, marked for veto)* and was installed as CEO on arrival *(invented, marked for veto)*; the "growth" credit refers to the strategy he and Liam are driving, not to a long tenure.
