@@ -53,7 +53,7 @@ When the family saw the full potential of the region, they made a calculated str
 
 - **Dong van der Meer (b. ~2033):** Younger son of Alexander and Wang Mei Li. Most visible and controversial member of the dynasty. Leads the Flowers Syndicate criminal organization while maintaining nominal connections to legitimate family businesses. Health declining due to stress, alcohol abuse, and old injury from a shootout.
 
-- **Sophia van der Meer Rodriguez (b. 2041):** Daughter of Elisabeth. Married politician Carlos Rodriguez Jr. in 2060; his scandals (infidelity and corruption) ended the marriage in a 2070 divorce. She then founded the Nueva Esperanza Foundation, a charity focused on preventing gang violence among youth. Two minor children: Isabella (b. ~2062) and Diego (b. ~2065).
+- **Sophia van der Meer Rodriguez (b. 2041):** Daughter of Elisabeth. Married politician Carlos Rodriguez Jr. in 2060; his scandals (infidelity and corruption) ended the marriage in a 2070 divorce. She then founded the Nueva Esperanza Foundation, a charity focused on preventing gang violence among youth. About 2071 she succeeds Maria as president of Fundación Esperanza and folds Nueva Esperanza into it as its youth arm. Two minor children: Isabella (b. ~2062) and Diego (b. ~2065).
 
 ### Current Generation — LGBTQ+ Branch
 - **Peter van der Meer (b. 2043):** Son of Jan and Maria. Publicly came out as gay in 2065, catalyzing LGBTQ+ rights movement in Las Flores. Was given mid-level administration in one of the mines. Married Rafaela (marriage of convenience); father of Peter Jr.
@@ -81,7 +81,7 @@ When the family saw the full potential of the region, they made a calculated str
 - **Willem van der Meer (b. 2015):** Mining executive based in Las Flores, Dutch by descent (European branch, Hendrik's line, Pieter's brother's family); father of Natalia.
 - **Lucas (b. ~2046):** Youngest child of Jan and Maria. Struggles with drug addiction and mental health issues from childhood trauma. Ended up in psychiatric institution after several public incidents.
 - **Wang Mei Li:** Ex-wife of Alexander. Founded Dragon Phoenix Trading ~2048-50 after the divorce; the company focuses on trade between China and Las Flores.
-- **Maria Martinez:** Wife of Jan (a Martinez of Old Las Flores; not the Fundación Esperanza founder of the same name). Influential socialite and philanthropist. Developed dementia after Jan's death.
+- **Maria Martinez:** Wife of Jan (a Martinez of Old Las Flores). Influential socialite and philanthropist; president and public face of Fundación Esperanza from about 2055, after the family took over a foundation started by Old Las Flores citizens. Developed dementia after Jan's death; Sophia took over the foundation about 2071.
 - **Other cousins and extended family members** manage various aspects of Van der Meer Mining operations and GLC interests.
 
 ---

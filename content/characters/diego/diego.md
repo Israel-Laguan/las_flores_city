@@ -25,3 +25,4 @@ After the rescue, Diego revealed he had seen glimmers of silver embedded deep in
 ## Related Lore
 - [The Abandoned Mine Across the River](../stories/the_abandoned_mine.md)
 - [South District](../districts/south.md)
+> **Not to be confused with:** [Diego Reyes](../diego_reyes/diego_reyes.md), the former Luz del Río plant operator falsely arrested by Adeyemi, [Diego López](../diego_lopez/diego_lopez.md), or the other Diegos. This file is the Mina Escondida guide; search by title ("Mina Escondida Guide"), not by the bare slug `diego`.

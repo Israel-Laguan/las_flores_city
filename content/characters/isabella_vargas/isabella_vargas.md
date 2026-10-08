@@ -341,3 +341,5 @@ cinematic, ultra-detailed, 8k
 ---
 
 *Isabella Vargas represents the quiet power of observation and analysis in the Las Flores 2077 story. Her ability to see patterns where others see chaos, and her determination to fill in every box and find every answer, makes her the intellectual foundation upon which the investigation's successes are built. She demonstrates that focus and precision can be just as revolutionary as passion and charisma.*
+
+**Not to be confused with:** [Isabella Garcia](../isabella_garcia/isabella_garcia.md), Alex's sister (b. 2043, artist), or [Isabella Vasquez](../isabella_vasquez/isabella_vasquez.md), who owns the Chronicle. A bare "Isabella" in the Alex story or the endgame means Vargas (the analyst, b. 2054).

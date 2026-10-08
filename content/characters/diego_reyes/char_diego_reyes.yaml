@@ -1,19 +1,20 @@
 id: c2000013-e29b-41d4-a716-446655440013
 name: Diego Reyes
-title: Community Activist
-birth_year: 2045
-description: A passionate community manager from a local activist group who approached Evelyn and Alex to help gain visibility for their cause. He proposed a more extreme and flashy approach with a new logo and slogan, which Evelyn and Alex were hesitant to fully embrace. After the movement separated from his group, Diego was falsely arrested by Chief Inspector Adeyemi for the Residencial Las Estrellas murders — a framing that collapsed when the 2077 broadcast exposed the true nature of the case. He was released within seventy-two hours of the broadcast and gave a single brief press statement before declining further interviews.
-physical_description: Latino man in his early 30s with an athletic, compact build, warm-brown skin, curly dark hair, thick brows and round expressive eyes; wears a bold activist t-shirt under an open jacket with statement pins.
-psychological_description: A passionate activist; flashy and impatient, favoring a bolder, more visible approach to the cause.
+title: Former Luz del Río Plant Operator
+birth_year: 2022
+description: A former Luz del Río plant operator who lost his wife and younger daughter to the contaminated river water in 2054; his surviving son has a documented neurological condition linked to lithium exposure. Disorderly-conduct records from two protests outside the Luz del Río corporate offices (2057, 2059) gave him a motive that looked almost too clear, and Chief Inspector Adeyemi arrested him in public for the Residencial Las Estrellas murders on evidence assembled from the company's internal records. The framing collapsed when the 2077 broadcast exposed the true nature of the case; he was released within seventy-two hours, gave a single brief press statement and declined further interviews. Not to be confused with Diego (the Mina Escondida guide) or the other Diegos.
+physical_description: Latino man in his mid-50s with a compact, heavy-shouldered build worn by years of floor work, warm-brown skin, close-cropped curly hair going grey at the temples, thick brows and tired, steady dark eyes; wears a plain work jacket over a faded crew-neck shirt.
+psychological_description: Grief-hardened and guarded; his anger at Luz del Río is real and public, but he is a worker, not a schemer, and after his release he wants only to be left alone with his son.
 background_and_role:
-  - Community manager of a local activist group
-  - Proposed a flashier new logo and slogan to Evelyn and Alex
+  - Former Luz del Río plant operator who worked the facility floor, not records
+  - Lost his wife and younger daughter to the contaminated river water in 2054; his son has a lithium-linked neurological condition
+  - Protested outside Luz del Río's offices in 2057 and 2059 (disorderly-conduct records)
   - Falsely arrested by Chief Inspector Adeyemi, then released within seventy-two hours of the 2077 broadcast
 metadata:
   type: human
   role: npc
   faction: independent
-  personality: passionate_activist
+  personality: grief_hardened_worker
 asset_paths:
   portrait: diego_reyes__default.png
 

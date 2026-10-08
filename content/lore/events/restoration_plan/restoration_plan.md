@@ -69,7 +69,7 @@ The plan was organized into three dedicated working groups:
 - Targeted outreach to indigenous populations and Afro-Latino neighborhoods
 - Monitor and analyze media coverage
 
-**2. Fundraising and Partnerships Working Group (FRPWG) — Led by Yara Rossi and María Martinez (Fundación Esperanza)**
+**2. Fundraising and Partnerships Working Group (FRPWG) — Led by Yara Rossi and María Martinez van der Meer (Fundación Esperanza)**
 - Develop compelling narrative and funding proposals
 - Identify potential funding sources: conservation foundations, development banks, CSR programs
 - Facilitate partnerships between local businesses, NGOs, and government entities
@@ -99,7 +99,7 @@ The mining company and their allies in the city council hatched a systematic pla
 
 ### Media Manipulation (2056–2059)
 - **Canal 15** ran biased reporting highlighting economic benefits of lithium mining, interviewing only pro-mining experts
-- **Isabella Chen** spread rumors that the Movement was secretly investing in offshore accounts
+- **Isabella Vasquez** (then a young Chronicle writer) spread rumors that the Movement was secretly investing in offshore accounts
 - **El Javi** mocked the Movement's leaders, calling Yara a "river nymph" disconnected from reality
 - **Ricardo Chen** invited environmental figures to live debates but ambushed them with false accusations; threatened to release compromising footage
 - **Lina Kim** faced death threats and her reporting was discredited by pro-Minera Estrella outlets
@@ -112,7 +112,7 @@ Yara was assassinated while returning from a meeting with investors. Her murder 
 
 ### Aftermath (July 2059)
 - **Dr. Wei Zhang** was pressured by Chinese investors to switch allegiances; his family in China faced threats. Mayor Vega appointed him as the new head of the restoration project, praised by the city council for ensuring continuity.
-- **The Movement** began to crumble under false accusations of embezzlement. El Javi and Isabella spread rumors that the Movement was a front for foreign interests.
+- **The Movement** began to crumble under false accusations of embezzlement. El Javi and Isabella Vasquez spread rumors that the Movement was a front for foreign interests.
 - **Evelyn Ruthenberg** vowed to continue gathering evidence on her own, maintaining a low profile to avoid detection.
 - Dr. Wei Zhang publicly aligned with the city council and Minera Estrella, but this was a strategic performance — a calculated move to retain influence over the compromised project. A covert channel between Wei and Evelyn remained active. In the shadows, he continued channeling critical data and subtly modifying techniques to plant seeds of genuine restoration within the compromised framework.
 

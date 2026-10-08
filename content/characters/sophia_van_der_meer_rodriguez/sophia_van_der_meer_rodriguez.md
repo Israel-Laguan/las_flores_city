@@ -43,6 +43,8 @@ Through Nueva Esperanza, Sophia also focuses on:
 - **Women's empowerment** - Microfinance programs for female entrepreneurs
 - **Environmental conservation** - Reforestation and clean water initiatives
 
+**Taking the lead of Fundación Esperanza (c. 2071).** As [María Martinez van der Meer](../maria_martinez_van_der_meer/maria_martinez_van_der_meer.md)'s dementia worsens, Sophia succeeds her as president of [Fundación Esperanza](../../lore/organizations/civil_society/fundacion_esperanza/fundacion_esperanza.md), the Old Las Flores foundation the Van der Meers took over in the 2050s. Nueva Esperanza continues as the foundation's youth and gang-prevention arm, which also gives her family's influence a respectable, ready-made platform. *(dates proposed)*
+
 Sophia has worked tirelessly to secure funding from diverse sources, including local businesses, European investors, and international NGOs. She has effectively leveraged her family's considerable influence to gain support from government officials who recognize the value of her initiative.
 
 ## Personality & Traits
@@ -66,6 +68,7 @@ Sophia is a fixture in Las Flores high society:
 | [Carlos Alberto Hernandez](../figures/carlos_alberto_hernandez.md) | Father |
 | [Carlos Rodriguez Jr.](to_be_created.md) | Ex-husband |
 | [Nueva Esperanza Foundation](to_be_created.md) | Founder and President |
+| [Fundación Esperanza](../../lore/organizations/civil_society/fundacion_esperanza/fundacion_esperanza.md) | President from c. 2071, succeeding María Martinez van der Meer |
 
 ## In-Game References
 

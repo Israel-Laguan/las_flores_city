@@ -138,8 +138,8 @@ Minera Estrella files a complaint against Laura Rodriguez for allegedly inciting
 ### 2058 — El Javi Compromised (August)
 A video surfaces showing Javier "El Javi" Garcia accepting cash from a Minera Estrella executive in exchange for positive coverage. His credibility is severely damaged.
 
-### 2058 — Isabella Chen's Report (October)
-Isabella files an investigative piece exposing Minera Estrella's exploitation of Chinese migrant workers. The company retaliates; Isabella is temporarily suspended from writing about the mining industry.
+### 2058 — Lina Kim's Migrant-Labor Exposé (October)
+[Lina Kim](../characters/lina_kim/lina_kim.md) files an investigative piece for La Prensa exposing Minera Estrella's exploitation of Chinese migrant workers. The company retaliates; Lina is temporarily suspended from writing about the mining industry.
 
 ### 2059 — Restoration Project Begins (January)
 With sufficient resources and support, Yara oversees the initiation of the phytoremediation and riparian habitat restoration project. Volunteers from Las Flores and abroad join to implement the plan.

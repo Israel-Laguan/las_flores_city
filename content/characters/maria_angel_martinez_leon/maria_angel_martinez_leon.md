@@ -1,54 +1,46 @@
-# Maria Martinez
+# Maria Angel Martinez Leon
 
-**Title:** Founder, Fundación Esperanza
+**Title:** Night Receptionist, Pacific Coast
 
 **Physical Description:**
-- Latina educator in her 50s with a soft, rounded, welcoming build; round face, curly dark hair threaded with silver, gentle wrinkles and reading glasses, with a Fundación Esperanza lanyard.
-- **Identifying detail:** a chalk-dusted cardigan sleeve and the reading glasses on a beaded chain. *(invented)*
+- Latina woman of 55 with a soft, rounded, welcoming build; round face, dark brown eyes, gentle wrinkles and laugh lines, warm tan skin and a short straight black bob with a side part tucked behind one ear. Usually in a plain blue crew-neck t-shirt off shift.
 
 **Description (full):**
 
-Beloved educator who founded Fundación Esperanza to promote education, community development, and capacity-building in Old Las Flores. The foundation empowers marginalized communities through lifelong learning.
+"Mari" works the night desk at a beachside hotel near Bahía de las Olas. She took the job years ago as a stopgap, and nothing in it has ever led anywhere: no promotion, no raise worth the name, only the same keys, the same sleepless guests and the same sound of the sea through the lobby doors. She is separated from her husband, and her grown daughter has moved to the city. Mari is looking, half-seriously, for someone to share an evening with, and has more hope than luck.
+
+She is warm, funny and tired. Her name is a coincidence she has stopped finding amusing: guests who see "Maria Martinez" on a booking sometimes ask whether she is "the Van der Meer one". She is not.
 
 **Age (2077):** 55 (b. 2022)
-**District:** Las Flores (Old Las Flores)
-**Role:** Founder
+**District:** Pacific Coast (Las Flores)
+**Role:** Hotel night receptionist (everyday coastal resident)
 **Descendancy:** Latin American
 
-*Not to be confused with [María Martinez van der Meer](../maria_martinez_van_der_meer/maria_martinez_van_der_meer.md), wife of Jan van der Meer (the file there states the two are unrelated), nor with Dr. Luisa Martínez, a nurse on the foundation's board.*
+> **Not to be confused with:** [María Martinez van der Meer](../maria_martinez_van_der_meer/maria_martinez_van_der_meer.md), the Van der Meer matriarch and long-time public face of Fundación Esperanza. They share a first and a family name and nothing else. Mari has no tie to Old Las Flores' foundation, and her second given name and her mother's surname (Leon) are how to tell them apart.
 
 ---
 
 ## Background
 
-[Fundación Esperanza](../../lore/organizations/civil_society/fundacion_esperanza/fundacion_esperanza.md) was established "by a group of concerned citizens from various walks of life" to address the social and environmental problems of Old Las Flores' most vulnerable communities. Maria is the educator among them and the foundation's face: the character data names her its founder.
+All details below are invented; no existing lore mentions her. She replaces the earlier "Maria Martinez, founder of Fundación Esperanza", who has been folded into the Van der Meer matriarch's file.
 
-- **Born 2022**, grows up in the city's earlier years, as the mining boom reshapes Old Las Flores. *(the early-life details are invented; the stories do not give them)*
-- **Teacher in Old Las Flores** before the foundation, which is why its programs center on education and lifelong learning. *(invented)*
-- **The 2052 Great Lithium Leak** (she is 30) is the event the foundation's environmental and healthcare work answers. *(her personal link to it is invented)*
-- **Founding date** is not stated in the lore. The foundation's later work includes education, healthcare, environmental conservation and economic development.
+- **Born 2022** on the Pacific Coast, the daughter of a fishing-boat mechanic and a market-stall seller. *(invented)*
+- **Married young**, had a daughter around 2051, and drifted into hotel work when the family needed a second income. *(invented)*
+- **Separated about three years ago.** No dramatic reason; the marriage wore down. She kept the rented flat inland from the bay. *(invented)*
+- **Daughter:** Lucía, in her mid-twenties, moved to the city for work. She calls on Sundays and worries about her mother being alone. *(invented)*
 
 ## Want, Flaw, Fear
 
-- **Want:** That people in Old Las Flores, who were left out of the city's growth, can learn their way to security. She teaches adults as well as children. "Lifelong learning" is her answer to marginalization.
-- **Flaw:** She gives too much of herself to everyone. A teacher's patience that never says no, so she carries the foundation's fundraising and the classes. *(invented)*
-- **Fear:** That the foundation depends on donors who also profit from the harm it treats; Carlos Rodríguez, the businessman supporter on its board, funds it in part. *(invented framing)*
+- **Want:** Someone who asks about her day and waits for the answer.
+- **Flaw:** She settles for the almost-right evening and then talks herself into it. *(invented)*
+- **Fear:** That this is the shape of the rest of her life, the night desk included. *(invented)*
 
 ## Habits and Contradictions
 
-- Keeps reading glasses on a chain and a lanyard, and reads every enrolment form herself. *(invented)*
-- Warm in the classroom, shrewd at the donor table. *(invented)*
-- Corrects people who confuse her with the Van der Meer matriarch of the same name. *(invented)*
-
-## Relationships
-
-- **Fundación Esperanza's board:** [Carlos Rodríguez](../carlos_rodriguez/carlos_rodriguez.md) is listed on the foundation as a businessman supporter (stock animal farming, South Las Flores); the file does not say whether this is the same man as the mayor, and the two should not be assumed identical. Others are María Hernández (fish distribution, river communities), Paco Ruiz (comedy influencer), Ana Ramirez (indigenous political leader, also in CJS), Dr. Luisa Martínez (clinic nurse) and Raúl Gómez (social worker). The foundation partners with CJS, COFAVIC and Músicos en Acción.
-- **[Sophia van der Meer Rodriguez](../sophia_van_der_meer_rodriguez/sophia_van_der_meer_rodriguez.md):** a high-society philanthropist whose own foundation has a similar name (the "Nueva Esperanza Foundation" in the Van der Meer family file). Not the same foundation; the contrast between old-neighborhood education and society charity is a possible theme. *(the contrast is interpretive)*
+- Dresses up a little for dates and takes the bus home before sunrise anyway. *(invented)*
+- Remembers every regular's name and coffee order; cannot remember to book her own days off. *(invented)*
+- Corrects people who confuse her with the Van der Meer matriarch. *(invented)*
 
 ## Story Role
 
-A civil-society ally in Old Las Flores, a source of community knowledge and a scene anchor for foundation events. She is **not** part of the main 2077 plot.
-
-## Known inconsistencies (for later review)
-
-- The foundation's lore credits a group of founders and does not name Maria Martinez; her character file calls her the founder. I have treated her as the founding educator within the group, which is an invention.
+A scene extra and a voice of the everyday coast: a recurring face at the hotel lobby and a source of local gossip and small kindnesses. She is **not** part of the main 2077 plot.

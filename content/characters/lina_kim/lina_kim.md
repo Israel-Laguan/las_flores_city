@@ -60,6 +60,10 @@ Based in Las Flores for a couple of months in 2052, Lina worked tirelessly to un
 
 Her reporting brought international pressure for accountability and forced both corporate and government entities to address the crisis seriously. The exposé cemented her reputation as a journalist who would not be deterred by powerful interests and who had the skills to uncover even the most carefully concealed truths.
 
+### The Migrant-Labor Exposé - 2058
+
+At 33, Lina filed an investigative piece exposing Minera Estrella's exploitation of Chinese migrant workers. The company retaliated, and she was temporarily suspended from writing about the mining industry. The smear and death threats she faced from pro-Minera outlets (see [The Restoration Plan](../../lore/events/restoration_plan/restoration_plan.md)) date from this period.
+
 ### Senior Investigative Reporter - 2059
 
 By age 34, Lina had risen to the position of Senior Investigative Reporter at La Prensa. Her work took her across the globe, pursuing stories wherever the need for truth was greatest. From exposing corporate corruption in emerging economies to revealing political scandals that shook established democracies, her investigations had a global impact.

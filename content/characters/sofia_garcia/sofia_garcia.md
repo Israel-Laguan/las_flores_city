@@ -95,3 +95,4 @@ Despite her hardships, Sofia has become a symbol of resilience in Old Las Flores
 - **"Sofi"** - Used affectionately by the community and in popular stories
 - **"Sofia"** - Her full name used in official documents
 - **Differentiation:** The nickname "Sofi" distinguishes her from Sophia van der Meer Rodriguez (the high-society philanthropist)
+- **Disambiguation:** Not Sofia Mendoza (the student activist in *Real Heroism in Latam*) nor Sofia Ramirez (the lithium-trial prosecutor). Sofia Garcia is the former miner known as "Sofi".

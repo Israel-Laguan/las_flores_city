@@ -58,3 +58,5 @@ Young Latina woman of 18 with slightly olive skin and brown curly hair in a pony
 Sofia is the lead of the branching storyline [Real Heroism in Latam](../../stories/real_heroism_in_latam/real_heroism_in_latam.md), a five-beat arc: the encounter with gangers handing out flyers, the brother's orbit, the confession, the discovery that Los Culebras is funded by Minera Estrella to destabilize South Las Flores for cheap real-estate buyouts, and the finale. Depending on trust she either stays and builds a community network (the player gains a faction leader), or she is disillusioned and leaves or dies. She is **not** part of the 2077 Alex/Evelyn main plot; she is a civil-society ally in the side arc. Her faction in the data is `civil_society`.
 
 Her state is tracked by `sofia_status`, `sofia_trust` and `alberto_status`, and five dialogues are attached to her; do not change her id.
+
+> **Not to be confused with:** [Sofia Garcia](../sofia_garcia/sofia_garcia.md) ("Sofi", the former miner), [Sofia Ramirez](../sofia_ramirez/sofia_ramirez.md), the lithium-trial prosecutor, or Sophia van der Meer Rodriguez. Sofia Mendoza is the student activist of *Real Heroism in Latam*.
