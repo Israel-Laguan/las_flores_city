@@ -4,11 +4,14 @@ title: Environment Correspondent, La Prensa
 birth_year: 2042
 description: Covers environmental issues affecting Las Flores, including the aftermath of the Great Lithium Leak. Her reporting has raised awareness and prompted policy changes.
 physical_description: "Latina woman in her 30s with a lean, wiry build, sun-freckled skin, angular face, high cheekbones and wavy dark hair; dresses in practical field-reporter attire with a press badge."
-psychological_description: "Dedicated environmental journalist whose reporting aims to raise awareness and prompt change."
+psychological_description: "Dedicated environmental journalist whose reporting aims to raise awareness and prompt change. Morally certain about companies, and fears becoming a chronicler of decline."
 background_and_role:
   - "Environment correspondent at La Prensa"
   - "Covers the aftermath of the Great Lithium Leak"
   - "Her reporting prompted policy changes"
+  - "Covers the river and the aftermath of the Great Lithium Leak for La Prensa's Las Flores bureau"
+  - "Follows the river restoration plan and its task forces"
+  - "Environmental clue source; not part of the 2077 main plot"
 metadata:
   type: human
   role: npc

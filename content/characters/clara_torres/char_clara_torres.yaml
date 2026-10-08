@@ -4,11 +4,14 @@ title: Technology & Innovation Editor, La Prensa
 birth_year: 2042
 description: Leads reporting on technology, science, and their societal impacts. Instrumental in engaging younger audiences through cutting-edge digital storytelling techniques.
 physical_description: "Lean, sharp-featured Latina woman in her 30s with an angular face, high cheeks, a small mole near the left eye and long straight dark hair with a centre part; wears modern smart-casual journalist attire and carries a tablet."
-psychological_description: "Tech-savvy and forward-looking, an engaged journalist drawn to new forms of storytelling."
+psychological_description: "Tech-savvy and forward-looking, an engaged journalist drawn to new forms of storytelling. Quick to adopt new tools, slower to check what they hide."
 background_and_role:
   - "Technology and Innovation Editor at La Prensa"
   - "Covers technology, science and their societal impacts"
   - "Engages younger audiences through digital storytelling"
+  - "Runs La Prensa's technology and science desk"
+  - "Closest ally of managing editor Soledad Ortega on digital storytelling"
+  - "Can explain a device or analyse a data leak for the player"
 metadata:
   type: human
   role: npc

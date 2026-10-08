@@ -4,11 +4,13 @@ title: CEO, Global Lithium Corp (GLC)
 birth_year: 2025
 description: Dutch businessman and CEO of Global Lithium Corp. Launched the 'Futuro Brillante' scholarship program to support students from Old Las Flores and combat gang violence through education.
 physical_description: "Dutch man in his early 50s with a broad, heavy, prosperous build, thin receding gray-blonde hair, a square face, shrewd almond eyes and a small mole on his left cheek; wears a tailored suit with a GLC lapel pin."
-psychological_description: "Corporate philanthropist with shrewd, watchful composure and an air of measured authority."
+psychological_description: "Corporate philanthropist with shrewd, watchful composure and an air of measured authority. A professional executive, unrelated to the family, whose public generosity (Futuro Brillante) sits on top of GLC's mining legacy."
 background_and_role:
   - CEO of Global Lithium Corp (GLC)
   - Launched the Futuro Brillante scholarship program
   - Supports Old Las Flores students to counter gang violence
+  - Unrelated professional executive; succeeded the family's Jan van der Meer (GLC head 2045-2060) as GLC head
+  - Not part of the 2077 main plot
 metadata:
   type: human
   role: npc

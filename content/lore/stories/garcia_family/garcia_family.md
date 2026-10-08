@@ -38,7 +38,7 @@ Without Maria's guiding hand and the income from the flower fields, the family's
 
 Alejandro took on back-breaking work in the city, laboring on construction sites, doing whatever he could to make ends meet. Despite the family's struggles, Alex found refuge in their studies. They had always been gifted at mathematics, and their teachers saw in them a spark of potential.
 
-**Alex's Scholarship:** Recognizing Alex's potential, Alejandro encouraged them to apply for scholarships. Alex secured a scholarship from the Van der Meer Foundation, which covers their tuition and living expenses (see [alex_garcia](../../characters/alex_garcia/alex_garcia.md)).
+**Alex's Scholarship:** Recognizing Alex's potential, Alejandro encouraged them to apply for scholarships. Alex secured a **Futuro Brillante** scholarship from Global Lithium Corp (the Van der Meer family's company), a full scholarship for talented students from Old Las Flores that covers their tuition and living expenses (see [alex_garcia](../../characters/alex_garcia/alex_garcia.md)).
 
 **Isabella's Care:** Isabella requires frequent medical check-ups and treatments. Alejandro allocates a significant portion of his earnings to cover her medical expenses.
 

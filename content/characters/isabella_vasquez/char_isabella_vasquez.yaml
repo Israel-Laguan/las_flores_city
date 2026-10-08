@@ -14,7 +14,7 @@ metadata:
   role: npc
   faction: media
   personality: society_mogul_rightwing
-  lore_doc: organizations/las_flores_chronicle.md
+  lore_doc: lore/media/press/las_flores_chronicle/las_flores_chronicle.md
 asset_paths:
   portrait: isabella_vasquez__default.png
 

@@ -72,6 +72,19 @@ Her work prompted national and international media to pick up the story, elevati
 
 ---
 
+## Newsroom Dynamics (2077)
+
+*(Everything in this section is an invented elaboration of the lore above, to help writers keep the staff files consistent.)*
+
+- **Shared pressure:** the LW Group's influence over local media through advertising revenue, direct payments and personal connections. [Victor Almeida](../../../../characters/victor_almeida/victor_almeida.md) refuses it; [Soledad Ortega](../../../../characters/soledad_ortega/soledad_ortega.md)'s digital products offset the lost income; [Mariana De La Cruz](../../../../characters/mariana_de_la_cruz/mariana_de_la_cruz.md) carries it locally.
+- **Print vs digital:** Victor's rigor against Soledad's speed, with [Clara Torres](../../../../characters/clara_torres/clara_torres.md) on Soledad's side.
+- **Beats:** [Alejandro Ruiz](../../../../characters/alejandro_ruiz/alejandro_ruiz.md) and [Laura Silva](../../../../characters/laura_silva/laura_silva.md) (corruption and political money, a territorial overlap), [Sofia Cortez](../../../../characters/sofia_cortez/sofia_cortez.md) (the river), [Emilio Navarro](../../../../characters/emilio_navarro/emilio_navarro.md) (culture), [Pedro Escobar](../../../../characters/pedro_escobar/pedro_escobar.md) (city desk).
+- **The star:** [Lina Kim](../../../../characters/lina_kim/lina_kim.md); the bureau lives in the shadow of her 2052 series.
+- **Rivals:** [El Informador](../el_informador/el_informador.md) for local scoops; the [Chronicle](../las_flores_chronicle/las_flores_chronicle.md) for elite stories ([Juan Pérez](../../../../characters/juan_perez/juan_perez.md)).
+- **Open inconsistency:** the lore places the main office "outside Las Flores", but several main-office staff have district "Las Flores" in their data, and Lina Kim's own file puts her at the main office in 2077 while this file lists her in the Las Flores office.
+
+---
+
 ## In-Game References
 - Lina Kim's investigation as a key narrative anchor
 - Investigative articles as vault/clue items

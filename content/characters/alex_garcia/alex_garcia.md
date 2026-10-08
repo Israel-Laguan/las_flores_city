@@ -1,6 +1,6 @@
 # Alex Garcia
 
-**Title:** Architecture Student, Van der Meer Scholar, Leader of the 2077 Grassroots Movement
+**Title:** Architecture Student, Futuro Brillante Scholar, Leader of the 2077 Grassroots Movement
 
 **Physical Description:**
 - 22-year-old Latino person of lean, wiry, medium-height build with straight, shaggy dark hair, hooded dark eyes with faint dark circles and a heart-shaped face; ink-stained hands, jeans, a hoodie, old sneakers and an overstuffed backpack of sketchbooks.
@@ -8,7 +8,7 @@
 
 **Description (full):**
 
-The central protagonist of the 2077 endgame arc. Born in the Garcia family's flower-growing village by the Río de las Flores, youngest child of Alejandro and Maria Garcia and younger brother of Isabella and Sofia, Alex grew up knowing the cost of corporate greed intimately — their mother Maria died in January 2071, when Alex was sixteen, from respiratory complications caused by lithium-contaminated water. Alex enrolled at Universidad Nacional de Las Flores in 2075 to study sustainable urban design on a Van der Meer Foundation scholarship. After moving into Residencial Las Estrellas, Alex noticed a pattern of suspicious deaths and began investigating, eventually discovering Evelyn Ruthenberg's vigilante campaign. The revelation that Evelyn was targeting the people responsible for the contamination that killed their mother transformed Alex's grief into directed action. Alex built a grassroots movement that brought the fight into the light, and died in 2077 detonating an abandoned mine to create an improvised dam — saving the city from a catastrophic flood and buying Evelyn and the others the cover they needed to escape.
+The central protagonist of the 2077 endgame arc. Born in the Garcia family's flower-growing village by the Río de las Flores, youngest child of Alejandro and Maria Garcia and younger brother of Isabella and Sofia, Alex grew up knowing the cost of corporate greed intimately — their mother Maria died in January 2071, when Alex was sixteen, from respiratory complications caused by lithium-contaminated water. Alex enrolled at Universidad Nacional de Las Flores in 2075 to study sustainable urban design on a Futuro Brillante scholarship, the GLC program for Old Las Flores students. After moving into Residencial Las Estrellas, Alex noticed a pattern of suspicious deaths and began investigating, eventually discovering Evelyn Ruthenberg's vigilante campaign. The revelation that Evelyn was targeting the people responsible for the contamination that killed their mother transformed Alex's grief into directed action. Alex built a grassroots movement that brought the fight into the light, and died in 2077 detonating an abandoned mine to create an improvised dam — saving the city from a catastrophic flood and buying Evelyn and the others the cover they needed to escape.
 
 **Age (2077):** ~22 (b. ~2055)
 **Family:** Youngest child of [Alejandro Garcia](../alejandro_garcia/alejandro_garcia.md) and [Maria Garcia](../maria_garcia/maria_garcia.md); younger brother of [Isabella Garcia](../isabella_garcia/isabella_garcia.md) and [Sofia Garcia](../sofia_garcia/sofia_garcia.md); uncle to Sofia's daughter Ariana.
@@ -25,7 +25,8 @@ The central protagonist of the 2077 endgame arc. Born in the Garcia family's flo
 | 2052 (Aug) | Great Lithium Leak. The family's flowers turn red the following September; Maria's illness begins. Alex is not yet born. |
 | ~2055 | Alex is born, "a few years after the first signs of contamination" ([Garcia family](../../lore/stories/garcia_family/garcia_family.md)). |
 | Jan 2071 | Maria dies; Alex is sixteen. Alejandro goes silent and takes construction work in the city. |
-| ~2071–2075 | Alex pours everything into school and applies for the Van der Meer Foundation scholarship, on Alejandro's urging. Won on the third application. *(the "third application" is invented)* |
+| ~2071–2073 | Alex pours everything into school. As a high school senior (~2073), applies on Alejandro's urging for [Futuro Brillante](../../lore/stories/glc_scholarship_program/glc_scholarship_program.md), GLC's full scholarship for talented Old Las Flores students, and wins it. The program also offers GLC mentorship and lithium-industry internships. |
+| ~2073–2075 | Works and helps the family before enrolling at twenty. *(the two-year gap is invented to fit the age; the stories give 2075 for enrollment and no school date)* |
 | 2075 | Enrolls at Universidad Nacional de Las Flores. |
 | 2075–2077 | Lives at Residencial Las Estrellas; works two part-time jobs, one of them a shift at the university library, where they meet [Ana Kim](../ana_kim/ana_kim.md). |
 | 2077 | Investigates the Las Estrellas deaths, forms an alliance with Evelyn Ruthenberg, builds the movement, leads the estate raid and dies at the abandoned mine. See [Alex & Evelyn: The 2077 Endgame](../../lore/stories/alex_and_evelyn_2077/alex_and_evelyn_2077.md). |
@@ -56,7 +57,7 @@ The central protagonist of the 2077 endgame arc. Born in the Garcia family's flo
 
 ## Story Role
 
-Alex is the 2077 protagonist and, by the end, a martyr. The scholarship makes Alex a beneficiary of Van der Meer money while the family fortune was built on the leak that killed their mother. *(treating that irony as a theme is an editorial reading, not stated in the stories)* The movement outlives Alex: a studio at the architecture school, a community center in Sector Norte and a bench near Las Estrellas carry their name.
+Alex is the 2077 protagonist and, by the end, a martyr. The scholarship makes Alex a beneficiary of GLC, the Van der Meer family's company, whose mining the leak came from. *(treating that irony as a theme is an editorial reading, not stated in the stories)* The movement outlives Alex: a studio at the architecture school, a community center in Sector Norte and a bench near Las Estrellas carry their name.
 
 ## Known Inconsistencies (for later review)
 

@@ -4,13 +4,18 @@
 
 ## Overview
 
-**Type:** Glossy Lifestyle Magazine
+**Type:** Glossy Lifestyle Magazine (digital-first)
+**Format:** Subscriber app and feed; a small run of luxury print issues as a status object *(format invented for 2077)*
 **Focus:** Elite scandals, gossip, celebrity culture
 **Owner:** Isabella Vasquez (media mogul, society power broker)
 **Star Journalist:** Juan Pérez
 **Approach:** Sensationalist
 
-The Las Flores Chronicle is a glossy lifestyle magazine catering to the city's elite. Known for its sensationalist approach, with articles centering on scandals, gossip, and celebrity culture.
+The Las Flores Chronicle is a glossy lifestyle magazine that caters to the city's elite, focusing on the extravagant lives of its wealthy residents. It is known for a sensationalist approach, with articles often centering on scandals, gossip, and celebrity culture.
+
+By 2077 it is **digital-first**: issues drop to a paid app and feed, and leaks are pushed as alerts. A limited print run survives as a luxury object for society tables and galas. The contrast with [El Informador](../el_informador/el_informador.md) is deliberate: El Informador carries 20,000 print copies and 300,000 online readers, while the Chronicle sells exclusivity, not reach. *(digital format invented; the original lore only says "glossy lifestyle magazine")*
+
+[Juan Pérez](../../../../characters/juan_perez/juan_perez.md) is the magazine's star journalist, renowned for digging up dirt on Las Flores' most prominent figures. The magazine is owned by [Isabella Vasquez](../../../../characters/isabella_vasquez/isabella_vasquez.md), who inherited it from her wealthy father; her connections within high society secure exclusive content and keep the magazine a must-read for those who aspire to the city's inner circle. *(the pitch text describes Isabella as a "former model"; her character file says otherwise, so that is not carried over here)*
 
 ---
 

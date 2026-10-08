@@ -14,11 +14,11 @@ NOTE: PNG reads closer to 50 than 42 and shows a short salt-and-pepper beard not
 
 ## Prompt (Draft)
 
-Stocky Latino man of 42, sun-damaged warm-brown skin, short curly dark hair with gray streaks, short salt-and-pepper beard, grey V-neck t-shirt, plain flat grey background. Neutral relaxed expression, mouth closed, eyes to camera, front-facing, arms relaxed. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Stocky Latino man of 65, sun-damaged warm-brown skin, short curly dark hair with gray streaks, short salt-and-pepper beard, grey V-neck t-shirt, plain flat grey background. Neutral relaxed expression, mouth closed, eyes to camera, front-facing, arms relaxed. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a stocky Latino man of 42. Sun-damaged warm-brown skin, a round face with a strong jaw, hooded dark eyes under thick brows, short curly dark hair with gray streaks at the sides, and a short salt-and-pepper beard. Plain grey V-neck t-shirt. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a stocky Latino man of 65. Sun-damaged warm-brown skin, a round face with a strong jaw, hooded dark eyes under thick brows, short curly dark hair with gray streaks at the sides, and a short salt-and-pepper beard. Plain grey V-neck t-shirt. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
