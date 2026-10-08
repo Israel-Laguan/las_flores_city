@@ -38,4 +38,4 @@ Broad-shouldered Latino young man of 19 with warm tan skin, a square jaw, dark b
 - **[Kiara Montenegro](../kiara_montenegro/kiara_montenegro.md).** Partner in the entourage; they split the credit for what the yacht gives them.
 - **[Peter Jr.](../peter_van_der_meer_jr/peter_van_der_meer_jr.md).** A generous source of access, and a boy Bruno mostly ignores.
 - **His father.** The Port venues he is expected to inherit.
-- **[Adrián Beltrán](../adrian_beltran/adrian_beltran.md).** Controls the guest list.
+- **[Adrián Beltrán](../adrian_beltran/adrian_beltran.md).** Controls the guest list. *(invented)*

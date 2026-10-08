@@ -1830,21 +1830,6 @@
     "prompt_source": "draft"
   },
   {
-    "file": "content/characters/maria_martinez/maria_martinez.prompt.md",
-    "name": "Maria Martinez",
-    "type": "portrait",
-    "consumer": "portrait",
-    "target": "asset_paths.portrait` in `content/characters/maria_martinez/char_maria_martinez.yaml",
-    "size": "1024x1024",
-    "aspect_ratio": "3:4",
-    "prompt": "Latina educator in her 50s, soft-rounded welcoming build, clear warm skin. Round face, soft jaw, subtle cheeks, pointed nose, hooded eyes, flat brows, full lips. Curly dark hair threaded with silver streaks, gentle wrinkles, one smile line deeper, faint brow droop. Beloved teacher bearing, kind patient expression. Modest educator attire, reading glasses, Fundación Esperanza lanyard, sport earbud. Community classroom or foundation office backdrop, books and learning materials. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.",
-    "negative_prompt": "--no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no East Asian features, no Northern European features",
-    "has_i2i_variants": false,
-    "has_expression_variants": true,
-    "has_variations": true,
-    "prompt_source": "draft"
-  },
-  {
     "file": "content/characters/maria_martinez_van_der_meer/maria_martinez_van_der_meer.prompt.md",
     "name": "Maria Martinez van der Meer",
     "type": "portrait",

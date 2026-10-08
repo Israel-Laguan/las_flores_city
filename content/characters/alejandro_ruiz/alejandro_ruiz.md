@@ -23,26 +23,26 @@ Investigative reporter with a track record of uncovering corporate misconduct an
 La Prensa credits Alejandro with uncovering "corporate misconduct and government corruption" that led to "significant legal reforms and the resignation of several high-profile figures." He is the paper's main hard-news investigator; [Lina Kim](../lina_kim/lina_kim.md) is the famous one, he is the dependable one.
 
 - **Born 2032**, so he was 20 at the leak and has built his career since; by 2077 he is 45. *(his early career is invented)*
-- **Beat:** corporate and government corruption, not the environment. That puts him on the same ground as [Laura Silva](../laura_silva/laura_silva.md)'s political-finance work. *(invented overlap)*
+- **Beat:** corporate and government corruption, not the environment. That puts him on the same ground as [Laura Silva](../laura_silva/laura_silva.md)'s political-finance work; La Prensa's file names this territorial overlap, so it is canon. *(the specific beat split is inferred)*
 
 ## Want, Flaw, Fear
 
-- **Want:** A result that sticks: laws changed, not just names in headlines. His successes are legal reforms and resignations.
+- **Want:** A result that sticks: laws changed, not just names in headlines. *(the want is invented)* His successes are legal reforms and resignations (canon).
 - **Flaw:** Obsessive and territorial. He treats an investigation as personal property and has been known to hold back a source from colleagues, which cost him a shared story with Laura. *(invented example)*
 - **Fear:** That a source he promised to protect is exposed through his own file, which is why he keeps notes only on paper. *(invented)*
 
-## Habits and Contradictions
+## Habits and Contradictions *(all invented unless noted)*
 
-- The faint scar along his jaw is from a confrontation with a subject's security man. *(origin invented)*
-- Rumpled jacket, open collar, and a watchful way of choosing the seat facing the door.
-- Cautious with sources and reckless with his own safety.
+- The faint scar along his jaw is from a confrontation with a subject's security man. *(origin invented; the scar is from his description)*
+- Rumpled jacket, open collar *(from his description)*, and a watchful way of choosing the seat facing the door *(invented)*.
+- Cautious with sources and reckless with his own safety. *(invented)*
 
 ## Relationships (with cost)
 
-- **[Victor Almeida](../victor_almeida/victor_almeida.md), editor-in-chief.** Victor trusts him with the stories that cost advertisers. Alejandro's work is why the paper is hard to buy.
+- **[Victor Almeida](../victor_almeida/victor_almeida.md), editor-in-chief.** Victor trusts him with the stories that cost advertisers. Alejandro's work is why the paper is hard to buy. *(invented)*
 - **[Lina Kim](../lina_kim/lina_kim.md).** Respect between investigators; he is the one who tracks her leads after she moves on. *(invented)*
-- **[Laura Silva](../laura_silva/laura_silva.md).** A rival on the political-money beat.
-- **LW Group and the Business Coalition.** Targets of both reporters.
+- **[Laura Silva](../laura_silva/laura_silva.md).** A rival on the political-money beat; La Prensa's file names their territorial overlap, so the rivalry is canon.
+- **LW Group and the Business Coalition.** Targets of both reporters. *(invented)*
 
 ## Story Role
 

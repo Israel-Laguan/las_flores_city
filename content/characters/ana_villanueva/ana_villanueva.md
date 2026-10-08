@@ -1,5 +1,7 @@
 # Ana Villanueva
 
+**Canon status: all invented.** Canon holds only the name and role of a background NPC (an everyday worker unconnected to Alex's group). She is not the student-investigator Ana of the 2077 story, who is [Ana Kim](../ana_kim/ana_kim.md); an earlier draft mislabelled that Ana, and its student/undercover/Barrio Norte details belong to Ana Kim's old stub.
+
 > Tags: `#figure` `#npc` `#office_worker` `#online_seller` `#independent`
 
 ## Overview
@@ -17,7 +19,7 @@
 - Distinguishing features: Polished but practical: neat casual clothes she can wear from the office to a late-night product shoot, a messenger bag stuffed with samples and a phone she is never without. She is observant and easy to underestimate.
 
 ## Background
-Ana grew up in Barrio Norte, a mid-income district. Her parents are teachers who raised her with a strong sense of civic duty, though they always warned her to keep her head down.
+Ana grew up in the Port District, where her mother runs a stall in the port-side market and her father is a customs clerk *(invented)*.
 
 By day she is an office assistant at a mid-size import-and-distribution firm near the port, handling purchase orders, invoices and customs paperwork. By night she runs a small online store of imported clothes and beauty goods that she promotes on her social network, sourcing products through the contacts and suppliers she meets at the firm.
 

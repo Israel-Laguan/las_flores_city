@@ -26,7 +26,7 @@ Tall, slim Latina girl of 17 with smooth youthful skin, long glossy dark hair wo
 
 - **Want:** A follower count that does not depend on anyone's yacht. She wants her own brand.
 - **Flaw:** Flatters people she is using, and cannot tell when she is no longer using them.
-- **Fear:** Being forgotten the day Peter Jr.'s feed moves on, and Adrián dropping her from the guest list.
+- **Fear:** Being forgotten the day Peter Jr.'s feed moves on, and Adrián dropping her from the guest list. *(invented; Adrián's control of the list is invented)*
 
 ## Habits and Contradictions
 

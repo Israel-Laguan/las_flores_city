@@ -64,8 +64,8 @@ Sophia is a fixture in Las Flores high society:
 
 | Entity | Relationship |
 |---|---|
-| [Elisabeth van der Meer](../figures/elisabeth_van_der_meer.md) | Mother |
-| [Carlos Alberto Hernandez](../figures/carlos_alberto_hernandez.md) | Father |
+| [Elisabeth van der Meer](../elisabeth_van_der_meer/elisabeth_van_der_meer.md) | Mother |
+| [Carlos Alberto Hernandez](../carlos_alberto_hernandez/carlos_alberto_hernandez.md) | Father |
 | [Carlos Rodriguez Jr.](to_be_created.md) | Ex-husband |
 | [Nueva Esperanza Foundation](to_be_created.md) | Founder and President |
 | [Fundación Esperanza](../../lore/organizations/civil_society/fundacion_esperanza/fundacion_esperanza.md) | President from c. 2071, succeeding María Martinez van der Meer |

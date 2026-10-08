@@ -30,7 +30,7 @@
 | [Las Mujeres de la Familia Van der Meer](van_der_meer_women/van_der_meer_women.md) | Van der Meer women — Anna, Elisabeth, Natalia | `#van_der_meer` `#women` `#philanthropy` `#society` |
 | [Mayor Hernandez's Legacy](mayor_hernandez_legacy/mayor_hernandez_legacy.md) | Carlos Hernandez, Maria Gutierrez, Ana Silva | `#investigation` `#environmental` `#corruption` `#politics` |
 | [Police Combat Rising Insecurity](secure_neighborhoods_initiative/secure_neighborhoods_initiative.md) | Chief Inspector Adeyemi, Alfonso Vega | `#police` `#insecurity` `#community` |
-| [Old Las Flores District Statement](old_las_flores_district_statement/old_las_flores_district_statement.md) | District of Old Las Flores, Maria Martinez | `#government` `#old_las_flores` `#gang_violence` |
+| [Old Las Flores District Statement](old_las_flores_district_statement/old_las_flores_district_statement.md) | District of Old Las Flores | `#government` `#old_las_flores` `#gang_violence` |
 | [GLC Launches Scholarship Program](glc_scholarship_program/glc_scholarship_program.md) | Jan van Dijk, Futuro Brillante scholars | `#education` `#scholarship` `#gang_violence` |
 | [How the Business Elite Manipulate Politics](business_elite_manipulate_politics/business_elite_manipulate_politics.md) | Laura Silva, Business Coalition, Ana Silva | `#investigation` `#corruption` `#business_coalition` |
 | [Policing Disparity Exposed](policing_disparity_exposed/policing_disparity_exposed.md) | Juan Pablo Hernandez, Ana Silva | `#investigation` `#police` `#inequality` `#activism` |
