@@ -4,11 +4,13 @@ title: 26-year-old Afro-Venezuelan professional
 birth_year: 2051
 description: "Alisha is of Venezuelan descent, born to parents of Afro-Venezuelan heritage. Raised in a modest household in the mountains, she learned the values of hard work and resilience from her family. Currently, Alisha lives and works in a wealthy Chinese neighborhood in Las Flores, where she faces the challenges of being overworked and underappreciated in her job. Alisha has a striking appearance, with long curly hair that she often styles elegantly."
 physical_description: "26-year-old Afro-Venezuelan woman, short and thin with clear deep brown skin, long elegantly styled curly hair, almond eyes, a round face and a small gap between her front teeth; professional attire."
-psychological_description: "Ambitious and resilient with a polished bearing, though overworked and underappreciated."
+psychological_description: "Ambitious and resilient with a polished bearing, though overworked and underappreciated; absorbs overwork as the price of belonging and fears being a replaceable cog."
 background_and_role:
   - "Afro-Venezuelan professional raised in a modest mountain household"
   - "Lives and works in the wealthy Chinese enclave of Las Flores"
   - "Overworked and underappreciated in her job"
+  - "Part of the Venezuelan / Afro-Latino working community; works in the Chinese enclave (Northeast) as an assumed administrative or analyst professional"
+  - "Faction independent; not a media figure"
 metadata:
   type: human
   role: npc
