@@ -11,7 +11,7 @@ Javier Mendoza is a resilient 47-year-old farm owner in the Agricultural Valley 
 ## The Minera Estrella Payout
 Javier was formerly a safety inspector at Minera Estrella. During the fallout of the Great Lithium Leak, he initially agreed to testify about the company's negligence and safety violations. However, just before the trial, he suddenly retracted his statement and refused to appear in court.
 
-It is an open secret that he was offered a substantial payoff to remain silent. The guilt of this decision weighed heavily on him, prompting him to use the "blood money" to buy land in the Agricultural Valley, hoping to escape his past and start anew as a farmer.
+It is an open secret that he was offered a substantial payoff to remain silent. The guilt of this decision weighed heavily on him, prompting him to pour the "blood money" into expanding the Agricultural Valley farm his mother had built, hoping to escape his past and start anew as a farmer.
 
 ## Life in the Agricultural Valley
 Javier believes in hard work and perseverance, seeking redemption through honest labor. Facing challenges from automated mega-farms dominating the market, he adapted after a corporate partnership scam by selling his produce directly to restaurants and hotels in the city, seeking better prices and trustworthy relationships.

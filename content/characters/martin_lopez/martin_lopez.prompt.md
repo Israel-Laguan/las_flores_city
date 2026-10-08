@@ -12,7 +12,7 @@ consumer: portrait
 
 ## Prompt (Draft)
 
-Latino man of 55, medium build, deeply lined weary face, sharp dark brown eyes, heavy creased brows, five o'clock stubble, medium-brown skin, dark hair streaked with gray combed back, light blue collared shirt, neutral relaxed expression with mouth closed and relaxed, brows unfurrowed, eyes straight at the camera, facing front, level shoulders, arms hanging relaxed at the sides, plain flat light-grey background, premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Latino man of 55, medium build, deeply lined weary face, sharp dark brown eyes, heavy creased brows, five o'clock stubble, medium-brown skin, thinning dark hair streaked with gray combed back, light blue collared shirt, neutral relaxed expression with mouth closed and relaxed, brows unfurrowed, eyes straight at the camera, facing front, level shoulders, arms hanging relaxed at the sides, plain flat light-grey background, premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 

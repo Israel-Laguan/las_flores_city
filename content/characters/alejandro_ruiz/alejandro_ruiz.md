@@ -3,7 +3,7 @@
 **Title:** Senior Investigative Reporter, La Prensa
 
 **Physical Description:**
-- Latino man in his 40s with a lean, wiry build and weathered brown skin; wavy dark hair threaded with gray, thick brows and a faint pale scar along the jaw, deep-set watchful eyes, a prominent hawk nose, and a rumpled jacket over an open collar.
+- Latino man in his 40s with a lean, wiry build and weathered brown skin; wavy dark hair threaded with gray, thick brows and a faint pale scar along the jaw, deep-set watchful eyes, a prominent hawk nose, a short dark goatee, and a rumpled jacket over an open collar.
 
 **Description (full):**
 

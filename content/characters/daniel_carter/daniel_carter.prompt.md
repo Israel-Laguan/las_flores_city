@@ -12,7 +12,7 @@ consumer: portrait
 
 ## Prompt (Draft)
 
-Man of about 65, broad heavy build, square weathered face with deep lines, thin receding grey-white hair combed back, thick grey brows, blue-grey eyes, olive-green collared polo shirt. neutral relaxed expression, mouth closed, brows unfurrowed, eyes to camera, front-facing, arms relaxed. plain flat grey background. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Man of about 72, broad heavy build, square weathered face with deep lines, thin receding grey-white hair combed back, thick grey brows, blue-grey eyes, olive-green collared polo shirt. neutral relaxed expression, mouth closed, brows unfurrowed, eyes to camera, front-facing, arms relaxed. plain flat grey background. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 

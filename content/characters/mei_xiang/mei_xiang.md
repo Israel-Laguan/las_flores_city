@@ -56,7 +56,7 @@ A historical figure and a source for how the concession was won: the origin of t
 
 ## Known inconsistencies
 
-- **Age:** the data gave b. ~2015, which would make her about nine at the 2024–2025 talks. Revised to ~1995 (about 29 then, 82 in 2077). Her portrait shows a woman in her early 60s and may need updating.
+- **Age:** the data gave b. ~2015, which would make her about nine at the 2024–2025 talks. Revised to ~1995 (about 29 then, 82 in 2077). Her portrait prompts now depict her in her early 80s with a silver bob; the existing PNG may need regenerating.
 
 ## Related Lore
 - [LW Group Overview](../../lore/organizations/companies/overview/overview.md)

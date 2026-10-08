@@ -14,9 +14,9 @@
 - Distinguishing features: Small rectangular glasses, always carries a leather portfolio, nervous habit of checking over her shoulder, simple pearl stud earrings
 
 ## Overview
-Liu Fang was a whistleblower from within the LW Group who provided damning evidence of bribery and corruption to local officials. She was brutally murdered in an alleyway in August 2059 under mysterious circumstances, days before she was set to testify in the 2059 class-action proceedings against Minera Estrella, the follow-up to the 2055-2057 trial. 
+Liu Fang was a whistleblower from within the LW Group who provided damning evidence of bribery and corruption to local officials. She was stabbed to death in August 2059 during the massive anti-mining protest at Estación Central by an assassin working for Li Wei, days before she was set to testify in the 2059 class-action proceedings against Minera Estrella, the follow-up to the 2055-2057 trial. 
 
-In her final moments, she managed to pass her memory card of evidence to a passing student. As she bled out, a young nurse, Cecilia Rodríguez, attempted to save her life. However, a corporate "cleaner" posing as a doctor, Viktor Reyes, displaced the nurse and ensured Liu Fang did not survive.
+In her final moments, she managed to pass her memory card of evidence to a university student who witnessed the attack. As she bled out, a young nurse, Cecilia Rodríguez, attempted to save her life. However, a corporate "cleaner" posing as a doctor, Viktor Reyes, displaced the nurse and ensured Liu Fang did not survive.
 ## Evidence Collected
 Liu Fang gathered extensive evidence including:
 - Proof that container facilities before 2052 were structurally weak
@@ -25,7 +25,7 @@ Liu Fang gathered extensive evidence including:
 - Plans for new container facilities (built in 2055) due to danger of the original containers
 
 ## Posthumous Impact
-Liu Fang was officially misidentified when she died, leading many to believe she had simply "disappeared." However, her evidence survived on the memory card she passed to the student in the alleyway. The student later sent this evidence to the press to be used in the second trial against Minera Estrella. Ultimately, a copy of her evidence was shared by an anonymous source to Yara Rossi in June 2059, and it also ended up in the hands of Evelyn Ruthenberg. 
+Liu Fang was officially misidentified when she died, leading many to believe she had simply "disappeared." However, her evidence survived on the memory card she passed to the student at the protest. The student took it to the mainstream press, which ignored it under corporate pressure; frustrated, the student posted an encrypted sample on the underground network *El Grito Estudiantil* in September 2059, and Evelyn Ruthenberg intercepted the post, tracked the student down and secured the drive. An earlier copy of her evidence had already reached Yara Rossi from an anonymous source in June 2059, two months before Liu Fang's death. 
 
 Her sacrifice ensured that the true extent of the corporate negligence during the Great Lithium Leak would not be buried.
 ## Related Lore

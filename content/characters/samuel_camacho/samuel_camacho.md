@@ -7,7 +7,7 @@
 
 **Description (full):**
 
-Samuel Camacho (20). Samuel grew up in the Port Area Port Area, Las Flores. His parents work in various roles related to the port, which has sparked his interest in technology and how it can optimize the port's operations. Early on, Samuel discovered a knack for computers and programming, leading him to pursue a degree in Computer Engineering.
+Samuel Camacho (20). Samuel grew up in the Port Area, Las Flores. His parents work in various roles related to the port, which has sparked his interest in technology and how it can optimize the port's operations. Early on, Samuel discovered a knack for computers and programming, leading him to pursue a degree in Computer Engineering.
 
 **Age (2077):** 20 (b. 2057)
 **District:** Port Area, Las Flores

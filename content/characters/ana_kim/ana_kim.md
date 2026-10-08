@@ -93,7 +93,7 @@ To cope with danger she retreats into observation mode, treating human tragedy a
 ### Education & Work
 - **Studies:** Sociology and journalism student at the Universidad de Las Flores, frustrated by the lack of real reporting in the city's corporate-owned media
 - **Employment:** Works at the university library, where Alex Garcia has a part-time shift; this is how she meets Alex and, through him, the rest of the student group
-- **Freelance:** After 2077 she does freelance background-investigator work for mid-tier law firms and corporate HR departments. It is boring, invisible work that grants legitimate access to proprietary databases, financial registries and court records, and it pays for her studies and her information work
+- **Freelance:** In 2077 she does freelance background-investigator work for mid-tier law firms and corporate HR departments. It is boring, invisible work that grants legitimate access to proprietary databases, financial registries and court records, and it pays for her studies and her information work
 - **Skills:** Research, archival work, library systems, organization
 - **Access:** Employee access to archived press databases and university systems
 
@@ -142,7 +142,7 @@ To cope with danger she retreats into observation mode, treating human tragedy a
 ### Meeting Ken
 - **When:** Around the same month, while the building mystery deepens
 - **Who:** Ken, an undercover investigator stationed by Chief Inspector Adeyemi in the building's vacant apartment to watch Alex and the owners; he has no surname and no character file yet
-- **Cover:** Ana stays close to the apartment operation, but she does not take the investigator's cover herself. The source dump casts her as Alex's relative and Ken as her fiancé; the canonical account assigns that apartment cover to an unnamed police investigator.
+- **Cover:** Ana stays close to the apartment operation, but the cover is not hers. In the canonical account Ken poses as the fiancé of an unnamed police investigator playing a distant relative of Alex's; Ana only knows him as the undercover man in that apartment.
 - **Texture:** Professional and uncomfortable; Adeyemi controls what the team knows. Ana asks the questions everyone else sidesteps, and she is intelligent enough to notice Ken's inconsistencies
 
 ### Role in the Movement
@@ -232,7 +232,7 @@ To cope with danger she retreats into observation mode, treating human tragedy a
 - **Connection:** None. Ana Villanueva is a separate character who only shares a first name; NPCs may confuse them
 
 ### With Ken
-- **Connection:** Adeyemi's undercover investigator; introduced early as her "fiancé" cover in the vacant apartment
+- **Connection:** Adeyemi's undercover investigator; introduced early as the undercover man in the vacant apartment (his "fiancé" cover belongs to an unnamed police investigator, not to Ana)
 - **Dynamic:** Informant turned double agent, then a double-crossed double agent
 - **Impact:** Teaches her the cost of trust
 
@@ -386,7 +386,7 @@ conveying tension and the moment of decision, cinematic, ultra-detailed, 8k
 - **Status:** Active
 - **Faction:** Las Estrellas Movement (former), Supporter
 - **Location:** Middle Districts, Las Flores
-- **Occupation:** University Library Employee, Social Work Student
+- **Occupation:** University Library Employee, Sociology and Journalism Student
 
 ---
 

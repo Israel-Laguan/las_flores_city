@@ -8,7 +8,7 @@ target: content/characters/javier_torres/assets/
 
 # Video Prompts: Javier Torres
 
-NOTE: PNG reads closer to 50 than 42 and shows a short salt-and-pepper beard not in the YAML; accepted as canonical (no regeneration required).
+NOTE: canon age is now 65; the existing PNG (reads about 50) is stale and should be regenerated against the 65-year-old prompt. It also shows a short salt-and-pepper beard not in the YAML; accepted as canonical.
 
 Generate seamless looping portrait videos from each expression variant PNG. Use the corresponding `javier_torres__<expression>.png` as the input image for each prompt. The man on the reference image is the character described in the source prompt file.
 

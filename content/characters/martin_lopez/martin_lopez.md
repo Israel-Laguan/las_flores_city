@@ -3,7 +3,7 @@
 **Title:** 55-year-old Veteran Journalist & Investigative Reporter at El Informador
 
 ## Physical Description
-- Hair: Gray-brown, thinning and combed back
+- Hair: Dark brown streaked with gray, thinning and combed back
 - Eyes: Dark brown, weary but sharp
 - Build: Average height, slightly stooped from years at a desk
 - Skin: Medium brown, lined from stress and long hours

@@ -4,7 +4,8 @@
 
 **Physical Description:**
 - Chinese man in his late 50s with a lean, wiry build and clear skin; square face with pronounced cheekbones, receding straight dark-gray hair, thick brows and a small mole on the left cheek.
-- **Identifying detail:** the small mole on his left cheek. *(age revised to fit the timeline; see below; existing portrait assets were drawn for age 45 and may need a refresh)*
+- **Identifying detail:** the small mole on his left cheek.
+- *Age revised to fit the timeline (see below); existing portrait assets were drawn for age 45 and may need a refresh.*
 
 **Description (full):**
 
@@ -22,7 +23,7 @@ Drives the LW Group's ventures into next-generation lithium extraction and renew
 | Date | Event |
 |---|---|
 | 2049 | Proposes a new, high-tech containment system. [Zhang Liang](../zhang_liang/zhang_liang.md) imposes financial barriers that delay approval. An independent audit that year confirms the vulnerabilities, yet nothing is done. (Emails showing the deliberate budget pressure appear in the [leak clues](../../vault/great_lithium_leak_clues.yaml).) |
-| 15 Aug 2052 | Great Lithium Leak. In the secret meeting that follows, [Li Wei](../li_wei/li_wei.md) approves staging the disaster as an electrical failure and entrusts execution to Qiu Bo, who works with the President of Minera Estrella and Chief Engineer Liu Xiaoping. |
+| 15 Aug 2052 | Great Lithium Leak. In the secret meeting that follows, [Li Wei](../li_wei/li_wei.md) and the inner circle approve staging the scene as an electrical failure. Qiu Bo oversees the fabrication of evidence. |
 | 2052–2057 | Oversees the fabrication of evidence; the defense case in the trial (Jan 2055–Mar 2057) rests on it. Also collaborates with [Mingze Luo](../mingze_luo/mingze_luo.md). |
 | 2065 | Remains in the inner circle under the new CEO [Xiao Chen](../xiao_chen/xiao_chen.md). |
 | 2077 | Head of Tech & Innovation, pushing next-gen extraction and renewables. His role in the endgame is not described. |

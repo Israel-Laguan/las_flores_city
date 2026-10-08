@@ -10,15 +10,15 @@ consumer: portrait
 
 # Prompt: Xiao Chen
 
-NOTE: existing PNG reads closer to 60 than 52, and omits the lore's tiny mole near the lower lip, gray threads in the hair and the small sport earbud (low priority).
+NOTE: existing PNG reads closer to 60 than 52, and omits the lore's tiny mole near the lower lip, the gray threads in the bob and the small sport earbud (low priority).
 
 ## Prompt (Draft)
 
-Chinese woman of about 52, oval face, almond dark eyes, fine lines at the eyes and mouth, short straight jet-black hair side-parted and tucked behind the ears, fair skin, athletic-compact build, black collared button-up shirt. Plain flat grey background. Neutral relaxed expression, mouth closed, eyes straight at camera, facing front, arms relaxed at sides. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Chinese woman of about 52, oval face, almond dark eyes, fine lines at the eyes and mouth, short straight dark bob threaded with gray, side-parted and tucked behind the ears, fair skin, athletic-compact build, black collared button-up shirt. Plain flat grey background. Neutral relaxed expression, mouth closed, eyes straight at camera, facing front, arms relaxed at sides. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Chinese woman of about 52 with an athletic-compact build. Oval face with almond-shaped dark eyes, fine lines at the corners of the eyes and mouth, fair skin and thin mauve-tinted lips. Short straight jet-black hair side-parted and tucked behind the ears. A black collared button-up shirt. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Chinese woman of about 52 with an athletic-compact build. Oval face with almond-shaped dark eyes, fine lines at the corners of the eyes and mouth, fair skin and thin mauve-tinted lips. Short straight dark bob threaded with gray, side-parted and tucked behind the ears. A black collared button-up shirt. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
