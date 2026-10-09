@@ -23,7 +23,7 @@ Oversees La Prensa's operations in Las Flores. Pivotal in building the newspaper
 She runs the Las Flores operation and is "pivotal in building the newspaper's presence and credibility in the city." The bureau's problem is the one the outlet file names: the LW Group's influence over local media, through ad revenue, payments and personal connections. Mariana has to keep a bureau alive in a town where most local outlets will not touch the leak. *(her specific choices are invented)*
 
 - **Born 2033** (44 in 2077). She was 19 at the 2052 leak, so the bureau she leads postdates it or she joined it young. *(her path is invented)*
-- She is the bureau's local anchor while [Lina Kim](../lina_kim/lina_kim.md), an outsider, makes the headlines and then leaves.
+- She is the bureau's local anchor while [Lina Kim](../lina_kim/lina_kim.md), an outsider, makes the headlines and then leaves. *(this framing is invented; the lore has Lina based at the main office by 2077)*
 
 ## Want, Flaw, Fear
 
@@ -39,9 +39,9 @@ She runs the Las Flores operation and is "pivotal in building the newspaper's pr
 ## Relationships (with cost)
 
 - **[Pedro Escobar](../pedro_escobar/pedro_escobar.md), city editor.** Her day-to-day operator.
-- **[Sofia Cortez](../sofia_cortez/sofia_cortez.md) and [Emilio Navarro](../emilio_navarro/emilio_navarro.md),** reporters she manages.
-- **[Victor Almeida](../victor_almeida/victor_almeida.md), main-office editor.** Her boss; he backs the bureau's investigations but makes her carry their consequences.
-- **[Lina Kim](../lina_kim/lina_kim.md).** The star she is tasked with supporting when Lina is in town.
+- **[Sofia Cortez](../sofia_cortez/sofia_cortez.md) and [Emilio Navarro](../emilio_navarro/emilio_navarro.md),** reporters she manages. *(the reporting line is invented)*
+- **[Victor Almeida](../victor_almeida/victor_almeida.md), main-office editor.** Her boss; he backs the bureau's investigations but makes her carry their consequences. *(invented)*
+- **[Lina Kim](../lina_kim/lina_kim.md).** The star she supports when Lina is in town. *(invented; in 2077 Lina is mentoring at the main office)*
 
 ## Story Role
 

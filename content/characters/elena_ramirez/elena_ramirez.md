@@ -45,7 +45,7 @@ Timeline sources: [Founding Era](../../lore/organizations/movements/humanity_fir
 
 - **[Daniel Carter](../daniel_carter/daniel_carter.md).** Her partner in founding, who left her the council.
 - **[Javier Torres](../javier_torres/javier_torres.md).** Vice-Chair beside her for nearly two decades.
-- **[Sofia Alvarez](../sofia_alvarez/sofia_alvarez.md).** Successor; Sofia led the Youth Council under her.
+- **[Sofia Alvarez](../sofia_alvarez/sofia_alvarez.md).** Successor as Chair; Sofia led the Youth Council during Elena's tenure. *(any mentoring between them is invented)*
 - **[Carlos Lopez](../carlos_lopez/carlos_lopez.md).** Her verifier.
 
 ## Story Role

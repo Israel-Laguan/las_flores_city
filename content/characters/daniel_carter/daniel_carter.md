@@ -32,7 +32,7 @@ Timeline source: [Founding Era](../../lore/organizations/movements/humanity_firs
 ## Want, Flaw, Fear
 
 - **Want:** A movement that does not need him. His whole method is to make himself unnecessary, and by 2039 he does.
-- **Flaw:** He builds trust by listening, then leaves, and the council inherits his rules without his judgment. The later rogue groups take root in the years after he withdraws (Diego Salazar and Carla Ruiz from December 2038). *(the framing is mine; the dates are the lore's)*
+- **Flaw:** He builds trust by listening, then leaves, and the council inherits his rules without his judgment. The later rogue groups take root around his withdrawal (Diego Salazar and Carla Ruiz begin building a following in December 2038, the year before he leaves in 2039). *(invented framing; the dates are the lore's)*
 - **Fear:** That the movement is "his", and that local ownership is a performance. He repeatedly insists the council is self-sufficient. *(invented)*
 
 ## Habits and Contradictions

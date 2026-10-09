@@ -4,11 +4,14 @@ title: Community Organizer, Sector Norte
 birth_year: 2032
 description: A community organizer in Sector Norte, Ana Castillo runs a local food cooperative that provides affordable groceries to the neighborhood. She was one of the early supporters of Alex's movement, allowing the cooperative's back room to be used for the first community meetings. She never joined the frontlines but was instrumental in building trust between the movement and the neighborhood's residents. After the 2077 broadcast, she served on the transitional council's food security committee.
 physical_description: "Latina woman in her 40s with a soft, rounded build, warm brown skin with fine lines around the eyes, wavy dark hair held back with a clip, a round face and a dimple on the right cheek; a practical apron, canvas tote and a faint burn scar on the left forearm."
-psychological_description: "Principled and honest, building trust within her neighborhood."
+psychological_description: "Principled and honest, building trust within her neighborhood. Cannot say no to the movement's requests for her back room, and fears the co-op will pay for the movement's risk."
 background_and_role:
   - "Community organizer in Sector Norte"
   - "Runs a food cooperative providing affordable groceries"
   - "Early supporter of Alex's movement; served on the transitional council's food security committee"
+  - "Not Ana Kim (the investigator in Alex's group); not Ana Silva or Ana Ramirez"
+  - "Hosted the movement's first community meetings in her co-op's back room, near the raided Sector Norte community center"
+  - "Not part of the 2077 core group"
 metadata:
   type: human
   role: npc

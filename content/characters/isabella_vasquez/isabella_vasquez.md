@@ -114,6 +114,11 @@ Isabella does not "cover" Las Flores power — she rents space inside it.
 
 ## Skeletons
 
+### The rumor years (2056–2059)
+*Canon note: the lore establishes only that Isabella, then a young Chronicle writer, spread unsourced rumors against the Movement during the 2056–2059 Restoration fight: that it was secretly investing in offshore accounts, and that it was a front for foreign interests (see [The Restoration Plan](../../lore/events/restoration_plan/restoration_plan.md) and [The Las Flores Chronicle](../../lore/media/press/las_flores_chronicle/las_flores_chronicle.md)). Everything below beyond that is invented.*
+
+In her early 20s Isabella was a rising byline on her father's paper *(invented)*, and she would only come to own it later *(invented)*. Her name came from the beauty-standard attacks *(invented)*, but the Chronicle's side of the Restoration fight gave her a second kind of piece: unsourced items that the Movement was secretly moving money into offshore accounts and that it was a front for foreign interests. They ran alongside El Javi's mockery and Minera Estrella's wider smear campaign. It suited her politics and her appetite *(motives invented)*: a rumor that needed no proof was her first lesson that information is a weapon, and it taught her what the later Isabella would refine into leverage *(invented)*. Nothing in the record shows Minera paying her *(invented as a framing; the lore is simply silent)*; she never confirms or denies who handed her the first tip *(invented)*.
+
 ### The pretty ones she ruined
 In her late 20s and early 30s, Isabella made a private sport of destroying women she found prettier than herself — junior Chronicle staffers, society daughters, influencers on the rise. Methods: kill-pieces dressed as "concern," leaked nudes framed as public interest, whispered infertility or gold-digger rumors, blacklists from galas, and once a fabricated conflict-of-interest that cost a rival her column. She told herself it was standards and "truth." It was gene-hatred with a press pass. A few of those women left the city. At least one attempted suicide. Isabella still has the clippings. She does not apologize. She calls it "how the game was played then" and gets cold when pressed.
 
@@ -197,3 +202,6 @@ She never starts at 5. Anyone who rushes intimacy is filed as a threat or a toy.
 **Break / betrayal**
 - If you leak her: she burns you in print and calls a debt with Flowers or City Hall.
 - If you stay loyal through a near-miss like 2069: she may finally stop auditioning you and start needing you — which terrifies her more than Dong's garage.
+
+
+**Not to be confused with:** [Isabella Garcia](../isabella_garcia/isabella_garcia.md) (Alex's sister), [Isabella Vargas](../isabella_vargas/isabella_vargas.md) (the analyst in Alex's group). Vasquez owns the Las Flores Chronicle (b. 2035).

@@ -40,10 +40,10 @@ La Prensa's independence rests on keeping advertising and editorial apart, and i
 
 ## Relationships (with cost)
 
-- **[Lina Kim](../lina_kim/lina_kim.md), star investigator.** He backed her and paid for it in ad revenue; she is the paper's reputation.
+- **[Lina Kim](../lina_kim/lina_kim.md), star investigator.** He backed her and paid for it in ad revenue *(invented)*; she is the paper's reputation.
 - **[Soledad Ortega](../soledad_ortega/soledad_ortega.md), managing editor.** Her multimedia push saves the paper's finances and pulls it away from his model of slow, rigorous print. *(invented tension)*
-- **[Alejandro Ruiz](../alejandro_ruiz/alejandro_ruiz.md).** Victor's most reliable hard-news investigator.
-- **[Mariana De La Cruz](../mariana_de_la_cruz/mariana_de_la_cruz.md),** his Las Flores bureau chief, who carries the LW pressure day to day.
+- **[Alejandro Ruiz](../alejandro_ruiz/alejandro_ruiz.md).** Victor's most reliable hard-news investigator. *(invented; the lore names him Senior Investigative Reporter)*
+- **[Mariana De La Cruz](../mariana_de_la_cruz/mariana_de_la_cruz.md),** his Las Flores bureau chief, who carries the LW pressure day to day. *(invented reporting line)*
 
 ## Story Role
 

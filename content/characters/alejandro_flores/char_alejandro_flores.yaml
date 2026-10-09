@@ -9,11 +9,13 @@ description: |
 
   Outside work, he enjoys wine tastings, art galleries, cultural events, and reading history and philosophy. He aspires to executive leadership while modernizing family winemaking traditions.
 physical_description: "38-year-old Latino man, tall and elegant with sharp angular features, high cheekbones, keen dark brown eyes and dark hair slicked back in a precise side part; tailored charcoal suit, white shirt and burgundy silk tie."
-psychological_description: "Results-driven and authoritative, dismissive of those he sees as less competent, and struggles to balance high standards with empathy."
+psychological_description: "Results-driven and authoritative, dismissive of those he sees as less competent, and struggles to balance high standards with empathy; fears being only a middle manager in the family firm or a contaminated vintage."
 background_and_role:
   - "Middle manager at Vinícola La Hacienda from a prestigious wine-industry family"
   - "Oversees production, quality control and logistics"
   - "Aspires to executive leadership while modernizing family winemaking traditions"
+  - "Los Andes wine family; Vinícola La Hacienda is in the Andean Mountains near the Minera Estrella Andes Mine (assumed family link)"
+  - "Mandarin speaker who may serve Chinese buyers and tourists (assumed)"
 metadata:
   type: human
   role: npc

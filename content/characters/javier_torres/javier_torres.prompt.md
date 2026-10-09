@@ -10,7 +10,7 @@ consumer: portrait
 
 # Prompt: Javier Torres
 
-NOTE: PNG reads closer to 50 than 42 and shows a short salt-and-pepper beard not in the YAML; accepted as canonical (no regeneration required).
+NOTE: canon age is now 65; the existing PNG (reads about 50) is stale and should be regenerated against the 65-year-old prompt. It also shows a short salt-and-pepper beard not in the YAML; accepted as canonical.
 
 ## Prompt (Draft)
 

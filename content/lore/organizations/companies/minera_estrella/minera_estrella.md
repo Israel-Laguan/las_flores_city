@@ -81,7 +81,7 @@ The defense — led by **Xiao Chen** (future CEO of LW Group) — argued the dis
 - Evidence admissibility disputes
 - Corporate liability shielding (executives not personally liable)
 
-### Verdict (January 10, 2057)
+### Verdict (March 15, 2057)
 Minera Estrella was **acquitted** on most charges. The company paid a $5 million fine and promised improved safety standards. The verdict was widely criticized as corporate impunity.
 
 ### Post-Trial

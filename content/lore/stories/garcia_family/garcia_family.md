@@ -42,7 +42,7 @@ Alejandro took on back-breaking work in the city, laboring on construction sites
 
 **Isabella's Care:** Isabella requires frequent medical check-ups and treatments. Alejandro allocates a significant portion of his earnings to cover her medical expenses.
 
-**Sofia's Support:** Sofia, the middle child, found a supportive husband at 18. They got married and started their own family, but Sofia ensured she remained closely involved with her father and siblings.
+**Sofia's Support:** Sofia, the middle child, was born deaf and worked as a mineral sorter until the 2063 rockslide; she sends what she can to her daughter Ariana, who lives with Isabella and Alejandro.
 
 ## Connection to Evelyn Ruthenberg
 "Evelyn and Alex family and friends got involved." — Alex Garcia became connected to Evelyn Ruthenberg's investigation into the lithium leak. The Garcia family's tragedy is one of the human stories behind the environmental disaster.

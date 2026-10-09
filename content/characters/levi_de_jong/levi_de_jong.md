@@ -16,6 +16,10 @@ His introduction to the world of wealthy benefactors began innocently enough—a
 
 The chic city-center apartment was the first major gift, but it was far from the last. Levi quickly learned the value of his companionship and the power dynamics at play in these relationships. What started as genuine affection in some cases evolved into something more transactional—and eventually, more dangerous.
 
+## Family: Twin Brother *(invented)*
+
+Levi has a fraternal twin, [Lucas de Jong](../lucas_de_jong/lucas_de_jong.md): same birth year, same family, same move to Las Flores as teenagers, very different lives. Lucas stayed inside the Dutch business community and its expectations; Levi walked away from them, building his own world of nightlife, benefactors and a curated feed. Lucas has glossy black hair and stubble and a heavier build; Levi has dark brown hair, is clean-shaven and lean. Their parents are the same well-to-do couple who relocated for the lithium industry.
+
 ## Personality
 
 Levi exudes charm that draws people in effortlessly. His charismatic and confident demeanor makes him the center of attention at any gathering. He is seductive and assertive, adept at navigating relationships to his advantage with a practiced ease that belies his young age.

@@ -56,3 +56,5 @@ The relationship between Isabella and her younger sister Sofia is deeply straine
 
 - **Themes:** Sibling rivalry, the psychological toll of chronic illness, the gentrification of art, the unequal impacts of industrial contamination.
 - **Narrative Hooks:** Players might need to interact with Isabella to reach Ariana or pass messages to Sofia. Isabella could hold onto old family documents or artistic renderings of Old Las Flores that contain clues about the historical contamination cover-ups.
+
+**Not to be confused with:** [Isabella Vargas](../isabella_vargas/isabella_vargas.md), the analyst in Alex's core group (b. 2054), or [Isabella Vasquez](../isabella_vasquez/isabella_vasquez.md), who owns the Chronicle. Isabella Garcia is Alex's sister (b. 2043).

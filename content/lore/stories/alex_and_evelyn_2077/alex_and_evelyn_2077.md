@@ -110,9 +110,23 @@ Alex directed the holding action from inside the estate's outer wall, using the 
 
 Evelyn reached the archive. The broadcast began transmitting at 3:14 AM.
 
+### Alex
+
+The broadcast completed at 3:28 AM. The perimeter had been held. But the plan had already gone wrong.
+
+The controlled dam release that was meant to create an escape route had collapsed the dam entirely. The water was surging toward the city — it would leave Las Flores without electricity and threaten thousands of innocent lives. Alex saw the news feed in the command vehicle. They understood immediately what the math meant.
+
+There was a nearby mine, abandoned for decades. If Alex could reach it and detonate the remaining explosives, the resulting cave-in could create an improvised dam — redirecting the flood, saving the city, and buying Evelyn and the others the cover they needed to escape.
+
+Alex did not tell anyone what they were doing. They drove to the mine alone.
+
+Miguel figured it out too late. He reached the mine entrance just as the ground shook. He does not talk about what he found.
+
+Alex died in the explosion, buried under a mountain of rock and rubble, having traded their life for the city they had spent their final months trying to save.
+
 ### Evelyn and Adeyemi
 
-Evelyn entered the mayor's estate through the service corridors, the broadcast already transmitting from the archive. But the mayor had anticipated a breach. The estate went into lockdown — gates sealed, police units converging from all directions. Mayor Vega retreated to a hidden safe room beneath the main building, leaving his enforcement officers to hunt Evelyn through the labyrinthine corridors.
+Evelyn had entered the mayor's estate through the service corridors, the broadcast already transmitting from the archive. The mayor had anticipated a breach, and the estate had gone into lockdown — gates sealed, police units converging from all directions. Mayor Vega had retreated to a hidden safe room beneath the main building, leaving his enforcement officers to hunt Evelyn through the labyrinthine corridors.
 
 Adeyemi was already inside. He had been stationed at the estate as the mayor's security coordinator, placed there to ensure nothing went wrong. But watching the broadcasts, watching the evidence spill out into the open, watching the movement's people hold the perimeter against overwhelming force — something in him had already begun to shift.
 
@@ -142,27 +156,13 @@ He shot Mayor Alfonso Vega. Once.
 
 Then he walked back through the sealed corridors, found Evelyn in the same hallway where he had left her, and told her what he had done.
 
-"You need to make it look like you killed him," Evelyn said. "The world needs a story it can understand. The vigilante killed the mayor. You captured her. That's the narrative that works."
+"You need to make it look like I killed him," Evelyn said. "The world needs a story it can understand. The vigilante killed the mayor. You captured her. That's the narrative that works."
 
 Adeyemi understood. He handcuffed her.
 
 Together, they walked out of the estate's main entrance. The police had surrounded the perimeter, news cameras were broadcasting live. The footage that went out across the world showed Chief Inspector Adeyemi emerging from the estate with Evelyn Ruthenberg in handcuffs — the fugitive vigilante who had killed the mayor of Las Flores, finally brought to justice.
 
 It was a lie. It was also, in the way that mattered most, the truth.
-
-### Alex
-
-The broadcast completed at 3:28 AM. The perimeter had been held. But the plan had already gone wrong.
-
-The controlled dam release that was meant to create an escape route had collapsed the dam entirely. The water was surging toward the city — it would leave Las Flores without electricity and threaten thousands of innocent lives. Alex saw the news feed in the command vehicle. They understood immediately what the math meant.
-
-There was a nearby mine, abandoned for decades. If Alex could reach it and detonate the remaining explosives, the resulting cave-in could create an improvised dam — redirecting the flood, saving the city, and buying Evelyn and the others the cover they needed to escape.
-
-Alex did not tell anyone what they were doing. They drove to the mine alone.
-
-Miguel figured it out too late. He reached the mine entrance just as the ground shook. He does not talk about what he found.
-
-Alex died in the explosion, buried under a mountain of rock and rubble, having traded their life for the city they had spent their final months trying to save.
 
 ---
 

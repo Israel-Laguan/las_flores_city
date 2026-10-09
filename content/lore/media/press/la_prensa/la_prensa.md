@@ -42,14 +42,14 @@ The newspaper's independence from local political and economic interests made it
 
 ## Coverage of the Lithium Leak
 
-Journalist Lina Kim led an investigative team that uncovered the extent of environmental damage caused by the tailings dam failure. Her reporting brought international pressure on Las Flores authorities to hold Minera Estrella accountable.
+Journalist Lina Kim led an investigative team that uncovered the extent of environmental damage caused by the high-pressure pipe failure at its processing facility. Her reporting brought international pressure on Las Flores authorities to hold Minera Estrella accountable.
 
 ## Challenges
 
 La Prensa faced restrictions on independent reporting and investigation of the incident. The LW Group exerted influence over local media outlets through advertising revenue, direct payments, and personal connections.
 
 ### Lina Kim and The Great Lithium Leak Exposé
-Lina Kim, a tenacious journalist at La Prensa's Las Flores office, exploited her outsider status to her advantage. Being unencumbered by local biases and loyalties, she delved into the story of the Great Lithium Leak, a catastrophe that local media hesitated to scrutinize due to its potential economic implications.
+Lina Kim, a tenacious journalist at La Prensa (main office), exploited her outsider status to her advantage. Being unencumbered by local biases and loyalties, she delved into the story of the Great Lithium Leak, a catastrophe that local media hesitated to scrutinize due to its potential economic implications.
 
 Her exhaustive investigation revealed the depth of negligence and corruption behind the leak, outraging the public and leading to widespread demands for justice. Kim's exposé was published in a series of damning articles that illuminated the environmental devastation, the ensuing public health crisis, and the initial attempts to cover up the incident.
 
@@ -62,7 +62,7 @@ Her work prompted national and international media to pick up the story, elevati
 2. **Soledad Ortega** — Managing Editor: Driving force behind the integration of multimedia content. Her background in digital media has been crucial in navigating the transition to a multi-platform news organization.
 3. **Alejandro Ruiz** — Senior Investigative Reporter: With a penchant for uncovering corporate misconduct and government corruption, his investigations have led to significant legal reforms and the resignation of several high-profile figures.
 4. **Clara Torres** — Technology and Innovation Editor: Leads a team focused on reporting the latest in technology, science, and their societal impacts. Instrumental in engaging younger audiences through cutting-edge digital storytelling techniques.
-5. **Lina Kim** — Investigative Journalist (2077: mentoring at the main office): Led the Great Lithium Leak investigation, bringing international attention to the disaster and cover-up.
+5. **Lina Kim** — Senior Investigative Reporter (from 2059; 2077: mentoring at the main office): Led the Great Lithium Leak investigation, bringing international attention to the disaster and cover-up.
 
 ### Las Flores Office
 1. **Mariana De La Cruz** — Bureau Chief: Tasked with overseeing La Prensa's operations in Las Flores, pivotal in building the newspaper's presence and credibility in the city.

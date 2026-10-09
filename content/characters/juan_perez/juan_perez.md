@@ -34,10 +34,10 @@ The **2069** Flowers near-miss taught Isabella that Juan's speed can get her kil
 
 ## Habits and Contradictions
 
-- Collects off-record confessions at bars after galas; flirts for access, not always for romance.
+- Collects off-record confessions at bars after galas; flirts for access, not always for romance. *(invented)*
 - Keeps a private archive of spiked stories. It is his insurance and, if Isabella learns how complete it is, his death warrant. *(archive is established; its completeness is not)*
 - Preaches against hypocrisy while living off the hypocrites' parties. The chipped front tooth is a story he tells differently each time. *(origin invented)*
-- Charm as research: warm in the room, an inventory by the time he leaves.
+- Charm as research: warm in the room, an inventory by the time he leaves. *(invented; the lore says only "charismatic")*
 
 ## Relationships (with cost)
 

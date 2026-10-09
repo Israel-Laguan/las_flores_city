@@ -25,9 +25,8 @@ The central protagonist of the 2077 endgame arc. Born in the Garcia family's flo
 | 2052 (Aug) | Great Lithium Leak. The family's flowers turn red the following September; Maria's illness begins. Alex is not yet born. |
 | ~2055 | Alex is born, "a few years after the first signs of contamination" ([Garcia family](../../lore/stories/garcia_family/garcia_family.md)). |
 | Jan 2071 | Maria dies; Alex is sixteen. Alejandro goes silent and takes construction work in the city. |
-| ~2071–2073 | Alex pours everything into school. As a high school senior (~2073), applies on Alejandro's urging for [Futuro Brillante](../../lore/stories/glc_scholarship_program/glc_scholarship_program.md), GLC's full scholarship for talented Old Las Flores students, and wins it. The program also offers GLC mentorship and lithium-industry internships. |
-| ~2073–2075 | Works and helps the family before enrolling at twenty. *(the two-year gap is invented to fit the age; the stories give 2075 for enrollment and no school date)* |
-| 2075 | Enrolls at Universidad Nacional de Las Flores. |
+| ~2071–2075 | Alex pours everything into school while helping the family; the grief and Alejandro's silence slow the way through, so Alex finishes late, at nineteen. *(the late finish is invented, to make the stories' age, sixteen in 2071, and their 2075 enrollment agree)* In the final school year (~2074–2075), applies on Alejandro's urging for [Futuro Brillante](../../lore/stories/glc_scholarship_program/glc_scholarship_program.md), GLC's full scholarship for talented Old Las Flores students, and wins it. The program also offers GLC mentorship and lithium-industry internships. |
+| 2075 | Enrolls at Universidad Nacional de Las Flores at twenty, on the scholarship, and moves to the city. By 2077 Alex is in the third year, among older students such as Carlos Medina (final year) and Ana Kim (library job). |
 | 2075–2077 | Lives at Residencial Las Estrellas; works two part-time jobs, one of them a shift at the university library, where they meet [Ana Kim](../ana_kim/ana_kim.md). |
 | 2077 | Investigates the Las Estrellas deaths, forms an alliance with Evelyn Ruthenberg, builds the movement, leads the estate raid and dies at the abandoned mine. See [Alex & Evelyn: The 2077 Endgame](../../lore/stories/alex_and_evelyn_2077/alex_and_evelyn_2077.md). |
 
@@ -59,6 +58,6 @@ The central protagonist of the 2077 endgame arc. Born in the Garcia family's flo
 
 Alex is the 2077 protagonist and, by the end, a martyr. The scholarship makes Alex a beneficiary of GLC, the Van der Meer family's company, whose mining the leak came from. *(treating that irony as a theme is an editorial reading, not stated in the stories)* The movement outlives Alex: a studio at the architecture school, a community center in Sector Norte and a bench near Las Estrellas carry their name.
 
-## Known Inconsistencies (for later review)
+## Notes
 
-- [Miguel Jhonson](../miguel_jhonson/miguel_jhonson.md) says he "was there at the end with Alex", while the endgame story has Alex drive to the mine alone. Not resolved here.
+- Alex drove to the mine alone and told no one; [Miguel Jhonson](../miguel_jhonson/miguel_jhonson.md) worked it out too late and reached the entrance as the ground shook (the earlier "there at the end with Alex" wording in Miguel's file was corrected to match).

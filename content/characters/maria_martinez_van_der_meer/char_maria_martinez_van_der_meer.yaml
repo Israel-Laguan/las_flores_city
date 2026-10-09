@@ -1,13 +1,14 @@
 id: 26ee4303-72a9-4422-b30d-95dd5bd01353
 name: Maria Martinez van der Meer
-title: Matriarch of the van der Meer Family
+title: Matriarch of the van der Meer Family; President of Fundación Esperanza
 birth_year: 2020
-description: Born into a prominent Las Flores family (the Martinez family of Old Las Flores; unrelated to María Martinez, founder of Fundación Esperanza) with deep social and political roots. Educated at exclusive European institutions, she married Jan van der Meer, son of industrialist Pieter van der Meer. As a young woman, she became a force in high society with her elegance, charm, and intellect. Legendary beauty with striking dark hair, piercing eyes, and radiant smile. After marrying Jan in 2040, she became mother to Anna, Peter, and Lucas, hosting lavish galas while supporting philanthropic efforts in education, healthcare, and poverty alleviation. Despite her glamorous persona, she had a compassionate heart, working tirelessly for local charities. Faced family challenges including Peter's coming out, Anna's activism, and Lucas's addiction struggles. Developed dementia in later years, with Anna caring for her. Found solace with Dirk, an elderly servant and constant companion.
+description: Born into a prominent Las Flores family (the Martinez family of Old Las Flores) with deep social and political roots. Educated at exclusive European institutions, she married Jan van der Meer, son of industrialist Pieter van der Meer, in 2040 and became mother to Anna, Peter and Lucas. A legendary beauty with a compassionate heart, she hosted lavish galas and backed charities in education, healthcare and poverty relief. From about 2055 she was the public face and president of Fundación Esperanza, a foundation started by Old Las Flores citizens and taken over by the Van der Meers as a means of political pressure; Sophia van der Meer Rodriguez succeeded her about 2071 as dementia set in, with Anna caring for her. Found solace with Dirk, an elderly servant and constant companion.
 physical_description: "Medium-height woman with dark, expressive eyes, a straight nose, a defined jaw and dark flowing hair, with a calm, steady and composed bearing."
 psychological_description: "Elegant, charming and intellectually keen, with a compassionate heart beneath her glamorous persona; quietly strove to present a united front for her family."
 background_and_role:
   - "Matriarch of the van der Meer family"
   - "Wife of Jan van der Meer; mother of Anna, Peter and Lucas"
+  - "President of Fundación Esperanza (c. 2055–2071), founded by citizens and taken over by the family as political pressure; succeeded by Sophia van der Meer Rodriguez"
   - "Host of society galas and supporter of charities in education, healthcare and poverty relief"
 metadata:
   type: human

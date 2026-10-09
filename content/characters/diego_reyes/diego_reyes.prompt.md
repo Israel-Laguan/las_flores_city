@@ -12,11 +12,11 @@ consumer: portrait
 
 ## Prompt (Draft)
 
-Latino man of about 32, athletic-compact build, warm-brown skin, short curly black hair, thick brows, round dark eyes, light stubble, slate-blue crew-neck t-shirt. neutral relaxed expression, mouth closed, brows unfurrowed, eyes to camera, front-facing, arms relaxed. plain flat grey background. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Latino man of about 55, compact heavy-shouldered build, warm-brown skin, close-cropped curly hair greying at the temples, thick brows, round dark eyes, grey stubble, faded slate-blue crew-neck shirt under a plain work jacket. neutral relaxed expression, mouth closed, brows unfurrowed, eyes to camera, front-facing, arms relaxed. plain flat grey background. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man of about 32. Athletic-compact build with broad shoulders and a thick neck. Round face with large dark brown eyes under thick dark brows, a broad nose, full lips, warm-brown skin and light stubble along the jaw and chin. Short, tight curly black hair, shorter on the sides. Slate-blue crew-neck t-shirt. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man of about 55. Compact build with heavy shoulders and a thick neck. Round face with large dark brown eyes under thick dark brows, a broad nose, full lips, warm-brown skin and grey stubble along the jaw and chin and fine lines at the eyes. Close-cropped curly dark hair going grey at the temples. Faded slate-blue crew-neck shirt under a plain work jacket. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
@@ -24,8 +24,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Shouting through a megaphone at the head of a crowd with a hand-painted banner behind him
-- [ ] Pinning a rainbow of small badges onto a jacket at a cramped campaign table
+- [ ] Standing at a protest line outside a corporate office, jaw set, a faded work jacket zipped to the collar
+- [ ] Sitting at a kitchen table beside a boy's medication organiser, hands flat on the wood
 - [ ] Being led away between two officers, wrists together, head held high
 
 ## Expression Variants
@@ -46,4 +46,4 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 <!-- Lore wardrobe staged as outfit variants of the base portrait: `assets/<slug>__outfit-<name>.png`. Same face, hair and build as the base. -->
 
-- **`__outfit-activist.png`**: Use the base portrait as reference. Same man, now wearing a bold abstract-graphic t-shirt under an open worn jacket with a cluster of small colourful statement pins on the lapel and no lettering, neutral relaxed expression, shoulders level, looking at the camera, 3/4 take. Keep the same face, build and art style as reference, plain flat neutral light-grey backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__outfit-plant.png`**: Use the base portrait as reference. Same man, now wearing a worn plant-floor coverall with the sleeves rolled and a faded Luz del Río patch on the chest, neutral relaxed expression, shoulders level, looking at the camera, 3/4 take. Keep the same face, build and art style as reference, plain flat neutral light-grey backdrop. Clean confident linework, painterly soft shading, muted natural palette.

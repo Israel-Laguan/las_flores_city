@@ -106,7 +106,7 @@ The LW Group's underground operations included:
 ### 2052
 | Date | Event |
 |---|---|
-| **Aug 15** | Tailings dam/pipe failure at Minera Estrella; massive spill contaminates rivers |
+| **Aug 15** | High-pressure pipe failure at Minera Estrella; massive spill contaminates rivers |
 | **Aug 18** | Emergency meeting at LW Group; Li Wei briefed; Elena Torres confirms long-term contamination |
 | **Aug 19** | Secret meeting decides cover-up strategy; electrical failure narrative approved |
 | **Sept 5** | Elena Torres initiates media campaign to downplay impacts |
@@ -145,7 +145,7 @@ The LW Group's underground operations included:
 ### 2057
 | Date | Event |
 |---|---|
-| **Jan 10** | Trial verdict: Minera Estrella acquitted on most charges, fined $5 million |
+| **Mar 15** | Trial verdict: Minera Estrella acquitted on most charges, fined $5 million |
 | **Mar 15** | Minera Estrella demands payment from Luz del Rio |
 | **May 10** | Public response mixed; economic importance of lithium debated |
 | **Jun 5** | International diplomatic concerns expressed |

@@ -4,11 +4,13 @@ title: Miner, Community Figure
 birth_year: 2009
 description: Born deaf in the Andean region, Amara works as a mineral sorter at the local mine. Her keen eyes and strong work ethic earn her the respect of her coworkers. She is also a community figure, known for her resilience and dedication to supporting her daughter Marisol, who works as a mine safety inspector.
 physical_description: "Deaf Andean woman in her late 60s with a petite, wiry build, a practical black braid, dark brown alert eyes and deep brown, weathered skin; calloused hands and a small silver pickaxe pendant."
-psychological_description: "Unbroken and resilient, with keen eyes and a strong work ethic that earn her coworkers' respect."
+psychological_description: "Unbroken and stubborn, a deaf mineral sorter who will not stop working; afraid her daughter will be punished for an honest safety report."
 background_and_role:
   - "Born deaf in a small Andean village"
   - "Mineral sorter at the local mine"
   - "Community figure affectionately called Ama; mother of mine safety inspector Marisol"
+  - "Works at the Minera Estrella Andes Mine in Los Andes (assumed); allied with the miners, not the company"
+  - "Parallel to Sofia Garcia: another deaf mineral sorter and mother"
 metadata:
   type: human
   role: npc

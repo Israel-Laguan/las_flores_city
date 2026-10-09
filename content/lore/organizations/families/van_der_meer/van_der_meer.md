@@ -53,7 +53,7 @@ When the family saw the full potential of the region, they made a calculated str
 
 - **Dong van der Meer (b. ~2033):** Younger son of Alexander and Wang Mei Li. Most visible and controversial member of the dynasty. Leads the Flowers Syndicate criminal organization while maintaining nominal connections to legitimate family businesses. Health declining due to stress, alcohol abuse, and old injury from a shootout.
 
-- **Sophia van der Meer Rodriguez (b. 2041):** Daughter of Elisabeth. Married politician Carlos Rodriguez Jr. in 2060; his scandals (infidelity and corruption) ended the marriage in a 2070 divorce. She then founded the Nueva Esperanza Foundation, a charity focused on preventing gang violence among youth. Two minor children: Isabella (b. ~2062) and Diego (b. ~2065).
+- **Sophia van der Meer Rodriguez (b. 2041):** Daughter of Elisabeth. Married politician Carlos Rodriguez Jr. in 2060; his scandals (infidelity and corruption) ended the marriage in a 2070 divorce. She then founded the Nueva Esperanza Foundation, a charity focused on preventing gang violence among youth. About 2071 she succeeds Maria as president of Fundación Esperanza and folds Nueva Esperanza into it as its youth arm. Two minor children: Isabella (b. ~2062) and Diego (b. ~2065).
 
 ### Current Generation — LGBTQ+ Branch
 - **Peter van der Meer (b. 2043):** Son of Jan and Maria. Publicly came out as gay in 2065, catalyzing LGBTQ+ rights movement in Las Flores. Was given mid-level administration in one of the mines. Married Rafaela (marriage of convenience); father of Peter Jr.
@@ -65,7 +65,7 @@ When the family saw the full potential of the region, they made a calculated str
 - **Jan van der Meer Jr.:** Peter's cousin and husband (son of the late Jan van der Meer's cousin from Amsterdam). Staunch ally during Peter's coming out; his support drove a wedge with other family members. Brought fresh insights from Europe to the family business. Together with Peter, oversaw development of new state-of-the-art refinery.
 
 ### Current Generation — Business Leadership
-- **Anna van der Meer (b. ~2041):** Daughter of Jan and Maria. Took on the top role at Van der Meer Industries after Jan's death in 2060 at age 19, initially with board management. Now Chair of the board / executive director (the CEO post is held by her cousin Sebastian); active in the 2070s, pursuing environmental activism, LGBTQ+ advocacy, and socially conscious photography. Married Han Jr. (a Dutch cousin, a different man from Peter's husband Jan Jr.) around 2072; no children. Won a Las Flores City Council seat in 2078.
+- **Anna van der Meer (b. ~2041):** Daughter of Jan and Maria. Took on the top role at Van der Meer Industries after Jan's death in 2060 at age 19, initially with board management. Now Chair of the board / executive director (the CEO post is held by her second cousin Sebastian); active in the 2070s, pursuing environmental activism, LGBTQ+ advocacy, and socially conscious photography. Married Han Jr. (a Dutch cousin, a different man from Peter's husband Jan Jr.) around 2072; no children. Goes on to win a Las Flores City Council seat in 2078 (after the 2077 present).
 
 - **Liam van der Meer (b. 2035):** Illegitimate son of Alexander van der Meer; half-brother to Xiu Li and Dong. Executive at Van der Meer Industries; advocates for better EU-Las Flores relations. Works closely with European ambassadors. Married **Sofia Rodriguez** in 2068; three young children: twins Miguel and Maria (b. ~2070) and Antonio (b. ~2073). Future aspirations: diplomacy, law and engineering respectively.
 
@@ -81,7 +81,7 @@ When the family saw the full potential of the region, they made a calculated str
 - **Willem van der Meer (b. 2015):** Mining executive based in Las Flores, Dutch by descent (European branch, Hendrik's line, Pieter's brother's family); father of Natalia.
 - **Lucas (b. ~2046):** Youngest child of Jan and Maria. Struggles with drug addiction and mental health issues from childhood trauma. Ended up in psychiatric institution after several public incidents.
 - **Wang Mei Li:** Ex-wife of Alexander. Founded Dragon Phoenix Trading ~2048-50 after the divorce; the company focuses on trade between China and Las Flores.
-- **Maria Martinez:** Wife of Jan (a Martinez of Old Las Flores; not the Fundación Esperanza founder of the same name). Influential socialite and philanthropist. Developed dementia after Jan's death.
+- **Maria Martinez:** Wife of Jan (a Martinez of Old Las Flores). Influential socialite and philanthropist; president and public face of Fundación Esperanza from about 2055, after the family took over a foundation started by Old Las Flores citizens. Developed dementia after Jan's death; Sophia took over the foundation about 2071.
 - **Other cousins and extended family members** manage various aspects of Van der Meer Mining operations and GLC interests.
 
 ---

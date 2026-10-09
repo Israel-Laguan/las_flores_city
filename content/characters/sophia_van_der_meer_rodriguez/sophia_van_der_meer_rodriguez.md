@@ -29,7 +29,7 @@ Born into privilege, Sophia enjoyed a cosmopolitan upbringing, though her parent
 
 ## Marriage and Divorce
 
-In 2060, Sophia married Carlos Rodriguez Jr., the son of a prominent Latin American political family. The marriage was initially seen as a union of two powerful dynasties—combining the wealth of the van der Meers with the political clout of the Rodriguez family. Sophia entered the marriage with high hopes of building a formidable partnership.
+In 2060, Sophia married Carlos Rodriguez Jr., the son of a prominent Latin American political family. The marriage took place the same year her paternal grandfather, Carlos Hernandez—the former mayor who had built the modern city—died at age 85. The timing cast a somber shadow over what should have been a joyous occasion. The marriage was initially seen as a union of two powerful dynasties—combining the wealth of the van der Meers with the political clout of the Rodriguez family. Sophia entered the marriage with high hopes of building a formidable partnership.
 
 However, the reality proved far different. The marriage was plagued by Carlos's infidelities, shady business dealings, and mounting political scandals. The public humiliation took a toll on Sophia, culminating in a highly publicized divorce in 2070.
 
@@ -42,6 +42,8 @@ Through Nueva Esperanza, Sophia also focuses on:
 - **Healthcare** - Mobile clinics for remote communities
 - **Women's empowerment** - Microfinance programs for female entrepreneurs
 - **Environmental conservation** - Reforestation and clean water initiatives
+
+**Taking the lead of Fundación Esperanza (c. 2071).** As [María Martinez van der Meer](../maria_martinez_van_der_meer/maria_martinez_van_der_meer.md)'s dementia worsens, Sophia succeeds her as president of [Fundación Esperanza](../../lore/organizations/civil_society/fundacion_esperanza/fundacion_esperanza.md), the Old Las Flores foundation the Van der Meers took over in the 2050s. Nueva Esperanza continues as the foundation's youth and gang-prevention arm, which also gives her family's influence a respectable, ready-made platform. *(dates proposed)*
 
 Sophia has worked tirelessly to secure funding from diverse sources, including local businesses, European investors, and international NGOs. She has effectively leveraged her family's considerable influence to gain support from government officials who recognize the value of her initiative.
 
@@ -62,10 +64,11 @@ Sophia is a fixture in Las Flores high society:
 
 | Entity | Relationship |
 |---|---|
-| [Elisabeth van der Meer](../figures/elisabeth_van_der_meer.md) | Mother |
-| [Carlos Alberto Hernandez](../figures/carlos_alberto_hernandez.md) | Father |
+| [Elisabeth van der Meer](../elisabeth_van_der_meer/elisabeth_van_der_meer.md) | Mother |
+| [Carlos Alberto Hernandez](../carlos_alberto_hernandez/carlos_alberto_hernandez.md) | Father |
 | [Carlos Rodriguez Jr.](to_be_created.md) | Ex-husband |
 | [Nueva Esperanza Foundation](to_be_created.md) | Founder and President |
+| [Fundación Esperanza](../../lore/organizations/civil_society/fundacion_esperanza/fundacion_esperanza.md) | President from c. 2071, succeeding María Martinez van der Meer |
 
 ## In-Game References
 

@@ -10,11 +10,11 @@ background_and_role:
   - Lawyer-turned-politician specializing in bilateral investment law
   - Progressive Alliance appointee who co-authored the 2074 surveillance disclosure proposal
 relationships:
-  - target_id: Carlos Rodriguez
+  - target_id: Alfonso Vega
     type: professional
-    closeness: 70
-    trust: 85
-    context: Political ally in the Progressive Alliance
+    closeness: 60
+    trust: 70
+    context: Mayor she serves under as Vice-Mayor; Progressive Alliance coalition partner
   - target_id: LW Group
     type: rival
     closeness: -20

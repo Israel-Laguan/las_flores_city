@@ -13,7 +13,7 @@
 - Eyes: Pale blue, thoughtful and reserved
 - Build: Tall and lean, slightly stooped from long hours at a desk
 - Skin: Fair, freckled on the nose from outdoor surveys
-- Distinguishing features: Wire-rimmed glasses, gentle smile, always carried a leather-bound notebook, wore a simple wedding band
+- Distinguishing features: Wire-rimmed glasses, gentle smile, always carried a leather-bound notebook, wore a simple wedding band *(glasses and notebook are invented)*
 
 ## Overview
 

@@ -10,25 +10,25 @@ consumer: portrait
 
 # Prompt: Aisha Al-Sayed
 
-NOTE: PNG reads as a woman in her 20s with long loose straight hair, no glasses and no safety vest; canon is late 30s (b.2039), wavy hair in a low bun, wire-rimmed glasses, high-visibility vest. Regenerate (high priority).
+NOTE: PNG reads as a woman in her 20s with long loose straight hair, no glasses and no vest; canon is late 30s (b.2039), wavy hair in a low bun, wire-rimmed glasses, tailored blazer over a professional blouse. Vest appears only in industrial work variants. Regenerate (high priority).
 
 ## Prompt (Draft)
 
-Middle Eastern Arab woman of about 38, medium height, lean angular frame, warm olive skin, deep amber-brown eyes, dark brown wavy hair in a low bun, slight widow's peak, thin wire-rimmed glasses, small sport earbud on one earlobe, high-visibility safety vest without lettering over a blouse. Plain flat grey background. Neutral relaxed expression, mouth closed, looking at the camera, front-facing, arms relaxed at the sides. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Middle Eastern Arab woman of about 38, medium height, lean angular frame, warm olive skin, deep amber-brown eyes with subtle tiredness, thick well-defined eyebrows, slightly aquiline nose, full natural lips, faint fine lines around eyes from overwork, subtle age wrinkles on forehead, dark brown wavy hair in a low bun, slight widow's peak, thin wire-rimmed glasses, small sport earbud on one earlobe, tailored blazer over a professional blouse. Plain flat grey background. Neutral relaxed expression, mouth closed, looking at the camera, front-facing, arms relaxed at the sides. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Middle Eastern Arab woman of about 38. Medium height with a lean, angular frame. Warm olive skin, deep amber-brown eyes, a slight widow's peak, and dark brown wavy hair pulled back in a practical low bun. Thin wire-rimmed glasses and a small sport non-in-ear earbud clipped to one earlobe. Plain practical blouse under a high-visibility safety vest without lettering or logos, a thin scar on the left forearm. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Middle Eastern Arab woman of about 38. Medium height with a lean, angular frame. Warm olive skin, deep amber-brown eyes with subtle tiredness, thick well-defined eyebrows, slightly aquiline nose, full natural lips, faint fine lines around eyes from overwork, subtle age wrinkles on forehead, a slight widow's peak, and dark brown wavy hair pulled back in a practical low bun. Thin wire-rimmed glasses and a small sport non-in-ear earbud clipped to one earlobe. Tailored blazer over a professional blouse, a thin scar on the left forearm. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Chinese aesthetics
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Chinese aesthetics, Western beauty standards, Hollywood features, angelic features, thin lips, button nose, small nose, European features, Caucasian features, Barbie doll proportions, youthful, overly smooth skin, poreless skin
 
 ## Variations
 
-- [ ] At work in an industrial facility, studying electrical schematics, glasses pushed up her nose
+- [ ] At work in an industrial facility, studying electrical schematics, glasses pushed up her nose, **wearing high-visibility safety vest**
 - [ ] At her desk late in the day, weighing a career decision
-- [ ] With a small team of engineers in a technical discussion, safety vest prominent
+- [ ] With a small team of engineers in a technical discussion, **wearing professional high-visibility safety vest**
 - [ ] At a leadership workshop, networking with colleagues, polished and composed
 
 ## Expression Variants

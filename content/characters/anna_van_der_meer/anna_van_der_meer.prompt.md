@@ -10,8 +10,6 @@ consumer: portrait
 
 # Prompt: Anna van der Meer
 
-NOTE: regeneration needed: current PNG has a stray black bar artifact (top right) and shows a sleeveless tank instead of the charcoal suit
-
 ## Prompt (Draft)
 
 Dutch woman of 36, athletic toned build, oval face, deep blue eyes, fair skin, dark brown hair neatly styled behind the ears, tailored charcoal suit jacket over a crisp white shirt, plain flat grey background. neutral relaxed expression, front-facing, arms relaxed. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.

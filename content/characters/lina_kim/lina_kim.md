@@ -20,7 +20,7 @@ Known for her sharp intellect, skeptical mind, and meticulous approach to report
 Despite her tough exterior, Lina has a compassionate heart, particularly for the underprivileged and marginalized whose stories she seeks to bring to light.
 
 ## Family
-Lina is the aunt of [Ana Kim](../ana_kim/ana_kim.md), her younger sibling's daughter, born in 2052, the year of the Great Lithium Leak. Lina began investigating the leak a few weeks after Ana's birth and missed much of Ana's first year (invented). She is the cool, famous relative Ana grew up admiring, and the one who taught her to verify everything. She never wanted Ana in the field, and learned in 2077 that Ana had been in the car, in the apartment and at the break-in. After Alex Garcia's death she was the channel through which Ana got the movement's evidence to the press; Lina published on a source she knew better than anyone, and finally told Ana she was proud and sorry. See Ana's file for the full dynamic.
+Lina is the aunt of [Ana Kim](../ana_kim/ana_kim.md), her younger sibling's daughter *(the younger-sibling link is invented)*, born in 2052, the year of the Great Lithium Leak *(the 2052 birth year is invented)*. Lina began investigating the leak a few weeks after Ana's birth and missed much of Ana's first year (invented). She is the cool, famous relative Ana grew up admiring, and the one who taught her to verify everything. She never wanted Ana in the field, and learned in 2077 that Ana had been in the car, in the apartment and at the break-in. After Alex Garcia's death she was the channel through which Ana got the movement's evidence to the press; Lina published on a source she knew better than anyone, and finally told Ana she was proud and sorry. See Ana's file for the full dynamic.
 
 ## Background
 
@@ -54,15 +54,19 @@ Her work has taken her across the globe, investigating stories ranging from corp
 
 ### The Great Lithium Leak - 2052
 
-At age 28, Lina Kim was already making waves in investigative journalism. Her most notable early work was the exposé on the Great Lithium Leak, a story that would establish her as one of the leading journalists of her generation.
+At age 27, Lina Kim was already making waves in investigative journalism. Her most notable early work was the exposé on the Great Lithium Leak, a story that would establish her as one of the leading journalists of her generation.
 
 Based in Las Flores for a couple of months in 2052, Lina worked tirelessly to uncover the truth behind the environmental disaster. The official narratives were inconsistent and evasive. Companies and government officials were more interested in containing the story than addressing the crisis. Through persistent investigation, confidential sources, and meticulous documentation, Lina revealed the extent of the cover-up and the corporate negligence that had led to the disaster.
 
 Her reporting brought international pressure for accountability and forced both corporate and government entities to address the crisis seriously. The exposé cemented her reputation as a journalist who would not be deterred by powerful interests and who had the skills to uncover even the most carefully concealed truths.
 
+### The Migrant-Labor Exposé - 2058
+
+At 33, Lina filed an investigative piece exposing Minera Estrella's exploitation of Chinese migrant workers. The company retaliated, and she was temporarily suspended from writing about the mining industry. The smear and death threats she faced from pro-Minera outlets (see [The Restoration Plan](../../lore/events/restoration_plan/restoration_plan.md)) date from this period.
+
 ### Senior Investigative Reporter - 2059
 
-By age 34, Lina had risen to the position of Senior Investigative Reporter at La Prensa. Her work took her across the globe, pursuing stories wherever the need for truth was greatest. From exposing corporate corruption in emerging economies to revealing political scandals that shook established democracies, her investigations had a global impact.
+By age 34, Lina had risen to the position of Senior Investigative Reporter at La Prensa. *(Senior is a rank, not a single post: [Alejandro Ruiz](../alejandro_ruiz/alejandro_ruiz.md) holds the same rank at the main office, so the two are peers by title; the lore lists them separately.)* Her work took her across the globe, pursuing stories wherever the need for truth was greatest. From exposing corporate corruption in emerging economies to revealing political scandals that shook established democracies, her investigations had a global impact.
 
 Despite her travels, she maintained a special connection to Las Flores. The city where she had made her name held a special place in her career, and she returned regularly, both for professional assignments and personal visits. Her return trips were often marked by reunions with sources from her Lithium Leak investigation and follow-up stories on the environmental recovery efforts.
 

@@ -22,7 +22,7 @@ Carlos Alberto was initially aligned with his father's Economic Libertarian Unio
 His wife Elisabeth hoped he would align with the PLF, which represented Latin American interests, but Carlos Alberto was already too entrenched in the ELU's web of patronage and illegal enrichment.
 
 ## Marriage and Corruption
-The union with Elisabeth was strained from the start. Carlos Hernandez senior's inappropriate behavior toward his daughter-in-law created tension, as did Elisabeth's European expectations of egalitarian marriage clashing with the Hernandez family's patriarchal norms. Carlos Alberto remained emotionally and politically dependent on his father, unable to break free.
+The union with Elisabeth was strained from the start. Carlos Hernandez senior's inappropriate behavior toward his daughter-in-law created tension, as did Elisabeth's European expectations of egalitarian marriage clashing with the Hernandez family's patriarchal norms. Carlos Alberto remained emotionally and politically dependent on his father, unable to break free. Even after his father's death in 2060 at age 85, Carlos Alberto continued to invoke the Hernandez name to maintain his political standing, though the legacy carried both prestige and the lingering stench of the old corruption scandals.
 
 He now represents the second generation of Hernandez political influence — corrupt, compromised, and deeply entangled with both Chinese and Dutch interests.
 

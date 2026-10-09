@@ -3,7 +3,7 @@
 **Title:** 55-year-old Veteran Journalist & Investigative Reporter at El Informador
 
 ## Physical Description
-- Hair: Gray-brown, thinning and combed back
+- Hair: Dark brown streaked with gray, thinning and combed back
 - Eyes: Dark brown, weary but sharp
 - Build: Average height, slightly stooped from years at a desk
 - Skin: Medium brown, lined from stress and long hours
@@ -20,3 +20,6 @@ Martín believes that "The truth deserves to be told, even when it's inconvenien
 He maintains close ties with COFAVIC, collaborating on investigations into human rights abuses and corruption. Martín regularly shares information and coordinates efforts with María Fernanda Rodriguez and other journalists committed to uncovering the truth about Las Flores' dark secrets. Has been threatened by powerful figures due to his exposés, but continues to investigate despite the risks.
 
 Martín speaks carefully and deliberately during interviews, choosing his words strategically to avoid jeopardizing ongoing investigations or endangering sources. He maintains a strong commitment to journalistic integrity, always striving to verify information before presenting it to the public. He prefers to work behind the scenes, using his connections and expertise to support activists and advocates seeking justice.
+## Documentary Work
+
+- Directed *Río de Sangre* (2054) on the immediate aftermath of the leak, and *The Silence of the Flowers* (2056) on the cover-up and witness intimidation, drawing on his COFAVIC contacts. See [Visual Arts Response](../../lore/events/visual_arts_response/visual_arts_response.md).

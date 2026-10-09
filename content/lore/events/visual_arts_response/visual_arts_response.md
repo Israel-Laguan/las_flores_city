@@ -56,7 +56,7 @@ Several documentaries captured the crisis for international audiences:
 | Film | Director | Year | Focus |
 |------|----------|------|-------|
 | *Río de Sangre* | Martín Lopez | 2054 | The immediate aftermath of the leak |
-| *The Silence of the Flowers* | Isabella Chen | 2056 | The cover-up and witness intimidation |
+| *The Silence of the Flowers* | Martín Lopez | 2056 | The cover-up and witness intimidation |
 | *Yara* | Anonymous | 2060 | Yara Rossi's life and assassination |
 | *The Student and the Vigilante* | El Grito Estudiantil | 2078 | Alex and Evelyn's alliance |
 

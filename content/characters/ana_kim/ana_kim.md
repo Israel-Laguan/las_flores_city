@@ -4,10 +4,10 @@
 > 
 > **Full Name:** Ana Kim
 > **Age (2077):** ~25
-> **Status:** Alive; studying and freelancing in 2077
-> **Role:** Researcher, Informant Handler and Press Liaison; sociology and journalism student; niece of journalist [Lina Kim](../lina_kim/lina_kim.md)
+> **Status:** Alive; studying in 2077
+> **Role:** Researcher, Informant Handler and Press Liaison; sociology and journalism student *(invented)*; niece of journalist [Lina Kim](../lina_kim/lina_kim.md)
 > **Descendancy:** Asian (Korean)
-> **District:** Middle Districts
+> **District:** Central District, near the university *(invented)*
 
 ---
 
@@ -63,10 +63,10 @@ Her arc is about **sustainable resolve**. Carlos Medina's death and Ken's betray
 
 ---
 
-### Cautious by Nature
+### Cautious by Nature *(invented)*
 Ana is not a thrill-seeker. She is cautious and initially reluctant to get involved in anything dangerous, but she has a quiet, razor-sharp ability to observe. She notices things others miss precisely because she is used to being underestimated. Once she understands the stakes, her caution turns into stubborn bravery.
 
-### Fatal Flaw: Clinical Detachment
+### Fatal Flaw: Clinical Detachment *(invented)*
 To cope with danger she retreats into observation mode, treating human tragedy as a puzzle to be solved rather than a trauma to be felt. In the past this caused her to emotionally abandon a close friend during a family emergency because she was too busy "investigating solutions" to offer comfort. She is warm in low-stakes moments, but goes unreachable when people need her most.
 
 ### Texture: Habits and Contradictions *(invented, marked for veto)*
@@ -83,17 +83,18 @@ To cope with danger she retreats into observation mode, treating human tragedy a
 ## Background
 
 ### Early Life
-- **Family:** Grew up in Barrio Norte, a mid-income district of Las Flores's middle districts. Her parents are teachers who raised her with a strong sense of civic duty, though they always warned her to keep her head down. One parent is the younger sibling of journalist Lina Kim, making Lina her aunt.
-- **Sibling:** Has a younger brother
-- **Social Class:** Middle-class background
+- **Family:** Canon establishes only that Lina Kim is her aunt; everything else in this section is invented. *(invented)* She grew up in the Central District, near the university. Her parents are teachers who raised her with a strong sense of civic duty, though they always warned her to keep her head down. One parent is the younger sibling of journalist Lina Kim, making Lina her aunt.
+- **Sibling:** Has a younger brother *(invented)*
+- **Social Class:** Middle-class background *(invented)*
+- **Arithmetic check:** Ana was born in 2052 (25 in 2077) and Lina in 2025, so Ana's parent would be Lina's younger sibling, which is plausible.
 
 ### Growing Up with "Auntie Lina"
 - See the **Auntie Lina** section below: the aunt who made Ana want to investigate, and the one most afraid of what that costs.
 
 ### Education & Work
-- **Studies:** Sociology and journalism student at the Universidad de Las Flores, frustrated by the lack of real reporting in the city's corporate-owned media
+- **Studies:** Sociology and journalism student at the Universidad Nacional de Las Flores, frustrated by the lack of real reporting in the city's corporate-owned media *(invented; older docs say social work, and canon only mentions a library colleague "Ana from work")*
 - **Employment:** Works at the university library, where Alex Garcia has a part-time shift; this is how she meets Alex and, through him, the rest of the student group
-- **Freelance:** After 2077 she does freelance background-investigator work for mid-tier law firms and corporate HR departments. It is boring, invisible work that grants legitimate access to proprietary databases, financial registries and court records, and it pays for her studies and her information work
+- **Freelance:** In 2077 she does freelance background-investigator work for mid-tier law firms and corporate HR departments. It is boring, invisible work that grants legitimate access to proprietary databases, financial registries and court records, and it pays for her studies and her information work *(invented)*
 - **Skills:** Research, archival work, library systems, organization
 - **Access:** Employee access to archived press databases and university systems
 
@@ -124,7 +125,7 @@ To cope with danger she retreats into observation mode, treating human tragedy a
 - **Ana's disillusion with the glamour.** Ana had admired the fearless journalist on the clippings. She learned that her aunt's fearlessness is mostly fear managed well, and that the work leaves people alone at night with a phone.
 - **Lina's guilt.** She believes she gave Ana the taste for this and is responsible for Carlos's death in a way no one has said aloud.
 
-### After Alex's Death: Both Break Their Rules
+### After Alex's Death: Both Break Their Rules *(invented; canon is only the evidence handoff to the press via Lina)*
 - Ana breaks "never involve family": she brings the evidence to her aunt because she has no one else who can reach seventeen newsrooms at once.
 - Lina breaks "never publish what you haven't verified in person": she publishes on a source she knows better than anyone, her niece.
 - The two sit up all night with the data, and Lina says the thing she has never said: that she is proud, and that she is sorry.
@@ -136,13 +137,13 @@ To cope with danger she retreats into observation mode, treating human tragedy a
 
 ### Joining the Investigation
 - **Catalyst:** Comes to return Alex's forgotten notebook at the café; Alex is distracted and asks for her help
-- **Early weeks:** Alex is living in Residencial Las Estrellas and has begun investigating with Carlos Medina and Ana. Carlos and Ana, both careful and quietly funny under pressure, grow close during these weeks
+- **Early weeks:** Alex is living in Residencial Las Estrellas and has begun investigating with Carlos Medina and Ana. Carlos and Ana, both careful and quietly funny under pressure, grow close during these weeks *(invented)*
 - **Nature:** Accidental entry that becomes deliberate
 
 ### Meeting Ken
 - **When:** Around the same month, while the building mystery deepens
 - **Who:** Ken, an undercover investigator stationed by Chief Inspector Adeyemi in the building's vacant apartment to watch Alex and the owners; he has no surname and no character file yet
-- **Cover:** Ana stays close to the apartment operation, but she does not take the investigator's cover herself. The source dump casts her as Alex's relative and Ken as her fiancé; the canonical account assigns that apartment cover to an unnamed police investigator.
+- **Cover:** Ana stays close to the apartment operation, but the cover is not hers. In the canonical account Ken poses as the fiancé of an unnamed police investigator playing a distant relative of Alex's; Ana only knows him as the undercover man in that apartment.
 - **Texture:** Professional and uncomfortable; Adeyemi controls what the team knows. Ana asks the questions everyone else sidesteps, and she is intelligent enough to notice Ken's inconsistencies
 
 ### Role in the Movement
@@ -154,7 +155,7 @@ To cope with danger she retreats into observation mode, treating human tragedy a
 ### The Chase and Carlos's Death
 - **Context:** Alex spots the old gasoline car and acts before anyone agrees on a plan; Ana, who happened to be meeting Alex that day, says she isn't going anywhere
 - **Position:** In Alex's car, following south; Carlos drives the other. A motorcycle cuts across his lane
-- **Impact:** Carlos's death breaks the detective-novel idea of the work. It is the moment the investigation stops being abstract for her
+- **Impact:** Carlos's death breaks the detective-novel idea of the work. It is the moment the investigation stops being abstract for her *(invented; the chase itself is canon)*
 
 ### Hardening
 - **Reflection:** For some days she goes quiet and reflects, then returns having decided to keep helping, with no illusions
@@ -166,7 +167,7 @@ To cope with danger she retreats into observation mode, treating human tragedy a
 - **Ana's Role:** In the corridor with Miguel when guards find them
 - **Physical Confrontation:** Guard grips Ana, bruises her (swollen eye, bruised ribs, wrist injury)
 - **Isabella's Action:** Pulls Ana out of the guard's grip, then continues to the records room
-- **Significance:** Ana realizes the cost and decides to step back from fieldwork
+- **Significance:** Ana realizes the cost and decides to step back from fieldwork. The injury is the canon trigger; Carlos's death weighing on the decision is invented
 
 ### Stepping Back from the Field
 - **Timing:** In the car on the way back from the archive break-in
@@ -197,7 +198,7 @@ To cope with danger she retreats into observation mode, treating human tragedy a
 - **Framing:** Does not frame herself as hero or coward
 
 ### Where the Player Finds Her
-- Studying sociology and journalism, and working freelance as a background investigator to afford finishing her degree, with a foot still in investigative information
+- Studying sociology and journalism *(invented)*, and working freelance as a background investigator to afford finishing her degree *(invented)*, with a foot still in investigative information
 - She assesses newcomers with a measured, cynical eye: she learned fast, and at great cost, that visibility is a liability
 - She feeds verified, airtight evidence to established reporters (above all her aunt) or publishes under encrypted pseudonyms
 
@@ -224,15 +225,15 @@ To cope with danger she retreats into observation mode, treating human tragedy a
 
 ### With Carlos Medina
 - **Connection:** Both early in the investigation; Carlos is the technical expert Miguel brought in
-- **Shared Experience:** Closer during the early weeks of the investigation; Ana is in Alex's car in the chase that kills Carlos
-- **Impact:** Carlos's death is part of Ana's calculation to leave
-- **Memory:** Ana carries the loss and the lesson
+- **Shared Experience:** Ana is in Alex's car in the chase that kills Carlos (canon); the closeness between them in the early weeks is invented *(invented)*
+- **Impact:** Carlos's death is part of Ana's calculation to leave *(invented)*
+- **Memory:** Ana carries the loss and the lesson *(invented)*
 
 ### With Ana Villanueva
 - **Connection:** None. Ana Villanueva is a separate character who only shares a first name; NPCs may confuse them
 
 ### With Ken
-- **Connection:** Adeyemi's undercover investigator; introduced early as her "fiancé" cover in the vacant apartment
+- **Connection:** Adeyemi's undercover investigator; introduced early as the undercover man in the vacant apartment (his "fiancé" cover belongs to an unnamed police investigator, not to Ana)
 - **Dynamic:** Informant turned double agent, then a double-crossed double agent
 - **Impact:** Teaches her the cost of trust
 
@@ -385,8 +386,8 @@ conveying tension and the moment of decision, cinematic, ultra-detailed, 8k
 - **Last Updated:** 2026-07-01
 - **Status:** Active
 - **Faction:** Las Estrellas Movement (former), Supporter
-- **Location:** Middle Districts, Las Flores
-- **Occupation:** University Library Employee, Social Work Student
+- **Location:** Central District, near the university, Las Flores *(invented)*
+- **Occupation:** University Library Employee, Sociology and Journalism Student *(student detail invented)*
 
 ---
 

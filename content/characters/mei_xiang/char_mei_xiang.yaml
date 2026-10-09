@@ -1,14 +1,17 @@
 id: c3000014-e29b-41d4-a716-446655440014
 name: Mei Xiang
 title: Financial Negotiator, CLM
-birth_year: 2015
+birth_year: 1995
 description: The lead financial negotiator for China Lithium & Metals during the 2024-2025 concession negotiations. Crafted the financial packages and community investments that secured CLM's dominant position in Las Flores.
-physical_description: "Slender Chinese woman in her early 60s with sharp, calculating dark brown eyes and a jet-black bob, dressed in tailored suits."
-psychological_description: "Shrewd and composed, she rarely betrays emotion and negotiates with quiet calculation."
+physical_description: "Slender Chinese woman in her early 80s with sharp, calculating dark brown eyes and a sleek silver bob, dressed in tailored suits."
+psychological_description: "Shrewd and composed, she rarely betrays emotion and negotiates with quiet calculation. Builds deals so each side can only gain by staying in; treats community promises as a closing cost; now an elder whose first deal is the one the city learned not to trust."
 background_and_role:
   - "Lead financial negotiator for China Lithium & Metals"
   - "Led the 2024-2025 concession negotiations"
   - "Crafted the financial packages and community investments that secured CLM's position in Las Flores"
+  - "Born ~1995 (revised from 2015); about 29 at the 2024 talks, about 82 in 2077"
+  - "Closed the 2025 concession during Mayor Carlos Hernandez's re-election; present at the 2028 groundbreaking era with Li Wei"
+  - "Not part of the 2077 main plot"
 metadata:
   type: human
   role: npc

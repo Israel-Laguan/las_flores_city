@@ -1,14 +1,14 @@
 ---
-name: Maria Martinez
+name: Maria Angel Martinez Leon
 type: portrait
 size: 1024x1024
 aspect_ratio: 3:4
-source: content/characters/maria_martinez/maria_martinez.md
-target: `asset_paths.portrait` in `content/characters/maria_martinez/char_maria_martinez.yaml`
+source: content/characters/maria_angel_martinez_leon/maria_angel_martinez_leon.md
+target: `asset_paths.portrait` in `content/characters/maria_angel_martinez_leon/char_maria_angel_martinez_leon.yaml`
 consumer: portrait
 ---
 
-# Prompt: Maria Martinez
+# Prompt: Maria Angel Martinez Leon
 
 ## Prompt (Draft)
 
@@ -24,9 +24,9 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Reading aloud to children seated on a rug in a small classroom
-- [ ] Handing out supplies from a folding table
-- [ ] Chatting with adult students on the steps of a modest building
+- [ ] Behind a hotel front desk at night, a name tag on her blue t-shirt, glancing at her phone
+- [ ] On a bus at dusk with the sea behind her, a takeaway coffee in both hands
+- [ ] Laughing at a small beachside table, dressed up a little more than usual, waiting for someone
 
 ## Expression Variants
 
@@ -46,4 +46,4 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 <!-- Lore wardrobe staged as outfit variants of the base portrait: `assets/<slug>__outfit-<name>.png`. Same face, hair and build as the base. -->
 
-- **`__outfit-teacher.png`**: Use the base portrait as reference. Same woman, now wearing reading glasses low on the nose, a soft cardigan over the t-shirt and a plain lanyard with a blank card, with her hair in the same bob. Neutral relaxed expression, shoulders level, looking at the camera, 3/4 take. Keep the same face, hair, build and art style as reference, plain flat neutral light-grey backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__outfit-work.png`**: Use the base portrait as reference. Same woman, now wearing a plain dark hotel-reception waistcoat over a white blouse and a small name tag, with her hair in the same bob. Neutral relaxed expression, shoulders level, looking at the camera, 3/4 take. Keep the same face, hair, build and art style as reference, plain flat neutral light-grey backdrop. Clean confident linework, painterly soft shading, muted natural palette.

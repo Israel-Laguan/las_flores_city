@@ -32,6 +32,7 @@ By 2077 it is **digital-first**: issues drop to a paid app and feed, and leaks a
 ### Isabella Vasquez — Owner
 - Media mogul and society power broker
 - Inherited the publication from her wealthy father
+- Wrote for the paper as a young journalist during the 2056–2059 Restoration fight, when she spread unsourced rumors against the Movement (see [Isabella Vasquez](../../../../characters/isabella_vasquez/isabella_vasquez.md))
 - Connections within high society secure exclusive content
 - Made The Chronicle one of Las Flores' most influential periodicals
 

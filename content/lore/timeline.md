@@ -101,8 +101,8 @@ The trial of Minera Estrella executives begins in a Special Environmental Tribun
 ### 2055 — Gang Attack on Evelyn Ruthenberg (March)
 Evelyn Ruthenberg attempts to present her evidence from Karla and Nubia's apartment but is ambushed by gang members in an alley. She fights free using self-defense taught by her grandfather and escapes through an abandoned park onto a metro train. Fleeing to the South District Valley, she goes underground for three years.
 
-### 2057 — Acquittal (January 10)
-Despite evidence of widespread corruption and negligence, Minera Estrella is **acquitted** on most charges due to technicalities and legal loopholes. The company agrees to a modest $5 million fine. Luz del Rio is scapegoated and sued.
+### 2057 — Acquittal (March 15)
+On March 15, 2057, despite evidence of widespread corruption and negligence, Minera Estrella is **acquitted** on most charges due to technicalities and legal loopholes. The company agrees to a modest $5 million fine. Luz del Rio is scapegoated and sued.
 
 ### 2057 — Canal 15 Media Manipulation
 Canal 15 runs biased reporting highlighting economic benefits of lithium mining, interviewing only pro-mining experts. The channel airs an "exclusive" interview with a "whistleblower" claiming the Movement is secretly funding left-wing rebels in neighboring countries. Sensationalized segments about supposed "eco-terrorist" activities air regularly.
@@ -138,8 +138,8 @@ Minera Estrella files a complaint against Laura Rodriguez for allegedly inciting
 ### 2058 — El Javi Compromised (August)
 A video surfaces showing Javier "El Javi" Garcia accepting cash from a Minera Estrella executive in exchange for positive coverage. His credibility is severely damaged.
 
-### 2058 — Isabella Chen's Report (October)
-Isabella files an investigative piece exposing Minera Estrella's exploitation of Chinese migrant workers. The company retaliates; Isabella is temporarily suspended from writing about the mining industry.
+### 2058 — Lina Kim's Migrant-Labor Exposé (October)
+[Lina Kim](../characters/lina_kim/lina_kim.md) files an investigative piece for La Prensa exposing Minera Estrella's exploitation of Chinese migrant workers. The company retaliates; Lina is temporarily suspended from writing about the mining industry.
 
 ### 2059 — Restoration Project Begins (January)
 With sufficient resources and support, Yara oversees the initiation of the phytoremediation and riparian habitat restoration project. Volunteers from Las Flores and abroad join to implement the plan.
@@ -166,7 +166,10 @@ During a massive anti-mining protest at Estación Central, an assassin working f
 The student attempts to deliver the USB to the mainstream press, but they ignore it due to corporate pressure. Frustrated, the student posts an encrypted sample on the underground network *El Grito Estudiantil*. Evelyn Ruthenberg intercepts the post, tracks down the student, and secures the drive, obtaining the exact target list she needs for her vigilante campaign.
 
 ### 2059 — Class-Action Lawsuit
-A group of affected communities launches a class-action lawsuit against Minera Estrella for damages related to the tailings dam failure. Luz del Rio files for bankruptcy after losing critical contracts and paying damages.
+A group of affected communities launches a class-action lawsuit against Minera Estrella for damages related to the Great Lithium Leak (the 2052 pipe failure). Luz del Rio files for bankruptcy after losing critical contracts and paying damages.
+
+### 2060 — Death of Carlos Hernandez (March 12)
+Carlos Hernandez, the architect of Las Flores' transformation from a small mining town into a global lithium hub, passes away at age 85 from heart complications. His death marks the end of an era for the city he helped build. A grand public funeral is held in Old Las Flores, attended by political figures from across the city's history, including Governor Isabel Cáceres and members of both the Chinese and Dutch business communities. Despite the official eulogies praising his vision as a "builder," whispers persist about his role in the CLM deal that set the stage for the 2052 disaster and the corruption scandals involving his son Carlos Alberto.
 
 ### 2061 — Continued Expansion
 Despite ongoing environmental concerns and social tensions, Las Flores continues to expand as a major global hub for lithium exports.
@@ -196,7 +199,7 @@ Las Flores passes landmark legislation outlawing discrimination based on sexual 
 Alex, a resident whose mother died from lithium contamination, discovers the truth of the cover-up. After initially clashing with Evelyn Ruthenberg, Alex joins forces with her and builds a grassroots movement to take down the LW Group.
 
 ### 2077 — The Mayor's Estate Raid
-Alex's movement and Evelyn breach the estate of Mayor Vega and Senator Chen. During the raid, Chief Inspector Adeyemi experiences a crisis of conscience. Moved by Alex's idealism and Evelyn's resolve, Adeyemi turns his gun on the Mayor, buying Evelyn time to escape.
+Alex's movement and Evelyn breach the estate of Mayor Vega and Senator Chen. During the raid, Chief Inspector Adeyemi experiences a crisis of conscience. Moved by Alex's idealism and Evelyn's resolve, Adeyemi shoots Mayor Vega, then stages Evelyn's capture so she can walk out alive, in handcuffs, as the vigilante who killed the Mayor.
 
 ### 2077 — The Fall of Li Wei
 Alex sacrifices their life to ensure Evelyn can finally expose Li Wei, the "Emperor in the Shadows." The revelation dismantles the corrupt power structure of Las Flores, leaving Alex's surviving friends to carry on the fight.
@@ -274,7 +277,7 @@ New source material proposes alternate dates for three foundational events. The 
 | **Ricardo Rivas** | Governor (during Great Lithium Leak) | 2049–2053 |
 | **Rafael Sáenz** | Governor (post-leak crisis) | 2053–2057 |
 | **Maria Jose Torres** | Governor | Modern era (2061–2069) |
-| **Alfonso Vega** | City Mayor | Tailings disaster (2052) |
+| **Alfonso Vega** | City Mayor | Great Lithium Leak (2052) |
 | **Lina Kim** | Investigative journalist, La Prensa | Disaster coverage (2052–present) |
 | **Ricardo Chen** | Senator, implicated in scandal | Trial (2055–2057) |
 

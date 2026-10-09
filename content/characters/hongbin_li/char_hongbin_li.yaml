@@ -9,11 +9,13 @@ description: |
 
   Despite his charming demeanor, he can be ruthless when protecting China's image. He lives in an upscale high-rise in Las Flores' financial district and is actively working on a major campaign to showcase Chinese investments, aiming to sway public opinion in favor of closer ties between China and the region.
 physical_description: Chinese man in his early 30s, average height and lean, with neat jet-black side-parted hair, sharp dark brown eyes and fair skin; wears designer clothing, an Apple Watch and has perfect white veneers.
-psychological_description: Charismatic, strategic and shrewd; charming on the surface but ruthless when protecting China's image.
+psychological_description: "Charismatic, strategic and ruthless on China's behalf; treats opinion as an input to be managed and fears a leak showing the 'grassroots' voices are paid."
 background_and_role:
   - Senior manager at a Beijing-based public relations firm, from Shanghai
   - Posted to Las Flores as part of a government initiative to expand Chinese influence
   - Oversees social media managers and influencer campaigns promoting Chinese interests
+  - "Allegiance: Chinese state initiative and Chinese-owned businesses; works the same media ground as LW Group's PR (Yang Chen's successor in style, Yi Sang's crisis side)"
+  - "Competes with La Prensa's digital team for influencers"
 metadata:
   type: human
   role: npc
