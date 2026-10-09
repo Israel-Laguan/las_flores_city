@@ -29,7 +29,7 @@ Born into privilege, Sophia enjoyed a cosmopolitan upbringing, though her parent
 
 ## Marriage and Divorce
 
-In 2060, Sophia married Carlos Rodriguez Jr., the son of a prominent Latin American political family. The marriage was initially seen as a union of two powerful dynasties—combining the wealth of the van der Meers with the political clout of the Rodriguez family. Sophia entered the marriage with high hopes of building a formidable partnership.
+In 2060, Sophia married Carlos Rodriguez Jr., the son of a prominent Latin American political family. The marriage took place the same year her paternal grandfather, Carlos Hernandez—the former mayor who had built the modern city—died at age 85. The timing cast a somber shadow over what should have been a joyous occasion. The marriage was initially seen as a union of two powerful dynasties—combining the wealth of the van der Meers with the political clout of the Rodriguez family. Sophia entered the marriage with high hopes of building a formidable partnership.
 
 However, the reality proved far different. The marriage was plagued by Carlos's infidelities, shady business dealings, and mounting political scandals. The public humiliation took a toll on Sophia, culminating in a highly publicized divorce in 2070.
 

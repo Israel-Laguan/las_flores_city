@@ -3,8 +3,9 @@
 > Tags: `#figure` `#politics` `#mayor` `#old_las_flores`
 >
 > **Born:** ~1975 (Las Flores)
+> **Died:** 2060 (Las Flores, age 85, heart complications)
 > **Role:** Mayor of Old Las Flores (2000–2034), Mayor of City District (2034–2038)
-> **Status:** Retired (as of 2038)
+> **Status:** Deceased
 
 ## Overview
 
@@ -18,7 +19,7 @@ He was re-elected multiple times, maintaining power through the town's dramatic 
 
 ## Physical Description
 
-- **Age:** ~25 (2000), ~51 (2026), ~63 (2038), ~84 (2059), ~102 (2077)
+- **Age:** ~25 (2000), ~51 (2026), ~63 (2038), ~84 (2059), ~85 (2060, at death)
 - **Height:** 5'9"
 - **Weight:** 180 lbs
 - **Hair:** Black in early adulthood, graying by 2025, predominantly gray/white by 2059, neatly groomed, receding hairline
@@ -94,7 +95,7 @@ However, his legacy remained complicated:
 - Persistent rumors of Chinese business ties, misappropriation, and quid-pro-quo arrangements followed him into retirement.
 - The corruption scandals involving his son, **Carlos Alberto Hernandez**, whose 2038 marriage to **Elisabeth van der Meer** and entanglement in ELU graft further tarnished the family name.
 
-In **2059**, at age 84, Hernandez was still visible in the community — attending city council meetings and community events, advocating for unity and progress. By **2077**, at 102 years old, he had fully retired but remained a significant figure, mentoring young leaders and engaging in philanthropy.
+In **2059**, at age 84, Hernandez was still visible in the community — attending city council meetings and community events, advocating for unity and progress. He passed away the following year, in **2060 at age 85**, after suffering heart complications related to his long-standing weight issues. His death was marked by a grand public funeral in Old Las Flores, attended by political figures from across the city's history.
 
 ## Related Lore
 

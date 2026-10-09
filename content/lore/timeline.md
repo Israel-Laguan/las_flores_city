@@ -168,6 +168,9 @@ The student attempts to deliver the USB to the mainstream press, but they ignore
 ### 2059 — Class-Action Lawsuit
 A group of affected communities launches a class-action lawsuit against Minera Estrella for damages related to the Great Lithium Leak (the 2052 pipe failure). Luz del Rio files for bankruptcy after losing critical contracts and paying damages.
 
+### 2060 — Death of Carlos Hernandez (March 12)
+Carlos Hernandez, the architect of Las Flores' transformation from a small mining town into a global lithium hub, passes away at age 85 from heart complications. His death marks the end of an era for the city he helped build. A grand public funeral is held in Old Las Flores, attended by political figures from across the city's history, including Governor Isabel Cáceres and members of both the Chinese and Dutch business communities. Despite the official eulogies praising his vision as a "builder," whispers persist about his role in the CLM deal that set the stage for the 2052 disaster and the corruption scandals involving his son Carlos Alberto.
+
 ### 2061 — Continued Expansion
 Despite ongoing environmental concerns and social tensions, Las Flores continues to expand as a major global hub for lithium exports.
 

@@ -2,9 +2,10 @@ id: a0000001-0000-4000-8000-000000000002
 name: Carlos Hernandez
 title: Mayor of Old Las Flores (2000-2034)
 birth_year: 1975
+death_year: 2060
 description: |
-  Carlos Hernandez was the dominant political figure in Las Flores during its transformation from a small mining town into a global lithium hub. Serving as mayor for nearly four decades, he navigated the city through the lithium boom and the controversial creation of the Free City.
-physical_description: "Latino man of 102 with a round, friendly face, a distinctive mole on his right cheek, warm dark brown eyes, receding gray-white hair and a slightly overweight build; wears a white guayabera and a warm, knowing expression."
+  Carlos Hernandez was the dominant political figure in Las Flores during its transformation from a small mining town into a global lithium hub. Serving as mayor for nearly four decades, he navigated the city through the lithium boom and the controversial creation of the Free City. Died in 2060 at age 85 from heart complications.
+physical_description: "Latino man in his mid-80s with a round, friendly face, a distinctive mole on his right cheek, warm dark brown eyes, receding gray-white hair and a slightly overweight build; wears a white guayabera and a warm, knowing expression. Died at 85 from heart complications related to his weight."
 psychological_description: "Charismatic and approachable, a laid-back builder with a warm demeanor, though privately marked by past personal vulnerabilities such as a hidden gambling addiction."
 background_and_role:
   - "Mayor of Old Las Flores from 2000 to 2034"

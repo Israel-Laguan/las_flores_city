@@ -14,15 +14,15 @@ NOTE: the current PNG shows a plain dark navy t-shirt with no round wire-rimmed 
 
 ## Prompt (Draft)
 
-South Asian Indian woman of 35, petite compact build, smooth deep brown skin, dark brown almost-black eyes, thick straight jet-black hair in a neat bun, heavy straight brows, dark navy crew-neck t-shirt, plain flat grey background, neutral relaxed expression, mouth closed, eyes to camera, front-facing, level shoulders, arms relaxed at sides, premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+South Asian Indian woman of 35, petite compact build, deep brown skin with faint fine lines around eyes from overwork and subtle age wrinkles on forehead, dark brown almost-black eyes, thick straight jet-black hair in a neat bun, heavy straight brows, full natural lips, dark navy crew-neck t-shirt, plain flat grey background. Neutral relaxed expression, mouth closed, eyes to camera, front-facing, level shoulders, arms relaxed at sides. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a South Asian Indian woman of 35. Petite, compact build. Smooth deep brown skin. Dark brown, almost black eyes under thick straight brows, a narrow nose and full lips. Thick straight jet-black hair pulled back into a neat bun at the crown with a few fine strands at the nape. Plain dark navy crew-neck t-shirt. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a South Asian Indian woman of 35. Petite, compact build. Deep brown skin with faint fine lines around eyes from overwork and subtle age wrinkles on forehead. Dark brown, almost black eyes with subtle tiredness under thick straight brows, a broad nose and full natural lips. Thick straight jet-black hair pulled back into a neat bun at the crown with a few fine strands at the nape. Plain dark navy crew-neck t-shirt. Neutral relaxed resting expression with the mouth closed and relaxed, brows unfurrowed, eyes looking straight at the camera, facing front with level shoulders and arms hanging relaxed at the sides. Plain flat neutral light-grey background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 
---no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Northern European features
+--no neon, androids, anime, cartoon, text, watermarks, blurry, low quality, detailed backgrounds, environmental backgrounds, scenery, East Asian features, Northern European features, Western beauty standards, Hollywood features, angelic features, thin lips, button nose, small nose, European features, Caucasian features, Barbie doll proportions, youthful, overly smooth skin, poreless skin
 
 ## Variations
 
