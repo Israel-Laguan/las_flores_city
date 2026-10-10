@@ -37,7 +37,7 @@ Sprint-03 met its own definition of done. The milestone is wider:
   Resolution was proven in SC-319. **Update (Sprint 4, T1):** artifact compile is now built and
   proven on Postgres (`scene-compile.e2e.test.ts`). Met.
 - **Equal-priority conflict fails the compile.** Met (SC-304, SC-319).
-- **The revision pointer flips atomically and rolls back.** Not built (SC-404).
+- **The revision pointer flips atomically and rolls back.** Not built in Sprint 3. **Update (Sprint 4, T2):** built and proven on Postgres, including a concurrent compare-and-swap race and a fault injected mid-publish (`scene-publish.e2e.test.ts`, `revisionRepository.pg.test.ts`). Met.
 - **A personality pool shared by two characters resolves correctly.** Not built (SC-306).
 
 ## 5. Holding list (Sprint 4 candidates, not committed)

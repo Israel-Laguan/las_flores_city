@@ -189,25 +189,28 @@ export {
   stringifySceneArtifact,
 } from './artifact/index.js';
 
-// Revision
+// Revision (SC-404, D1: bundle revision + compare-and-swap pointer)
 export type {
-  AtomicFlip,
-  AtomicFlipResult,
+  ActiveRevision,
+  CreateRevisionInput,
+  FlipFailureCode,
+  FlipInput,
+  FlipRecord,
+  FlipResult,
+  ManifestEntry,
+  Revision,
   RevisionId,
-  RevisionPointer,
-  RevisionPointerCreate,
-  RevisionPointerCreated,
-  RevisionPointerRead,
-  RevisionPointerReader,
-  RevisionPointerRepository,
-  RevisionPointerWriter,
-} from './revision/revision-pointer.js';
-export type { ISODateString as RevisionISODateString } from './revision/revision-pointer.js';
+  RevisionManifest,
+  RevisionReader,
+  RevisionWriter,
+} from './revision/index.js';
 export {
-  createRevisionPointer,
-  isRevisionPointer,
-  isRevisionPointerRead,
-} from './revision/revision-pointer.js';
+  InvalidManifestError,
+  RevisionArtifactMissingError,
+  isRevisionId,
+  manifestHash,
+  normaliseManifest,
+} from './revision/index.js';
 
 // Legacy placeholder (for backwards compatibility)
 export const contractsReady = true as const;

@@ -11,9 +11,11 @@ export type {
   Artifact,
   ArtifactManifest,
   ArtifactId,
-  RevisionPointer,
-  RevisionPointerRead,
-  RevisionPointerReader,
+  ActiveRevision,
+  Revision,
+  RevisionId,
+  RevisionManifest,
+  RevisionReader,
 } from '@las-flores/api-contracts';
 
 export {

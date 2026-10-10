@@ -127,9 +127,28 @@ No other shared tables, no cross-schema foreign keys, no synchronous calls betwe
 live somewhere both roles can reach, and a read-only grant on a purpose-built schema keeps
 the one-writer-per-fact rule, R9/R14, intact.)
 
-*Status:* artifacts (`publish.artifacts`) are implemented (SC-402). The revision pointer and
-atomic flip (SC-404) land in the next tranche; until then nothing in this section about the
-pointer is built.
+*Status:* artifacts (`publish.artifacts`, SC-402) and the revision pointer (SC-404, migration
+105) are implemented.
+
+- **A revision is a bundle** (D1): an immutable manifest `(artifact_type, name) -> artifact_id`
+  over a set of artifacts, in `publish.revisions` + `publish.revision_entries`. Creating one is
+  inert. There is ONE pointer, `publish.active_revision`, a singleton row (pinned by
+  `PRIMARY KEY` + `CHECK`).
+- **The flip is compare-and-swap.** The caller must state the revision it believes is active
+  (`expectedActive`, `null` = none yet). First flip: `INSERT ... ON CONFLICT DO NOTHING`; later
+  flips: `UPDATE ... WHERE revision_id = <expected>`. A mismatch changes nothing and reports
+  what is actually active. Of N racing flips exactly one wins (tested on Postgres, 12- and
+  20-way). Every flip also appends to `publish.revision_flips` in the same transaction.
+- **Rollback is flipping again** to an earlier revision; revisions and artifacts are never
+  mutated, so the earlier revision serves byte for byte as before.
+- **Publish is atomic.** `publish` writes the artifacts, creates the revision and flips the
+  pointer in one transaction; any failure (stale expectation, tampered artifact, an error
+  injected between the steps) rolls back all of it.
+- **Grants:** runtime has SELECT on revisions, entries and the pointer, and nothing on the flip
+  log. Planning has INSERT + SELECT on revisions, entries and flips, and SELECT/INSERT/UPDATE
+  (never DELETE) on the pointer.
+- **Not built (SC-M3):** runtime session pinning to a revision, and artifact lookup scoped to
+  the pinned revision (SC-502/504). Runtime can read the pointer today; nothing consumes it.
 
 Two properties follow structurally rather than by discipline:
 

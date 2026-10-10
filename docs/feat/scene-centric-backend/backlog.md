@@ -78,9 +78,9 @@
 | SC-401 | Artifact + manifest schemas in `contracts/artifact` | S | **Done** (S4 T1; `api/contracts/src/artifact/`: `scene-artifact.ts`, `compile-report.ts`; id = lowercase hex sha256 per D3) |
 | SC-402 | Compile step: emit content-addressed scene artifacts | L | **Done** for scene artifacts (S4 T1; `api/planning/src/compile/compile-scenes.ts`, `PgArtifactStore`, migration 104; `scene-compile.e2e.test.ts`). Other artifact kinds are later |
 | SC-403 | Content-hash idempotency — unchanged entity is a skip, not a rewrite | M | **Done** (S4 T1; same canon recompiles to the same id and `putMany` reports `unchanged`; proven on Postgres, row untouched) |
-| SC-404 | Revision pointer: format, read interface, atomic flip, rollback by re-flip | M | Ready: D1 (bundle revision, compare-and-swap flip) and D2 approved. Next tranche (T2) |
+| SC-404 | Revision pointer: format, read interface, atomic flip, rollback by re-flip | M | **Done** (S4 T2; `api/contracts/src/revision/`, `PgRevisionRepository`, migration 105; compare-and-swap flip, rollback by flipping again; `revisionRepository.pg.test.ts`, `scene-publish.e2e.test.ts`). Runtime session pinning is SC-504 |
 | SC-405 | Compile-time failure on missing required content (R10), with a machine-readable report | M | **Done**, minimal (S4 T1; `CompileReport`, location/cast checks). Dialogue refs are reported UNVERIFIED (hint) because legacy dialogues have no slug; R10 asset checks need the look model (SC-8xx) |
-| SC-406 | Batch upsert per plan in one transaction — no N+1 writes | M | In progress: artifact batch insert done (S4 T1, one statement per `putMany`); the publish transaction with the revision is T2. Canon `upsertMany` is not built |
+| SC-406 | Batch upsert per plan in one transaction — no N+1 writes | M | **Done** for publish (S4 T1+T2: one statement per artifact batch; artifacts + revision + flip in one transaction). Canon `upsertMany` is not built and is out of SC-M2 scope |
 
 ## SC-E5 — Runtime resolution & player state · F5, F6 · SC-M3
 

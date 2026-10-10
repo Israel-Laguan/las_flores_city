@@ -10,8 +10,15 @@ export type {
   Artifact,
   ArtifactManifest,
   ArtifactId,
-  RevisionPointer,
-  RevisionPointerRead,
+  ActiveRevision,
+  Revision,
+  RevisionId,
+  RevisionManifest,
+  RevisionReader,
+  RevisionWriter,
+  FlipInput,
+  FlipResult,
+  FlipRecord,
 } from '@las-flores/api-contracts';
 
 export {
@@ -125,6 +132,16 @@ export {
 export type { CompileDeps, CompileScenesOptions, CompileScenesResult } from './compile/compile-scenes.js';
 export { compileScenes } from './compile/compile-scenes.js';
 export type { CompileReport, SceneArtifactPayload } from '@las-flores/api-contracts';
+export {
+  InvalidManifestError,
+  RevisionArtifactMissingError,
+  manifestHash,
+  normaliseManifest,
+} from '@las-flores/api-contracts';
+
+// Revisions + publish (SC-404/406)
+export type { PublishInput, PublishResult, RevisionRepository } from './compile/revision-repository.js';
+export { InMemoryRevisionRepository, manifestFromRecords } from './compile/revision-repository.js';
 
 // Threshold events (SC-206)
 export type { ThresholdResult, StatValue, Threshold } from './canon/threshold-events.js';

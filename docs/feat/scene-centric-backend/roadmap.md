@@ -61,7 +61,7 @@ being wrong. A roadmap that assumes 100% is a roadmap that lies at the first ret
 |---|---|---|---|
 | 1 | A base and a flag-gated overlay compile to artifacts and resolve differently as the flag flips | **Met** (S4 T1) | `server/tests/integration/scene-compile.e2e.test.ts` (Postgres, artifact read back as the `runtime` role); `api/planning/src/compile/compile-scenes.test.ts` |
 | 2 | Equal-priority conflict on an exclusive property fails the compile | **Met** (S3, re-proved through the compile in S4 T1) | `compile-scenes.test.ts`, `scene-compile.e2e.test.ts` |
-| 3 | The revision pointer flips atomically and rolls back by flipping again | Open (T2) | not built |
+| 3 | The revision pointer flips atomically and rolls back by flipping again | **Met** (S4 T2) | `server/tests/integration/scene-publish.e2e.test.ts` (runtime role sees v2, a stale flip is rejected, rollback restores v1 byte for byte); `revisionRepository.pg.test.ts` (CAS race, fault injection, mutation-checked) |
 | 4 | A personality pool shared by two characters resolves correctly for both | Open (T3) | not built |
 
 ### SC-M3 — Runtime resolver
