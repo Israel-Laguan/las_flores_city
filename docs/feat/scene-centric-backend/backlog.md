@@ -45,9 +45,9 @@
 | SC-303 | Base + overlay composition with priority ordering | M | **Done** (S3 Group E; `api/planning/src/scene/compose-scene.ts`) |
 | SC-304 | Exclusive vs. additive property resolution; equal-priority conflict fails compile | M | **Done** (S3 Group E; equal-priority exclusive fails compile, A3) |
 | SC-305 | Weather: compile resolves `scene.weather` over `district.weather` and persists the resolved value on the artifact; runtime only reads that artifact field before `buildBackgroundHints` (A6 — `spikes/SC-S5-weather-source.md`) | S | **Done** (S3 Group E; `api/planning/src/scene/resolve-weather.ts`) |
-| SC-306 | Personality dialogue pools, shared many-to-many across characters | M | Dependencies met (SC-301 Done); acceptance criteria not yet written, so not Ready |
-| SC-307 | Scene dialogue attached to role slots rather than characters | M | In progress: schema half done in S4 T1 (SceneDef v2 `slot_lines`, `add_slot_lines` overlay op, compose + validation). Resolution by slot and the ladder are SC-308; acceptance criteria still need sign-off |
-| SC-308 | Specificity ladder resolution — scene > relationship > personality | M | Blocked: SC-306, SC-307 |
+| SC-306 | Personality dialogue pools, shared many-to-many across characters | M | **Done** at planning level (S4 T3; `api/contracts/src/dialogue/personality-pool.ts`, `PgPersonalityPoolRepository`, migration 106; pools are validated, shared many-to-many through `planning.character_pools`). Not compiled into artifacts: that is SC-M3's first task |
+| SC-307 | Scene dialogue attached to role slots rather than characters | M | **Done** at planning level (S4 T1 schema + T3: `slot_lines` v2, `add_slot_lines` overlay op, lines follow the slot through recasting; `resolveSlotLine`). Not served from artifacts yet (SC-M3) |
+| SC-308 | Specificity ladder resolution — scene > relationship > personality | M | **Done** at planning level (S4 T3; `resolveLine` in `api/contracts/src/dialogue/resolve-line.ts`, `resolveCharacterLine` in planning; tie-break rule in `docs/PERSONALITY_POOL_AUTHORING.md`). Relationship rung takes caller-supplied lines: no relationship line model exists yet |
 | SC-309 | *(split in sprint 3 → SC-309a vocabulary, 309b migration 098, 309c tooling)* `districts.weather` column + seed defaults + admin/content tooling to set it (SC-S5 follow-up gap) | S | Done (merged: vocab in `api/contracts/src/weather/`, migration 098, `district` content type + admin editor) |
 
 ## Sprint-3 additions (see `sprint-03/`)

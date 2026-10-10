@@ -38,6 +38,9 @@ slot_lines:                    # schema v2: lines keyed by SLOT, never by charac
       weather: [rain, fog]
 ```
 
+Slot lines take part in the same resolution ladder as personality pools; see
+[PERSONALITY_POOL_AUTHORING.md](PERSONALITY_POOL_AUTHORING.md) for the tie-break rules.
+
 A slot line follows the slot, not the character: recasting `valentina` to someone else
 keeps the line. Every `slot_id` must name a slot in `role_slots`. Scene JSON is schema
 version 2 (`slot_lines` is required, `[]` when there are none); version 1 payloads are
