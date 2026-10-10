@@ -122,3 +122,44 @@ export function slotLineFromJSON(raw: Record<string, any>): SlotLine {
 
 /** `slot_id` + `line_id`: the identity additive composition merges on. */
 export const slotLineKey = (line: Pick<SlotLine, 'slot_id' | 'line_id'>): string => `${line.slot_id}.${line.line_id}`;
+
+// ── Personality pool lines (SC-306) ─────────────────────────────────────────────────────
+// A pool line is a slot line without a slot: text + `when`, identified by `line_id` within its
+// pool. It can only ever carry these keys, so a pool can never hold traits, stats or
+// relationship data (R7, proposal §2.5): an extra key is a validation error.
+
+export interface PoolLine {
+  line_id: string;
+  text: string;
+  when: LineWhen;
+}
+
+export const POOL_LINE_JSON_KEYS = ['line_id', 'text', 'when'] as const;
+
+/** Shape check of an untrusted pool line at `path`. */
+export function checkPoolLine(value: unknown, path: string): LineProblem[] {
+  if (!isPlainObject(value)) return [{ path, message: `'${path}' must be an object` }];
+  const problems: LineProblem[] = [];
+  for (const key of Object.keys(value)) {
+    if (!(POOL_LINE_JSON_KEYS as readonly string[]).includes(key)) {
+      problems.push({ path: `${path}.${key}`, message: `unknown field '${key}' (a pool line is only line_id, text, when)` });
+    }
+  }
+  if (!isValidSlug(value.line_id)) problems.push({ path: `${path}.line_id`, message: `'${path}.line_id' must be a valid slug` });
+  if (typeof value.text !== 'string' || value.text.trim() === '') {
+    problems.push({ path: `${path}.text`, message: `'${path}.text' must be a non-empty string` });
+  }
+  if (value.when === undefined) problems.push({ path: `${path}.when`, message: `'${path}.when' is required (use {} for unconstrained)` });
+  else problems.push(...checkLineWhen(value.when, `${path}.when`));
+  return problems;
+}
+
+/** Canonical JSON form of a pool line (sorted keys). */
+export function poolLineToJSON(line: PoolLine): Record<string, unknown> {
+  return { line_id: line.line_id, text: line.text, when: lineWhenToJSON(line.when) };
+}
+
+/** Copy of a validated pool line (no aliasing). Call only after `checkPoolLine` found no problems. */
+export function poolLineFromJSON(raw: Record<string, any>): PoolLine {
+  return { line_id: raw.line_id, text: raw.text, when: lineWhenFromJSON(raw.when) };
+}

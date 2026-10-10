@@ -119,6 +119,25 @@ export {
   stringifyConflictReport,
 } from './scene/conflicts.js';
 
+// Personality pools + character line resolution (SC-306/308)
+export type {
+  CharacterPoolRepository,
+  LinkStatus,
+  ListPersonalityPoolsOptions,
+  PersonalityPoolRecord,
+  PersonalityPoolRepository,
+} from './canon/personality-pool-repository.js';
+export {
+  InMemoryCharacterPoolRepository,
+  InMemoryPersonalityPoolRepository,
+  PersonalityPoolRetiredError,
+  PoolLinkError,
+  normalisePersonalityPool,
+  personalityPoolContentHash,
+} from './canon/personality-pool-repository.js';
+export type { ResolveCharacterLineInput } from './dialogue/resolve-character-line.js';
+export { resolveCharacterLine, resolveSlotLine } from './dialogue/resolve-character-line.js';
+
 // Compile (SC-402/403/405) — scenes + overlays -> content-addressed artifacts + report
 export type { ContentLookup, LocationInfo } from './compile/content-lookup.js';
 export { InMemoryContentLookup } from './compile/content-lookup.js';

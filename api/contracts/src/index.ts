@@ -140,6 +140,41 @@ export {
   slotLineToJSON,
 } from './scene/index.js';
 
+// Personality pools + the specificity ladder (SC-306/308)
+export type { PoolLine } from './scene/line.js';
+export {
+  POOL_LINE_JSON_KEYS,
+  checkPoolLine,
+  poolLineFromJSON,
+  poolLineToJSON,
+} from './scene/line.js';
+export type {
+  PersonalityPool,
+  PersonalityPoolInput,
+  PoolIssue,
+  PoolIssueCode,
+  PoolValidationResult,
+} from './dialogue/personality-pool.js';
+export {
+  InvalidPersonalityPoolError,
+  PERSONALITY_POOL_JSON_KEYS,
+  PERSONALITY_POOL_SCHEMA_VERSION,
+  POOL_ISSUE_CODES,
+  createPersonalityPool,
+  personalityPoolFromJSON,
+  personalityPoolToJSON,
+  stringifyPersonalityPool,
+  validatePersonalityPool,
+} from './dialogue/personality-pool.js';
+export type { LineCandidate, LineContext, LineRung } from './dialogue/resolve-line.js';
+export {
+  LINE_RUNGS,
+  lineApplies,
+  poolLineCandidates,
+  resolveLine,
+  slotLineCandidates,
+} from './dialogue/resolve-line.js';
+
 // Validation (shared issue format)
 export type { IssueSeverity, ValidationIssue, ValidationResult } from './validation/index.js';
 export { ISSUE_SEVERITIES, createValidationResult, issuePath } from './validation/index.js';
