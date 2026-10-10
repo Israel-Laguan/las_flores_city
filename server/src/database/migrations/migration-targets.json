@@ -92,7 +92,8 @@
     "102_characters_slug.sql",
     "103_characters_rich_fields.sql",
     "104_publish_artifacts.sql",
-    "105_publish_revisions.sql"
+    "105_publish_revisions.sql",
+    "106_planning_personality_pools.sql"
   ],
   "nontransactional": {
     "075_job_runs_run_token_backfill.sql": "las_flores",

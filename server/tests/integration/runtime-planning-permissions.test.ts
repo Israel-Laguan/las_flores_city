@@ -217,7 +217,14 @@ describe('SC-106 runtime cannot access planning schema', () => {
   // so the first denial fires at schema level; the table-level REVOKEs in 096/101 are the
   // second line of defence and are what these checks assert. The planning role must still
   // be able to read, so a denial cannot be a broken fixture.
-  const CANON_TABLES = ['planning.scene_defs', 'planning.scene_overlays', 'planning.flag_definitions'];
+  const CANON_TABLES = [
+    'planning.scene_defs',
+    'planning.scene_overlays',
+    'planning.flag_definitions',
+    // SC-306 (migration 106): personality pools and their character links.
+    'planning.personality_pools',
+    'planning.character_pools',
+  ];
 
   describe.each(CANON_TABLES)('SC-317 %s', (table) => {
     test('planning role can read the table', async () => {
