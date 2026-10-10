@@ -42,11 +42,15 @@ export function sceneRepositoryContract(
     });
 
     test('create returns the record with hash and timestamps; get reads it back', async () => {
-      const scene = fixtureScene(`${p}_a`);
+      // v2: slot_lines must persist and read back byte-for-byte (SC-307).
+      const scene = fixtureScene(`${p}_a`, {
+        role_slots: [{ slot_id: 'host', cast: null, position: 'center' }],
+        slot_lines: [{ slot_id: 'host', line_id: 'greet', text: 'Welcome.', when: { time: ['night'] } }],
+      });
       const created = await repo.create(scene);
       expect(created.slug).toBe(`${p}_a`);
       expect(created.scene).toEqual(scene);
-      expect(created.schemaVersion).toBe(1);
+      expect(created.schemaVersion).toBe(2);
       expect(created.contentHash).toMatch(/^[0-9a-f]{64}$/);
       expect(created.contentHash).toBe(sceneDefContentHash(scene));
       expect(created.retiredAt).toBeNull();

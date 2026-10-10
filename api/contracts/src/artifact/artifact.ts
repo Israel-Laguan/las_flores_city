@@ -5,7 +5,7 @@
 
 /**
  * Unique identifier for an artifact, derived from its content hash.
- * Format: base64url-encoded SHA-256 hash of the artifact's JSON representation.
+ * Format: lowercase hex SHA-256 of the artifact's canonical payload bytes (D3).
  * Used as a stable reference across revisions.
  */
 export type ArtifactId = string;
@@ -20,13 +20,14 @@ export type ManifestVersion = 1;
 /**
  * Content hash of the artifact.
  * Used for integrity verification and as the artifact's identity.
- * Must be a valid SHA-256 hash in hex or base64url encoding.
+ * New artifacts use lowercase hex (D3); `validateContentHash` still reads base64url.
  */
 export type ContentHash = string;
 
 /**
  * Type of content artifact.
- * - 'scene': A compiled scene with all its dialogue, choices, and branching
+ * - 'scene': A compiled scene (SC-402): the `ResolvedScene` base + conditional layers
+ *   plus the district-weather snapshot. Dialogue is referenced by slug, not embedded.
  * - 'dialogue': A standalone dialogue tree
  * - 'mission': A mission definition with its associated scenes
  * - 'character': Character definition and all associated assets
@@ -47,7 +48,7 @@ export type ISODateString = string;
 export interface Artifact {
   /**
    * Unique identifier, derived from content_hash.
-   * Typically: base64url(sha256(json_bytes))
+   * Always equal to `content_hash`.
    */
   artifact_id: ArtifactId;
 
@@ -154,15 +155,30 @@ export function validateContentHash(hash: string): boolean {
   return CONTENT_HASH_PATTERN.test(hash);
 }
 
+/** Canonical artifact identity: lowercase hex SHA-256 (64 chars). */
+export const ARTIFACT_ID_PATTERN = /^[0-9a-f]{64}$/;
+
+/** True when `value` is a canonical (lowercase hex SHA-256) artifact id. */
+export function isArtifactId(value: unknown): value is ArtifactId {
+  return typeof value === 'string' && ARTIFACT_ID_PATTERN.test(value);
+}
+
 /**
- * Creates an artifact ID from a content hash.
- * Uses base64url encoding of the SHA-256 hash.
- * This is a placeholder - actual implementation would use crypto.
+ * Creates an artifact ID from a content hash (D3): the id IS the content hash, as
+ * lowercase hex SHA-256 — the same form `sceneDefContentHash` and
+ * `ContentPublishService` already use, so one artifact has exactly one identity.
+ * Uppercase hex is lowercased; anything that is not 64 hex characters (including the
+ * base64url form `validateContentHash` still accepts for reading) throws.
+ *
+ * @param contentHash - Hex SHA-256 of the artifact's canonical bytes
+ * @returns The canonical artifact id
+ * @throws TypeError when `contentHash` is not 64 hex characters
  */
 export function createArtifactId(contentHash: ContentHash): ArtifactId {
-  // For now, just return the hash as-is (assuming it's already base64url)
-  // In practice, this might involve encoding/decoding
-  return contentHash;
+  if (typeof contentHash !== 'string' || !/^[0-9a-fA-F]{64}$/.test(contentHash)) {
+    throw new TypeError('artifact id must be a 64-character hex SHA-256 content hash');
+  }
+  return contentHash.toLowerCase();
 }
 
 /**
@@ -201,10 +217,11 @@ export function isArtifact(value: unknown): value is Artifact {
  */
 function isArtifactBody(obj: Record<string, unknown>): boolean {
   return (
-    typeof obj.artifact_id === 'string' &&
+    isArtifactId(obj.artifact_id) &&
     typeof obj.artifact_type === 'string' &&
     ARTIFACT_TYPES.has(obj.artifact_type) &&
-    typeof obj.content_hash === 'string' &&
+    // D3: identity is the content hash, so the two must agree.
+    obj.content_hash === obj.artifact_id &&
     typeof obj.name === 'string' &&
     typeof obj.created_at === 'string' &&
     typeof obj.size_bytes === 'number' &&

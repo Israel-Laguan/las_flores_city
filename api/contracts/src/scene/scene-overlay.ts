@@ -20,6 +20,7 @@ import type { ConditionExpr } from '../condition/expression.js';
 import { TRUE, fromJSON as conditionFromJSON, toJSON as conditionToJSON } from '../condition/expression.js';
 import type { ValidationIssue } from '../validation/issue.js';
 import type { WeatherTag } from '../weather/weather-tag.js';
+import { slotLineFromJSON, slotLineToJSON, type SlotLine } from './line.js';
 import { roleSlotToJSON, type RoleSlot } from './role-slot.js';
 import { SCENE_OVERLAY_SCHEMA_VERSION } from './overlay-vocab.js';
 import type { SceneTime } from './scene-vocab.js';
@@ -29,6 +30,8 @@ export type AddDialogueRefsOp = { op: 'add_dialogue_refs'; refs: string[] };
 export type AddItemsOp = { op: 'add_items'; items: string[] };
 /** Adds a new slot; composing it onto a scene that already has `slot_id` is an issue. */
 export type AddRoleSlotOp = { op: 'add_role_slot'; slot: RoleSlot };
+/** Adds slot lines by identity (`slot_id` + `line_id`); the target slot must exist when composed. */
+export type AddSlotLinesOp = { op: 'add_slot_lines'; lines: SlotLine[] };
 /** Assigns `cast` on an existing slot (`null` = reopen it). */
 export type CastSlotOp = { op: 'cast_slot'; slot_id: string; cast: string | null };
 /** `null` = explicitly clear back to "inherit the district default". */
@@ -36,7 +39,7 @@ export type SetWeatherOp = { op: 'set_weather'; weather: WeatherTag | null };
 /** `null` = explicitly clear back to "any time". */
 export type SetTimeOp = { op: 'set_time'; time: SceneTime | null };
 
-export type SceneOverlayOp = AddDialogueRefsOp | AddItemsOp | AddRoleSlotOp | CastSlotOp | SetWeatherOp | SetTimeOp;
+export type SceneOverlayOp = AddDialogueRefsOp | AddItemsOp | AddRoleSlotOp | AddSlotLinesOp | CastSlotOp | SetWeatherOp | SetTimeOp;
 
 export interface SceneOverlay {
   /** Identifier-valid authoring handle, unique across overlays. */
@@ -90,6 +93,8 @@ export function sceneOverlayOpToJSON(op: SceneOverlayOp): Record<string, unknown
       return { items: [...op.items], op: op.op };
     case 'add_role_slot':
       return { op: op.op, slot: roleSlotToJSON(op.slot) };
+    case 'add_slot_lines':
+      return { lines: op.lines.map(slotLineToJSON), op: op.op };
     case 'cast_slot':
       return { cast: op.cast ?? null, op: op.op, slot_id: op.slot_id };
     case 'set_weather':
@@ -127,6 +132,8 @@ function opFromJSON(raw: Record<string, any>): SceneOverlayOp {
         op: 'add_role_slot',
         slot: { slot_id: raw.slot.slot_id, cast: raw.slot.cast, position: raw.slot.position },
       };
+    case 'add_slot_lines':
+      return { op: 'add_slot_lines', lines: raw.lines.map((l: Record<string, any>) => slotLineFromJSON(l)) };
     case 'cast_slot':
       return { op: 'cast_slot', slot_id: raw.slot_id, cast: raw.cast };
     case 'set_weather':

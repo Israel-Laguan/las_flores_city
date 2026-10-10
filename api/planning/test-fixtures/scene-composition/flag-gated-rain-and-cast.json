@@ -14,7 +14,8 @@
       { "cast": "valentina_quan", "position": "left", "slot_id": "valentina" },
       { "cast": null, "position": "right", "slot_id": "bystander" }
     ],
-    "schema_version": 1,
+    "schema_version": 2,
+    "slot_lines": [],
     "slug": "vq_airport_gate",
     "time": "night",
     "title": "Airport gate",

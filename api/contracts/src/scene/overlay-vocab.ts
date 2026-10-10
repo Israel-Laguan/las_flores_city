@@ -26,6 +26,7 @@ export const SCENE_OVERLAY_OPS = {
   add_dialogue_refs: { kind: 'additive', keys: ['op', 'refs'] },
   add_items: { kind: 'additive', keys: ['items', 'op'] },
   add_role_slot: { kind: 'additive', keys: ['op', 'slot'] },
+  add_slot_lines: { kind: 'additive', keys: ['lines', 'op'] },
   cast_slot: { kind: 'conflicting', keys: ['cast', 'op', 'slot_id'] },
   set_weather: { kind: 'exclusive', keys: ['op', 'weather'] },
   set_time: { kind: 'exclusive', keys: ['op', 'time'] },

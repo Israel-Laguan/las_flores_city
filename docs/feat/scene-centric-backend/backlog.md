@@ -46,7 +46,7 @@
 | SC-304 | Exclusive vs. additive property resolution; equal-priority conflict fails compile | M | **Done** (S3 Group E; equal-priority exclusive fails compile, A3) |
 | SC-305 | Weather: compile resolves `scene.weather` over `district.weather` and persists the resolved value on the artifact; runtime only reads that artifact field before `buildBackgroundHints` (A6 — `spikes/SC-S5-weather-source.md`) | S | **Done** (S3 Group E; `api/planning/src/scene/resolve-weather.ts`) |
 | SC-306 | Personality dialogue pools, shared many-to-many across characters | M | Dependencies met (SC-301 Done); acceptance criteria not yet written, so not Ready |
-| SC-307 | Scene dialogue attached to role slots rather than characters | M | Dependencies met (SC-302 Done); acceptance criteria not yet written, so not Ready |
+| SC-307 | Scene dialogue attached to role slots rather than characters | M | In progress: schema half done in S4 T1 (SceneDef v2 `slot_lines`, `add_slot_lines` overlay op, compose + validation). Resolution by slot and the ladder are SC-308; acceptance criteria still need sign-off |
 | SC-308 | Specificity ladder resolution — scene > relationship > personality | M | Blocked: SC-306, SC-307 |
 | SC-309 | *(split in sprint 3 → SC-309a vocabulary, 309b migration 098, 309c tooling)* `districts.weather` column + seed defaults + admin/content tooling to set it (SC-S5 follow-up gap) | S | Done (merged: vocab in `api/contracts/src/weather/`, migration 098, `district` content type + admin editor) |
 
@@ -75,12 +75,12 @@
 
 | ID | Story | Size | State |
 |---|---|---|---|
-| SC-401 | Artifact + manifest schemas in `contracts/artifact` | S | Dependencies met (SC-301 Done); acceptance criteria not yet written, so not Ready |
-| SC-402 | Compile step: emit content-addressed scene artifacts | L | Blocked: SC-401 |
-| SC-403 | Content-hash idempotency — unchanged entity is a skip, not a rewrite | M | Blocked: SC-402 |
-| SC-404 | Revision pointer: format, read interface, atomic flip, rollback by re-flip | M | Blocked: SC-402 |
-| SC-405 | Compile-time failure on missing required content (R10), with a machine-readable report | M | Blocked: SC-402 |
-| SC-406 | Batch upsert per plan in one transaction — no N+1 writes | M | Blocked: SC-402 |
+| SC-401 | Artifact + manifest schemas in `contracts/artifact` | S | **Done** (S4 T1; `api/contracts/src/artifact/`: `scene-artifact.ts`, `compile-report.ts`; id = lowercase hex sha256 per D3) |
+| SC-402 | Compile step: emit content-addressed scene artifacts | L | **Done** for scene artifacts (S4 T1; `api/planning/src/compile/compile-scenes.ts`, `PgArtifactStore`, migration 104; `scene-compile.e2e.test.ts`). Other artifact kinds are later |
+| SC-403 | Content-hash idempotency — unchanged entity is a skip, not a rewrite | M | **Done** (S4 T1; same canon recompiles to the same id and `putMany` reports `unchanged`; proven on Postgres, row untouched) |
+| SC-404 | Revision pointer: format, read interface, atomic flip, rollback by re-flip | M | Ready: D1 (bundle revision, compare-and-swap flip) and D2 approved. Next tranche (T2) |
+| SC-405 | Compile-time failure on missing required content (R10), with a machine-readable report | M | **Done**, minimal (S4 T1; `CompileReport`, location/cast checks). Dialogue refs are reported UNVERIFIED (hint) because legacy dialogues have no slug; R10 asset checks need the look model (SC-8xx) |
+| SC-406 | Batch upsert per plan in one transaction — no N+1 writes | M | In progress: artifact batch insert done (S4 T1, one statement per `putMany`); the publish transaction with the revision is T2. Canon `upsertMany` is not built |
 
 ## SC-E5 — Runtime resolution & player state · F5, F6 · SC-M3
 

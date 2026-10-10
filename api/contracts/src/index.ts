@@ -85,6 +85,7 @@ export type {
   AddDialogueRefsOp,
   AddItemsOp,
   AddRoleSlotOp,
+  AddSlotLinesOp,
   CastSlotOp,
   SetWeatherOp,
   SetTimeOp,
@@ -126,6 +127,19 @@ export { SCENE_COMPOSE_ISSUE_CODES, applyOverlayOps, toComposedScene } from './s
 export type { PlayerScene } from './scene/index.js';
 export { resolveSceneForPlayer, selectActiveOverlays } from './scene/index.js';
 
+// Scene lines (SC-307; also the SC-306 pool line shape)
+export type { LineWhen, SlotLine, LineProblem } from './scene/index.js';
+export {
+  LINE_WHEN_KEYS,
+  SLOT_LINE_JSON_KEYS,
+  checkLineWhen,
+  checkSlotLine,
+  lineWhenSpecificity,
+  lineWhenToJSON,
+  slotLineKey,
+  slotLineToJSON,
+} from './scene/index.js';
+
 // Validation (shared issue format)
 export type { IssueSeverity, ValidationIssue, ValidationResult } from './validation/index.js';
 export { ISSUE_SEVERITIES, createValidationResult, issuePath } from './validation/index.js';
@@ -143,12 +157,37 @@ export type {
 } from './artifact/artifact.js';
 export {
   ARTIFACT_TYPES,
+  ARTIFACT_ID_PATTERN,
   CONTENT_HASH_PATTERN,
   validateContentHash,
   createArtifactId,
+  isArtifactId,
   isArtifact,
   isArtifactManifest,
 } from './artifact/artifact.js';
+
+// Scene artifact + compile report (SC-401/402/405)
+export type {
+  CompileIssue,
+  CompileIssueCode,
+  CompileReport,
+  CompileSceneEntry,
+  CompileSceneStatus,
+  SceneArtifactPayload,
+} from './artifact/index.js';
+export {
+  COMPILE_ISSUE_CODES,
+  COMPILE_REPORT_VERSION,
+  SCENE_ARTIFACT_SCHEMA_VERSION,
+  InvalidSceneArtifactError,
+  buildCompileReport,
+  sceneArtifactContentHash,
+  sceneArtifactPayloadFromJSON,
+  sceneArtifactPayloadToJSON,
+  sha256Hex,
+  stringifyCompileReport,
+  stringifySceneArtifact,
+} from './artifact/index.js';
 
 // Revision
 export type {

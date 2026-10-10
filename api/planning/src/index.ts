@@ -112,6 +112,20 @@ export {
   stringifyConflictReport,
 } from './scene/conflicts.js';
 
+// Compile (SC-402/403/405) — scenes + overlays -> content-addressed artifacts + report
+export type { ContentLookup, LocationInfo } from './compile/content-lookup.js';
+export { InMemoryContentLookup } from './compile/content-lookup.js';
+export type { ArtifactRecord, ArtifactStore, PutManyResult } from './compile/artifact-store.js';
+export {
+  ArtifactIntegrityError,
+  InMemoryArtifactStore,
+  buildSceneArtifactRecord,
+  verifyArtifactRecord,
+} from './compile/artifact-store.js';
+export type { CompileDeps, CompileScenesOptions, CompileScenesResult } from './compile/compile-scenes.js';
+export { compileScenes } from './compile/compile-scenes.js';
+export type { CompileReport, SceneArtifactPayload } from '@las-flores/api-contracts';
+
 // Threshold events (SC-206)
 export type { ThresholdResult, StatValue, Threshold } from './canon/threshold-events.js';
 export {

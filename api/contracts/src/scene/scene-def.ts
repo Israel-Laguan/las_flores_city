@@ -15,6 +15,7 @@ import type { ConditionExpr } from '../condition/expression.js';
 import { TRUE, fromJSON as conditionFromJSON, toJSON as conditionToJSON } from '../condition/expression.js';
 import type { WeatherTag } from '../weather/weather-tag.js';
 import type { ValidationIssue } from '../validation/issue.js';
+import { slotLineFromJSON, slotLineToJSON, type SlotLine } from './line.js';
 import { roleSlotToJSON, type RoleSlot } from './role-slot.js';
 import { SCENE_SCHEMA_VERSION, SCENE_TIMES, isSceneTime, type SceneTime } from './scene-vocab.js';
 import { validateScene } from './validate.js';
@@ -50,6 +51,11 @@ export interface SceneDef {
   /** Cast positions (SC-302). `slot_id` is unique within the scene. */
   role_slots: RoleSlot[];
   /**
+   * Dialogue lines attached to a role slot, not to a character (SC-307): the same line
+   * serves whoever is cast in the slot. Every `slot_id` must name a slot in `role_slots`.
+   */
+  slot_lines: SlotLine[];
+  /**
    * Gate on per-player flag state (SC-310), in the SAME grammar as dialogue and
    * missions — no second grammar. `TRUE` = always available. Evaluated at runtime.
    */
@@ -80,6 +86,7 @@ export function createSceneDef(input: SceneDefInput): SceneDef {
     items: input.items ?? [],
     dialogue_refs: input.dialogue_refs ?? [],
     role_slots: input.role_slots ?? [],
+    slot_lines: input.slot_lines ?? [],
     availability: input.availability ?? TRUE,
     priority: input.priority ?? 0,
   };
@@ -111,6 +118,7 @@ export function sceneDefToJSON(scene: SceneDef): Record<string, unknown> {
     priority: scene.priority,
     role_slots: scene.role_slots.map(roleSlotToJSON),
     schema_version: SCENE_SCHEMA_VERSION,
+    slot_lines: scene.slot_lines.map(slotLineToJSON),
     slug: scene.slug,
     time: scene.time ?? null,
     title: scene.title,
@@ -153,6 +161,7 @@ export function sceneDefFromJSON(value: unknown): SceneDef {
     items: [...obj.items],
     dialogue_refs: [...obj.dialogue_refs],
     role_slots: obj.role_slots.map((s: RoleSlot) => ({ slot_id: s.slot_id, cast: s.cast, position: s.position })),
+    slot_lines: obj.slot_lines.map((l: Record<string, any>) => slotLineFromJSON(l)),
     availability: conditionFromJSON(obj.availability),
     priority: obj.priority,
   };

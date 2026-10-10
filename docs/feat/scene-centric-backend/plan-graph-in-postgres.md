@@ -308,6 +308,9 @@ flowchart LR
 **An immutable artifact bundle, and a pointer to the active revision.** That is the entire
 coupling. No shared tables, no foreign keys across the seam, no synchronous calls.
 
+> **Superseded wording (D2, 2026-10-10):** the one shared surface is the purpose-built `publish`
+> schema, written by planning and read-only for runtime. See `architecture.md` §3/§4.
+
 Two properties fall out for free:
 
 - **Player sessions pin to a revision.** This is exactly the revision-scoping requirement

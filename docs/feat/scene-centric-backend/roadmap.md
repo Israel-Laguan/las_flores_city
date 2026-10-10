@@ -55,6 +55,15 @@ being wrong. A roadmap that assumes 100% is a roadmap that lies at the first ret
 - The revision pointer flips atomically and rolls back by flipping it again.
 - A personality pool shared by two characters resolves correctly for both.
 
+**SC-M2 exit-criteria status** (updated as each has a passing test; do not mark SC-M2 complete until all four do):
+
+| # | Criterion | Status | Evidence |
+|---|---|---|---|
+| 1 | A base and a flag-gated overlay compile to artifacts and resolve differently as the flag flips | **Met** (S4 T1) | `server/tests/integration/scene-compile.e2e.test.ts` (Postgres, artifact read back as the `runtime` role); `api/planning/src/compile/compile-scenes.test.ts` |
+| 2 | Equal-priority conflict on an exclusive property fails the compile | **Met** (S3, re-proved through the compile in S4 T1) | `compile-scenes.test.ts`, `scene-compile.e2e.test.ts` |
+| 3 | The revision pointer flips atomically and rolls back by flipping again | Open (T2) | not built |
+| 4 | A personality pool shared by two characters resolves correctly for both | Open (T3) | not built |
+
 ### SC-M3 — Runtime resolver
 
 *Sprints 5–6. The slice is playable.*

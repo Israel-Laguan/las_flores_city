@@ -34,7 +34,8 @@ until the next sprint captures it. (The backlog defers estimates until sprint-1 
 Sprint-03 met its own definition of done. The milestone is wider:
 
 - **Two scenes at one location compile to artifacts and resolve differently as a flag flips.**
-  The resolution flip is proven (SC-319). Artifact compile is not built (SC-402, SC-E4).
+  Resolution was proven in SC-319. **Update (Sprint 4, T1):** artifact compile is now built and
+  proven on Postgres (`scene-compile.e2e.test.ts`). Met.
 - **Equal-priority conflict fails the compile.** Met (SC-304, SC-319).
 - **The revision pointer flips atomically and rolls back.** Not built (SC-404).
 - **A personality pool shared by two characters resolves correctly.** Not built (SC-306).
