@@ -58,8 +58,22 @@ export type {
 export {
   InMemorySceneDefRepository,
   SceneDefRetiredError,
+  normaliseSceneDef,
   sceneDefContentHash,
 } from './canon/scene-def-repository.js';
+
+// Scene overlay repository (SC-314)
+export type {
+  ListSceneOverlaysOptions,
+  SceneOverlayRecord,
+  SceneOverlayRepository,
+} from './canon/scene-overlay-repository.js';
+export {
+  InMemorySceneOverlayRepository,
+  SceneOverlayRetiredError,
+  normaliseSceneOverlay,
+  sceneOverlayContentHash,
+} from './canon/scene-overlay-repository.js';
 
 // Scene composition (SC-303b)
 export type {

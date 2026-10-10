@@ -6,11 +6,11 @@
 
 **Current branch:** `feat/sc-106-negative` (4 new commits over `main`: SC-106 test, D1 fix, D2 fix, CI README tweak).
 
-**Status:** A1 INCOMPLETE (see below). A2-A4 COMPLETED. B1-B6 COMPLETED. C COMPLETED.
+**Status:** A1 COMPLETED (by BF-305). A2-A4 COMPLETED. B1-B6 COMPLETED. C COMPLETED.
 
 > **How to read this file.** This is a point-in-time gap analysis written *before* the work
-> landed. The banner above is authoritative: every task below is DONE **except A1**, which is
-> incomplete because the SC-S6 harness is committed but is still a non-runnable stub. The
+> landed. The banner above is authoritative: every task below is DONE. A1 was finished later by
+> BF-305, which replaced the SC-S6 stub with a working harness. The
 > prose under each task ("Not done. No code exists for flags anywhere.") describes the gap as
 > it stood when this document was written and is retained as history — it is not a statement
 > about the current state of the branch. Milestone status lives in
@@ -19,7 +19,7 @@
 ### Progress Summary
 | Part | Task | Status |
 |------|------|--------|
-| A | A1. Commit spike harnesses | ⚠️ INCOMPLETE (SC-S6 harness is a stub) |
+| A | A1. Commit spike harnesses | ✅ DONE (BF-305 replaced the SC-S6 stub; live run not re-verified) |
 | A | A2. Implement api/contracts primitives | ✅ DONE (this session) |
 | A | A3. Update stale docs | ✅ DONE (this session) |
 | A | A4. Preserve SC-102 boundary proof | ✅ DONE (this session) |
@@ -32,9 +32,9 @@
 
 ### A1. Commit spike harnesses (SC-S7 follow-up)
 
-**Status:** INCOMPLETE — SC-S1 through SC-S5 harnesses are committed under `server/scripts/`;
-the SC-S6 harness is still a non-runnable stub (exits non-zero, measures nothing), so the
-reproducible p50/p95 measurement A1 promised is not done.
+**Status:** DONE (BF-305) — SC-S1 through SC-S5 harnesses are committed under `server/scripts/`,
+and the SC-S6 harness is implemented in `server/scripts/spikes/serving-baseline.ts` and wired as
+`npm run spike:serving-baseline --workspace=server`. The gap text below is kept as history.
 
 > *Historical (at time of writing):* Spike write-ups (S1–S6) exist in `spikes/`, but the scripts that reproduce their numbers were on separate `spike/sc-s*` branches, not merged.
 

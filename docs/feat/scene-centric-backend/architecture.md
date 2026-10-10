@@ -232,13 +232,13 @@ which it must be settled.
 |---|---|---|
 | A1 | File-canonical (YAML) vs. DB-canonical content — and whether existing content is imported or ages out | SC-M4 |
 | A2 | Scene pinning: per visit, per time-block, or re-resolve every entry | SC-M3 |
-| A3 | Precedence rule for exclusive scene properties on overlay conflict — and whether equal priority warns or fails | SC-M2 |
+| A3 | ~~Precedence rule for exclusive scene properties on overlay conflict — and whether equal priority warns or fails~~ — **resolved**: equal priority on an exclusive property fails the compile (SC-304; `spikes/SC-S13-flag-gated-overlays.md`); otherwise the higher priority wins | SC-M2 |
 | A4 | Approval granularity: whole-plan or partial | SC-M4 |
 | A5 | Regeneration vs. hand-edit merge rule | SC-M4 |
 | A6 | ~~Weather source — where the live value comes from~~ — **resolved**: compiled snapshot of `districts.weather` at revision R (default) + `scene.weather` (author override, wins when set), resolved by the caller from the **pinned artifact** before `buildBackgroundHints` (`spikes/SC-S5-weather-source.md`). Runtime never reads `districts` live; if a revision-scoped read model replaces the snapshot, its contract MUST be added to §4. | SC-M2 |
 | A7 | `asset_fallback` signal consumer | SC-M6 |
 | A8 | Whether `dialogue_bias` and `look_hint` survive R7 (no field without a reader) | SC-M6 |
 
-A3 has a recommendation already: **equal priority on an exclusive property should fail the
-compile**, because equal priority means nondeterminism and a warning on nondeterminism is
+A3 is **resolved**: **equal priority on an exclusive property fails the compile** (implemented
+in SC-304), because equal priority means nondeterminism and a warning on nondeterminism is
 a bug that ships.

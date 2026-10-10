@@ -91,7 +91,14 @@ describe('098 districts.weather', () => {
     const m = sql.match(/CHECK \(weather IN \(([^)]*)\)\)/);
     expect(m).not.toBeNull();
     const tags = m![1].split(',').map((t) => t.trim().replace(/'/g, ''));
-    expect([...tags].sort()).toEqual([...WEATHER_TAGS].sort());
+    // Name both sides in the failure so drift is attributable without reading the test.
+    const sqlTags = [...tags].sort();
+    const contractTags = [...WEATHER_TAGS].sort();
+    if (JSON.stringify(sqlTags) !== JSON.stringify(contractTags)) {
+      throw new Error(
+        `weather drift: 098_districts_weather.sql CHECK [${sqlTags.join(', ')}] != api/contracts WEATHER_TAGS [${contractTags.join(', ')}]`,
+      );
+    }
   });
 
   describe('content upsert (SC-309c)', () => {

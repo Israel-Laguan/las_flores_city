@@ -212,4 +212,41 @@ describe('SC-106 runtime cannot access planning schema', () => {
     );
     expect(sqlstate).toBe('42501');
   });
+
+  // SC-317 (m-81): the planning canon tables. Runtime lacks USAGE on the planning schema,
+  // so the first denial fires at schema level; the table-level REVOKEs in 096/101 are the
+  // second line of defence and are what these checks assert. The planning role must still
+  // be able to read, so a denial cannot be a broken fixture.
+  const CANON_TABLES = ['planning.scene_defs', 'planning.scene_overlays', 'planning.flag_definitions'];
+
+  describe.each(CANON_TABLES)('SC-317 %s', (table) => {
+    test('planning role can read the table', async () => {
+      await expect(planningClient.query(`SELECT 1 FROM ${table} LIMIT 0`)).resolves.toBeDefined();
+    });
+
+    test('runtime SELECT is permission denied (42501)', async () => {
+      const sqlstate = await expectPermissionDenied(
+        `SELECT on ${table} as runtime`,
+        () => runtimeClient.query(`SELECT 1 FROM ${table} LIMIT 0`),
+      );
+      expect(sqlstate).toBe('42501');
+    });
+
+    test('runtime INSERT is permission denied (42501)', async () => {
+      // Privilege is checked before constraints, so an empty INSERT still reports 42501.
+      const sqlstate = await expectPermissionDenied(
+        `INSERT on ${table} as runtime`,
+        () => runtimeClient.query(`INSERT INTO ${table} DEFAULT VALUES`),
+      );
+      expect(sqlstate).toBe('42501');
+    });
+
+    test('runtime UPDATE is permission denied (42501)', async () => {
+      const sqlstate = await expectPermissionDenied(
+        `UPDATE on ${table} as runtime`,
+        () => runtimeClient.query(`UPDATE ${table} SET slug = slug WHERE false`),
+      );
+      expect(sqlstate).toBe('42501');
+    });
+  });
 });

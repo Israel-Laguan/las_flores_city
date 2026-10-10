@@ -8,7 +8,7 @@ Property from `proposal.md` §2.2 that drives everything: scene properties are *
 (participants, items, activities, dialogue — all active scenes contribute) or **exclusive**
 (weather, time, background — exactly one wins, needing explicit precedence).
 
-> **Status: ✅ Done (branch `feat/sprint-03-group-e-composition`, 6 commits: 303a, 303b, 304, 305, 312, 313 — not yet merged).** TDD, one commit per task. Deviations and facts F/G rely on:
+> **Status: ✅ Done — merged to `main` via PRs #144–#146 (commits 303a, 303b, 304, 305, 312, 313).** TDD, one commit per task. Deviations and facts F/G rely on:
 >
 > **Deviations**
 > - **The engine lives in contracts, not only planning.** Runtime may not import planning, but SC-S13 needs runtime to apply layers with the *same* code. So `applyOverlayOps`, `toComposedScene`, `selectActiveOverlays`, `resolveSceneForPlayer` and the `ComposedScene` / `ConditionalLayer` / `ResolvedScene` types are in `api/contracts/src/scene/`. `composeScene` (sorting, folding, conflicts), `resolveWeather` and the fixtures are in `api/planning/src/scene/`. The co-satisfiability helper is `contracts/condition/satisfiable.ts` (as in m-62).

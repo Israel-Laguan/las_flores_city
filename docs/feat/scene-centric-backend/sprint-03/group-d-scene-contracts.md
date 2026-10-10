@@ -4,7 +4,7 @@ All new types live in `api/contracts/src/scene/` (leaf module, imports nothing f
 or runtime). Everything here is **pure data + pure functions** except D5 (tables).
 Naming in code follows the SC-S12 answer; this file writes `Scene` for readability.
 
-> **Status: ✅ Done (on branch `feat/sprint-03-group-d-scene-contracts`, 6 commits — SC-311 is two — not yet merged).** One commit per task, TDD. Deviations and facts downstream groups (E/F/G) rely on:
+> **Status: ✅ Done — merged to `main` via PR #143 (6 commits; SC-311 is two).** One commit per task, TDD. Deviations and facts downstream groups (E/F/G) rely on:
 >
 > **Deviations**
 > - **Migration is `101_planning_scene_defs.sql`, not 099.** 099 (`migration_log_district`) and 100 (`…_validate`) were taken by the districts work. Same oltp array, same rules; Groups F/G text that says "097–099" should read "097–098, 101".
@@ -108,6 +108,6 @@ Scenes and overlays are gated by the **same** condition grammar as dialogue and 
 - Migration idempotent; FK from overlay to scene enforced by the DB.
 - Repository contract test suite parametrised over implementations (reuse BF-303's pattern).
 
-- m-51 Write 099, register in `migration-targets.json`.
+- m-51 Write 101 (was 099), register in `migration-targets.json`.
 - m-52 `SceneDefRepository` + in-memory implementation.
 - m-53 Shared contract-test helper `sceneRepositoryContract(factory)`.

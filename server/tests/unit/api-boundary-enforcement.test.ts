@@ -440,3 +440,30 @@ describe('SC-102 Boundary Enforcement', () => {
     });
   });
 });
+
+// ============================================================
+// SC-318 (m-84): nested scene folders are inside the boundary
+// ============================================================
+// The fixtures above sit at each zone's root. The scene composition code lives one level
+// deeper (api/planning/src/scene, api/runtime/src/resolve, api/contracts/src/scene), so the
+// relative specifiers must climb further. These cases prove the zone rule still covers the
+// nested folders, not just the root.
+describe('SC-318 boundary holds inside scene folders', () => {
+  const nestedCases = [
+    { zone: 'planning', file: 'src/scene/probe.ts', spec: '../../../runtime/src/index', forbidden: true },
+    { zone: 'runtime', file: 'src/resolve/probe.ts', spec: '../../../planning/src/index', forbidden: true },
+    { zone: 'contracts', file: 'src/scene/probe.ts', spec: '../../../planning/src/index', forbidden: true },
+    { zone: 'contracts', file: 'src/scene/probe.ts', spec: '../../../runtime/src/index', forbidden: true },
+    { zone: 'planning', file: 'src/scene/probe.ts', spec: '../../../contracts/src/index', forbidden: false },
+    { zone: 'runtime', file: 'src/resolve/probe.ts', spec: '../../../contracts/src/index', forbidden: false },
+  ];
+
+  test.each(nestedCases)(
+    '$zone/$file importing $spec: forbidden=$forbidden',
+    async ({ zone, file, spec, forbidden }) => {
+      const eslint = await getESLintForZone(zone);
+      const results = await lintFixture(eslint, zone, `import { x } from '${spec}';\n`, file);
+      expect(hasBoundaryRuleError(results[0].messages)).toBe(forbidden);
+    },
+  );
+});
