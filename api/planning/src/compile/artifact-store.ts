@@ -74,6 +74,24 @@ export interface ArtifactStore {
   has(ids: readonly ArtifactId[]): Promise<ReadonlySet<ArtifactId>>;
 }
 
+/** Builds the verified record for already-canonical bytes of any artifact kind. `createdAt` is metadata, not content. */
+export function buildArtifactRecord(artifactType: Artifact['artifact_type'], name: string, bytes: string, createdAt: string): ArtifactRecord {
+  const id = createArtifactId(createHash('sha256').update(bytes).digest('hex'));
+  return {
+    artifact: {
+      artifact_id: id,
+      artifact_type: artifactType,
+      content_hash: id,
+      manifest_version: 1,
+      name,
+      created_at: createdAt,
+      size_bytes: Buffer.byteLength(bytes, 'utf8'),
+      dependencies: [],
+    },
+    payload: bytes,
+  };
+}
+
 /** Builds the verified record for a scene artifact payload. `createdAt` is metadata, not content. */
 export function buildSceneArtifactRecord(payload: SceneArtifactPayload, createdAt: string): ArtifactRecord {
   const bytes = stringifySceneArtifact(payload);
