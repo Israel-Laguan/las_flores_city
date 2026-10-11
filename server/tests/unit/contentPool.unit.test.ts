@@ -116,4 +116,28 @@ describe('M19 contentPool', () => {
       else process.env.CONTENT_POOL_MAX = prev;
     }
   });
+
+  it('oltpPool defaults to max 50 when OLTP_POOL_MAX is unset', async () => {
+    const prev = process.env.OLTP_POOL_MAX;
+    delete process.env.OLTP_POOL_MAX;
+    try {
+      await queryOLTP<{ id: string }>('SELECT 1');
+      expect(poolConfigs[poolConfigs.length - 1].max).toBe(50);
+    } finally {
+      if (prev === undefined) delete process.env.OLTP_POOL_MAX;
+      else process.env.OLTP_POOL_MAX = prev;
+    }
+  });
+
+  it('oltpPool honors OLTP_POOL_MAX override', async () => {
+    const prev = process.env.OLTP_POOL_MAX;
+    process.env.OLTP_POOL_MAX = '5';
+    try {
+      await queryOLTP<{ id: string }>('SELECT 1');
+      expect(poolConfigs[poolConfigs.length - 1].max).toBe(5);
+    } finally {
+      if (prev === undefined) delete process.env.OLTP_POOL_MAX;
+      else process.env.OLTP_POOL_MAX = prev;
+    }
+  });
 });

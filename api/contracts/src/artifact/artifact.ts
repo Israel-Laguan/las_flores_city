@@ -32,8 +32,17 @@ export type ContentHash = string;
  * - 'mission': A mission definition with its associated scenes
  * - 'character': Character definition and all associated assets
  * - 'overlay': Dialogue overlay with modifications and additions
+ * - 'personality_pool': a compiled personality pool (SC-M3); name = pool slug
+ * - 'character_pools': the active pools a character uses (SC-M3); name = character slug
  */
-export type ArtifactType = 'scene' | 'dialogue' | 'mission' | 'character' | 'overlay';
+export type ArtifactType =
+  | 'scene'
+  | 'dialogue'
+  | 'mission'
+  | 'character'
+  | 'overlay'
+  | 'personality_pool'
+  | 'character_pools';
 
 /**
  * Timestamp in ISO 8601 format (UTC).
@@ -191,6 +200,8 @@ export const ARTIFACT_TYPES: ReadonlySet<string> = new Set<ArtifactType>([
   'mission',
   'character',
   'overlay',
+  'personality_pool',
+  'character_pools',
 ]);
 
 /**

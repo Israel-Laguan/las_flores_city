@@ -147,21 +147,25 @@ the one-writer-per-fact rule, R9/R14, intact.)
 - **Grants:** runtime has SELECT on revisions, entries and the pointer, and nothing on the flip
   log. Planning has INSERT + SELECT on revisions, entries and flips, and SELECT/INSERT/UPDATE
   (never DELETE) on the pointer.
-- **Not built (SC-M3):** runtime session pinning to a revision, and artifact lookup scoped to
-  the pinned revision (SC-502/504). Runtime can read the pointer today; nothing consumes it.
+- **Built (SC-M3 slice):** revision-scoped lookup (SC-502) and `startSession` + client-owned pin
+  validation (SC-504, server half). **Not built:** the client that stores the pin, HTTP serving,
+  scene resolution against player state (SC-503), effects (SC-506), scene pinning (SC-507).
 
 Two properties follow structurally rather than by discipline:
 
 - **Publish is atomic and reversible.** Artifacts go up first; the pointer flips last;
   rollback is flipping it back. Old revisions are never mutated.
-- **Sessions pin to a revision.** At session creation (first scene resolution) the
-  runtime reads the current `active_revision` pointer and stores that revision ID on the
-  session / player-state row (`runtime.player_sessions.pinned_revision_id` or equivalent).
-  Every subsequent artifact and transition lookup in that session is scoped to the pinned
-  ID — never to "current pointer." New sessions pin to whatever is active at creation
-  time; in-progress sessions are unaffected by a later pointer flip; rollback (flipping the
-  pointer back) affects only sessions created after the rollback — existing pinned sessions
-  continue to resolve against their already-pinned revision, consistent with R12.
+- **Sessions pin to a revision, and the pin is client-owned.** A "session" is the span
+  between saves; the server does not see it. At session start the runtime reads the
+  `active_revision` pointer once (`startSession`, one statement) and returns the revision ID;
+  the client stores it (localStorage) so it survives outages and a dead laptop, and sends it
+  with every request. Every artifact lookup is scoped to that ID — never to "current pointer."
+  The server keeps no pin table and no timeout: revisions and artifacts are immutable, so
+  re-presenting the ID later resolves byte-identically. A pin naming no revision is a typed
+  `revision_missing`, never a fallback to the pointer. New sessions pin to whatever is active
+  at start; a later flip or rollback affects only sessions started after it, consistent with
+  R12. Durable player state (flags, current resolution) is keyed by player AND game
+  (`runtime.games` / `game_flags` / `game_resolution`, migration 108).
 
 ## 5. Technology decisions
 
