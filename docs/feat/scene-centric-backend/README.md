@@ -5,13 +5,14 @@ around the **scene** as the unit of composition rather than the character. Built
 `api/` tree alongside the existing `server/`, `scripts/`, and `content/`, which keep
 working until each old component's kill condition is met.
 
-**Status:** SC-M1 complete. SC-M2 is partly delivered: flags & conditions (SC-201–SC-206) and the
-scene model and composition (SC-301–SC-313) are Done, and sprint-03 Group F adds the Postgres
-adapters, fixtures, integration tests and exit demo (SC-314, SC-316–SC-319). SC-M2's exit criteria
-are **not** all met: artifact compile (SC-402), the revision pointer (SC-404) and the shared
-personality pool (SC-306) are not built. Still open in sprint-03: SC-315 (deferred), SC-320
-(close-out, in progress) and the SC-318 clean-checkout dry run. Everything past SC-M2 is
-provisional and revised at retro. Per-story states: [backlog.md](backlog.md).
+**Status:** SC-M1 complete. SC-M2's four exit criteria each have a passing test: flags & conditions
+(SC-201–SC-206), the scene model and composition (SC-301–SC-313), the Postgres adapters and exit
+demo (SC-314, SC-316–SC-319), artifact compile and the revision pointer with atomic flip and
+rollback (SC-401–SC-406, sprint 4 T1–T2), and shared personality pools with the specificity ladder
+(SC-306–SC-308, T3). One caveat: the pool criterion is met at **planning level only**; pools are not
+compiled into artifacts yet, so runtime serving is SC-M3's first task. Still open: SC-315 (importer,
+deferred), SC-320 (retro is the last step) and the SC-318 clean-checkout dry run. Everything past
+SC-M2 is provisional and revised at retro. Per-story states: [backlog.md](backlog.md).
 
 ---
 

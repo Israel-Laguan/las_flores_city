@@ -42,11 +42,10 @@ Sprint-03 met its own definition of done. The milestone is wider:
 
 ## 5. Holding list (Sprint 4 candidates, not committed)
 
-- SC-402 / SC-404: artifact compile and revision pointer, the largest gap to SC-M2.
-- SC-306: shared personality pools. Needs acceptance criteria before it can be Ready.
+- Pool artifacts and runtime serving of personality pools: the first SC-M3 task, since the pool
+  criterion is met at planning level only (SC-402 / SC-404 / SC-306 themselves are done; see §4).
 - SC-315: importer, once re-homed under the `db` package.
 - SC-318 m-86: clean-checkout dry run, after an explicit go-ahead for `git clean`.
-- SC-406: batch upsert per plan in one transaction.
 - Overlay FK parity: the in-memory overlay double does not model the base-scene foreign key.
   The Postgres suite covers it; a future change to FK behaviour needs both sides updated.
 - A1 (file- vs. DB-canonical content) and A7 (`asset_fallback` consumer), both still open.
