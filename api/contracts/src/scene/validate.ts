@@ -31,6 +31,10 @@
 // SCENE_SLOT_DUPLICATE            error     role_slots[i].slot_id         slot_id repeats an earlier slot
 // SCENE_SLOT_CAST_INVALID         error     role_slots[i].cast            not null | a valid character slug
 // SCENE_SLOT_POSITION_INVALID     error     role_slots[i].position        not left | center | right
+// SCENE_SLOT_LINE_INVALID         error     slot_lines[i](.<key>)         shape problem in a slot line (unknown key,
+//                                                                         bad slug, empty text, bad `when`)
+// SCENE_SLOT_LINE_SLOT_UNKNOWN    error     slot_lines[i].slot_id         names a slot that is not in role_slots
+// SCENE_SLOT_LINE_DUPLICATE       error     slot_lines[i]                 (slot_id, line_id) repeats an earlier line
 // SCENE_AVAILABILITY_INVALID      error     availability                  not a valid ConditionExpr
 // SCENE_AVAILABILITY_UNKNOWN_FLAG warning   availability                  reads a flag outside `knownFlags`
 //                                                                         (only when `knownFlags` is given)
@@ -45,6 +49,7 @@ import {
   type ValidationResult,
 } from '../validation/issue.js';
 import { WEATHER_TAGS, isWeatherTag } from '../weather/weather-tag.js';
+import { checkSlotLine } from './line.js';
 import { ROLE_SLOT_JSON_KEYS, SLOT_POSITIONS, isSlotPosition } from './role-slot.js';
 import { SCENE_JSON_KEYS, SCENE_SCHEMA_VERSION, SCENE_TIMES, isSceneTime } from './scene-vocab.js';
 import { isUuid, isValidSlug } from './slug.js';
@@ -67,6 +72,9 @@ export const SCENE_ISSUE_CODES = {
   SCENE_SLOT_DUPLICATE: 'SCENE_SLOT_DUPLICATE',
   SCENE_SLOT_CAST_INVALID: 'SCENE_SLOT_CAST_INVALID',
   SCENE_SLOT_POSITION_INVALID: 'SCENE_SLOT_POSITION_INVALID',
+  SCENE_SLOT_LINE_INVALID: 'SCENE_SLOT_LINE_INVALID',
+  SCENE_SLOT_LINE_SLOT_UNKNOWN: 'SCENE_SLOT_LINE_SLOT_UNKNOWN',
+  SCENE_SLOT_LINE_DUPLICATE: 'SCENE_SLOT_LINE_DUPLICATE',
   SCENE_AVAILABILITY_INVALID: 'SCENE_AVAILABILITY_INVALID',
   SCENE_AVAILABILITY_UNKNOWN_FLAG: 'SCENE_AVAILABILITY_UNKNOWN_FLAG',
 } as const;
@@ -200,6 +208,29 @@ function checkRoleSlots(sink: IssueSink, obj: Record<string, unknown>): void {
   });
 }
 
+function checkSlotLines(sink: IssueSink, obj: Record<string, unknown>): void {
+  const lines = arrayField(sink, obj, 'slot_lines');
+  if (lines === undefined) return;
+  const slotIds = new Set<string>();
+  if (Array.isArray(obj.role_slots)) {
+    for (const s of obj.role_slots) if (isPlainObject(s) && isValidSlug(s.slot_id)) slotIds.add(s.slot_id);
+  }
+  const seen = new Set<string>();
+  lines.forEach((entry, i) => {
+    const base = issuePath('slot_lines', i);
+    const problems = checkSlotLine(entry, base);
+    for (const p of problems) sink.add('SCENE_SLOT_LINE_INVALID', p.path, p.message);
+    if (problems.length > 0 || !isPlainObject(entry)) return;
+    const slotId = entry.slot_id as string;
+    if (!slotIds.has(slotId)) {
+      sink.add('SCENE_SLOT_LINE_SLOT_UNKNOWN', `${base}.slot_id`, `slot_lines[${i}] targets slot '${slotId}', which is not in 'role_slots'`);
+    }
+    const key = `${slotId}.${entry.line_id as string}`;
+    if (seen.has(key)) sink.add('SCENE_SLOT_LINE_DUPLICATE', base, `duplicate slot line '${key}'`);
+    seen.add(key);
+  });
+}
+
 function checkAvailability(sink: IssueSink, obj: Record<string, unknown>, known: ReadonlySet<string> | undefined): void {
   if (!sink.require(obj, 'availability', 'availability')) return;
   const cond = obj.availability;
@@ -251,6 +282,7 @@ export function validateScene(input: unknown, options: ValidateSceneOptions = {}
   checkRefList(sink, input, 'items');
   checkRefList(sink, input, 'dialogue_refs');
   checkRoleSlots(sink, input);
+  checkSlotLines(sink, input);
   checkAvailability(sink, input, options.knownFlags === undefined ? undefined : new Set(options.knownFlags));
   return createValidationResult(sink.issues);
 }

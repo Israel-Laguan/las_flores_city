@@ -12,6 +12,8 @@
 // - additive (`add_dialogue_refs`, `add_items`): append entries not already present —
 //   merge by identity, first occurrence keeps its position and provenance.
 // - `add_role_slot`: append; a `slot_id` that already exists → SCENE_SLOT_ALREADY_EXISTS.
+// - `add_slot_lines`: append lines by identity (`slot_id` + `line_id`, first wins); a line
+//   for a slot the scene does not have is skipped → SCENE_SLOT_MISSING.
 // - `cast_slot`: replace `cast` on an existing slot; missing → SCENE_SLOT_MISSING.
 // - exclusive (`set_weather`, `set_time`): replace; the last layer applied (= highest
 //   priority) wins.
@@ -19,10 +21,11 @@
 //
 // Provenance: field key → `'base'` or the overlay slug that last wrote it. Keys:
 // `weather`, `time`, `dialogue_refs.<ref>`, `items.<item>`, `role_slots.<slot_id>`,
-// `role_slots.<slot_id>.cast`. Emitted with sorted keys for stable JSON.
+// `role_slots.<slot_id>.cast`, `slot_lines.<slot_id>.<line_id>`. Emitted with sorted keys for stable JSON.
 
 import type { ConditionExpr } from '../condition/expression.js';
 import { issuePath, type IssueSeverity, type ValidationIssue } from '../validation/issue.js';
+import { slotLineFromJSON, slotLineKey, slotLineToJSON, type SlotLine } from './line.js';
 import type { RoleSlot } from './role-slot.js';
 import type { SceneDef } from './scene-def.js';
 import type { SceneOverlayOp } from './scene-overlay.js';
@@ -88,6 +91,8 @@ export interface ResolvedScene {
 const sortedProvenance = (p: Provenance): Provenance =>
   Object.fromEntries(Object.entries(p).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)));
 
+const copyLine = (l: SlotLine): SlotLine => slotLineFromJSON(slotLineToJSON(l));
+
 const copySlot = (s: RoleSlot): RoleSlot => ({ slot_id: s.slot_id, cast: s.cast, position: s.position });
 
 /** Lifts a SceneDef into a ComposedScene whose every field has provenance `'base'`. */
@@ -99,6 +104,7 @@ export function toComposedScene(def: SceneDef): ComposedScene {
     provenance[`role_slots.${slot.slot_id}`] = 'base';
     provenance[`role_slots.${slot.slot_id}.cast`] = 'base';
   }
+  for (const line of def.slot_lines) provenance[`slot_lines.${slotLineKey(line)}`] = 'base';
   return {
     ...cloneDef(def),
     provenance: sortedProvenance(provenance),
@@ -117,6 +123,7 @@ function cloneDef(def: SceneDef): SceneDef {
     items: [...def.items],
     dialogue_refs: [...def.dialogue_refs],
     role_slots: def.role_slots.map(copySlot),
+    slot_lines: def.slot_lines.map(copyLine),
     availability: def.availability,
     priority: def.priority,
   };
@@ -177,6 +184,18 @@ export function applyOverlayOps(scene: ComposedScene, layers: ReadonlyArray<Over
           out.role_slots.push(copySlot(op.slot));
           prov[`role_slots.${op.slot.slot_id}`] = layer.slug;
           prov[`role_slots.${op.slot.slot_id}.cast`] = layer.slug;
+          return;
+        case 'add_slot_lines':
+          for (const line of op.lines) {
+            if (!out.role_slots.some((s) => s.slot_id === line.slot_id)) {
+              issues.push(issue('SCENE_SLOT_MISSING', path, `add_slot_lines targets slot '${line.slot_id}', which does not exist`));
+              continue;
+            }
+            const key = slotLineKey(line);
+            if (out.slot_lines.some((l) => slotLineKey(l) === key)) continue;
+            out.slot_lines.push(copyLine(line));
+            prov[`slot_lines.${key}`] = layer.slug;
+          }
           return;
         case 'cast_slot': {
           const idx = out.role_slots.findIndex((s) => s.slot_id === op.slot_id);

@@ -6,8 +6,12 @@
  * Version of the serialized SceneDef shape. Stamped into every `toJSON` output (and
  * therefore into content hashes) and checked on read. Bump on any shape change that
  * old payloads cannot satisfy.
+ *
+ * v2 (SC-307): adds `slot_lines` (dialogue keyed by role slot). No v1 payloads were ever
+ * persisted outside tests (planning.scene_defs held 0 rows when this landed), so v1 is
+ * rejected rather than migrated.
  */
-export const SCENE_SCHEMA_VERSION = 1 as const;
+export const SCENE_SCHEMA_VERSION = 2 as const;
 
 /**
  * Time-of-day tags a scene can pin. Matches `client/src/utils/time.ts`
@@ -37,6 +41,7 @@ export const SCENE_JSON_KEYS = [
   'priority',
   'role_slots',
   'schema_version',
+  'slot_lines',
   'slug',
   'time',
   'title',

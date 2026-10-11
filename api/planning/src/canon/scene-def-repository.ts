@@ -1,11 +1,11 @@
 // api/planning/src/canon/scene-def-repository.ts
 // SC-311: planning storage contract for scene definitions (`planning.scene_defs`).
 // Repository supports create, read, list, upsertIfChanged, retire (never delete).
-// Implemented by InMemorySceneDefRepository here; the Postgres adapter is F1
-// (server/src/planning), exactly as FlagRegistry/PgFlagRegistry were done (SC-202/BF-303).
+// Implemented by InMemorySceneDefRepository here; the Postgres adapter is
+// PgSceneDefRepository (server/src/planning, SC-314), as FlagRegistry/PgFlagRegistry were
+// done (SC-202/BF-303).
 //
-// Scope: SceneDef only. `planning.scene_overlays` exists in migration 101 but its
-// repository waits for the SceneOverlay contract (Group E, E1).
+// Scope: SceneDef only. Overlays have their own contract in scene-overlay-repository.ts.
 
 import { createHash } from 'node:crypto';
 import {
@@ -37,9 +37,9 @@ export interface SceneDefRecord {
 
 export type UpsertStatus = 'created' | 'updated' | 'unchanged';
 
-export interface UpsertResult {
+export interface UpsertResult<R = SceneDefRecord> {
   status: UpsertStatus;
-  record: SceneDefRecord;
+  record: R;
 }
 
 export interface ListSceneDefsOptions {
@@ -96,7 +96,7 @@ export interface SceneDefRepository {
 }
 
 /** Validates (tier 1) and normalises a scene to its canonical, independent copy. */
-function normalise(scene: SceneDef): SceneDef {
+export function normaliseSceneDef(scene: SceneDef): SceneDef {
   const { issues } = validateScene(sceneDefToJSON(scene));
   const errors = issues.filter((i) => i.severity === 'error');
   if (errors.length > 0) throw new InvalidSceneDefError(errors);
@@ -116,7 +116,7 @@ export class InMemorySceneDefRepository implements SceneDefRepository {
   private rows = new Map<string, SceneDefRecord>();
 
   async create(input: SceneDef): Promise<SceneDefRecord> {
-    const scene = normalise(input);
+    const scene = normaliseSceneDef(input);
     if (this.rows.has(scene.slug)) {
       throw new Error(`Scene def with slug '${scene.slug}' already exists`);
     }
@@ -147,7 +147,7 @@ export class InMemorySceneDefRepository implements SceneDefRepository {
   }
 
   async upsertIfChanged(input: SceneDef): Promise<UpsertResult> {
-    const scene = normalise(input);
+    const scene = normaliseSceneDef(input);
     const existing = this.rows.get(scene.slug);
     if (!existing) {
       return { status: 'created', record: await this.create(scene) };

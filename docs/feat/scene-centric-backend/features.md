@@ -131,14 +131,15 @@ design.
 
 ## 6. Known prerequisite gaps
 
-Discovered during review; each blocks a feature and none has an owner yet.
+Discovered during review; each blocks a feature. Rows marked **answered** are closed by a spike, an
+architecture decision or a shipped story; the rows still open are marked **open**.
 
 | Gap | Blocks | Detail |
 |---|---|---|
-| **Weather has no live source** | F3 (exclusive properties), S5 | `buildBackgroundHints(timeOfDay, weather?, mood?)` accepts weather, but `AGENTS.md:36` states it is "a forward-compatible hook with no live source yet (callers pass `undefined`)" |
-| **No dialogue serving benchmark** | F5 | Nothing in the repo measures chunk fetch or portrait load. R13 forbids a performance goal without a baseline |
-| **`asset_fallback` signal has no consumer** | S5 | A signal nobody reads is why expressions went dark. Needs at minimum a compile-time coverage report |
-| **File-canonical vs. DB-canonical undecided** | F8, S13 | Open question #8. The external reviewer never engaged it because the brief underplayed it |
-| **Knowledge-ledger shape** | S14 | No `knows_fact` projection exists yet; needs SC-S8 spike to decide `fact_id` granularity (secret vs. per-utterance) and whether facts are authored explicitly or inferred via LLM cheap-checker |
-| **Inventory-ledger shape** | S15 | `has_item` edges not yet projected; needs SC-S9 spike to decide per-character vs. per-location possession and consumption semantics |
-| **Time-vs-prose checker calibration** | S16 | Deterministic TB-sum check is trivial; LLM-assist "prose claims 3 hours" detection needs SC-S10 spike to measure cheap-model precision/recall |
+| ~~**Weather has no live source**~~ — **answered** (SC-S5; A6 resolved; SC-305 and SC-309 Done) | F3 (exclusive properties), S5 | `buildBackgroundHints(timeOfDay, weather?, mood?)` accepts weather, but `AGENTS.md:36` states it is "a forward-compatible hook with no live source yet (callers pass `undefined`)" |
+| ~~**No dialogue serving benchmark**~~ — **answered** (SC-S6 answer; BF-305 harness implemented, live run not re-verified) | F5 | Nothing in the repo measures chunk fetch or portrait load. R13 forbids a performance goal without a baseline |
+| **`asset_fallback` signal has no consumer** — **open**, no owner yet (A7 / SC-808) | S5 | A signal nobody reads is why expressions went dark. Needs at minimum a compile-time coverage report |
+| **File-canonical vs. DB-canonical undecided** — **open**, no owner yet (A1, due by SC-M4) | F8, S13 | Open question #8. The external reviewer never engaged it because the brief underplayed it |
+| ~~**Knowledge-ledger shape**~~ — **answered** 2026-10-06 (SC-S8: explicit secrets; cheap-model inference not viable) | S14 | No `knows_fact` projection exists yet; needs SC-S8 spike to decide `fact_id` granularity (secret vs. per-utterance) and whether facts are authored explicitly or inferred via LLM cheap-checker |
+| ~~**Inventory-ledger shape**~~ — **answered** 2026-10-06 (SC-S9: per-character, `acquired`/`retired`) | S15 | `has_item` edges not yet projected; needs SC-S9 spike to decide per-character vs. per-location possession and consumption semantics |
+| ~~**Time-vs-prose checker calibration**~~ — **answered** 2026-10-06 (SC-S10) | S16 | Deterministic TB-sum check is trivial; LLM-assist "prose claims 3 hours" detection needs SC-S10 spike to measure cheap-model precision/recall |

@@ -28,6 +28,7 @@ export type {
   AddDialogueRefsOp,
   AddItemsOp,
   AddRoleSlotOp,
+  AddSlotLinesOp,
   CastSlotOp,
   SetWeatherOp,
   SetTimeOp,
@@ -71,3 +72,15 @@ export type {
 
 export type { PlayerScene } from './select.js';
 export { resolveSceneForPlayer, selectActiveOverlays } from './select.js';
+
+export type { LineWhen, SlotLine, LineProblem } from './line.js';
+export {
+  LINE_WHEN_KEYS,
+  SLOT_LINE_JSON_KEYS,
+  checkLineWhen,
+  checkSlotLine,
+  lineWhenSpecificity,
+  lineWhenToJSON,
+  slotLineKey,
+  slotLineToJSON,
+} from './line.js';

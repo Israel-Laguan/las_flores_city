@@ -42,12 +42,12 @@
 |---|---|---|---|
 | SC-301 | Scene entity (`SceneDef`): location, time, weather, items, dialogue refs — contract, stable JSON, tier-1 `validateScene` (`participants` deferred, see `sprint-03/group-d-scene-contracts.md`) | M | **Done** (S3 Group D; branch `feat/sprint-03-group-d-scene-contracts`) |
 | SC-302 | Role slots as a scene attribute — slot id, cast, position | M | **Done** (S3 Group D) |
-| SC-303 | Base + overlay composition with priority ordering | M | Ready, not started |
-| SC-304 | Exclusive vs. additive property resolution; equal-priority conflict fails compile | M | Planned (S3) — pulled forward |
-| SC-305 | Weather: compile resolves `scene.weather` over `district.weather` and persists the resolved value on the artifact; runtime only reads that artifact field before `buildBackgroundHints` (A6 — `spikes/SC-S5-weather-source.md`) | S | Blocked: SC-301, F4 (SC-309 done) |
-| SC-306 | Personality dialogue pools, shared many-to-many across characters | M | Blocked: SC-301 |
-| SC-307 | Scene dialogue attached to role slots rather than characters | M | Blocked: SC-302 |
-| SC-308 | Specificity ladder resolution — scene > relationship > personality | M | Blocked: SC-306, SC-307 |
+| SC-303 | Base + overlay composition with priority ordering | M | **Done** (S3 Group E; `api/planning/src/scene/compose-scene.ts`) |
+| SC-304 | Exclusive vs. additive property resolution; equal-priority conflict fails compile | M | **Done** (S3 Group E; equal-priority exclusive fails compile, A3) |
+| SC-305 | Weather: compile resolves `scene.weather` over `district.weather` and persists the resolved value on the artifact; runtime only reads that artifact field before `buildBackgroundHints` (A6 — `spikes/SC-S5-weather-source.md`) | S | **Done** (S3 Group E; `api/planning/src/scene/resolve-weather.ts`) |
+| SC-306 | Personality dialogue pools, shared many-to-many across characters | M | **Done** at planning level (S4 T3; `api/contracts/src/dialogue/personality-pool.ts`, `PgPersonalityPoolRepository`, migration 106; pools are validated, shared many-to-many through `planning.character_pools`). Not compiled into artifacts: that is SC-M3's first task |
+| SC-307 | Scene dialogue attached to role slots rather than characters | M | **Done** at planning level (S4 T1 schema + T3: `slot_lines` v2, `add_slot_lines` overlay op, lines follow the slot through recasting; `resolveSlotLine`). Not served from artifacts yet (SC-M3) |
+| SC-308 | Specificity ladder resolution — scene > relationship > personality | M | **Done** at planning level (S4 T3; `resolveLine` in `api/contracts/src/dialogue/resolve-line.ts`, `resolveCharacterLine` in planning; tie-break rule in `docs/PERSONALITY_POOL_AUTHORING.md`). Relationship rung takes caller-supplied lines: no relationship line model exists yet |
 | SC-309 | *(split in sprint 3 → SC-309a vocabulary, 309b migration 098, 309c tooling)* `districts.weather` column + seed defaults + admin/content tooling to set it (SC-S5 follow-up gap) | S | Done (merged: vocab in `api/contracts/src/weather/`, migration 098, `district` content type + admin editor) |
 
 ## Sprint-3 additions (see `sprint-03/`)
@@ -59,25 +59,28 @@
 | BF-303 | Flag registry persistence: migration 097 (`retired_at`) + `PgFlagRegistry` (completes SC-202) | M | **Done** |
 | BF-304 | Tests for SC-205/206/runtime flags + SC-204 property test | M | **Done** |
 | BF-305 | SC-S6 harness made real | M | **Done** |
-| SC-310 | Scene/overlay `availability` condition + flag-usage extraction | M | **Done** for scenes (S3 Group D); overlay `availability` lands with E1 |
+| SC-310 | Scene/overlay `availability` condition + flag-usage extraction | M | **Done** (scenes in S3 Group D; overlays in S3 Group E) |
 | SC-311 | `planning.scene_defs`/`scene_overlays` (migration **101** — 099/100 were taken) + `SceneDefRepository` + in-memory impl + shared contract helper | M | **Done** (S3 Group D; PG adapter is SC-314) |
-| SC-312 | Flag-gated composition (`selectActiveOverlays`) | M | Planned (S3) |
-| SC-313 | Composition property + golden tests | M | Planned (S3) |
-| SC-314 | `PgSceneDefRepository` (oltpPool, single upsert, passes contract suite; batch → SC-406) | S | Planned (S3, trimmed) |
+| SC-312 | Flag-gated composition (`selectActiveOverlays`) | M | **Done** (S3 Group E; `api/contracts/src/scene/select.ts`) |
+| SC-313 | Composition property + golden tests | M | **Done** (S3 Group E; golden fixtures + property tests) |
+| SC-314 | `PgSceneDefRepository` (oltpPool, single upsert, passes contract suite; batch → SC-406) | S | **Done** (S3 Group F; `server/src/planning/PgSceneDefRepository.ts`, `PgSceneOverlayRepository.ts`) |
 | SC-315 | One-way importer `content/scenes` → `planning.scene_defs` | M | **Deferred** — moves to the `db` package work (docs/issues/DB-PACKAGE-and-api-migration.md) |
-| SC-316 | Authored overlay fixtures + authoring guide | M | Planned (S3) |
-| SC-317–320 | Integration/permission tests, boundary+parity gates, exit demo, docs+retro | S–M | Planned (S3) |
+| SC-316 | Authored overlay fixtures + authoring guide | M | **Done** (S3 Group F; fixtures in `api/planning/test-fixtures/scene-composition/`, guide `docs/SCENE_OVERLAY_AUTHORING.md`) |
+| SC-317 | Integration tests + permission extension | M | **Done** (S3 Group F; `runtime-planning-permissions.test.ts`, `flag-registry-retire-migration.test.ts`, `sceneOverlayRepository.pg.test.ts`) |
+| SC-318 | Boundary, CI and parity gates | M | **Done**, except m-86 clean-checkout dry run (not run; `git clean -xfd` needs go-ahead) |
+| SC-319 | Sprint-exit demo | S | **Done** (`server/tests/integration/scene-composition.e2e.test.ts`; transcript in `sprint-03/EVIDENCE.md`) |
+| SC-320 | Docs/backlog sync + retro prep | S | In progress (this sync; `sprint-03/retro-notes.md`; retro is the last step) |
 
 ## SC-E4 — Compile & publish · F4 · SC-M2
 
 | ID | Story | Size | State |
 |---|---|---|---|
-| SC-401 | Artifact + manifest schemas in `contracts/artifact` | S | Blocked: SC-301 |
-| SC-402 | Compile step: emit content-addressed scene artifacts | L | Blocked: SC-401 |
-| SC-403 | Content-hash idempotency — unchanged entity is a skip, not a rewrite | M | Blocked: SC-402 |
-| SC-404 | Revision pointer: format, read interface, atomic flip, rollback by re-flip | M | Blocked: SC-402 |
-| SC-405 | Compile-time failure on missing required content (R10), with a machine-readable report | M | Blocked: SC-402 |
-| SC-406 | Batch upsert per plan in one transaction — no N+1 writes | M | Blocked: SC-402 |
+| SC-401 | Artifact + manifest schemas in `contracts/artifact` | S | **Done** (S4 T1; `api/contracts/src/artifact/`: `scene-artifact.ts`, `compile-report.ts`; id = lowercase hex sha256 per D3) |
+| SC-402 | Compile step: emit content-addressed scene artifacts | L | **Done** for scene artifacts (S4 T1; `api/planning/src/compile/compile-scenes.ts`, `PgArtifactStore`, migration 104; `scene-compile.e2e.test.ts`). Other artifact kinds are later |
+| SC-403 | Content-hash idempotency — unchanged entity is a skip, not a rewrite | M | **Done** (S4 T1; same canon recompiles to the same id and `putMany` reports `unchanged`; proven on Postgres, row untouched) |
+| SC-404 | Revision pointer: format, read interface, atomic flip, rollback by re-flip | M | **Done** (S4 T2; `api/contracts/src/revision/`, `PgRevisionRepository`, migration 105; compare-and-swap flip, rollback by flipping again; `revisionRepository.pg.test.ts`, `scene-publish.e2e.test.ts`). Runtime session pinning is SC-504 |
+| SC-405 | Compile-time failure on missing required content (R10), with a machine-readable report | M | **Done**, minimal (S4 T1; `CompileReport`, location/cast checks). Dialogue refs are reported UNVERIFIED (hint) because legacy dialogues have no slug; R10 asset checks need the look model (SC-8xx) |
+| SC-406 | Batch upsert per plan in one transaction — no N+1 writes | M | **Done** for publish (S4 T1+T2: one statement per artifact batch; artifacts + revision + flip in one transaction). Canon `upsertMany` is not built and is out of SC-M2 scope |
 
 ## SC-E5 — Runtime resolution & player state · F5, F6 · SC-M3
 
@@ -97,7 +100,7 @@
 
 | ID | Story | Size | State |
 |---|---|---|---|
-| SC-601 | Scene-shaped plan delta: one description yields scene + participants + dialogue + flags | L | Blocked: SC-301 |
+| SC-601 | Scene-shaped plan delta: one description yields scene + participants + dialogue + flags | L | Dependencies met (SC-301 Done); acceptance criteria not yet written, so not Ready |
 | SC-602 | Add new entity types to `plan_deltas.entity_type` | S | Blocked: SC-601 |
 | SC-603 | Tier-1 shape checks, per-tier required fields, in the review step | M | Blocked: SC-601 |
 | SC-604 | Tier-2 reference checks against canon and within-plan | M | Blocked: SC-603 |
@@ -124,7 +127,7 @@
 
 | ID | Story | Size | State |
 |---|---|---|---|
-| SC-801 | `activity_def` catalog with 4 verbs, all `completion.type='none'` | M | Blocked: SC-302 |
+| SC-801 | `activity_def` catalog with 4 verbs, all `completion.type='none'` | M | Dependencies met (SC-302 Done); acceptance criteria not yet written, so not Ready |
 | SC-802 | `activity_slug` on role slots; exclusive per character per resolution | M | Blocked: SC-801 |
 | SC-803 | Client manifest maps `activity_slug` → clip; unknown tag warns and renders idle | S | Blocked: SC-801 |
 | SC-804 | `look` + `AssetVariant` model; identity is `(owner, look, variant)`, hash is version | L | Blocked: SC-402 |
@@ -136,23 +139,6 @@
 | SC-810 | Unify location backgrounds under the same `look` model | M | Blocked: SC-804 |
 | SC-811 | Relationship stats with scene-emitted deltas; deltas to mobs/cameos dropped not stored | M | Blocked: SC-206 |
 | SC-812 | Validator flags a relationship effect authored on a cameo or mob | S | Blocked: SC-811 |
-
-## SC-E10 — Narrative consistency checkers · S14, S15, S16 · SC-M5/SC-M6
-
-*Writer + cheap-checker pattern: expensive model (Opus-class) writes, cheap models lint. Reuses the existing `LLM_MODEL` / `LLM_DEEP_MODEL` two-model split (`LiteLLMProvider.ts`) and the tier-3 `entity_edges` projection. All three checkers run at plan time (F9 review step), never at runtime.*
-
-| ID | Story | Size | State |
-|---|---|---|---|
-| SC-1001 | Knowledge ledger schema in `contracts/knowledge` — `fact_id` (stable secret/utterance id), `source_scene`, `acquired_via` (`witnessed`/`told`/`inferred`), `story_beat` visibility, plus `CharacterKnowsFact` edge type | M | Blocked: SC-S8, SC-701 |
-| SC-1002 | `knows_fact` edge projection — from explicit `fact_refs` on dialogue nodes/overlays + hand-authored `fact` registry; array-aware merge for MODIFY deltas (same pitfall as SC-702 / SC-S3) | M | Blocked: SC-1001 |
-| SC-1003 | Metagame checker — flags any NPC line referencing a `fact_id` not in that NPC's ledger at the requesting `story_beat` (covers "said in their head / wasn't there" cases); emits tier-3 diagnostic with fix hint ("add acquisition scene or gate line behind flag") | M | Blocked: SC-1002, SC-703 |
-| SC-1004 | Inventory possession ledger — `has_item` / `item_at_location` edges, `acquired`/`consumed`/`lost` lifecycle; projection from `gives_item` + explicit possession deltas | M | Blocked: SC-S9, S8, SC-701 |
-| SC-1005 | Inventory consistency checker — flags `requires_item` / gives/uses without prior `has_item`, or `has_item` after `consumed` without re-acquisition | M | Blocked: SC-1004, SC-703 |
-| SC-1006 | Time-block consistency checker (deterministic) — sums `time_block_cost` across a scene path and flags prose-vs-cost mismatch (e.g. "three hours passed" vs TB cost 1); runs as pure lint in the review step, zero LLM | S | Blocked: SC-301, SC-701 |
-| SC-1007 | Time-vs-prose LLM assist (cheap model) — extracts claimed elapsed time from dialogue prose and compares to TB sum; cheap-model pass (`LLM_MODEL`), writer model (`LLM_DEEP_MODEL`) stays for generation. Precision/recall gated on SC-S10 | M | Blocked: SC-S10, SC-1006 |
-| SC-1008 | Wire all three checkers into `SC-703`/`SC-605` review step + CI — fail on `error` severity, warn on `hint`; add hint-engine hooks (S2) for "characters in this role usually know X" | M | Blocked: SC-1003, SC-1005, SC-1006, SC-1007 |
-
-> **Sequencing note:** SC-1001–SC-1003 (S14) can start once SC-S8 answers and `S1` projection exists; SC-1004–SC-1005 (S15) needs S8 to exist; SC-1006 is the only item that can ship without a spike (pure TB arithmetic). SC-1007 is explicitly gated on SC-S10's precision measurement — do not build it until the spike says the cheap model is viable.
 
 ## SC-E9 — Old-path retirement · SC-M6 → SC-M7
 
@@ -171,6 +157,23 @@ lands there, so nothing pollutes the current DB while the new one grows.*
 | SC-906 | Final `server/` extraction run against the frozen snapshot — port reusable functions/ideas into `api/`, recorded in a port log (code/ideas only, never data write-back) | M | Blocked: SC-905 |
 | SC-907 | Archive: versioned `pg_dump -Fc` of `las_flores` + `las_flores_analytics` stored against the release tag (object storage + checksum in the port log) | S | Blocked: SC-906 |
 | SC-908 | Delete: drop `postgres-oltp` / `postgres-olap` compose services + volumes, remove `server/src/database/migrations/` + `migration-targets.json` + `server/src/database/migrate.ts` (the coexistence shim), grep-prove zero references | S | Blocked: SC-907, SC-1104 |
+
+## SC-E10 — Narrative consistency checkers · S14, S15, S16 · SC-M5/SC-M6
+
+*Writer + cheap-checker pattern: expensive model (Opus-class) writes, cheap models lint. Reuses the existing `LLM_MODEL` / `LLM_DEEP_MODEL` two-model split (`LiteLLMProvider.ts`) and the tier-3 `entity_edges` projection. All three checkers run at plan time (F9 review step), never at runtime.*
+
+| ID | Story | Size | State |
+|---|---|---|---|
+| SC-1001 | Knowledge ledger schema in `contracts/knowledge` — `fact_id` (stable secret/utterance id), `source_scene`, `acquired_via` (`witnessed`/`told`/`inferred`), `story_beat` visibility, plus `CharacterKnowsFact` edge type | M | Blocked: SC-S8, SC-701 |
+| SC-1002 | `knows_fact` edge projection — from explicit `fact_refs` on dialogue nodes/overlays + hand-authored `fact` registry; array-aware merge for MODIFY deltas (same pitfall as SC-702 / SC-S3) | M | Blocked: SC-1001 |
+| SC-1003 | Metagame checker — flags any NPC line referencing a `fact_id` not in that NPC's ledger at the requesting `story_beat` (covers "said in their head / wasn't there" cases); emits tier-3 diagnostic with fix hint ("add acquisition scene or gate line behind flag") | M | Blocked: SC-1002, SC-703 |
+| SC-1004 | Inventory possession ledger — `has_item` / `item_at_location` edges, `acquired`/`consumed`/`lost` lifecycle; projection from `gives_item` + explicit possession deltas | M | Blocked: SC-S9, S8, SC-701 |
+| SC-1005 | Inventory consistency checker — flags `requires_item` / gives/uses without prior `has_item`, or `has_item` after `consumed` without re-acquisition | M | Blocked: SC-1004, SC-703 |
+| SC-1006 | Time-block consistency checker (deterministic) — sums `time_block_cost` across a scene path and flags prose-vs-cost mismatch (e.g. "three hours passed" vs TB cost 1); runs as pure lint in the review step, zero LLM | S | Blocked: SC-301, SC-701 |
+| SC-1007 | Time-vs-prose LLM assist (cheap model) — extracts claimed elapsed time from dialogue prose and compares to TB sum; cheap-model pass (`LLM_MODEL`), writer model (`LLM_DEEP_MODEL`) stays for generation. Precision/recall gated on SC-S10 | M | Blocked: SC-S10, SC-1006 |
+| SC-1008 | Wire all three checkers into `SC-703`/`SC-605` review step + CI — fail on `error` severity, warn on `hint`; add hint-engine hooks (S2) for "characters in this role usually know X" | M | Blocked: SC-1003, SC-1005, SC-1006, SC-1007 |
+
+> **Sequencing note:** SC-1001–SC-1003 (S14) can start once SC-S8 answers and `S1` projection exists; SC-1004–SC-1005 (S15) needs S8 to exist; SC-1006 is the only item that can ship without a spike (pure TB arithmetic). SC-1007 is explicitly gated on SC-S10's precision measurement — do not build it until the spike says the cheap model is viable.
 
 ## SC-E11 — Rung-3 physical separation · SC-M7 · F10
 

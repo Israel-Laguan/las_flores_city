@@ -1,7 +1,7 @@
 # Sprint 03 — Scene Model and Composition
 
 **Milestone:** SC-M2 (Scene model + compile) · **Dates:** TBD (after Sprint 02 completion)
-· **Status:** PLANNED — expanded task plan in [`sprint-03/`](sprint-03/README.md) (32 tasks: P0 commit, P1 forecast)
+· **Status:** Delivered except SC-315 (deferred) and SC-320 (close-out in progress) — task plan and close-out notes in [`sprint-03/`](sprint-03/README.md) (32 tasks: P0 commit, P1 forecast)
 
 **Sprint goal:** The scene entity exists as a first-class authored object with base + overlay
 composition, providing the stable input the compile step needs. This is the foundation for

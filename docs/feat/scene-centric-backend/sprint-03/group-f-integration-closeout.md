@@ -13,6 +13,22 @@ pools**. The `planning`/`runtime` roles are exercised by permission tests, not a
 
 ---
 
+> **Close-out notes (sprint-03, as built).** Where the code departed from this plan:
+> - **SC-314** also adds `PgSceneOverlayRepository`, because `planning.scene_overlays` had no
+>   repository and the overlay contract now exists. Both adapters import `api/` at runtime, not
+>   only `oltpPool`: the content hash and normalisation must match the in-memory adapters byte for byte.
+> - **SC-316** fixtures stay under `scene-composition/`. The rain-and-cast fixture keeps
+>   `district_weather: overcast` (the seeded `city` district), not a `clear` district: `downtown`
+>   is not in content, and changing the value would rewrite the golden expectations. The rain
+>   override still changes the weather relative to the district value.
+> - **SC-317** m-82: 098 was already covered by `districts-weather.test.ts`; 097 is new. m-83
+>   (FK + never-delete) lives in `sceneOverlayRepository.pg.test.ts`, next to the overlay adapter.
+> - **SC-318** m-86 (clean-checkout dry run) is **not run**. Its `git clean -xfd` also removes
+>   ignored files such as `.env`, so it needs an explicit go-ahead.
+> - **SC-315** stays deferred, which is why m-73 is unused: the m-numbers have a gap.
+> - **SC-M2 exit criteria** are broader than this sprint. Artifact compile (SC-402), the revision
+>   pointer (SC-404) and the shared personality pool (SC-306) are not built.
+>
 > **Scope trimmed (2026-10-07).** `server/` is slated for deprecation and deletion (see
 > [docs/issues/DB-PACKAGE-and-api-migration.md](../../../issues/DB-PACKAGE-and-api-migration.md)),
 > so Group F adds the **minimum** `server/` code needed to prove the `api/planning` contracts
@@ -56,7 +72,7 @@ Three hand-authored fixtures (data, no code) used by tests, the demo (G3) and do
 Plus a one-page authoring guide in `docs/` showing the YAML for each op (so SC-601's later
 scene-shaped intake has something to target).
 
-- m-78 Fixtures under `api/planning/test-fixtures/scenes/`.
+- m-78 Fixtures under `api/planning/test-fixtures/scene-composition/` (the directory the SC-313 golden tests read).
 - m-79 Table test running all three through `composeScene`.
 - m-80 Authoring guide page + link from the README.
 
@@ -95,7 +111,7 @@ A single runnable script/test (`server/tests/integration/scene-composition.e2e.t
 
 1. Base scene + flag-gated rain overlay: flag **off** → district weather; flag **on** → `rain` with provenance `overlay:<slug>`.
 2. Two equal-priority overlays → compile report contains `SCENE_EXCLUSIVE_CONFLICT`.
-3. Unchanged scene re-upserted via `PgSceneDefRepository.upsertIfChanged` → `skipped`, row `updated_at` untouched (no importer this sprint — SC-315 is deferred).
+3. Unchanged scene re-upserted via `PgSceneDefRepository.upsertIfChanged` → `unchanged` (the contract's status name), row `updated_at` untouched (no importer this sprint — SC-315 is deferred).
 4. `retire` on a flag/scene keeps the row.
 
 Output is a short markdown transcript saved into `sprint-03/EVIDENCE.md`.

@@ -22,6 +22,7 @@ function makeScene(role_slots: RoleSlot[]): SceneDef {
     items: [],
     dialogue_refs: [],
     role_slots,
+    slot_lines: [],
     availability: TRUE,
     priority: 0,
   };

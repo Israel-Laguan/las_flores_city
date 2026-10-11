@@ -55,6 +55,17 @@ being wrong. A roadmap that assumes 100% is a roadmap that lies at the first ret
 - The revision pointer flips atomically and rolls back by flipping it again.
 - A personality pool shared by two characters resolves correctly for both.
 
+**SC-M2 exit-criteria status** (updated as each has a passing test):
+
+| # | Criterion | Status | Evidence |
+|---|---|---|---|
+| 1 | A base and a flag-gated overlay compile to artifacts and resolve differently as the flag flips | **Met** (S4 T1) | `server/tests/integration/scene-compile.e2e.test.ts` (Postgres, artifact read back as the `runtime` role); `api/planning/src/compile/compile-scenes.test.ts` |
+| 2 | Equal-priority conflict on an exclusive property fails the compile | **Met** (S3, re-proved through the compile in S4 T1) | `compile-scenes.test.ts`, `scene-compile.e2e.test.ts` |
+| 3 | The revision pointer flips atomically and rolls back by flipping again | **Met** (S4 T2) | `server/tests/integration/scene-publish.e2e.test.ts` (runtime role sees v2, a stale flip is rejected, rollback restores v1 byte for byte); `revisionRepository.pg.test.ts` (CAS race, fault injection, mutation-checked) |
+| 4 | A personality pool shared by two characters resolves correctly for both | **Met at planning level; runtime serving is SC-M3's first task** (S4 T3) | `server/tests/integration/personality-pools.e2e.test.ts` (Postgres); `api/planning/src/dialogue/resolve-character-line.test.ts`; `api/contracts/src/dialogue/resolve-line.test.ts` |
+
+All four criteria now have a passing test. Criterion 4 is met at planning level only (pools are not yet compiled into artifacts or served by runtime), so read "met" with that qualifier.
+
 ### SC-M3 — Runtime resolver
 
 *Sprints 5–6. The slice is playable.*

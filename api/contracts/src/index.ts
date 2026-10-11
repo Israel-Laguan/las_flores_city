@@ -85,6 +85,7 @@ export type {
   AddDialogueRefsOp,
   AddItemsOp,
   AddRoleSlotOp,
+  AddSlotLinesOp,
   CastSlotOp,
   SetWeatherOp,
   SetTimeOp,
@@ -126,6 +127,54 @@ export { SCENE_COMPOSE_ISSUE_CODES, applyOverlayOps, toComposedScene } from './s
 export type { PlayerScene } from './scene/index.js';
 export { resolveSceneForPlayer, selectActiveOverlays } from './scene/index.js';
 
+// Scene lines (SC-307; also the SC-306 pool line shape)
+export type { LineWhen, SlotLine, LineProblem } from './scene/index.js';
+export {
+  LINE_WHEN_KEYS,
+  SLOT_LINE_JSON_KEYS,
+  checkLineWhen,
+  checkSlotLine,
+  lineWhenSpecificity,
+  lineWhenToJSON,
+  slotLineKey,
+  slotLineToJSON,
+} from './scene/index.js';
+
+// Personality pools + the specificity ladder (SC-306/308)
+export type { PoolLine } from './scene/line.js';
+export {
+  POOL_LINE_JSON_KEYS,
+  checkPoolLine,
+  poolLineFromJSON,
+  poolLineToJSON,
+} from './scene/line.js';
+export type {
+  PersonalityPool,
+  PersonalityPoolInput,
+  PoolIssue,
+  PoolIssueCode,
+  PoolValidationResult,
+} from './dialogue/personality-pool.js';
+export {
+  InvalidPersonalityPoolError,
+  PERSONALITY_POOL_JSON_KEYS,
+  PERSONALITY_POOL_SCHEMA_VERSION,
+  POOL_ISSUE_CODES,
+  createPersonalityPool,
+  personalityPoolFromJSON,
+  personalityPoolToJSON,
+  stringifyPersonalityPool,
+  validatePersonalityPool,
+} from './dialogue/personality-pool.js';
+export type { LineCandidate, LineContext, LineRung } from './dialogue/resolve-line.js';
+export {
+  LINE_RUNGS,
+  lineApplies,
+  poolLineCandidates,
+  resolveLine,
+  slotLineCandidates,
+} from './dialogue/resolve-line.js';
+
 // Validation (shared issue format)
 export type { IssueSeverity, ValidationIssue, ValidationResult } from './validation/index.js';
 export { ISSUE_SEVERITIES, createValidationResult, issuePath } from './validation/index.js';
@@ -143,32 +192,60 @@ export type {
 } from './artifact/artifact.js';
 export {
   ARTIFACT_TYPES,
+  ARTIFACT_ID_PATTERN,
   CONTENT_HASH_PATTERN,
   validateContentHash,
   createArtifactId,
+  isArtifactId,
   isArtifact,
   isArtifactManifest,
 } from './artifact/artifact.js';
 
-// Revision
+// Scene artifact + compile report (SC-401/402/405)
 export type {
-  AtomicFlip,
-  AtomicFlipResult,
-  RevisionId,
-  RevisionPointer,
-  RevisionPointerCreate,
-  RevisionPointerCreated,
-  RevisionPointerRead,
-  RevisionPointerReader,
-  RevisionPointerRepository,
-  RevisionPointerWriter,
-} from './revision/revision-pointer.js';
-export type { ISODateString as RevisionISODateString } from './revision/revision-pointer.js';
+  CompileIssue,
+  CompileIssueCode,
+  CompileReport,
+  CompileSceneEntry,
+  CompileSceneStatus,
+  SceneArtifactPayload,
+} from './artifact/index.js';
 export {
-  createRevisionPointer,
-  isRevisionPointer,
-  isRevisionPointerRead,
-} from './revision/revision-pointer.js';
+  COMPILE_ISSUE_CODES,
+  COMPILE_REPORT_VERSION,
+  SCENE_ARTIFACT_SCHEMA_VERSION,
+  InvalidSceneArtifactError,
+  buildCompileReport,
+  sceneArtifactContentHash,
+  sceneArtifactPayloadFromJSON,
+  sceneArtifactPayloadToJSON,
+  sha256Hex,
+  stringifyCompileReport,
+  stringifySceneArtifact,
+} from './artifact/index.js';
+
+// Revision (SC-404, D1: bundle revision + compare-and-swap pointer)
+export type {
+  ActiveRevision,
+  CreateRevisionInput,
+  FlipFailureCode,
+  FlipInput,
+  FlipRecord,
+  FlipResult,
+  ManifestEntry,
+  Revision,
+  RevisionId,
+  RevisionManifest,
+  RevisionReader,
+  RevisionWriter,
+} from './revision/index.js';
+export {
+  InvalidManifestError,
+  RevisionArtifactMissingError,
+  isRevisionId,
+  manifestHash,
+  normaliseManifest,
+} from './revision/index.js';
 
 // Legacy placeholder (for backwards compatibility)
 export const contractsReady = true as const;

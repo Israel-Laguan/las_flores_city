@@ -12,6 +12,7 @@ import {
   not,
   type SceneDef,
   type SceneOverlay,
+  type SceneOverlayOp,
 } from '@las-flores/api-contracts';
 import { composeScene, sortOverlays } from './compose-scene.js';
 import { deepFreeze } from './test-support.js';
@@ -208,5 +209,42 @@ test('a layer may cast a slot added by an earlier layer only when its availabili
     const overlays = deepFreeze([ov('x', 0, { ops: [{ op: 'add_items', items: ['y'] }, { op: 'cast_slot', slot_id: 'bystander', cast: 'z' }] })]);
     expect(() => composeScene(b, overlays)).not.toThrow();
     expect(b.items).toEqual(['ticket']);
+  });
+});
+
+describe('add_slot_lines in compile (SC-307)', () => {
+  const line = { slot_id: 'ghost', line_id: 'boo', text: 'Boo', when: {} };
+
+  test('a layered add_slot_lines for a slot nothing guarantees is SCENE_SLOT_MISSING', () => {
+    const op: SceneOverlayOp = { op: 'add_slot_lines', lines: [line] };
+    const layered = composeScene(base(), [ov('l', 0, { availability: flag('f', true), ops: [op] })]);
+    expect(layered.issues).toEqual([
+      expect.objectContaining({ code: 'SCENE_SLOT_MISSING', path: 'l.ops[0]', severity: 'error' }),
+    ]);
+  });
+
+  test('a layered add_slot_lines for a base slot is fine and survives into layers', () => {
+    const op: SceneOverlayOp = { op: 'add_slot_lines', lines: [{ ...line, slot_id: 'bystander' }] };
+    const { scene, issues } = composeScene(base(), [ov('l', 0, { availability: flag('f', true), ops: [op] })]);
+    expect(issues).toEqual([]);
+    expect(scene.layers.map((l) => l.slug)).toEqual(['l']);
+  });
+
+  test('a layered add_slot_lines may target a slot added by an earlier layer only when implied', () => {
+    const add = ov('a_add', 0, { availability: flag('f', true), ops: [{ op: 'add_role_slot', slot: { slot_id: 'guard', cast: null, position: 'left' } }] });
+    const lines: SceneOverlayOp = { op: 'add_slot_lines', lines: [{ ...line, slot_id: 'guard' }] };
+    const implied = ov('b_lines', 0, { availability: and([flag('f', true), flag('g', true)]), ops: [lines] });
+    expect(composeScene(base(), [implied, add]).issues).toEqual([]);
+    const loose = { ...implied, availability: flag('g', true) };
+    expect(composeScene(base(), [loose, add]).issues).toEqual([
+      expect.objectContaining({ code: 'SCENE_SLOT_MISSING', path: 'b_lines.ops[0]', severity: 'error' }),
+    ]);
+  });
+
+  test('two equal-priority co-satisfiable overlays adding lines never conflict (additive)', () => {
+    const mk = (slug: string, text: string) =>
+      ov(slug, 3, { availability: flag(slug, true), ops: [{ op: 'add_slot_lines', lines: [{ ...line, slot_id: 'bystander', text }] }] });
+    const { issues } = composeScene(base(), [mk('a', 'one'), mk('b', 'two')]);
+    expect(issues).toEqual([]);
   });
 });

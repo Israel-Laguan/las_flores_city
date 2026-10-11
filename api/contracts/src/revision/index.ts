@@ -2,20 +2,23 @@
 // Re-exports for revision module.
 
 export type {
-  AtomicFlip,
-  AtomicFlipResult,
-  ISODateString as RevisionISODateString,
+  ActiveRevision,
+  CreateRevisionInput,
+  FlipFailureCode,
+  FlipInput,
+  FlipRecord,
+  FlipResult,
+  ManifestEntry,
+  Revision,
   RevisionId,
-  RevisionPointer,
-  RevisionPointerCreate,
-  RevisionPointerCreated,
-  RevisionPointerRead,
-  RevisionPointerReader,
-  RevisionPointerRepository,
-  RevisionPointerWriter,
-} from './revision-pointer.js';
+  RevisionManifest,
+  RevisionReader,
+  RevisionWriter,
+} from './revision.js';
 export {
-  createRevisionPointer,
-  isRevisionPointer,
-  isRevisionPointerRead,
-} from './revision-pointer.js';
+  InvalidManifestError,
+  RevisionArtifactMissingError,
+  isRevisionId,
+  manifestHash,
+  normaliseManifest,
+} from './revision.js';

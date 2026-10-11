@@ -8,7 +8,7 @@ target: content/characters/carlos_hernandez/assets/
 
 # Video Prompts: Carlos Hernandez
 
-NOTE: the PNG shows a man of about 65 with black hair going gray at the temples and the mole on the opposite cheek; this represents Carlos in his mid-80s (he died at 85 in 2060 from heart complications). The portrait captures his later years appearance with receding gray-white hair. Lore lists his ages at key points: 25 (2000), 51 (2026), 63 (2038), 84 (2059), 85 (2060, at death).
+NOTE: the PNG shows a man of about 65 with black hair going gray at the temples and the mole on the opposite cheek; this does NOT match Carlos's depicted age — he is mid-80s with receding gray-white hair (he died at 85 in 2060 from heart complications). The PNG needs to be regenerated from this prompt before it can serve as the age-85 reference image. Lore lists his ages at key points: 25 (2000), 51 (2026), 63 (2038), 84 (2059), 85 (2060, at death).
 
 Generate seamless looping portrait videos from each expression variant PNG. Use the corresponding `carlos_hernandez__<expression>.png` as the input image for each prompt. The old man on the reference image is the character described in the source prompt file.
 

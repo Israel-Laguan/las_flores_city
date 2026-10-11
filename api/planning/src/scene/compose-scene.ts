@@ -95,17 +95,22 @@ function checkLayerSlots(base: ComposedScene, layers: ReadonlyArray<ConditionalL
         adders.set(op.slot.slot_id, [...(adders.get(op.slot.slot_id) ?? []), layer.availability]);
         return;
       }
-      if (op.op !== 'cast_slot' || inBase.has(op.slot_id)) return;
-      const sat = castCanMissSlot(layer, adders.get(op.slot_id) ?? []);
-      if (sat.result === false) return;
-      issues.push({
-        code: 'SCENE_SLOT_MISSING',
-        path,
-        severity: sat.result === true ? 'error' : 'hint',
-        message:
-          `cast_slot targets slot '${op.slot_id}', which neither the base nor an earlier layer is guaranteed to define` +
-          (sat.result === true ? ` (e.g. flags {${sat.witness.join(', ')}})` : ' (undecided)'),
-      });
+      // cast_slot and add_slot_lines both reference slots they do not define.
+      const targets =
+        op.op === 'cast_slot' ? [op.slot_id] : op.op === 'add_slot_lines' ? [...new Set(op.lines.map((l) => l.slot_id))] : [];
+      for (const slotId of targets) {
+        if (inBase.has(slotId)) continue;
+        const sat = castCanMissSlot(layer, adders.get(slotId) ?? []);
+        if (sat.result === false) continue;
+        issues.push({
+          code: 'SCENE_SLOT_MISSING',
+          path,
+          severity: sat.result === true ? 'error' : 'hint',
+          message:
+            `${op.op} targets slot '${slotId}', which neither the base nor an earlier layer is guaranteed to define` +
+            (sat.result === true ? ` (e.g. flags {${sat.witness.join(', ')}})` : ' (undecided)'),
+        });
+      }
     });
   }
   return issues;

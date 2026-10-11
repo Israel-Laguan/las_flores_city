@@ -149,3 +149,50 @@ describe('applyOverlayOps', () => {
     expect(c.availability).toEqual(TRUE);
   });
 });
+
+describe('add_slot_lines (SC-307)', () => {
+  const line = (slot_id: string, line_id: string, text: string) => ({ slot_id, line_id, text, when: {} });
+  const baseWithLine = (): SceneDef =>
+    createSceneDef({ ...base(), slot_lines: [line('valentina', 'hello', 'You came.')] });
+  const run = (...layers: OverlayLayer[]) =>
+    applyOverlayOps(deepFreeze(toComposedScene(baseWithLine())), deepFreeze(layers));
+
+  test('base lines carry provenance "base"', () => {
+    expect(toComposedScene(baseWithLine()).provenance['slot_lines.valentina.hello']).toBe('base');
+  });
+
+  test('appends new lines by identity with overlay provenance', () => {
+    const { scene, issues } = run(layer('a', { op: 'add_slot_lines', lines: [line('bystander', 'gasp', 'Oh!')] }));
+    expect(issues).toEqual([]);
+    expect(scene.slot_lines.map((l) => `${l.slot_id}.${l.line_id}`)).toEqual(['valentina.hello', 'bystander.gasp']);
+    expect(scene.provenance['slot_lines.bystander.gasp']).toBe('a');
+  });
+
+  test('an existing (slot_id, line_id) keeps its first text and provenance', () => {
+    const { scene } = run(layer('a', { op: 'add_slot_lines', lines: [line('valentina', 'hello', 'overridden?')] }));
+    expect(scene.slot_lines).toHaveLength(1);
+    expect(scene.slot_lines[0].text).toBe('You came.');
+    expect(scene.provenance['slot_lines.valentina.hello']).toBe('base');
+  });
+
+  test('a line for a missing slot is skipped with SCENE_SLOT_MISSING', () => {
+    const { scene, issues } = run(layer('a', { op: 'add_slot_lines', lines: [line('ghost', 'boo', 'Boo')] }));
+    expect(scene.slot_lines).toHaveLength(1);
+    expect(issues).toEqual([expect.objectContaining({ code: 'SCENE_SLOT_MISSING', path: 'a.ops[0]' })]);
+  });
+
+  test('a slot added by an earlier layer can receive lines from a later one', () => {
+    const { scene, issues } = run(
+      layer('a', { op: 'add_role_slot', slot: { slot_id: 'guard', cast: null, position: 'center' } }),
+      layer('b', { op: 'add_slot_lines', lines: [line('guard', 'halt', 'Halt.')] }),
+    );
+    expect(issues).toEqual([]);
+    expect(scene.slot_lines.map((l) => l.line_id)).toContain('halt');
+  });
+
+  test('lines follow the slot, not the cast: recasting keeps them', () => {
+    const { scene } = run(layer('a', { op: 'cast_slot', slot_id: 'valentina', cast: 'marco_reyes' }));
+    expect(scene.slot_lines.map((l) => l.line_id)).toEqual(['hello']);
+    expect(scene.role_slots.find((s) => s.slot_id === 'valentina')?.cast).toBe('marco_reyes');
+  });
+});

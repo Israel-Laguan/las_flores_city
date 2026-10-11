@@ -10,8 +10,15 @@ export type {
   Artifact,
   ArtifactManifest,
   ArtifactId,
-  RevisionPointer,
-  RevisionPointerRead,
+  ActiveRevision,
+  Revision,
+  RevisionId,
+  RevisionManifest,
+  RevisionReader,
+  RevisionWriter,
+  FlipInput,
+  FlipResult,
+  FlipRecord,
 } from '@las-flores/api-contracts';
 
 export {
@@ -58,8 +65,22 @@ export type {
 export {
   InMemorySceneDefRepository,
   SceneDefRetiredError,
+  normaliseSceneDef,
   sceneDefContentHash,
 } from './canon/scene-def-repository.js';
+
+// Scene overlay repository (SC-314)
+export type {
+  ListSceneOverlaysOptions,
+  SceneOverlayRecord,
+  SceneOverlayRepository,
+} from './canon/scene-overlay-repository.js';
+export {
+  InMemorySceneOverlayRepository,
+  SceneOverlayRetiredError,
+  normaliseSceneOverlay,
+  sceneOverlayContentHash,
+} from './canon/scene-overlay-repository.js';
 
 // Scene composition (SC-303b)
 export type {
@@ -97,6 +118,49 @@ export {
   formatConflictReport,
   stringifyConflictReport,
 } from './scene/conflicts.js';
+
+// Personality pools + character line resolution (SC-306/308)
+export type {
+  CharacterPoolRepository,
+  LinkStatus,
+  ListPersonalityPoolsOptions,
+  PersonalityPoolRecord,
+  PersonalityPoolRepository,
+} from './canon/personality-pool-repository.js';
+export {
+  InMemoryCharacterPoolRepository,
+  InMemoryPersonalityPoolRepository,
+  PersonalityPoolRetiredError,
+  PoolLinkError,
+  normalisePersonalityPool,
+  personalityPoolContentHash,
+} from './canon/personality-pool-repository.js';
+export type { ResolveCharacterLineInput } from './dialogue/resolve-character-line.js';
+export { resolveCharacterLine, resolveSlotLine } from './dialogue/resolve-character-line.js';
+
+// Compile (SC-402/403/405) — scenes + overlays -> content-addressed artifacts + report
+export type { ContentLookup, LocationInfo } from './compile/content-lookup.js';
+export { InMemoryContentLookup } from './compile/content-lookup.js';
+export type { ArtifactRecord, ArtifactStore, PutManyResult } from './compile/artifact-store.js';
+export {
+  ArtifactIntegrityError,
+  InMemoryArtifactStore,
+  buildSceneArtifactRecord,
+  verifyArtifactRecord,
+} from './compile/artifact-store.js';
+export type { CompileDeps, CompileScenesOptions, CompileScenesResult } from './compile/compile-scenes.js';
+export { compileScenes } from './compile/compile-scenes.js';
+export type { CompileReport, SceneArtifactPayload } from '@las-flores/api-contracts';
+export {
+  InvalidManifestError,
+  RevisionArtifactMissingError,
+  manifestHash,
+  normaliseManifest,
+} from '@las-flores/api-contracts';
+
+// Revisions + publish (SC-404/406)
+export type { PublishInput, PublishResult, RevisionRepository } from './compile/revision-repository.js';
+export { InMemoryRevisionRepository, manifestFromRecords } from './compile/revision-repository.js';
 
 // Threshold events (SC-206)
 export type { ThresholdResult, StatValue, Threshold } from './canon/threshold-events.js';

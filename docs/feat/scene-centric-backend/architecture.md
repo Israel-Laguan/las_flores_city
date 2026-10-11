@@ -61,6 +61,7 @@ Rung 2 of the separation ladder — same database, separate schemas, separate ro
 |---|---|---|---|
 | `planning` | canon entities, `plan_deltas`, `entity_edges`, flag definitions, asset registry | `planning/` | `planning/` |
 | `runtime` | player state: flags set, current resolution, pinned cast, progress | `runtime/` | `runtime/` |
+| `publish` | compiled artifacts (`publish.artifacts`); from SC-404 also revisions and the active-revision pointer | `planning/` (INSERT, SELECT only: immutable) | `runtime/` (SELECT only) |
 | *(existing)* | current `server/` tables, untouched | `server/` | `server/` |
 
 **SC-M1 enforcement scope (grant-proof only):** the `R9` one-writer-per-fact boundary is
@@ -69,6 +70,15 @@ restricted role. Production `runtime/` code still runs on `oltpPool` as the priv
 `las_flores` app role per `AGENTS.md`. Making production transactions actually run as
 `runtime` (e.g. `SET LOCAL ROLE runtime` inside `withOLTPTransaction` or a sanctioned pool
 exception) is an explicit post-M1 decision — record as debt, do not add `runtimePool` now.
+
+**`publish` is the seam schema (D2, migration 104).** `runtime` may not read `planning`, yet it
+must read compiled output, so the compiled output lives in a third schema that exists for
+exactly that purpose. Grants, asserted by `publish-artifacts-permissions.test.ts`:
+`planning` has INSERT + SELECT (no UPDATE/DELETE/TRUNCATE: artifacts are immutable),
+`runtime` has SELECT only, and the table ACL names nobody else (not PUBLIC, not the app
+role). Content addressing is enforced by the table itself: a CHECK requires
+`artifact_id = sha256(payload)`, and `payload` is TEXT (not JSONB) so the exact hashed bytes
+round-trip.
 
 Two DB roles (`runtime`, `planning` — must match `RUNTIME_DATABASE_URL` /
 `PLANNING_DATABASE_URL` and SC-106). **The runtime role has no write access to
@@ -110,8 +120,35 @@ flowchart LR
   RS --> CL[client]
 ```
 
-**An immutable artifact bundle, and a pointer to the active revision.** No shared tables,
-no cross-schema foreign keys, no synchronous calls between the two.
+**An immutable artifact bundle, and a pointer to the active revision.** The only shared
+surface is the `publish` schema (§3): planning writes it, runtime reads it with SELECT only.
+No other shared tables, no cross-schema foreign keys, no synchronous calls between the two.
+(This replaces the earlier "no shared tables" wording: the pointer and the artifacts have to
+live somewhere both roles can reach, and a read-only grant on a purpose-built schema keeps
+the one-writer-per-fact rule, R9/R14, intact.)
+
+*Status:* artifacts (`publish.artifacts`, SC-402) and the revision pointer (SC-404, migration
+105) are implemented.
+
+- **A revision is a bundle** (D1): an immutable manifest `(artifact_type, name) -> artifact_id`
+  over a set of artifacts, in `publish.revisions` + `publish.revision_entries`. Creating one is
+  inert. There is ONE pointer, `publish.active_revision`, a singleton row (pinned by
+  `PRIMARY KEY` + `CHECK`).
+- **The flip is compare-and-swap.** The caller must state the revision it believes is active
+  (`expectedActive`, `null` = none yet). First flip: `INSERT ... ON CONFLICT DO NOTHING`; later
+  flips: `UPDATE ... WHERE revision_id = <expected>`. A mismatch changes nothing and reports
+  what is actually active. Of N racing flips exactly one wins (tested on Postgres, 12- and
+  20-way). Every flip also appends to `publish.revision_flips` in the same transaction.
+- **Rollback is flipping again** to an earlier revision; revisions and artifacts are never
+  mutated, so the earlier revision serves byte for byte as before.
+- **Publish is atomic.** `publish` writes the artifacts, creates the revision and flips the
+  pointer in one transaction; any failure (stale expectation, tampered artifact, an error
+  injected between the steps) rolls back all of it.
+- **Grants:** runtime has SELECT on revisions, entries and the pointer, and nothing on the flip
+  log. Planning has INSERT + SELECT on revisions, entries and flips, and SELECT/INSERT/UPDATE
+  (never DELETE) on the pointer.
+- **Not built (SC-M3):** runtime session pinning to a revision, and artifact lookup scoped to
+  the pinned revision (SC-502/504). Runtime can read the pointer today; nothing consumes it.
 
 Two properties follow structurally rather than by discipline:
 
@@ -135,7 +172,7 @@ Two properties follow structurally rather than by discipline:
 | Traversal | **Recursive CTEs over a derived `entity_edges` table** | Materialize the edges and traversal is uniform across heterogeneous entity types. Confirm cost in spike SC-S2 |
 | Fuzzy matching | **`pg_trgm`** | Solves alias/duplicate detection, which is the near-term need. Contrib extension, no pipeline |
 | Semantic retrieval | **deferred** | Structured filters likely beat embeddings at ~194 entities. `pgvector` only on a measurement showing filters failing |
-| Artifact storage | **existing object storage (MinIO/S3) + CDN** | Migration `076` already proved the pattern for dialogue chunks |
+| Artifact storage | **Postgres `publish.artifacts` behind an `ArtifactStore` port; object storage (MinIO/S3) + CDN deferred to SC-M3** | Publishing artifacts and flipping the pointer in one database transaction is what makes publish atomic and testable; scene artifacts are a few hundred bytes to a few KB (`spikes/SC-S13`), so the table is not a size problem. The object-store pattern (migration `076`, `ContentPublishService`) stays the target once the serving benchmark (SC-508) exists; swapping it in means a new `ArtifactStore` adapter, not a compile change (D2). |
 | Analytics | **existing Postgres OLAP layer** | Already live: `AdminEventEmitter`, `analyticsQueries.ts`, `LeaderboardWorker`. Emit into it; do not build a parallel emitter |
 | Language / typing | **strict TypeScript** | Project convention |
 
@@ -231,14 +268,14 @@ which it must be settled.
 | # | Decision | Settle by |
 |---|---|---|
 | A1 | File-canonical (YAML) vs. DB-canonical content — and whether existing content is imported or ages out | SC-M4 |
-| A2 | Scene pinning: per visit, per time-block, or re-resolve every entry | SC-M3 |
-| A3 | Precedence rule for exclusive scene properties on overlay conflict — and whether equal priority warns or fails | SC-M2 |
+| A2 | Scene pinning: per visit, per time-block, or re-resolve every entry. **Recommended: pin per visit; to be settled at SC-507.** Not resolved. | SC-M3 |
+| A3 | ~~Precedence rule for exclusive scene properties on overlay conflict — and whether equal priority warns or fails~~ — **resolved**: equal priority on an exclusive property fails the compile (SC-304; `spikes/SC-S13-flag-gated-overlays.md`); otherwise the higher priority wins | SC-M2 |
 | A4 | Approval granularity: whole-plan or partial | SC-M4 |
 | A5 | Regeneration vs. hand-edit merge rule | SC-M4 |
 | A6 | ~~Weather source — where the live value comes from~~ — **resolved**: compiled snapshot of `districts.weather` at revision R (default) + `scene.weather` (author override, wins when set), resolved by the caller from the **pinned artifact** before `buildBackgroundHints` (`spikes/SC-S5-weather-source.md`). Runtime never reads `districts` live; if a revision-scoped read model replaces the snapshot, its contract MUST be added to §4. | SC-M2 |
 | A7 | `asset_fallback` signal consumer | SC-M6 |
 | A8 | Whether `dialogue_bias` and `look_hint` survive R7 (no field without a reader) | SC-M6 |
 
-A3 has a recommendation already: **equal priority on an exclusive property should fail the
-compile**, because equal priority means nondeterminism and a warning on nondeterminism is
+A3 is **resolved**: **equal priority on an exclusive property fails the compile** (implemented
+in SC-304), because equal priority means nondeterminism and a warning on nondeterminism is
 a bug that ships.

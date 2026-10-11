@@ -30,6 +30,7 @@
 // SCENE_OVERLAY_SLOT_ID_INVALID           error     ops[i](.slot).slot_id   not an identifier-valid slug
 // SCENE_OVERLAY_SLOT_CAST_INVALID         error     ops[i](.slot).cast      not null | a valid character slug
 // SCENE_OVERLAY_SLOT_POSITION_INVALID     error     ops[i].slot.position    not left | center | right
+// SCENE_OVERLAY_SLOT_LINE_INVALID         error     ops[i].lines[j](.<key>) shape problem in a slot line
 // SCENE_OVERLAY_WEATHER_INVALID           error     ops[i].weather          not null | a WeatherTag
 // SCENE_OVERLAY_TIME_INVALID              error     ops[i].time             not null | a SceneTime
 // SCENE_OVERLAY_AVAILABILITY_INVALID      error     availability            not a valid ConditionExpr
@@ -46,6 +47,7 @@ import {
 } from '../validation/issue.js';
 import { WEATHER_TAGS, isWeatherTag } from '../weather/weather-tag.js';
 import { SCENE_OVERLAY_JSON_KEYS, SCENE_OVERLAY_OPS, SCENE_OVERLAY_SCHEMA_VERSION, isSceneOverlayOpName } from './overlay-vocab.js';
+import { checkSlotLine, slotLineKey } from './line.js';
 import { ROLE_SLOT_JSON_KEYS, SLOT_POSITIONS, isSlotPosition } from './role-slot.js';
 import { SCENE_TIMES, isSceneTime } from './scene-vocab.js';
 import { isValidSlug } from './slug.js';
@@ -67,6 +69,7 @@ export const SCENE_OVERLAY_ISSUE_CODES = {
   SCENE_OVERLAY_SLOT_ID_INVALID: 'SCENE_OVERLAY_SLOT_ID_INVALID',
   SCENE_OVERLAY_SLOT_CAST_INVALID: 'SCENE_OVERLAY_SLOT_CAST_INVALID',
   SCENE_OVERLAY_SLOT_POSITION_INVALID: 'SCENE_OVERLAY_SLOT_POSITION_INVALID',
+  SCENE_OVERLAY_SLOT_LINE_INVALID: 'SCENE_OVERLAY_SLOT_LINE_INVALID',
   SCENE_OVERLAY_WEATHER_INVALID: 'SCENE_OVERLAY_WEATHER_INVALID',
   SCENE_OVERLAY_TIME_INVALID: 'SCENE_OVERLAY_TIME_INVALID',
   SCENE_OVERLAY_AVAILABILITY_INVALID: 'SCENE_OVERLAY_AVAILABILITY_INVALID',
@@ -198,6 +201,21 @@ function checkOpBody(sink: Sink, op: Record<string, unknown>, name: keyof typeof
         sink.add('SCENE_OVERLAY_SLOT_POSITION_INVALID', `${path}.position`, `must be one of: ${SLOT_POSITIONS.join(', ')}`);
       }
       return id === undefined ? undefined : `add_role_slot:${id}`;
+    }
+    case 'add_slot_lines': {
+      const path = `${at}.lines`;
+      const lines = sink.array(op, 'lines', path);
+      const seen = new Set<string>();
+      lines?.forEach((entry, j) => {
+        const p = issuePath(path, j);
+        const problems = checkSlotLine(entry, p);
+        for (const prob of problems) sink.add('SCENE_OVERLAY_SLOT_LINE_INVALID', prob.path, prob.message);
+        if (problems.length > 0) return;
+        const key = slotLineKey(entry as { slot_id: string; line_id: string });
+        if (seen.has(key)) sink.add('SCENE_OVERLAY_REF_DUPLICATE', p, `'${key}' is listed more than once`, 'warning');
+        seen.add(key);
+      });
+      return undefined;
     }
     case 'cast_slot': {
       const id = checkSlotId(sink, op, `${at}.slot_id`);
