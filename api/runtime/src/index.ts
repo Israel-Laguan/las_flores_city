@@ -65,3 +65,21 @@ export { ArtifactLookupError, RevisionScopedLookup } from './resolve/lookup.js';
 export type { ResolveCharacterLineAtInput } from './resolve/character-line.js';
 export { resolveCharacterLineAt } from './resolve/character-line.js';
 export { InMemoryArtifactReader, InMemoryRevisionManifestReader } from './resolve/in-memory.js';
+
+// Player state keyed by player AND game (SC-501)
+export type {
+  Game,
+  GameFlagRepository,
+  GameRepository,
+  GameResolution,
+  GameResolutionInput,
+  ResolutionRepository,
+  SetFlagResult,
+} from './state/ports.js';
+export { GameNotFoundError } from './state/ports.js';
+export {
+  InMemoryGameFlagRepository,
+  InMemoryGameRepository,
+  InMemoryResolutionRepository,
+  flagsForGame,
+} from './state/in-memory.js';
