@@ -182,6 +182,27 @@ export function gameStateContract(
       ).rejects.toBeInstanceOf(GameNotFoundError);
     });
 
+    test('a malformed (non-UUID) id is treated as an unknown game: reads miss, writes throw', async () => {
+      const p = newPlayer();
+      const { gameId } = await ctx.games.startGame(p);
+      expect(await ctx.games.getGame(p, 'not-a-uuid')).toBeUndefined();
+      expect(await ctx.games.getGame('not-a-uuid', gameId)).toBeUndefined();
+      expect((await ctx.flags.getTrueFlags(p, 'not-a-uuid')).size).toBe(0);
+      expect((await ctx.flags.getTrueFlags('not-a-uuid', gameId)).size).toBe(0);
+      expect(await ctx.resolutions.get(p, 'not-a-uuid')).toBeUndefined();
+      expect(await ctx.resolutions.get('not-a-uuid', gameId)).toBeUndefined();
+      await expect(ctx.flags.setFlag(p, 'not-a-uuid', 'met_vera')).rejects.toBeInstanceOf(GameNotFoundError);
+      await expect(ctx.flags.setFlag('not-a-uuid', gameId, 'met_vera')).rejects.toBeInstanceOf(GameNotFoundError);
+      await expect(
+        ctx.resolutions.upsert({ playerId: p, gameId: 'not-a-uuid', sceneSlug: 'lobby', artifactId: ART_1, revisionId: randomUUID() }),
+      ).rejects.toBeInstanceOf(GameNotFoundError);
+      await expect(
+        ctx.resolutions.upsert({ playerId: 'not-a-uuid', gameId, sceneSlug: 'lobby', artifactId: ART_1, revisionId: randomUUID() }),
+      ).rejects.toBeInstanceOf(GameNotFoundError);
+      expect((await ctx.flags.getTrueFlags(p, gameId)).size).toBe(0);
+      expect(await ctx.resolutions.get(p, gameId)).toBeUndefined();
+    });
+
     test('an unreferenced (missing) revision id is accepted: no foreign key, no fallback to the pointer', async () => {
       const p = newPlayer();
       const { gameId } = await ctx.games.startGame(p);

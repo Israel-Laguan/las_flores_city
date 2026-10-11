@@ -7,7 +7,7 @@
 // or DELETE here, and the `runtime` role is not granted either, so the guarantee is a grant.
 
 import { queryOLTP } from '@las-flores/infra';
-import { validateFlagSlug } from '@las-flores/api-contracts';
+import { isUuid, validateFlagSlug } from '@las-flores/api-contracts';
 import {
   GameNotFoundError,
   type Game,
@@ -24,6 +24,11 @@ const FOREIGN_KEY_VIOLATION = '23503';
 
 const isFkViolation = (err: unknown): boolean => (err as { code?: string } | null)?.code === FOREIGN_KEY_VIOLATION;
 
+// player_id / game_id are UUID columns (migration 108): a malformed id would make Postgres raise
+// 22P02 before any row lookup, rejecting with a raw database error. Reads must answer "not found"
+// and writes must throw GameNotFoundError, matching the in-memory adapters' port contract.
+const hasValidKey = (playerId: string, gameId: string): boolean => isUuid(playerId) && isUuid(gameId);
+
 export class PgGameRepository implements GameRepository {
   constructor(private readonly query: QueryFn = queryOLTP) {}
 
@@ -33,6 +38,7 @@ export class PgGameRepository implements GameRepository {
   }
 
   async getGame(playerId: string, gameId: string): Promise<Game | undefined> {
+    if (!hasValidKey(playerId, gameId)) return undefined;
     const { rows } = await this.query(
       'SELECT game_id, player_id, created_at FROM runtime.games WHERE player_id = $1 AND game_id = $2',
       [playerId, gameId],
@@ -47,6 +53,7 @@ export class PgGameFlagRepository implements GameFlagRepository {
 
   async setFlag(playerId: string, gameId: string, flagSlug: string): Promise<SetFlagResult> {
     validateFlagSlug(flagSlug);
+    if (!hasValidKey(playerId, gameId)) throw new GameNotFoundError(playerId, gameId);
     try {
       const { rows } = await this.query(
         `INSERT INTO runtime.game_flags (player_id, game_id, flag_slug) VALUES ($1, $2, $3)
@@ -61,6 +68,7 @@ export class PgGameFlagRepository implements GameFlagRepository {
   }
 
   async getTrueFlags(playerId: string, gameId: string): Promise<Set<string>> {
+    if (!hasValidKey(playerId, gameId)) return new Set<string>();
     const { rows } = await this.query('SELECT flag_slug FROM runtime.game_flags WHERE player_id = $1 AND game_id = $2', [
       playerId,
       gameId,
@@ -73,6 +81,7 @@ export class PgResolutionRepository implements ResolutionRepository {
   constructor(private readonly query: QueryFn = queryOLTP) {}
 
   async upsert(input: GameResolutionInput): Promise<void> {
+    if (!hasValidKey(input.playerId, input.gameId)) throw new GameNotFoundError(input.playerId, input.gameId);
     try {
       await this.query(
         `INSERT INTO runtime.game_resolution (player_id, game_id, scene_slug, artifact_id, revision_id)
@@ -89,6 +98,7 @@ export class PgResolutionRepository implements ResolutionRepository {
   }
 
   async get(playerId: string, gameId: string): Promise<GameResolution | undefined> {
+    if (!hasValidKey(playerId, gameId)) return undefined;
     const { rows } = await this.query(
       `SELECT player_id, game_id, scene_slug, artifact_id, revision_id, resolved_at
          FROM runtime.game_resolution WHERE player_id = $1 AND game_id = $2`,
