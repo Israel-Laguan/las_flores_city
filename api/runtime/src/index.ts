@@ -83,3 +83,7 @@ export {
   InMemoryResolutionRepository,
   flagsForGame,
 } from './state/in-memory.js';
+
+// Client-owned session pin (SC-504)
+export type { SessionStart } from './session/pin.js';
+export { NoActiveRevisionError, requirePinnedRevision, startSession } from './session/pin.js';

@@ -87,9 +87,9 @@
 | ID | Story | Size | State |
 |---|---|---|---|
 | SC-501 | Player state schema and repositories — flags, resolution, pinned cast, progress | M | **Partly done** (SC-M3 T3; migration 108: `runtime.games`, `runtime.game_flags` (write-once by grant), `runtime.game_resolution`, keyed by player AND game; ports + in-memory in `api/runtime/src/state/`, `Pg*Repository` in `server/src/runtime/PgGameStateRepositories.ts`; `gameState.pg.test.ts`, `runtime-player-state-permissions.test.ts`). Pinned cast and a separate progress table are deferred to SC-507/506 (A2 still open); `game_resolution` is the minimal progress cursor. Previous blocker SC-103 is Done |
-| SC-502 | Resolver: revision-scoped artifact lookup | M | Blocked: SC-404 |
+| SC-502 | Resolver: revision-scoped artifact lookup | M | **Done** (SC-M3 T2; `RevisionScopedLookup` + `resolveCharacterLineAt` in `api/runtime/src/resolve/`, `PgArtifactReader`/`PgRevisionReader`; `runtimeLookup.pg.test.ts` incl. as role `runtime`; never reads the pointer). SC-404 is Done |
 | SC-503 | Scene resolution against player state via the condition evaluator | M | Blocked: SC-502 |
-| SC-504 | Session pins to a revision; a later pointer flip does not affect it | M | Blocked: SC-502 |
+| SC-504 | Session pins to a revision; a later pointer flip does not affect it | M | **Partly done** (server half; the pin is client-owned in localStorage, so the server stores nothing: `startSession` / `requirePinnedRevision` in `api/runtime/src/session/pin.ts`; flip, rollback, outage and racing-start cases in `sessionPin.pg.test.ts`). The client that persists the pin is not built. SC-502 is Done |
 | SC-505 | Choice-reachability validation before any effect applies | M | Blocked: SC-503 |
 | SC-506 | Effect application: flag setting, transactional | M | Blocked: SC-505 |
 | SC-507 | Scene pinning per the A2 decision | M | Blocked: A2 |
