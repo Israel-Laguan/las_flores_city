@@ -127,7 +127,12 @@ run_job() {
       OUT="$(free_path "$WANT")"   # re-check: never clobber anything created while we waited
       python3 -I -c 'import sys;from PIL import Image;Image.open(sys.argv[1]).save(sys.argv[2])' "$TMP" "$OUT" 2>/dev/null \
         || { command -v magick >/dev/null && magick "$TMP" "$OUT"; } || { command -v convert >/dev/null && convert "$TMP" "$OUT"; }
-      rm -f "$TMP"; echo "   saved $OUT"; echo "$URL" > "$STATE"; LAST_OK=1; return 0
+      if [[ -f "$OUT" ]]; then
+        rm -f "$TMP"; echo "   saved $OUT"; echo "$URL" > "$STATE"; LAST_OK=1
+      else
+        echo "   conversion failed; raw download kept at $TMP" >&2
+      fi
+      return 0
     fi
     [[ "$S" == 4 ]] && { echo "   generation failed (job $ID)"; return 0; }
   done

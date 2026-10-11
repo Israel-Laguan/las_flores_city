@@ -9,8 +9,11 @@ import { sceneOverlayRepositoryContract } from '../helpers/sceneOverlayRepositor
 // Collision avoidance: overlay slugs start with `sc314ov`, and the base scenes they point at
 // are seeded as `sc314ov_base*` through PgSceneDefRepository (the FK requires real rows).
 // Overlays are removed before their scenes in afterAll.
+// `...00a2` is this suite's own location literal — `...00a1` belongs to
+// scene-composition.e2e.test.ts (and the contract helpers) and must not be reused here
+// (no-shared-fixtures guard; see the collision-avoidance rule in AGENTS.md).
 const PREFIX = 'sc314ov';
-const LOCATION = 'e9900000-0000-4000-8000-0000000000a1';
+const LOCATION = 'e9900000-0000-4000-8000-0000000000a2';
 
 const scenes = new PgSceneDefRepository();
 

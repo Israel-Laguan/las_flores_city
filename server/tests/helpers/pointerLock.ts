@@ -16,6 +16,8 @@ export async function acquirePointerLock(): Promise<() => Promise<void>> {
   const saved = await client.query<{ revision_id: string; flipped_at: Date }>(
     'SELECT revision_id, flipped_at FROM publish.active_revision WHERE singleton',
   );
+  // Start every locked suite from "nothing active"; the saved row is restored on release.
+  await client.query('DELETE FROM publish.active_revision WHERE singleton');
   return async () => {
     try {
       const prior = saved.rows[0];

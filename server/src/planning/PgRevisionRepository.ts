@@ -90,6 +90,10 @@ async function casFlip(query: QueryFn, { to, expectedActive }: FlipInput): Promi
       : fail('conflict', `expected '${to}' to be active, but ${fmt(actual)} is`);
   }
 
+  if (expectedActive !== null && !isRevisionId(expectedActive)) {
+    const actual = await readActive(query);
+    return { ok: false, code: 'conflict', actual, message: `expected ${fmt(expectedActive)}, but ${fmt(actual)} is active` };
+  }
   const moved =
     expectedActive === null
       ? await query(
