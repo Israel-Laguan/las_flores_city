@@ -210,6 +210,8 @@ export type {
   CompileSceneStatus,
   SceneArtifactPayload,
   CharacterPoolsArtifactPayload,
+  ArtifactReader,
+  StoredArtifact,
 } from './artifact/index.js';
 export {
   COMPILE_ISSUE_CODES,

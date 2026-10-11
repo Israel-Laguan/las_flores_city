@@ -57,3 +57,11 @@ export const runtimeReady = true as const;
 export type { ComposedScene, ConditionalLayer, PlayerScene, ResolvedScene } from '@las-flores/api-contracts';
 export { resolveSceneForPlayer, selectActiveOverlays } from '@las-flores/api-contracts';
 export { resolvePlayerScene } from './resolve/scene.js';
+
+// Revision-scoped artifact lookup + pool-line resolution (SC-M3 T2 / SC-502)
+export type { ArtifactReader, StoredArtifact } from '@las-flores/api-contracts';
+export type { LookupErrorCode, LookupSources, RevisionManifestReader } from './resolve/lookup.js';
+export { ArtifactLookupError, RevisionScopedLookup } from './resolve/lookup.js';
+export type { ResolveCharacterLineAtInput } from './resolve/character-line.js';
+export { resolveCharacterLineAt } from './resolve/character-line.js';
+export { InMemoryArtifactReader, InMemoryRevisionManifestReader } from './resolve/in-memory.js';

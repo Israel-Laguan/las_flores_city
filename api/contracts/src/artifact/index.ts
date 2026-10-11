@@ -33,6 +33,8 @@ export {
   stringifySceneArtifact,
 } from './scene-artifact.js';
 
+export type { ArtifactReader, StoredArtifact } from './reader.js';
+
 export type { CharacterPoolsArtifactPayload } from './pool-artifact.js';
 export {
   CHARACTER_POOLS_ARTIFACT_SCHEMA_VERSION,
