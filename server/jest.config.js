@@ -32,6 +32,7 @@ const base = {
     '^@las-flores/infra$': '<rootDir>/../infra/src/index.ts',
     '^@las-flores/api-contracts$': '<rootDir>/../api/contracts/src/index.ts',
     '^@las-flores/api-planning$': '<rootDir>/../api/planning/src/index.ts',
+    '^@las-flores/api-runtime$': '<rootDir>/../api/runtime/src/index.ts',
   },
   transformIgnorePatterns: ['/node_modules/(?!@las-flores/shared/|@las-flores/infra/)'],
   transform: {

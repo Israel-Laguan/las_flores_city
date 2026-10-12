@@ -21,7 +21,7 @@ import type { FlagStateRepository } from '../flags.js';
 export async function resolvePlayerScene(
   artifact: ResolvedScene,
   playerId: string,
-  flags: FlagStateRepository,
+  flags: Pick<FlagStateRepository, 'getTrueFlags'>,
 ): Promise<PlayerScene> {
   return resolveSceneForPlayer(artifact, await flags.getTrueFlags(playerId));
 }

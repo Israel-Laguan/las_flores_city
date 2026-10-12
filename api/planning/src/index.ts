@@ -145,11 +145,14 @@ export type { ArtifactRecord, ArtifactStore, PutManyResult } from './compile/art
 export {
   ArtifactIntegrityError,
   InMemoryArtifactStore,
+  buildArtifactRecord,
   buildSceneArtifactRecord,
   verifyArtifactRecord,
 } from './compile/artifact-store.js';
 export type { CompileDeps, CompileScenesOptions, CompileScenesResult } from './compile/compile-scenes.js';
 export { compileScenes } from './compile/compile-scenes.js';
+export type { CompilePoolsDeps, CompilePoolsOptions, CompilePoolsResult } from './compile/compile-pools.js';
+export { POOL_COMPILE_ISSUE_CODES, compilePools } from './compile/compile-pools.js';
 export type { CompileReport, SceneArtifactPayload } from '@las-flores/api-contracts';
 export {
   InvalidManifestError,

@@ -19,9 +19,10 @@
       "@las-flores/shared": ["../shared/src/index.ts"],
       "@las-flores/infra": ["../infra/src/index.ts"],
       "@las-flores/api-contracts": ["../api/contracts/src/index.ts"],
-      "@las-flores/api-planning": ["../api/planning/src/index.ts"]
+      "@las-flores/api-planning": ["../api/planning/src/index.ts"],
+      "@las-flores/api-runtime": ["../api/runtime/src/index.ts"]
     }
   },
-  "include": ["src/**/*", "../shared/src/**/*", "../infra/src/**/*", "../api/contracts/src/**/*", "../api/planning/src/**/*"],
+  "include": ["src/**/*", "../shared/src/**/*", "../infra/src/**/*", "../api/contracts/src/**/*", "../api/planning/src/**/*", "../api/runtime/src/**/*"],
   "exclude": ["node_modules", "dist"]
 }

@@ -14,15 +14,29 @@ let _oltpPool: pg.Pool | null = null;
 let _olapPool: pg.Pool | null = null;
 let _contentPool: pg.Pool | null = null;
 
-function parseContentPoolMax(): number {
-  const raw = process.env.CONTENT_POOL_MAX;
-  if (raw === undefined || raw === '') return 10;
-  if (!/^\d+$/.test(raw)) throw new Error('CONTENT_POOL_MAX must be a positive integer');
+function parsePositiveIntEnv(name: string, fallback: number): number {
+  const raw = process.env[name];
+  if (raw === undefined || raw === '') return fallback;
+  if (!/^\d+$/.test(raw)) throw new Error(`${name} must be a positive integer`);
   const value = Number(raw);
   if (!Number.isSafeInteger(value) || value <= 0) {
-    throw new Error('CONTENT_POOL_MAX must be a positive integer');
+    throw new Error(`${name} must be a positive integer`);
   }
   return value;
+}
+
+function parseContentPoolMax(): number {
+  return parsePositiveIntEnv('CONTENT_POOL_MAX', 10);
+}
+
+// OLTP pool sizing is env-driven (default 50 for production headroom under
+// load tests + PgBouncer). Integration tests run MANY Jest worker PROCESSES in
+// parallel against ONE Postgres with max_connections=100 — each worker owns its
+// own oltpPool (50) + contentPool (10) + per-suite pools, so unconstrained
+// pools exhaust the server ("sorry, too many clients already"). The test
+// harness (server/tests/globalSetup.cjs) caps this via OLTP_POOL_MAX.
+function parseOltpPoolMax(): number {
+  return parsePositiveIntEnv('OLTP_POOL_MAX', 50);
 }
 
 function getOltpPool(): pg.Pool {
@@ -32,7 +46,7 @@ function getOltpPool(): pg.Pool {
     // without exhausting connections. Combined with PgBouncer in production.
     _oltpPool = new Pool({
       connectionString: process.env.DATABASE_URL,
-      max: 50,                  // Max connections in pool
+      max: parseOltpPoolMax(),  // Default 50 (prod/load tests); OLTP_POOL_MAX caps it (tests)
       idleTimeoutMillis: 30000, // Close idle clients after 30s
       connectionTimeoutMillis: 5000, // Fail if no connection available within 5s
     });
