@@ -3,14 +3,14 @@
 import { useState } from 'react';
 import styles from './JsonViewer.module.css';
 
-function syntaxHighlightJSON(json: unknown): JSX.Element {
+function syntaxHighlightJSON(json: unknown): React.JSX.Element {
   const stringified = JSON.stringify(json, null, 2);
   const tokenRegex = /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?|[{}[\]:,]|\s+|[^"\s{}[\]:,]+)/g;
 
   return (
     <pre className={styles.jsonPre}>
       {stringified.split('\n').map((line, i) => {
-        const tokens: JSX.Element[] = [];
+        const tokens: React.JSX.Element[] = [];
         let match;
         tokenRegex.lastIndex = 0;
 
