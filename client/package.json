@@ -13,8 +13,8 @@
     "test:e2e:ui": "npx playwright test --ui"
   },
   "dependencies": {
-    "react": "~19.3.0",
-    "react-dom": "~19.3.0",
+    "react": "~19.3.1",
+    "react-dom": "~19.3.1",
     "phaser": "~3.90.0",
     "eventemitter3": "~5.0.4"
   },
